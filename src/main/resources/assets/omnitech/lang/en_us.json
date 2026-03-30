@@ -1,7 +1,11 @@
 {
-  "itemGroup.omnitech": "Example Mod Tab",
+  "itemGroup.omnitech": "OmniTech",
   "block.omnitech.example_block": "Example Block",
+  "block.omnitech.alloy_furnace": "Alloy Furnace",
   "item.omnitech.example_item": "Example Item",
+  "item.omnitech.steel_ingot": "Steel Ingot",
+
+  "container.omnitech.alloy_furnace": "Alloy Furnace",
 
   "omnitech.configuration.title": "OmniTech Configs",
   "omnitech.configuration.section.omnitech.common.toml": "OmniTech Configs",

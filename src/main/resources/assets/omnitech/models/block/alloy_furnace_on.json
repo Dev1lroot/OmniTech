@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "omnitech:block/alloy_furnace_top",
+    "front": "omnitech:block/alloy_furnace_front_on",
+    "side": "omnitech:block/alloy_furnace_side"
+  }
+}
