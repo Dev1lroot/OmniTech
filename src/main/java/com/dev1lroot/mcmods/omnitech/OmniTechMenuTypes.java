@@ -10,14 +10,14 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.function.Supplier;
 
 public class OmniTechMenuTypes {
-    public static final DeferredRegister<MenuType<?>> MENU_TYPES =
+    public static final DeferredRegister<MenuType<?>> REGISTRY =
             DeferredRegister.create(Registries.MENU, OmniTech.MODID);
 
     public static final Supplier<MenuType<AlloyFurnaceMenu>> ALLOY_FURNACE =
-            MENU_TYPES.register("alloy_furnace",
+            REGISTRY.register("alloy_furnace",
                     () -> IMenuTypeExtension.create(AlloyFurnaceMenu::new));
 
     public static void register(IEventBus modEventBus) {
-        MENU_TYPES.register(modEventBus);
+        REGISTRY.register(modEventBus);
     }
 }

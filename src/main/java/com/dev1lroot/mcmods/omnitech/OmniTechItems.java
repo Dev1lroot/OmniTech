@@ -8,12 +8,12 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class OmniTechItems {
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(OmniTech.MODID);
+    public static final DeferredRegister.Items REGISTRY = DeferredRegister.createItems(OmniTech.MODID);
 
-    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(
+    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = REGISTRY.registerSimpleBlockItem(
             "example_block", OmniTechBlocks.EXAMPLE_BLOCK);
 
-    public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem(
+    public static final DeferredItem<Item> EXAMPLE_ITEM = REGISTRY.registerSimpleItem(
             "example_item",
             p -> p.food(new FoodProperties.Builder()
                     .alwaysEdible()
@@ -21,13 +21,13 @@ public class OmniTechItems {
                     .saturationModifier(2f)
                     .build()));
 
-    public static final DeferredItem<BlockItem> ALLOY_FURNACE_ITEM = ITEMS.registerSimpleBlockItem(
+    public static final DeferredItem<BlockItem> ALLOY_FURNACE_ITEM = REGISTRY.registerSimpleBlockItem(
             "alloy_furnace", OmniTechBlocks.ALLOY_FURNACE);
 
-    public static final DeferredItem<Item> STEEL_INGOT = ITEMS.registerSimpleItem(
+    public static final DeferredItem<Item> STEEL_INGOT = REGISTRY.registerSimpleItem(
             "steel_ingot", p -> p);
 
     public static void register(IEventBus modEventBus) {
-        ITEMS.register(modEventBus);
+        REGISTRY.register(modEventBus);
     }
 }

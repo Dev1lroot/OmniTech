@@ -9,22 +9,32 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-public class OmniTechBlocks {
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(OmniTech.MODID);
+import java.util.function.Function;
 
-    public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock(
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.DeferredBlock;
+
+public class OmniTechBlocks {
+    public static final DeferredRegister.Blocks REGISTRY = DeferredRegister.createBlocks(OmniTech.MODID);
+
+    public static final DeferredBlock<Block> EXAMPLE_BLOCK = REGISTRY.registerSimpleBlock(
             "example_block", p -> p.mapColor(MapColor.STONE));
 
-    public static final DeferredBlock<AlloyFurnaceBlock> ALLOY_FURNACE = BLOCKS.register(
-            "alloy_furnace",
-            () -> new AlloyFurnaceBlock(BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.STONE)
-                    .strength(3.5F)
-                    .sound(SoundType.STONE)
-            )
-    );
+//    public static final DeferredBlock<AlloyFurnaceBlock> ALLOY_FURNACE = BLOCKS.register(
+//            "alloy_furnace",
+//            () -> new AlloyFurnaceBlock(BlockBehaviour.Properties.of()
+//                    .mapColor(MapColor.STONE)
+//                    .strength(3.5F)
+//                    .sound(SoundType.STONE)
+//            )
+//    );
+    public static final DeferredBlock<Block> ALLOY_FURNACE;
+    static {
+        ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
+    }
 
-    public static void register(IEventBus modEventBus) {
-        BLOCKS.register(modEventBus);
+
+    private static <B extends Block> DeferredBlock<B> register(String name, Function<BlockBehaviour.Properties, ? extends B> supplier) {
+        return REGISTRY.registerBlock(name, supplier);
     }
 }

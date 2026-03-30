@@ -9,14 +9,14 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.function.Supplier;
 
 public class OmniTechBlockEntities {
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
+    public static final DeferredRegister<BlockEntityType<?>> REGISTRY =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, OmniTech.MODID);
 
     public static final Supplier<BlockEntityType<AlloyFurnaceBlockEntity>> ALLOY_FURNACE =
-            BLOCK_ENTITIES.register("alloy_furnace",
+            REGISTRY.register("alloy_furnace",
                     () -> new BlockEntityType<>(AlloyFurnaceBlockEntity::new, OmniTechBlocks.ALLOY_FURNACE.get()));
 
     public static void register(IEventBus modEventBus) {
-        BLOCK_ENTITIES.register(modEventBus);
+        REGISTRY.register(modEventBus);
     }
 }

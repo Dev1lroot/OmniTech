@@ -23,11 +23,11 @@ public class OmniTech {
     public OmniTech(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
 
-        OmniTechBlocks.register(modEventBus);
-        OmniTechBlockEntities.register(modEventBus);
-        OmniTechItems.register(modEventBus);
-        OmniTechMenuTypes.register(modEventBus);
-        OmniTechGUI.register(modEventBus);
+        OmniTechBlocks.REGISTRY.register(modEventBus);
+        OmniTechBlockEntities.REGISTRY.register(modEventBus);
+        OmniTechItems.REGISTRY.register(modEventBus);
+        OmniTechMenuTypes.REGISTRY.register(modEventBus);
+        OmniTechGUI.REGISTRY.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
 

@@ -12,11 +12,11 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class OmniTechGUI {
-    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
+    public static final DeferredRegister<CreativeModeTab> REGISTRY =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, OmniTech.MODID);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> OMNITECH_TAB =
-            CREATIVE_MODE_TABS.register("omnitech_tab", () -> CreativeModeTab.builder()
+            REGISTRY.register("omnitech_tab", () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.omnitech"))
                     .withTabsBefore(CreativeModeTabs.COMBAT)
                     .icon(() -> OmniTechItems.STEEL_INGOT.get().getDefaultInstance())
@@ -27,7 +27,7 @@ public class OmniTechGUI {
                     }).build());
 
     public static void register(IEventBus modEventBus) {
-        CREATIVE_MODE_TABS.register(modEventBus);
+        REGISTRY.register(modEventBus);
         modEventBus.addListener(OmniTechGUI::addCreative);
     }
 
