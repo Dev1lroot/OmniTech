@@ -1,0 +1,13 @@
+{
+  "itemGroup.omnitech": "Example Mod Tab",
+  "block.omnitech.example_block": "Example Block",
+  "item.omnitech.example_item": "Example Item",
+
+  "omnitech.configuration.title": "OmniTech Configs",
+  "omnitech.configuration.section.omnitech.common.toml": "OmniTech Configs",
+  "omnitech.configuration.section.omnitech.common.toml.title": "OmniTech Configs",
+  "omnitech.configuration.items": "Item List",
+  "omnitech.configuration.logDirtBlock": "Log Dirt Block",
+  "omnitech.configuration.magicNumberIntroduction": "Magic Number Text",
+  "omnitech.configuration.magicNumber": "Magic Number"
+}
