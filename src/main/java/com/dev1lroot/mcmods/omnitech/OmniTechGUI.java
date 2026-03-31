@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceScreen;
+import com.dev1lroot.mcmods.omnitech.gui.ManualMaceratorScreen;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -22,6 +23,8 @@ public class OmniTechGUI {
                     .icon(() -> OmniTechItems.STEEL_INGOT.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
                         output.accept(OmniTechItems.ALLOY_FURNACE_ITEM.get());
+                        output.accept(OmniTechItems.MANUAL_MACERATOR_ITEM.get());
+                        output.accept(OmniTechItems.CRANK_ITEM.get());
                         output.accept(OmniTechItems.STEEL_INGOT.get());
                         output.accept(OmniTechItems.EXAMPLE_ITEM.get());
                     }).build());
@@ -33,6 +36,7 @@ public class OmniTechGUI {
 
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(OmniTechMenuTypes.ALLOY_FURNACE.get(), AlloyFurnaceScreen::new);
+        event.register(OmniTechMenuTypes.MANUAL_MACERATOR.get(), ManualMaceratorScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event) {
@@ -41,6 +45,8 @@ public class OmniTechGUI {
         }
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             event.accept(OmniTechItems.ALLOY_FURNACE_ITEM);
+            event.accept(OmniTechItems.MANUAL_MACERATOR_ITEM);
+            event.accept(OmniTechItems.CRANK_ITEM);
         }
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(OmniTechItems.STEEL_INGOT);

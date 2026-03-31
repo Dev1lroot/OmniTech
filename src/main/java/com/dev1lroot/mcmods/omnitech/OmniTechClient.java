@@ -1,12 +1,13 @@
 package com.dev1lroot.mcmods.omnitech;
 
+import com.dev1lroot.mcmods.omnitech.client.CrankBlockEntityRenderer;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -17,6 +18,7 @@ public class OmniTechClient {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
         modEventBus.addListener(this::onClientSetup);
         modEventBus.addListener(this::registerScreens);
+        modEventBus.addListener(this::registerBlockEntityRenderers);
     }
 
     void onClientSetup(FMLClientSetupEvent event) {
@@ -26,5 +28,9 @@ public class OmniTechClient {
 
     void registerScreens(RegisterMenuScreensEvent event) {
         OmniTechGUI.registerScreens(event);
+    }
+
+    void registerBlockEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerBlockEntityRenderer(OmniTechBlockEntities.CRANK.get(), CrankBlockEntityRenderer::new);
     }
 }

@@ -7,6 +7,10 @@
 
   "container.omnitech.alloy_furnace": "Alloy Furnace",
 
+  "block.omnitech.manual_macerator": "Manual Macerator",
+  "block.omnitech.crank": "Crank",
+  "container.omnitech.manual_macerator": "Manual Macerator",
+
   "omnitech.configuration.title": "OmniTech Configs",
   "omnitech.configuration.section.omnitech.common.toml": "OmniTech Configs",
   "omnitech.configuration.section.omnitech.common.toml.title": "OmniTech Configs",

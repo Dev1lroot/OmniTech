@@ -1,0 +1,5 @@
+{
+  "requiredKineticForce": 20,
+  "input": "minecraft:cobblestone",
+  "output": ["minecraft:gravel"]
+}

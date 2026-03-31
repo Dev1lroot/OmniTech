@@ -1,0 +1,48 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "omnitech:block/crank",
+    "tex": "omnitech:block/crank"
+  },
+  "elements": [
+    {
+      "name": "axle",
+      "from": [7, 0, 7],
+      "to": [9, 4, 9],
+      "faces": {
+        "down":  {"uv": [7, 7, 9, 9],   "texture": "#tex"},
+        "up":    {"uv": [7, 7, 9, 9],   "texture": "#tex"},
+        "north": {"uv": [7, 0, 9, 4],   "texture": "#tex"},
+        "south": {"uv": [7, 0, 9, 4],   "texture": "#tex"},
+        "west":  {"uv": [7, 0, 9, 4],   "texture": "#tex"},
+        "east":  {"uv": [7, 0, 9, 4],   "texture": "#tex"}
+      }
+    },
+    {
+      "name": "arm",
+      "from": [2, 2, 7],
+      "to": [14, 4, 9],
+      "faces": {
+        "down":  {"uv": [0, 7, 14, 9],  "texture": "#tex"},
+        "up":    {"uv": [0, 7, 14, 9],  "texture": "#tex"},
+        "north": {"uv": [0, 0, 14, 2],  "texture": "#tex"},
+        "south": {"uv": [0, 0, 14, 2],  "texture": "#tex"},
+        "west":  {"uv": [0, 2, 2, 4],   "texture": "#tex"},
+        "east":  {"uv": [0, 2, 2, 4],   "texture": "#tex"}
+      }
+    },
+    {
+      "name": "handle",
+      "from": [2, 2, 7],
+      "to": [4, 8, 9],
+      "faces": {
+        "down":  {"uv": [0, 7, 2, 9],   "texture": "#tex"},
+        "up":    {"uv": [0, 7, 2, 9],   "texture": "#tex"},
+        "north": {"uv": [0, 0, 2, 6],   "texture": "#tex"},
+        "south": {"uv": [0, 0, 2, 6],   "texture": "#tex"},
+        "west":  {"uv": [7, 0, 9, 6],   "texture": "#tex"},
+        "east":  {"uv": [7, 0, 9, 6],   "texture": "#tex"}
+      }
+    }
+  ]
+}
