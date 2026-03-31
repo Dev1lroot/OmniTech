@@ -4,9 +4,7 @@
   "block.omnitech.alloy_furnace": "Alloy Furnace",
   "item.omnitech.example_item": "Example Item",
   "item.omnitech.steel_ingot": "Steel Ingot",
-
   "container.omnitech.alloy_furnace": "Alloy Furnace",
-
   "block.omnitech.manual_macerator": "Manual Macerator",
   "block.omnitech.manual_centrifuge": "Manual Centrifuge",
   "block.omnitech.crank": "Crank",
@@ -14,12 +12,18 @@
   "container.omnitech.manual_centrifuge": "Manual Centrifuge",
   "item.omnitech.silicium": "Silicium",
   "block.omnitech.tin_ore": "Tin Ore",
-
   "omnitech.configuration.title": "OmniTech Configs",
   "omnitech.configuration.section.omnitech.common.toml": "OmniTech Configs",
   "omnitech.configuration.section.omnitech.common.toml.title": "OmniTech Configs",
   "omnitech.configuration.items": "Item List",
   "omnitech.configuration.logDirtBlock": "Log Dirt Block",
   "omnitech.configuration.magicNumberIntroduction": "Magic Number Text",
-  "omnitech.configuration.magicNumber": "Magic Number"
+  "omnitech.configuration.magicNumber": "Magic Number",
+  "block.omnitech.tungsten_ore": "Tungsten Ore",
+  "block.omnitech.tungsten_block": "Tungsten Block",
+  "item.omnitech.raw_tungsten": "Raw Tungsten",
+  "item.omnitech.tungsten_ingot": "Tungsten Ingot",
+  "item.omnitech.tungsten_mote": "Tungsten Mote",
+  "item.omnitech.tungsten_dust": "Tungsten Dust",
+  "item.omnitech.tungsten_plate": "Tungsten Plate"
 }
