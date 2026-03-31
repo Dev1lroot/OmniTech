@@ -27,6 +27,11 @@ public class OmniTechItems {
     public static final DeferredItem<BlockItem> MANUAL_MACERATOR_ITEM = REGISTRY.registerSimpleBlockItem(
             "manual_macerator", OmniTechBlocks.MANUAL_MACERATOR);
 
+    public static final DeferredItem<BlockItem> MANUAL_CENTRIFUGE_ITEM = REGISTRY.registerSimpleBlockItem(
+            "manual_centrifuge", OmniTechBlocks.MANUAL_CENTRIFUGE);
+
+    public static final DeferredItem<Item> SILICIUM = REGISTRY.registerSimpleItem("silicium", p -> p);
+
     public static final DeferredItem<BlockItem> CRANK_ITEM = REGISTRY.registerSimpleBlockItem(
             "crank", OmniTechBlocks.CRANK);
 

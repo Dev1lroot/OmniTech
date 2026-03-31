@@ -2,6 +2,7 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.blocks.AlloyFurnaceBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.CrankBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.ManualCentrifugeBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.ManualMaceratorBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -21,12 +22,15 @@ public class OmniTechBlocks {
 
     public static final DeferredBlock<Block> ALLOY_FURNACE;
     public static final DeferredBlock<Block> MANUAL_MACERATOR;
+    public static final DeferredBlock<Block> MANUAL_CENTRIFUGE;
     public static final DeferredBlock<Block> CRANK;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
         MANUAL_MACERATOR = register("manual_macerator",
                 p -> new ManualMaceratorBlock(p.mapColor(MapColor.STONE).strength(3.5F).sound(SoundType.STONE)));
+        MANUAL_CENTRIFUGE = register("manual_centrifuge",
+                p -> new ManualCentrifugeBlock(p.mapColor(MapColor.STONE).strength(3.5F).sound(SoundType.STONE)));
         CRANK = register("crank",
                 p -> new CrankBlock(p.mapColor(MapColor.WOOD).strength(1.5F).sound(SoundType.WOOD).noOcclusion()));
     }

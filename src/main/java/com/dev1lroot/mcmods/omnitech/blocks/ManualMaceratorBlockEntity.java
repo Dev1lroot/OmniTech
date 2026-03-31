@@ -21,7 +21,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import java.util.List;
 import java.util.Optional;
 
-public class ManualMaceratorBlockEntity extends BaseContainerBlockEntity {
+public class ManualMaceratorBlockEntity extends BaseContainerBlockEntity implements IKineticReceiver {
     public static final int SLOT_INPUT = 0;
     public static final int SLOT_OUTPUT_1 = 1;
     public static final int SLOT_OUTPUT_2 = 2;

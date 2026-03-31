@@ -2,6 +2,7 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.blocks.AlloyFurnaceBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.CrankBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.ManualCentrifugeBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.ManualMaceratorBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -21,6 +22,10 @@ public class OmniTechBlockEntities {
     public static final Supplier<BlockEntityType<ManualMaceratorBlockEntity>> MANUAL_MACERATOR =
             REGISTRY.register("manual_macerator",
                     () -> new BlockEntityType<>(ManualMaceratorBlockEntity::new, OmniTechBlocks.MANUAL_MACERATOR.get()));
+
+    public static final Supplier<BlockEntityType<ManualCentrifugeBlockEntity>> MANUAL_CENTRIFUGE =
+            REGISTRY.register("manual_centrifuge",
+                    () -> new BlockEntityType<>(ManualCentrifugeBlockEntity::new, OmniTechBlocks.MANUAL_CENTRIFUGE.get()));
 
     public static final Supplier<BlockEntityType<CrankBlockEntity>> CRANK =
             REGISTRY.register("crank",

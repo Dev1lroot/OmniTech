@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "omnitech:block/manual_centrifuge" },
+    "facing=south": { "model": "omnitech:block/manual_centrifuge", "y": 180 },
+    "facing=west":  { "model": "omnitech:block/manual_centrifuge", "y": 270 },
+    "facing=east":  { "model": "omnitech:block/manual_centrifuge", "y": 90 }
+  }
+}
