@@ -1,0 +1,12 @@
+{
+  "minTemperature": 800,
+  "ingredients": [
+    "minecraft:apple",
+    "minecraft:gold_ingot",
+    "minecraft:lapis_lazuli"
+  ],
+  "output": [
+    "minecraft:enchanted_golden_apple",
+    "minecraft:gold_nugget"
+  ]
+}

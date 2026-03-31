@@ -52,11 +52,11 @@ public class AlloyFurnaceScreen extends AbstractContainerScreen<AlloyFurnaceMenu
         // Determine color based on temperature
         int tempColor = getTemperatureColor(currentTemp, requiredTemp);
 
-        // Current temperature display (right side of GUI)
+        // Current temperature display (below the progressbar)
         String currentTempText = currentTemp + " C";
         graphics.text(this.font, currentTempText, 90, 58, tempColor, false);
 
-        // Required temperature display (below current temp, only if there's a recipe)
+        // Required temperature display (above the progressbar, only if there's a recipe)
         if (requiredTemp > 0) {
             String requiredTempText = requiredTemp + " C";
             int reqColor = currentTemp >= requiredTemp ? 0xFF00AA00 : 0xFFAA0000; // Green if reached, red if not (with alpha)
