@@ -17,18 +17,18 @@ public class AlloyFurnaceMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     // Slot positions
-    private static final int INPUT_1_X = 38, INPUT_1_Y = 17;
-    private static final int INPUT_2_X = 56, INPUT_2_Y = 17;
-    private static final int INPUT_3_X = 74, INPUT_3_Y = 17;
-    private static final int FUEL_X = 56, FUEL_Y = 53;
-    private static final int OUTPUT_1_X = 116, OUTPUT_1_Y = 26;
-    private static final int OUTPUT_2_X = 116, OUTPUT_2_Y = 53;
+    private static final int INPUT_1_X = 26, INPUT_1_Y = 17;
+    private static final int INPUT_2_X = 44, INPUT_2_Y = 17;
+    private static final int INPUT_3_X = 62, INPUT_3_Y = 17;
+    private static final int FUEL_X = 44, FUEL_Y = 53;
+    private static final int OUTPUT_1_X = 134, OUTPUT_1_Y = 17;
+    private static final int OUTPUT_2_X = 134, OUTPUT_2_Y = 53;
 
     // Client constructor
     public AlloyFurnaceMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
         this(containerId, playerInventory,
              playerInventory.player.level().getBlockEntity(extraData.readBlockPos()),
-             new SimpleContainerData(4));
+             new SimpleContainerData(6));
     }
 
     // Server constructor
@@ -63,13 +63,21 @@ public class AlloyFurnaceMenu extends AbstractContainerMenu {
     public int getBurnProgress() {
         int burnTime = data.get(0);
         int maxBurnTime = data.get(1);
-        return maxBurnTime != 0 ? burnTime * 13 / maxBurnTime : 0;
+        return maxBurnTime != 0 ? burnTime * 14 / maxBurnTime : 0;
     }
 
     public int getCookProgress() {
         int cookProgress = data.get(2);
         int cookTotalTime = data.get(3);
-        return cookTotalTime != 0 ? cookProgress * 24 / cookTotalTime : 0;
+        return cookTotalTime != 0 ? cookProgress * 41 / cookTotalTime : 0;
+    }
+
+    public int getTemperature() {
+        return data.get(4);
+    }
+
+    public int getRequiredTemperature() {
+        return data.get(5);
     }
 
     @Override

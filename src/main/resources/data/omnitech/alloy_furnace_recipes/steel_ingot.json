@@ -1,0 +1,10 @@
+{
+  "minTemperature": 1500,
+  "ingredients": [
+    "minecraft:iron_ingot",
+    "minecraft:coal"
+  ],
+  "output": [
+    "omnitech:steel_ingot"
+  ]
+}

@@ -10,8 +10,8 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class AlloyFurnaceScreen extends AbstractContainerScreen<AlloyFurnaceMenu> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(OmniTech.MODID, "textures/gui/alloy_furnace.png");
-    private static final Identifier LIT_PROGRESS_SPRITE = Identifier.fromNamespaceAndPath(OmniTech.MODID, "container/alloy_furnace/lit_progress");
-    private static final Identifier BURN_PROGRESS_SPRITE = Identifier.fromNamespaceAndPath(OmniTech.MODID, "container/alloy_furnace/burn_progress");
+
+    private static final int MAX_TEMPERATURE = 2000;
 
     public AlloyFurnaceScreen(AlloyFurnaceMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -34,11 +34,54 @@ public class AlloyFurnaceScreen extends AbstractContainerScreen<AlloyFurnaceMenu
         // Render burn progress (flame)
         if (menu.isLit()) {
             int burnProgress = menu.getBurnProgress();
-            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x + 56, y + 36 + 13 - burnProgress, 176.0F, (float)(13 - burnProgress), 14, burnProgress + 1, 256, 256);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x + 44, y + 36 + 14 - burnProgress, 176.0F, (float)(14 - burnProgress), 14, burnProgress + 1, 256, 256);
         }
 
         // Render cook progress (arrow)
         int cookProgress = menu.getCookProgress();
-        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x + 89, y + 34, 176.0F, 14.0F, cookProgress + 1, 16, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x + 86, y + 35, 176.0F, 14.0F, cookProgress, 16, 256, 256);
+    }
+
+    @Override
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractLabels(graphics, mouseX, mouseY);
+
+        int currentTemp = menu.getTemperature();
+        int requiredTemp = menu.getRequiredTemperature();
+
+        // Determine color based on temperature
+        int tempColor = getTemperatureColor(currentTemp, requiredTemp);
+
+        // Current temperature display (right side of GUI)
+        String currentTempText = currentTemp + " C";
+        graphics.text(this.font, currentTempText, 90, 58, tempColor, false);
+
+        // Required temperature display (below current temp, only if there's a recipe)
+        if (requiredTemp > 0) {
+            String requiredTempText = requiredTemp + " C";
+            int reqColor = currentTemp >= requiredTemp ? 0xFF00AA00 : 0xFFAA0000; // Green if reached, red if not (with alpha)
+            graphics.text(this.font, requiredTempText, 90, 22, reqColor, false);
+        }
+    }
+
+    private int getTemperatureColor(int currentTemp, int requiredTemp) {
+        // Critical temperature warning (close to max)
+        if (currentTemp >= 1800) {
+            return 0xFFFF0000; // Bright red - danger! (with alpha)
+        }
+        // Hot enough for recipe
+        if (requiredTemp > 0 && currentTemp >= requiredTemp) {
+            return 0xFFFF6600; // Orange - working temperature
+        }
+        // Heating up
+        if (currentTemp > 500) {
+            return 0xFFFFAA00; // Yellow-orange
+        }
+        // Cool/warming
+        if (currentTemp > 100) {
+            return 0xFFFFFF00; // Yellow
+        }
+        // Cold
+        return 0xFFAAAAAA; // Gray (with alpha)
     }
 }
