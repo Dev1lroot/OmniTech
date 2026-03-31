@@ -1,5 +1,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
+import com.dev1lroot.mcmods.omnitech.blocks.OmniTechOreBlock;
+import com.dev1lroot.mcmods.omnitech.worldgen.OreSpawnConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -60,18 +62,8 @@ public class MaterialSet {
     // ── Factory ───────────────────────────────────────────────────────────────
 
     /**
-     * Create and register a complete material set.
-     *
-     * @param material      Material name, e.g. {@code "tungsten"}.
-     * @param itemRegistry  {@link DeferredRegister.Items} to register items into.
-     * @param itemPatterns  Item name patterns — {@code "%"} is replaced with the material name.
-     *                      Example: {@code ["%_ingot", "raw_%", "%_dust", "%_plate"]}.
-     *                      Patterns that also appear in {@code blockPatterns} are skipped here;
-     *                      their BlockItem is created automatically with the block.
-     * @param blockRegistry {@link DeferredRegister.Blocks} to register blocks into.
-     * @param blockPatterns Block name patterns, e.g. {@code ["%_ore", "%_block"]}.
-     *                      Block properties are chosen automatically based on the pattern name.
-     * @return Fully populated {@link MaterialSet} instance.
+     * Create and register a complete material set without any worldgen.
+     * Convenience overload — delegates to the full {@code create} with an empty ore-config map.
      */
     public static MaterialSet create(
             String material,
@@ -79,6 +71,33 @@ public class MaterialSet {
             String[] itemPatterns,
             DeferredRegister.Blocks blockRegistry,
             String[] blockPatterns) {
+        return create(material, itemRegistry, itemPatterns, blockRegistry, blockPatterns,
+                Map.of());
+    }
+
+    /**
+     * Create and register a complete material set, with optional worldgen for ore blocks.
+     *
+     * @param material      Material name, e.g. {@code "tungsten"}.
+     * @param itemRegistry  {@link DeferredRegister.Items} to register items into.
+     * @param itemPatterns  Item name patterns — {@code "%"} is replaced with the material name.
+     *                      Patterns that also appear in {@code blockPatterns} are skipped here;
+     *                      their BlockItem is created automatically with the block.
+     * @param blockRegistry {@link DeferredRegister.Blocks} to register blocks into.
+     * @param blockPatterns Block name patterns, e.g. {@code ["%_ore", "%_block"]}.
+     * @param oreConfigs    Map of block pattern → {@link OreSpawnConfig}.  Patterns listed here
+     *                      are registered as {@link OmniTechOreBlock} and added to
+     *                      {@link OmniTechBlocks#ALL_ORES} so datagen picks them up.
+     *                      Use {@link Map#of} or {@link Map#entry} to build this inline.
+     * @return Fully populated {@link MaterialSet} instance.
+     */
+    public static MaterialSet create(
+            String material,
+            DeferredRegister.Items itemRegistry,
+            String[] itemPatterns,
+            DeferredRegister.Blocks blockRegistry,
+            String[] blockPatterns,
+            Map<String, OreSpawnConfig> oreConfigs) {
 
         MaterialSet set = new MaterialSet(material);
         Set<String> blockPatternSet = new HashSet<>(Arrays.asList(blockPatterns));
@@ -87,12 +106,23 @@ public class MaterialSet {
         // --- Blocks (+ their BlockItems) ---
         for (String pattern : blockPatterns) {
             String name = pattern.replace("%", material);
-            DeferredBlock<Block> block = blockRegistry.registerSimpleBlock(name,
-                    p -> applyBlockDefaults(pattern, p));
-            set.blocks.put(pattern, block);
+            OreSpawnConfig oreConfig = oreConfigs.get(pattern);
 
-            DeferredItem<BlockItem> blockItem = itemRegistry.registerSimpleBlockItem(name, block);
-            set.blockItems.put(pattern, blockItem);
+            DeferredBlock<Block> block;
+            if (oreConfig != null) {
+                // Register as OmniTechOreBlock so it gets experience drops and participates in datagen
+                DeferredBlock<OmniTechOreBlock> oreBlock = OmniTechBlocks.register(name,
+                        p -> new OmniTechOreBlock(applyBlockDefaults(pattern, p), oreConfig));
+                OmniTechBlocks.ALL_ORES.add(new OmniTechBlocks.OreEntry(oreBlock, oreConfig));
+                @SuppressWarnings("unchecked")
+                DeferredBlock<Block> cast = (DeferredBlock<Block>) (DeferredBlock<?>) oreBlock;
+                block = cast;
+            } else {
+                block = blockRegistry.registerSimpleBlock(name, p -> applyBlockDefaults(pattern, p));
+            }
+
+            set.blocks.put(pattern, block);
+            set.blockItems.put(pattern, itemRegistry.registerSimpleBlockItem(name, block));
 
             if (resourcesDir != null) generateBlockResources(resourcesDir, name);
         }
@@ -101,8 +131,7 @@ public class MaterialSet {
         for (String pattern : itemPatterns) {
             if (blockPatternSet.contains(pattern)) continue;
             String name = pattern.replace("%", material);
-            DeferredItem<Item> item = itemRegistry.registerSimpleItem(name, p -> p);
-            set.items.put(pattern, item);
+            set.items.put(pattern, itemRegistry.registerSimpleItem(name, p -> p));
 
             if (resourcesDir != null) generateItemResources(resourcesDir, name);
         }

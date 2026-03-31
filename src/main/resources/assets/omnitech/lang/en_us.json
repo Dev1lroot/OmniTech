@@ -25,5 +25,10 @@
   "item.omnitech.tungsten_ingot": "Tungsten Ingot",
   "item.omnitech.tungsten_mote": "Tungsten Mote",
   "item.omnitech.tungsten_dust": "Tungsten Dust",
-  "item.omnitech.tungsten_plate": "Tungsten Plate"
+  "item.omnitech.tungsten_plate": "Tungsten Plate",
+  "block.omnitech.tin_block": "Tin Block",
+  "item.omnitech.raw_tin": "Raw Tin",
+  "item.omnitech.tin_ingot": "Tin Ingot",
+  "item.omnitech.tin_dust": "Tin Dust",
+  "item.omnitech.tin_plate": "Tin Plate"
 }

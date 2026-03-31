@@ -1,5 +1,12 @@
 package com.dev1lroot.mcmods.omnitech;
 
+import com.dev1lroot.mcmods.omnitech.worldgen.OreSpawnConfig;
+import com.dev1lroot.mcmods.omnitech.worldgen.OreSpawnConfig.BiomeOverride;
+import com.dev1lroot.mcmods.omnitech.worldgen.OreSpawnConfig.GenerationConfig;
+
+import java.util.List;
+import java.util.Map;
+
 /**
  * Central registry for all MaterialSet definitions.
  *
@@ -32,13 +39,44 @@ public class OmniTechMaterials {
             new String[]{ "%_ore", "%_block" }
     );
 
+    public static final MaterialSet TIN = MaterialSet.create(
+            "tin",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_ore", "raw_%", "%_ingot", "%_dust", "%_plate" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%_ore", "%_block" },
+            Map.of("%_ore", new OreSpawnConfig(
+                    new GenerationConfig(
+                            "#minecraft:is_overworld", // all overworld biomes
+                            12, 64,                    // minY, maxY
+                            8,                         // veinSize (max blocks per cluster)
+                            1, 32                      // minCount, maxCount per chunk
+                    ),
+                    List.of(
+                            new BiomeOverride(
+                                    "#minecraft:is_mountain", // mountains get extra tin
+                                    12, 32,                   // slightly higher ceiling
+                                    8,                        // larger clusters
+                                    1, 6                      // extra 1-6 clusters per chunk
+                            ),
+                            new BiomeOverride(
+                                    "#minecraft:is_jungle",   // jungle / tropical biomes
+                                    8, 50,                    // slightly lower floor
+                                    64,                       // smaller clusters
+                                    1, 32                     // extra 1-32 clusters per chunk
+                            )
+                    )
+            ))
+    );
+
     // Add more materials here, e.g.:
     // public static final MaterialSet TITANIUM = MaterialSet.create(
     //         "titanium",
     //         OmniTechItems.REGISTRY,
     //         new String[]{ "%_ore", "raw_%", "%_ingot", "%_dust", "%_plate" },
     //         OmniTechBlocks.REGISTRY,
-    //         new String[]{ "%_ore", "%_block" }
+    //         new String[]{ "%_ore", "%_block" },
+    //         Map.of("%_ore", new OreSpawnConfig(...))
     // );
 
     // ── Init ──────────────────────────────────────────────────────────────────

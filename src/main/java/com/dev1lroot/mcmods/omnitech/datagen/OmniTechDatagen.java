@@ -1,7 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.datagen;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
-import com.dev1lroot.mcmods.omnitech.blocks.OmniTechOreBlock;
+import com.dev1lroot.mcmods.omnitech.OmniTechBlocks.OreEntry;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechWorldGen;
 import com.dev1lroot.mcmods.omnitech.worldgen.OreSpawnConfig;
 import net.minecraft.core.HolderGetter;
@@ -15,6 +15,7 @@ import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
@@ -26,7 +27,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTes
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.List;
@@ -58,23 +58,24 @@ public class OmniTechDatagen {
     // ── ConfiguredFeature ──────────────────────────────────────────────────
 
     private static void bootstrapCF(BootstrapContext<ConfiguredFeature<?, ?>> ctx) {
-        for (DeferredBlock<OmniTechOreBlock> oreBlock : OmniTechBlocks.ALL_ORES) {
-            OmniTechOreBlock block = oreBlock.get();
-            OreSpawnConfig cfg = block.getSpawnConfig();
-            String name = oreBlock.getId().getPath();
+        for (OreEntry entry : OmniTechBlocks.ALL_ORES) {
+            OreSpawnConfig cfg = entry.config();
+            String name = entry.name();
 
-            ctx.register(OmniTechWorldGen.cfKey(name), makeCF(block, cfg.defaultConfig().veinSize()));
+            ctx.register(OmniTechWorldGen.cfKey(name),
+                    makeCF(entry.block().get(), cfg.defaultConfig().veinSize()));
 
             for (int i = 0; i < cfg.biomeOverrides().size(); i++) {
                 OreSpawnConfig.BiomeOverride override = cfg.biomeOverrides().get(i);
                 if (override.veinSize() != cfg.defaultConfig().veinSize()) {
-                    ctx.register(OmniTechWorldGen.cfOverrideKey(name, i), makeCF(block, override.veinSize()));
+                    ctx.register(OmniTechWorldGen.cfOverrideKey(name, i),
+                            makeCF(entry.block().get(), override.veinSize()));
                 }
             }
         }
     }
 
-    private static ConfiguredFeature<?, ?> makeCF(OmniTechOreBlock block, int veinSize) {
+    private static ConfiguredFeature<?, ?> makeCF(Block block, int veinSize) {
         return new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(
             List.of(OreConfiguration.target(
                 new BlockMatchTest(Blocks.STONE),
@@ -89,10 +90,9 @@ public class OmniTechDatagen {
     private static void bootstrapPF(BootstrapContext<PlacedFeature> ctx) {
         HolderGetter<ConfiguredFeature<?, ?>> cfGetter = ctx.lookup(Registries.CONFIGURED_FEATURE);
 
-        for (DeferredBlock<OmniTechOreBlock> oreBlock : OmniTechBlocks.ALL_ORES) {
-            OmniTechOreBlock block = oreBlock.get();
-            OreSpawnConfig cfg = block.getSpawnConfig();
-            String name = oreBlock.getId().getPath();
+        for (OreEntry entry : OmniTechBlocks.ALL_ORES) {
+            OreSpawnConfig cfg = entry.config();
+            String name = entry.name();
 
             ctx.register(OmniTechWorldGen.pfKey(name),
                 makePF(cfGetter.getOrThrow(OmniTechWorldGen.cfKey(name)), cfg.defaultConfig()));
@@ -128,9 +128,9 @@ public class OmniTechDatagen {
         HolderGetter<Biome>        biomeGetter   = ctx.lookup(Registries.BIOME);
         HolderGetter<PlacedFeature> featureGetter = ctx.lookup(Registries.PLACED_FEATURE);
 
-        for (DeferredBlock<OmniTechOreBlock> oreBlock : OmniTechBlocks.ALL_ORES) {
-            OreSpawnConfig cfg  = oreBlock.get().getSpawnConfig();
-            String         name = oreBlock.getId().getPath();
+        for (OreEntry entry : OmniTechBlocks.ALL_ORES) {
+            OreSpawnConfig cfg  = entry.config();
+            String         name = entry.name();
 
             ctx.register(OmniTechWorldGen.bmKey(name),
                 addFeatures(biomeGetter, featureGetter, cfg.defaultConfig(),
