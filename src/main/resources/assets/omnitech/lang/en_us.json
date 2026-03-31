@@ -13,6 +13,7 @@
   "container.omnitech.manual_macerator": "Manual Macerator",
   "container.omnitech.manual_centrifuge": "Manual Centrifuge",
   "item.omnitech.silicium": "Silicium",
+  "block.omnitech.tin_ore": "Tin Ore",
 
   "omnitech.configuration.title": "OmniTech Configs",
   "omnitech.configuration.section.omnitech.common.toml": "OmniTech Configs",

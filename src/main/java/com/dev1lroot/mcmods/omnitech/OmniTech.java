@@ -19,6 +19,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.Profiler;
+import com.dev1lroot.mcmods.omnitech.datagen.OmniTechDatagen;
 import com.dev1lroot.mcmods.omnitech.recipes.AlloyFurnaceRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualCentrifugeRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualMaceratorRecipeManager;
@@ -32,6 +33,7 @@ public class OmniTech {
 
     public OmniTech(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(OmniTechDatagen::gatherData);
 
         OmniTechBlocks.REGISTRY.register(modEventBus);
         OmniTechBlockEntities.REGISTRY.register(modEventBus);

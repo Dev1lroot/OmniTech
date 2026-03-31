@@ -27,6 +27,7 @@ public class OmniTechGUI {
                         output.accept(OmniTechItems.MANUAL_MACERATOR_ITEM.get());
                         output.accept(OmniTechItems.MANUAL_CENTRIFUGE_ITEM.get());
                         output.accept(OmniTechItems.CRANK_ITEM.get());
+                        output.accept(OmniTechItems.TIN_ORE_ITEM.get());
                         output.accept(OmniTechItems.STEEL_INGOT.get());
                         output.accept(OmniTechItems.EXAMPLE_ITEM.get());
                     }).build());
@@ -51,6 +52,9 @@ public class OmniTechGUI {
             event.accept(OmniTechItems.MANUAL_MACERATOR_ITEM);
             event.accept(OmniTechItems.MANUAL_CENTRIFUGE_ITEM);
             event.accept(OmniTechItems.CRANK_ITEM);
+        }
+        if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
+            event.accept(OmniTechItems.TIN_ORE_ITEM);
         }
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(OmniTechItems.STEEL_INGOT);

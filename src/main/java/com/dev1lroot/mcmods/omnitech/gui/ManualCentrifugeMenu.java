@@ -21,7 +21,7 @@ public class ManualCentrifugeMenu extends AbstractContainerMenu {
     private static final int OUTPUT_1_X = 44, OUTPUT_1_Y = 53;
     private static final int OUTPUT_2_X = 62, OUTPUT_2_Y = 53;
     private static final int OUTPUT_3_X = 80, OUTPUT_3_Y = 53;
-    private static final int OUTPUT_4_X = 96, OUTPUT_4_Y = 53;
+    private static final int OUTPUT_4_X = 98, OUTPUT_4_Y = 53;
     private static final int OUTPUT_5_X = 116, OUTPUT_5_Y = 53;
 
     // Client constructor
