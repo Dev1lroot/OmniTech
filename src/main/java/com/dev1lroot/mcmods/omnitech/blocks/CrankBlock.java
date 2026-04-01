@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks;
 
+import com.dev1lroot.mcmods.omnitech.KineticNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
@@ -87,13 +88,30 @@ public class CrankBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         }
 
-        // Try to give kinetic force to any kinetic receiver directly below
-        BlockEntity below = level.getBlockEntity(pos.below());
-        if (below instanceof IKineticReceiver receiver) {
-            boolean accepted = receiver.addKineticForce(1);
-            if (accepted) {
-                crank.startSpin();
-                level.playSound(null, pos, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.6f, 0.9f + level.getRandom().nextFloat() * 0.2f);
+        // Try to give kinetic force to the block directly below.
+        BlockPos belowPos = pos.below();
+        BlockState belowState = level.getBlockState(belowPos);
+
+        if (belowState.getBlock() instanceof KineticReductorBlock) {
+            // The reductor is an omnidirectional junction — use the full BFS so
+            // KF reaches every machine connected through the network.
+            BlockEntity reductorBe = level.getBlockEntity(belowPos);
+            if (reductorBe instanceof KineticReductorBlockEntity reductor) {
+                reductor.refreshPoweredTimer(level, belowPos, belowState);
+            }
+            KineticNetworkUtil.propagateKineticForce(level, belowPos, 1);
+            crank.startSpin();
+            level.playSound(null, pos, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS,
+                    0.6f, 0.9f + level.getRandom().nextFloat() * 0.2f);
+        } else {
+            BlockEntity below = level.getBlockEntity(belowPos);
+            if (below instanceof IKineticReceiver receiver) {
+                boolean accepted = receiver.addKineticForce(1);
+                if (accepted) {
+                    crank.startSpin();
+                    level.playSound(null, pos, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS,
+                            0.6f, 0.9f + level.getRandom().nextFloat() * 0.2f);
+                }
             }
         }
 
@@ -103,6 +121,8 @@ public class CrankBlock extends BaseEntityBlock {
     @Override
     public boolean canSurvive(BlockState state, net.minecraft.world.level.LevelReader level, BlockPos pos) {
         Block below = level.getBlockState(pos.below()).getBlock();
-        return below instanceof ManualMaceratorBlock || below instanceof ManualCentrifugeBlock;
+        return below instanceof ManualMaceratorBlock
+            || below instanceof ManualCentrifugeBlock
+            || below instanceof KineticReductorBlock;
     }
 }

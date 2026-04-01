@@ -1,9 +1,11 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceScreen;
+import com.dev1lroot.mcmods.omnitech.gui.HeaterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.KineticGeneratorScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ManualCentrifugeScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ManualMaceratorScreen;
+import com.dev1lroot.mcmods.omnitech.gui.StirlingEngineScreen;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -31,6 +33,10 @@ public class OmniTechGUI {
                         //output.accept(OmniTechMaterials.TIN.blockItem("%").get());
                         output.accept(OmniTechItems.KF_GENERATOR_ITEM.get());
                         output.accept(OmniTechItems.KF_PIPE_ITEM.get());
+                        output.accept(OmniTechItems.KF_REDUCTOR_ITEM.get());
+                        output.accept(OmniTechItems.HEATER_ITEM.get());
+                        output.accept(OmniTechItems.STIRLING_ENGINE_ITEM.get());
+                        output.accept(OmniTechItems.CONVEYOR_BELT_ITEM.get());
                         output.accept(OmniTechItems.STEEL_INGOT.get());
                     }).build());
 
@@ -45,6 +51,8 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.MANUAL_MACERATOR.get(), ManualMaceratorScreen::new);
         event.register(OmniTechMenuTypes.MANUAL_CENTRIFUGE.get(), ManualCentrifugeScreen::new);
         event.register(OmniTechMenuTypes.KF_GENERATOR.get(), KineticGeneratorScreen::new);
+        event.register(OmniTechMenuTypes.HEATER.get(), HeaterScreen::new);
+        event.register(OmniTechMenuTypes.STIRLING_ENGINE.get(), StirlingEngineScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)

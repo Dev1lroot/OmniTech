@@ -99,5 +99,23 @@
   "item.omnitech.copper_plate": "Copper Plate",
   "item.omnitech.copper_mote": "Copper Mote",
   "block.omnitech.lepidolite": "Lepidolite",
-  "item.omnitech.lepidolite_dust": "Lepidolite Dust"
+  "item.omnitech.lepidolite_dust": "Lepidolite Dust",
+
+  "block.omnitech.kf_reductor": "Kinetic Reductor",
+  "item.omnitech.kf_reductor": "Kinetic Reductor",
+
+  "block.omnitech.heater": "Heater",
+  "item.omnitech.heater": "Heater",
+  "container.omnitech.heater": "Heater",
+
+  "block.omnitech.stirling_engine": "Stirling Engine",
+  "item.omnitech.stirling_engine": "Stirling Engine",
+  "container.omnitech.stirling_engine": "Stirling Engine",
+
+  "item.omnitech.granite_dust": "Granite Dust",
+  "item.omnitech.andesite_dust": "Andesite Dust",
+  "item.omnitech.diorite_dust": "Diorite Dust",
+
+  "block.omnitech.conveyor_belt": "Conveyor Belt",
+  "item.omnitech.conveyor_belt": "Conveyor Belt"
 }

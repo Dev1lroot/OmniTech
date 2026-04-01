@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,powered=false": { "model": "omnitech:block/conveyor_belt" },
+    "facing=south,powered=false": { "model": "omnitech:block/conveyor_belt", "y": 180 },
+    "facing=west,powered=false":  { "model": "omnitech:block/conveyor_belt", "y": 270 },
+    "facing=east,powered=false":  { "model": "omnitech:block/conveyor_belt", "y": 90  },
+    "facing=north,powered=true":  { "model": "omnitech:block/conveyor_belt_on" },
+    "facing=south,powered=true":  { "model": "omnitech:block/conveyor_belt_on", "y": 180 },
+    "facing=west,powered=true":   { "model": "omnitech:block/conveyor_belt_on", "y": 270 },
+    "facing=east,powered=true":   { "model": "omnitech:block/conveyor_belt_on", "y": 90  }
+  }
+}

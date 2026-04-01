@@ -1,13 +1,10 @@
 package com.dev1lroot.mcmods.omnitech.blocks;
 
+import com.dev1lroot.mcmods.omnitech.KineticNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.gui.KineticGeneratorMenu;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import java.util.ArrayDeque;
-import java.util.HashSet;
-import java.util.Set;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
@@ -92,87 +89,10 @@ public class KineticGeneratorBlockEntity extends BaseContainerBlockEntity {
 
         // Walk the pipe network via BFS and deliver KF to every reachable machine
         if (be.isLit()) {
-            propagateKineticForce(level, pos);
+            KineticNetworkUtil.propagateKineticForce(level, pos, KF_PER_TICK);
         }
 
         be.setChanged();
-    }
-
-    /**
-     * BFS from the generator through connected {@link KineticPipeBlock} chains,
-     * delivering {@link #KF_PER_TICK} to every {@link IKineticReceiver} reachable
-     * at the end of a pipe chain (or directly adjacent with no pipe in between).
-     *
-     * <p>Pipe traversal rules:
-     * <ul>
-     *   <li>A pipe can only be entered from a direction that matches its {@code AXIS}.
-     *       (An X-axis pipe connects only on its east/west faces, etc.)</li>
-     *   <li>Pipes are transparent to the BFS — power travels through any number of
-     *       aligned pipes without limit.</li>
-     *   <li>Non-pipe blocks terminate the BFS branch; if they implement
-     *       {@link IKineticReceiver}, they receive KF.</li>
-     * </ul>
-     */
-    private static void propagateKineticForce(Level level, BlockPos source) {
-        record Step(BlockPos pos, Direction.Axis entryAxis) {}
-
-        Set<BlockPos>      visited  = new HashSet<>();
-        ArrayDeque<Step>   queue    = new ArrayDeque<>();
-
-        visited.add(source);
-        for (Direction dir : Direction.values()) {
-            queue.add(new Step(source.relative(dir), dir.getAxis()));
-        }
-
-        while (!queue.isEmpty()) {
-            Step step = queue.poll();
-            if (visited.contains(step.pos())) continue;
-            visited.add(step.pos());
-
-            BlockState state = level.getBlockState(step.pos());
-
-            if (state.getBlock() instanceof KineticPipeBlock) {
-                Direction.Axis pipeAxis = state.getValue(KineticPipeBlock.AXIS);
-
-                // Pipes are directional — only enter from the matching axis face
-                if (step.entryAxis() != pipeAxis) continue;
-
-                // Mark the pipe as spinning
-                BlockEntity pipeEntity = level.getBlockEntity(step.pos());
-                if (pipeEntity instanceof KineticPipeBlockEntity pipe) {
-                    pipe.refreshPoweredTimer(level, step.pos(), state);
-                }
-
-                // Continue BFS through both ends of this pipe's axis
-                for (Direction dir : Direction.values()) {
-                    if (dir.getAxis() != pipeAxis) continue;
-                    BlockPos next = step.pos().relative(dir);
-                    if (!visited.contains(next)) {
-                        queue.add(new Step(next, pipeAxis));
-                    }
-                }
-            } else if (state.getBlock() instanceof KineticReductorBlock) {
-                // Reductor is an omnidirectional junction — no axis constraint.
-                // Mark it as powered (activates the animated texture).
-                BlockEntity reductorBe = level.getBlockEntity(step.pos());
-                if (reductorBe instanceof KineticReductorBlockEntity reductor) {
-                    reductor.refreshPoweredTimer(level, step.pos(), state);
-                }
-                // Continue BFS in all six directions so KF can exit on any face.
-                for (Direction dir : Direction.values()) {
-                    BlockPos next = step.pos().relative(dir);
-                    if (!visited.contains(next)) {
-                        queue.add(new Step(next, dir.getAxis()));
-                    }
-                }
-            } else {
-                // Terminal node — deliver KF if it accepts it
-                BlockEntity be = level.getBlockEntity(step.pos());
-                if (be instanceof IKineticReceiver receiver) {
-                    receiver.addKineticForce(KF_PER_TICK);
-                }
-            }
-        }
     }
 
     public boolean isLit()       { return burnTime > 0; }

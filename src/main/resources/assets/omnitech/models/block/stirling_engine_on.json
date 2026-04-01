@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top":      "omnitech:block/stirling_engine_top",
+    "front":    "omnitech:block/stirling_engine_front_on",
+    "side":     "omnitech:block/kf_reductor_on",
+    "particle": "omnitech:block/kf_reductor_on"
+  }
+}

@@ -1,12 +1,15 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.blocks.AlloyFurnaceBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.ConveyorBeltBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.CrankBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.HeaterBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticGeneratorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticPipeBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticReductorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.ManualCentrifugeBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.ManualMaceratorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.StirlingEngineBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
@@ -48,6 +51,21 @@ public class OmniTechBlockEntities {
             REGISTRY.register("kf_reductor",
                     () -> new BlockEntityType<>(KineticReductorBlockEntity::new,
                             OmniTechBlocks.KF_REDUCTOR.get()));
+
+    public static final Supplier<BlockEntityType<HeaterBlockEntity>> HEATER =
+            REGISTRY.register("heater",
+                    () -> new BlockEntityType<>(HeaterBlockEntity::new,
+                            OmniTechBlocks.HEATER.get()));
+
+    public static final Supplier<BlockEntityType<StirlingEngineBlockEntity>> STIRLING_ENGINE =
+            REGISTRY.register("stirling_engine",
+                    () -> new BlockEntityType<>(StirlingEngineBlockEntity::new,
+                            OmniTechBlocks.STIRLING_ENGINE.get()));
+
+    public static final Supplier<BlockEntityType<ConveyorBeltBlockEntity>> CONVEYOR_BELT =
+            REGISTRY.register("conveyor_belt",
+                    () -> new BlockEntityType<>(ConveyorBeltBlockEntity::new,
+                            OmniTechBlocks.CONVEYOR_BELT.get()));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

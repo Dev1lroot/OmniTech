@@ -1,0 +1,5 @@
+{
+  "requiredKineticForce": 3,
+  "input": "minecraft:granite",
+  "output": [ "omnitech:granite_dust", "omnitech:aluminium_mote"]
+}

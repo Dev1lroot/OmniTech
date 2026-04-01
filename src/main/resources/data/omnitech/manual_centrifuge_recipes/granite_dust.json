@@ -1,0 +1,8 @@
+{
+  "requiredKineticForce": 3,
+  "input": "omnitech:granite_dust",
+  "output": [
+    { "item": "omnitech:aluminium_mote",   "count": 1, "chance": 1 },
+    { "item": "minecraft:quartz",   "count": 1, "chance": 0.1 }
+  ]
+}

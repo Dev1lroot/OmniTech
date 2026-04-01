@@ -1,12 +1,15 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.blocks.AlloyFurnaceBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.ConveyorBeltBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.CrankBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.HeaterBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticGeneratorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticPipeBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticReductorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.ManualCentrifugeBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.ManualMaceratorBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.StirlingEngineBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.OmniTechOreBlock;
 import com.dev1lroot.mcmods.omnitech.worldgen.OreSpawnConfig;
 import net.minecraft.world.level.block.Block;
@@ -47,6 +50,11 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> KF_PIPE;
     public static final DeferredBlock<Block> KF_REDUCTOR;
 
+    public static final DeferredBlock<Block> HEATER;
+    public static final DeferredBlock<Block> STIRLING_ENGINE;
+
+    public static final DeferredBlock<Block> CONVEYOR_BELT;
+
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
         MANUAL_MACERATOR = register("manual_macerator",
@@ -62,6 +70,15 @@ public class OmniTechBlocks {
                 p -> new KineticPipeBlock(p.mapColor(MapColor.METAL).strength(3.0F).sound(SoundType.METAL).noOcclusion()));
         KF_REDUCTOR = register("kf_reductor",
                 p -> new KineticReductorBlock(p.mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.METAL)));
+
+        HEATER = register("heater",
+                p -> new HeaterBlock(p.mapColor(MapColor.STONE).strength(3.5F).sound(SoundType.STONE)));
+        STIRLING_ENGINE = register("stirling_engine",
+                p -> new StirlingEngineBlock(p.mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.METAL)));
+
+        CONVEYOR_BELT = register("conveyor_belt",
+                p -> new ConveyorBeltBlock(p.mapColor(MapColor.METAL).strength(2.5F)
+                        .sound(SoundType.METAL).noOcclusion()));
     }
 
     // ── Registration helpers ───────────────────────────────────────────────

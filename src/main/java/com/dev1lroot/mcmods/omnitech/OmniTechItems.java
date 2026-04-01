@@ -33,6 +33,15 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> KF_REDUCTOR_ITEM = REGISTRY.registerSimpleBlockItem(
             "kf_reductor", OmniTechBlocks.KF_REDUCTOR);
 
+    public static final DeferredItem<BlockItem> HEATER_ITEM = REGISTRY.registerSimpleBlockItem(
+            "heater", OmniTechBlocks.HEATER);
+
+    public static final DeferredItem<BlockItem> STIRLING_ENGINE_ITEM = REGISTRY.registerSimpleBlockItem(
+            "stirling_engine", OmniTechBlocks.STIRLING_ENGINE);
+
+    public static final DeferredItem<BlockItem> CONVEYOR_BELT_ITEM = REGISTRY.registerSimpleBlockItem(
+            "conveyor_belt", OmniTechBlocks.CONVEYOR_BELT);
+
     // Real Items
     public static final DeferredItem<Item> STEEL_INGOT = REGISTRY.registerSimpleItem(
             "steel_ingot", p -> p);
