@@ -4,7 +4,6 @@ import com.dev1lroot.mcmods.omnitech.blocks.ConveyorBeltBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.ConveyorBeltBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.HashCommon;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.MovingBlockRenderState;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -59,17 +58,21 @@ public class ConveyorBeltRenderer
         state.powered = entity.getBlockState().getValue(ConveyorBeltBlock.POWERED);
         state.facing  = entity.getBlockState().getValue(ConveyorBeltBlock.FACING);
 
-        // Smooth animation driven by the global game clock — no explicit server sync needed.
-        if (state.powered && entity.getLevel() instanceof ClientLevel cl) {
-            float rawT = (cl.getGameTime() + partialTicks)
-                    % ConveyorBeltBlockEntity.TRANSFER_INTERVAL;
-            state.animProgress = rawT / ConveyorBeltBlockEntity.TRANSFER_INTERVAL;
+        // animProgress is driven by the entity's own transferTimer so it exactly
+        // matches the server-side transfer pace.  partialTicks provides sub-tick
+        // smoothing between the integer timer steps advanced by clientTick().
+        if (state.powered && !entity.getHeldItem().isEmpty()) {
+            // Clamp to 1.0 so a blocked belt (timer == TRANSFER_INTERVAL) shows
+            // the item at the back edge rather than slightly past it.
+            state.animProgress = Math.min(1.0f,
+                    (entity.getTransferTimer() + partialTicks)
+                            / ConveyorBeltBlockEntity.TRANSFER_INTERVAL);
         } else {
             state.animProgress = 0f;
         }
 
         // ── Belt block model ───────────────────────────────────────────────────
-        if (entity.getLevel() instanceof ClientLevel cl) {
+        if (entity.getLevel() instanceof net.minecraft.client.multiplayer.ClientLevel cl) {
             MovingBlockRenderState model = new MovingBlockRenderState();
             model.randomSeedPos    = entity.getBlockPos();
             model.blockPos         = entity.getBlockPos();

@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.blocks;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -12,6 +13,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -20,48 +22,73 @@ import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.slf4j.Logger;
-import com.mojang.logging.LogUtils;
 
 /**
  * Block entity for the {@link ConveyorBeltBlock}.
  *
- * <p>Holds at most one item in its single internal slot.  Each
- * {@link #TRANSFER_INTERVAL} ticks while KF-powered:
- * <ol>
- *   <li>If the slot is occupied, the item is pushed into the container
- *       behind the belt.  On success the slot is cleared.</li>
- *   <li>If the slot is now empty, one item is pulled from the container
- *       in front of the belt.</li>
- * </ol>
+ * <p>Implements {@link Container} so adjacent belts (and other machinery) can
+ * push/pull items through the standard container API.  The belt holds exactly
+ * one item (max stack size = 1 for the whole container).
  *
- * <p>KF is accepted via {@link IKineticReceiver#addKineticForce}, which
- * resets a short decay timer; when the timer reaches zero the belt
- * stops and the {@code POWERED} blockstate is cleared.
+ * <p>Transfer logic (server-side, runs every tick while KF-powered):
+ * <ul>
+ *   <li>If the slot is occupied the transfer timer counts up to
+ *       {@link #TRANSFER_INTERVAL}.  At that point the belt tries to push
+ *       the item into the container directly behind it.
+ *       <ul>
+ *         <li>Success → clear slot, reset timer to 0, immediately attempt a
+ *             pull from the front container.</li>
+ *         <li>Blocked (no output container or destination full) → timer stays
+ *             at {@link #TRANSFER_INTERVAL}; item is held at the back edge
+ *             visually and retried next tick.</li>
+ *       </ul>
+ *   </li>
+ *   <li>If the slot is empty the belt tries to pull one item from the
+ *       container in front of it every tick.</li>
+ * </ul>
  *
- * <p>{@link #animProgress} (0–1) tracks transfer progress for the
- * client-side item floating animation.
+ * <p>Items are <em>never</em> ejected into the world; the belt simply stalls.
  */
-public class ConveyorBeltBlockEntity extends BlockEntity implements IKineticReceiver {
+public class ConveyorBeltBlockEntity extends BlockEntity
+        implements IKineticReceiver, Container {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    /** Ticks between item transfer steps when powered. */
+    /** Ticks for an item to travel from the input face to the output face. */
     public static final int TRANSFER_INTERVAL = 8;
     /** Ticks before POWERED turns off after the last KF pulse. */
     public static final int POWERED_DECAY_TICKS = 3;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
-    private int   poweredTimer  = 0;
-    private int   transferTimer = 0;
+    private int poweredTimer  = 0;
     /**
-     * Fraction [0, 1] of the current transfer cycle that has elapsed.
-     * Synced to clients via {@link #setChanged()} so the renderer can
-     * interpolate the item position smoothly.
+     * Transfer progress timer [0, TRANSFER_INTERVAL].
+     * Capped at TRANSFER_INTERVAL when blocked (item at back edge, waiting
+     * for a free output slot).  Reset to 0 when a transfer succeeds.
      */
-    public float animProgress = 0f;
+    private int transferTimer = 0;
 
     public ConveyorBeltBlockEntity(BlockPos pos, BlockState state) {
         super(OmniTechBlockEntities.CONVEYOR_BELT.get(), pos, state);
+    }
+
+    // ── Client tick ───────────────────────────────────────────────────────────
+
+    /**
+     * Advances the local {@link #transferTimer} on the client each tick so the
+     * item slides smoothly between server update packets.
+     * The timer is capped at {@link #TRANSFER_INTERVAL} — it never wraps back
+     * to 0 on its own; only an incoming server packet (after a successful
+     * transfer) resets it.
+     */
+    public static void clientTick(Level level, BlockPos pos, BlockState state,
+            ConveyorBeltBlockEntity be) {
+        boolean powered = state.getValue(ConveyorBeltBlock.POWERED);
+        if (powered && !be.items.get(0).isEmpty()) {
+            if (be.transferTimer < TRANSFER_INTERVAL) be.transferTimer++;
+        } else {
+            be.transferTimer = 0;
+        }
     }
 
     // ── IKineticReceiver ──────────────────────────────────────────────────────
@@ -72,7 +99,7 @@ public class ConveyorBeltBlockEntity extends BlockEntity implements IKineticRece
         return true;
     }
 
-    // ── Tick ──────────────────────────────────────────────────────────────────
+    // ── Server tick ───────────────────────────────────────────────────────────
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
             ConveyorBeltBlockEntity be) {
@@ -83,29 +110,35 @@ public class ConveyorBeltBlockEntity extends BlockEntity implements IKineticRece
 
         if (wasPowered != isPowered) {
             level.setBlock(pos, state.setValue(ConveyorBeltBlock.POWERED, isPowered), 3);
-            state = level.getBlockState(pos); // refresh local reference
+            state = level.getBlockState(pos);
         }
 
         if (!isPowered) {
-            if (be.transferTimer != 0 || be.animProgress != 0f) {
-                be.transferTimer = 0;
-                be.animProgress  = 0f;
-                be.setChanged();
-            }
+            be.transferTimer = 0;
+            be.setChanged();
             return;
         }
 
-        // ── Transfer progress ──────────────────────────────────────────────────
-        be.transferTimer++;
-        be.animProgress = (float) be.transferTimer / TRANSFER_INTERVAL;
+        // ── Item movement ──────────────────────────────────────────────────────
+        if (!be.items.get(0).isEmpty()) {
+            // Advance timer toward the output end (cap; never wraps)
+            if (be.transferTimer < TRANSFER_INTERVAL) be.transferTimer++;
 
-        if (be.transferTimer >= TRANSFER_INTERVAL) {
+            if (be.transferTimer >= TRANSFER_INTERVAL) {
+                // Try to push the item to the back container
+                if (tryPushToBack(level, pos, state, be)) {
+                    be.transferTimer = 0;
+                    // Immediately pull a new item from the front
+                    tryPullFromFront(level, pos, state, be);
+                    level.sendBlockUpdated(pos, state, state, 3);
+                }
+                // If push failed: stay blocked, timer stays at TRANSFER_INTERVAL
+                // (item is rendered at the back edge until the output clears)
+            }
+        } else {
             be.transferTimer = 0;
-            be.animProgress  = 0f;
-            ItemStack before = be.items.get(0).copy();
-            performTransfer(level, pos, state, be);
-            // If the held item changed, push the new state to nearby clients.
-            if (!ItemStack.matches(before, be.items.get(0))) {
+            // Empty slot: try to pull from the front every tick
+            if (tryPullFromFront(level, pos, state, be)) {
                 level.sendBlockUpdated(pos, state, state, 3);
             }
         }
@@ -113,53 +146,56 @@ public class ConveyorBeltBlockEntity extends BlockEntity implements IKineticRece
         be.setChanged();
     }
 
-    private static void performTransfer(Level level, BlockPos pos, BlockState state,
+    // ── Transfer helpers ──────────────────────────────────────────────────────
+
+    /**
+     * Attempts to push the held item into the container directly behind the
+     * belt ({@code FACING.opposite()} direction).
+     *
+     * @return {@code true} if the item was accepted and the slot was cleared.
+     */
+    private static boolean tryPushToBack(Level level, BlockPos pos, BlockState state,
             ConveyorBeltBlockEntity be) {
-        Direction facing  = state.getValue(ConveyorBeltBlock.FACING);
-        Direction backDir = facing.getOpposite();     // output side
-        // input side == facing (front of block)
+        Direction backDir = state.getValue(ConveyorBeltBlock.FACING).getOpposite();
+        BlockEntity backBe = level.getBlockEntity(pos.relative(backDir));
+        if (!(backBe instanceof Container output)) return false; // no container → stall
 
-        // ── Push held item out the back ────────────────────────────────────────
         ItemStack held = be.items.get(0);
-        if (!held.isEmpty()) {
-            BlockPos backPos = pos.relative(backDir);
-            BlockEntity backBe = level.getBlockEntity(backPos);
-            if (backBe instanceof Container outputContainer) {
-                boolean inserted = tryInsert(outputContainer, held);
-                if (inserted) {
-                    be.items.set(0, ItemStack.EMPTY);
-                } else {
-                    return; // belt is blocked — don't pull either
-                }
-            } else {
-                // No container behind — eject item into the world
-                level.addFreshEntity(new net.minecraft.world.entity.item.ItemEntity(level,
-                        pos.getX() + 0.5 + backDir.getStepX() * 0.7,
-                        pos.getY() + 0.25,
-                        pos.getZ() + 0.5 + backDir.getStepZ() * 0.7,
-                        held.copy()));
-                be.items.set(0, ItemStack.EMPTY);
-            }
-        }
+        if (!tryInsert(output, held)) return false;  // destination full → stall
 
-        // ── Pull a new item from the front ─────────────────────────────────────
-        if (be.items.get(0).isEmpty()) {
-            BlockPos frontPos = pos.relative(facing);
-            BlockEntity frontBe = level.getBlockEntity(frontPos);
-            if (frontBe instanceof Container inputContainer) {
-                ItemStack pulled = tryExtract(inputContainer);
-                if (!pulled.isEmpty()) {
-                    be.items.set(0, pulled);
-                }
-            }
-        }
+        be.items.set(0, ItemStack.EMPTY);
+        return true;
     }
 
     /**
-     * Tries to insert exactly one item into {@code container}.
+     * Attempts to pull one item from the container directly in front of the
+     * belt ({@code FACING} direction) into the belt's own slot.
+     *
+     * @return {@code true} if an item was pulled.
+     */
+    private static boolean tryPullFromFront(Level level, BlockPos pos, BlockState state,
+            ConveyorBeltBlockEntity be) {
+        if (!be.items.get(0).isEmpty()) return false; // already holding something
+        Direction frontDir = state.getValue(ConveyorBeltBlock.FACING);
+        BlockEntity frontBe = level.getBlockEntity(pos.relative(frontDir));
+        if (!(frontBe instanceof Container input)) return false;
+
+        ItemStack pulled = tryExtract(input);
+        if (pulled.isEmpty()) return false;
+
+        be.items.set(0, pulled);
+        return true;
+    }
+
+    /**
+     * Inserts exactly one item into {@code container}.
+     * Respects {@link Container#getMaxStackSize()} so belts (max=1) are not
+     * over-filled.
+     *
      * @return {@code true} if the item was inserted.
      */
     private static boolean tryInsert(Container container, ItemStack stack) {
+        int containerMax = container.getMaxStackSize();
         for (int i = 0; i < container.getContainerSize(); i++) {
             ItemStack slot = container.getItem(i);
             if (slot.isEmpty()) {
@@ -167,7 +203,7 @@ public class ConveyorBeltBlockEntity extends BlockEntity implements IKineticRece
                 return true;
             }
             if (ItemStack.isSameItemSameComponents(slot, stack)
-                    && slot.getCount() < slot.getMaxStackSize()) {
+                    && slot.getCount() < Math.min(slot.getMaxStackSize(), containerMax)) {
                 slot.grow(1);
                 container.setChanged();
                 return true;
@@ -177,7 +213,9 @@ public class ConveyorBeltBlockEntity extends BlockEntity implements IKineticRece
     }
 
     /**
-     * Extracts exactly one item from the first non-empty slot of {@code container}.
+     * Extracts exactly one item from the first non-empty slot of
+     * {@code container}.
+     *
      * @return the extracted single-item stack, or {@link ItemStack#EMPTY}.
      */
     private static ItemStack tryExtract(Container container) {
@@ -193,29 +231,74 @@ public class ConveyorBeltBlockEntity extends BlockEntity implements IKineticRece
         return ItemStack.EMPTY;
     }
 
+    // ── Container implementation ──────────────────────────────────────────────
+
+    /** The belt holds at most 1 item (count = 1) — prevents stacking. */
+    @Override public int getMaxStackSize()      { return 1; }
+    @Override public int getContainerSize()     { return 1; }
+    @Override public boolean isEmpty()          { return items.get(0).isEmpty(); }
+    @Override public boolean stillValid(Player player) { return true; }
+
+    @Override
+    public ItemStack getItem(int slot) {
+        return slot == 0 ? items.get(0) : ItemStack.EMPTY;
+    }
+
+    @Override
+    public ItemStack removeItem(int slot, int amount) {
+        if (slot != 0) return ItemStack.EMPTY;
+        return ContainerHelper.removeItem(items, 0, amount);
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int slot) {
+        if (slot != 0) return ItemStack.EMPTY;
+        ItemStack held = items.get(0);
+        items.set(0, ItemStack.EMPTY);
+        return held;
+    }
+
+    /**
+     * Sets the item in the belt's slot (always clamped to count = 1).
+     * Notifies nearby clients so the item renderer updates immediately
+     * when another machine pushes into this belt.
+     */
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        if (slot != 0) return;
+        items.set(0, stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1));
+        setChanged();
+        if (level != null && !level.isClientSide()) {
+            level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+        }
+    }
+
+    @Override
+    public void clearContent() {
+        items.set(0, ItemStack.EMPTY);
+        setChanged();
+    }
+
     // ── Accessors ─────────────────────────────────────────────────────────────
 
-    public ItemStack getHeldItem()     { return items.get(0); }
-    public float     getAnimProgress() { return animProgress;  }
+    public ItemStack getHeldItem()      { return items.get(0); }
+    /** Raw transfer timer [0, TRANSFER_INTERVAL] — used by the client renderer. */
+    public int       getTransferTimer() { return transferTimer; }
 
     // ── Client sync ───────────────────────────────────────────────────────────
 
-    /** Sends a block entity data packet to nearby clients whenever the held item changes. */
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    /**
-     * Data included in the update packet — only the item slot needs to be
-     * visible on the client (for the floating item renderer).
-     */
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         try (ProblemReporter.ScopedCollector reporter =
                 new ProblemReporter.ScopedCollector(this.problemPath(), LOGGER)) {
             TagValueOutput output = TagValueOutput.createWithContext(reporter, registries);
             ContainerHelper.saveAllItems(output, items, true);
+            output.putInt("TransferTimer", transferTimer);
             return output.buildResult();
         }
     }

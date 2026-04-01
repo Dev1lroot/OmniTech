@@ -75,7 +75,12 @@ public class ConveyorBeltBlock extends BaseEntityBlock {
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(
             Level level, BlockState state, BlockEntityType<T> type) {
-        if (level.isClientSide()) return null;
+        if (level.isClientSide()) {
+            // Client ticker advances the local transfer timer so the item
+            // slides smoothly between update packets.
+            return createTickerHelper(type, OmniTechBlockEntities.CONVEYOR_BELT.get(),
+                    ConveyorBeltBlockEntity::clientTick);
+        }
         return createTickerHelper(type, OmniTechBlockEntities.CONVEYOR_BELT.get(),
                 ConveyorBeltBlockEntity::serverTick);
     }
