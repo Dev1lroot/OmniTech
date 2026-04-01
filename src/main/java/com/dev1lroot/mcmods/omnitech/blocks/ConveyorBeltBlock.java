@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +34,9 @@ public class ConveyorBeltBlock extends BaseEntityBlock {
     public static final MapCodec<ConveyorBeltBlock> CODEC = simpleCodec(ConveyorBeltBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty   POWERED = BlockStateProperties.POWERED;
+    /** Transfer progress [0, TRANSFER_INTERVAL] stored in blockstate for server-authoritative animation. */
+    public static final IntegerProperty   PROGRESS =
+            IntegerProperty.create("progress", 0, ConveyorBeltBlockEntity.TRANSFER_INTERVAL);
 
     /** 4-pixel-tall slab hitbox. */
     private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 4, 16);
@@ -41,7 +45,8 @@ public class ConveyorBeltBlock extends BaseEntityBlock {
         super(properties);
         registerDefaultState(stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
-                .setValue(POWERED, false));
+                .setValue(POWERED, false)
+                .setValue(PROGRESS, 0));
     }
 
     @Override
@@ -76,10 +81,7 @@ public class ConveyorBeltBlock extends BaseEntityBlock {
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(
             Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide()) {
-            // Client ticker advances the local transfer timer so the item
-            // slides smoothly between update packets.
-            return createTickerHelper(type, OmniTechBlockEntities.CONVEYOR_BELT.get(),
-                    ConveyorBeltBlockEntity::clientTick);
+            return null; // server-authoritative PROGRESS blockstate drives animation
         }
         return createTickerHelper(type, OmniTechBlockEntities.CONVEYOR_BELT.get(),
                 ConveyorBeltBlockEntity::serverTick);
@@ -87,6 +89,6 @@ public class ConveyorBeltBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, POWERED);
+        builder.add(FACING, POWERED, PROGRESS);
     }
 }

@@ -55,7 +55,7 @@ public class ConveyorBeltBlockEntity extends BlockEntity
     private static final Logger LOGGER = LogUtils.getLogger();
 
     /** Ticks for an item to travel from the input face to the output face. */
-    public static final int TRANSFER_INTERVAL = 8;
+    public static final int TRANSFER_INTERVAL = 20;
     /** Ticks before POWERED turns off after the last KF pulse. */
     public static final int POWERED_DECAY_TICKS = 3;
 
@@ -72,25 +72,6 @@ public class ConveyorBeltBlockEntity extends BlockEntity
         super(OmniTechBlockEntities.CONVEYOR_BELT.get(), pos, state);
     }
 
-    // ── Client tick ───────────────────────────────────────────────────────────
-
-    /**
-     * Advances the local {@link #transferTimer} on the client each tick so the
-     * item slides smoothly between server update packets.
-     * The timer is capped at {@link #TRANSFER_INTERVAL} — it never wraps back
-     * to 0 on its own; only an incoming server packet (after a successful
-     * transfer) resets it.
-     */
-    public static void clientTick(Level level, BlockPos pos, BlockState state,
-            ConveyorBeltBlockEntity be) {
-        boolean powered = state.getValue(ConveyorBeltBlock.POWERED);
-        if (powered && !be.items.get(0).isEmpty()) {
-            if (be.transferTimer < TRANSFER_INTERVAL) be.transferTimer++;
-        } else {
-            be.transferTimer = 0;
-        }
-    }
-
     // ── IKineticReceiver ──────────────────────────────────────────────────────
 
     @Override
@@ -104,7 +85,10 @@ public class ConveyorBeltBlockEntity extends BlockEntity
     public static void serverTick(Level level, BlockPos pos, BlockState state,
             ConveyorBeltBlockEntity be) {
         // ── Powered timer decay ────────────────────────────────────────────────
-        boolean wasPowered = be.poweredTimer > 0;
+        // Read the current POWERED state from the blockstate (not from the timer)
+        // so that when addKineticForce() sets poweredTimer>0 we correctly detect
+        // the false→true transition and actually set POWERED=true in the world.
+        boolean wasPowered = state.getValue(ConveyorBeltBlock.POWERED);
         if (be.poweredTimer > 0) be.poweredTimer--;
         boolean isPowered = be.poweredTimer > 0;
 
@@ -113,34 +97,38 @@ public class ConveyorBeltBlockEntity extends BlockEntity
             state = level.getBlockState(pos);
         }
 
-        if (!isPowered) {
-            be.transferTimer = 0;
-            be.setChanged();
-            return;
-        }
-
         // ── Item movement ──────────────────────────────────────────────────────
-        if (!be.items.get(0).isEmpty()) {
-            // Advance timer toward the output end (cap; never wraps)
-            if (be.transferTimer < TRANSFER_INTERVAL) be.transferTimer++;
+        if (isPowered) {
+            if (!be.items.get(0).isEmpty()) {
+                // Advance timer toward the output end (cap; never wraps)
+                if (be.transferTimer < TRANSFER_INTERVAL) be.transferTimer++;
 
-            if (be.transferTimer >= TRANSFER_INTERVAL) {
-                // Try to push the item to the back container
-                if (tryPushToBack(level, pos, state, be)) {
-                    be.transferTimer = 0;
-                    // Immediately pull a new item from the front
-                    tryPullFromFront(level, pos, state, be);
+                if (be.transferTimer >= TRANSFER_INTERVAL) {
+                    // Try to push the item to the back container
+                    if (tryPushToBack(level, pos, state, be)) {
+                        be.transferTimer = 0;
+                        // Immediately pull a new item from the front
+                        tryPullFromFront(level, pos, state, be);
+                        level.sendBlockUpdated(pos, state, state, 3);
+                    }
+                    // If push failed: stay blocked, timer stays at TRANSFER_INTERVAL
+                    // (item is rendered at the back edge until the output clears)
+                }
+            } else {
+                be.transferTimer = 0;
+                // Empty slot: try to pull from the front every tick
+                if (tryPullFromFront(level, pos, state, be)) {
                     level.sendBlockUpdated(pos, state, state, 3);
                 }
-                // If push failed: stay blocked, timer stays at TRANSFER_INTERVAL
-                // (item is rendered at the back edge until the output clears)
             }
-        } else {
-            be.transferTimer = 0;
-            // Empty slot: try to pull from the front every tick
-            if (tryPullFromFront(level, pos, state, be)) {
-                level.sendBlockUpdated(pos, state, state, 3);
-            }
+        }
+        // When unpowered: timer is preserved — item stays frozen at current position
+
+        // ── Sync PROGRESS blockstate (server-authoritative animation) ──────────
+        int progress = Math.min(be.transferTimer, TRANSFER_INTERVAL);
+        if (state.getValue(ConveyorBeltBlock.PROGRESS) != progress) {
+            state = state.setValue(ConveyorBeltBlock.PROGRESS, progress);
+            level.setBlock(pos, state, 2); // flag=2: send to clients, no neighbour update
         }
 
         be.setChanged();

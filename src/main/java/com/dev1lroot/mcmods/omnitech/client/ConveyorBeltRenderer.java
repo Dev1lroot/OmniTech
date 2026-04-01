@@ -32,7 +32,7 @@ public class ConveyorBeltRenderer
     /** Height above the belt surface (4 px = 0.25 + small clearance). */
     private static final float ITEM_Y = 0.30f;
     /** Item display scale relative to a full block. */
-    private static final float ITEM_SCALE = 0.3f;
+    private static final float ITEM_SCALE = 0.9f;
 
     private final ItemModelResolver itemModelResolver;
 
@@ -58,15 +58,14 @@ public class ConveyorBeltRenderer
         state.powered = entity.getBlockState().getValue(ConveyorBeltBlock.POWERED);
         state.facing  = entity.getBlockState().getValue(ConveyorBeltBlock.FACING);
 
-        // animProgress is driven by the entity's own transferTimer so it exactly
-        // matches the server-side transfer pace.  partialTicks provides sub-tick
-        // smoothing between the integer timer steps advanced by clientTick().
-        if (state.powered && !entity.getHeldItem().isEmpty()) {
-            // Clamp to 1.0 so a blocked belt (timer == TRANSFER_INTERVAL) shows
-            // the item at the back edge rather than slightly past it.
+        // animProgress is driven by the server-authoritative PROGRESS blockstate.
+        // When powered, partialTicks provides sub-tick smoothing.
+        // When unpowered, the item stays frozen at the last PROGRESS value.
+        if (!entity.getHeldItem().isEmpty()) {
+            int progress = entity.getBlockState().getValue(ConveyorBeltBlock.PROGRESS);
+            float smoothT = state.powered ? (progress + partialTicks) : (float) progress;
             state.animProgress = Math.min(1.0f,
-                    (entity.getTransferTimer() + partialTicks)
-                            / ConveyorBeltBlockEntity.TRANSFER_INTERVAL);
+                    smoothT / ConveyorBeltBlockEntity.TRANSFER_INTERVAL);
         } else {
             state.animProgress = 0f;
         }
@@ -110,12 +109,14 @@ public class ConveyorBeltRenderer
         // ── Floating item ──────────────────────────────────────────────────────
         if (state.heldItemState == null) return;
 
-        // Slide from front-face centre toward back-face centre.
-        // animProgress=0 → near front face; animProgress=1 → near back face.
+        // Slide item from the exact front face (t=0) to the exact back face (t=1).
+        // Formula: centre = 0.5 + facing.step * (0.5 - t)
+        //   t=0 → centre at front face edge (no gap)
+        //   t=1 → centre at back face edge (no gap)
         Direction front = state.facing;
         float t = state.animProgress;
-        float itemX = 0.5f + front.getStepX() * (0.4f - t * 0.8f);
-        float itemZ = 0.5f + front.getStepZ() * (0.4f - t * 0.8f);
+        float itemX = 0.5f + front.getStepX() * (0.5f - t);
+        float itemZ = 0.5f + front.getStepZ() * (0.5f - t);
 
         poseStack.pushPose();
         poseStack.translate(itemX, ITEM_Y, itemZ);
