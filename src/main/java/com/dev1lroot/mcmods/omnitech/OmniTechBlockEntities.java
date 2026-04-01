@@ -4,6 +4,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.AlloyFurnaceBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.CrankBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticGeneratorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticPipeBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.KineticReductorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.ManualCentrifugeBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.ManualMaceratorBlockEntity;
 import net.minecraft.core.registries.Registries;
@@ -42,6 +43,11 @@ public class OmniTechBlockEntities {
             REGISTRY.register("kf_pipe",
                     () -> new BlockEntityType<>(KineticPipeBlockEntity::new,
                             OmniTechBlocks.KF_PIPE.get()));
+
+    public static final Supplier<BlockEntityType<KineticReductorBlockEntity>> KF_REDUCTOR =
+            REGISTRY.register("kf_reductor",
+                    () -> new BlockEntityType<>(KineticReductorBlockEntity::new,
+                            OmniTechBlocks.KF_REDUCTOR.get()));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

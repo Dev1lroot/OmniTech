@@ -30,6 +30,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> KF_PIPE_ITEM = REGISTRY.registerSimpleBlockItem(
             "kf_pipe", OmniTechBlocks.KF_PIPE);
 
+    public static final DeferredItem<BlockItem> KF_REDUCTOR_ITEM = REGISTRY.registerSimpleBlockItem(
+            "kf_reductor", OmniTechBlocks.KF_REDUCTOR);
+
     // Real Items
     public static final DeferredItem<Item> STEEL_INGOT = REGISTRY.registerSimpleItem(
             "steel_ingot", p -> p);

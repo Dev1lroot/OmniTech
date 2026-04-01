@@ -151,6 +151,20 @@ public class KineticGeneratorBlockEntity extends BaseContainerBlockEntity {
                         queue.add(new Step(next, pipeAxis));
                     }
                 }
+            } else if (state.getBlock() instanceof KineticReductorBlock) {
+                // Reductor is an omnidirectional junction — no axis constraint.
+                // Mark it as powered (activates the animated texture).
+                BlockEntity reductorBe = level.getBlockEntity(step.pos());
+                if (reductorBe instanceof KineticReductorBlockEntity reductor) {
+                    reductor.refreshPoweredTimer(level, step.pos(), state);
+                }
+                // Continue BFS in all six directions so KF can exit on any face.
+                for (Direction dir : Direction.values()) {
+                    BlockPos next = step.pos().relative(dir);
+                    if (!visited.contains(next)) {
+                        queue.add(new Step(next, dir.getAxis()));
+                    }
+                }
             } else {
                 // Terminal node — deliver KF if it accepts it
                 BlockEntity be = level.getBlockEntity(step.pos());

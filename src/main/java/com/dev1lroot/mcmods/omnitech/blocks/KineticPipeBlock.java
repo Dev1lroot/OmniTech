@@ -77,4 +77,21 @@ public class KineticPipeBlock extends BaseEntityBlock {
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return defaultBlockState().setValue(AXIS, context.getClickedFace().getAxis());
     }
+
+    /**
+     * Returns the thin-shaft VoxelShape for the pipe's current axis.
+     * Fixes the hitbox so it matches the rendered 4×16×4 model instead of
+     * defaulting to a full block.  Combined with {@code noOcclusion()} on the
+     * block properties this also lets sky-light and block-light pass freely
+     * through the space that the pipe does not occupy.
+     */
+    @Override
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos,
+            CollisionContext context) {
+        return switch (state.getValue(AXIS)) {
+            case X -> SHAPE_X;
+            case Z -> SHAPE_Z;
+            default -> SHAPE_Y;
+        };
+    }
 }

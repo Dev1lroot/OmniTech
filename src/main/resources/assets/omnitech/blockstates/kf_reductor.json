@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "powered=false": { "model": "omnitech:block/kf_reductor" },
+    "powered=true":  { "model": "omnitech:block/kf_reductor_on" }
+  }
+}
