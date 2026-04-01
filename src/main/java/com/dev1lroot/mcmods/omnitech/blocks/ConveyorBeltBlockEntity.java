@@ -3,15 +3,24 @@ package com.dev1lroot.mcmods.omnitech.blocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import org.slf4j.Logger;
+import com.mojang.logging.LogUtils;
 
 /**
  * Block entity for the {@link ConveyorBeltBlock}.
@@ -33,6 +42,8 @@ import net.minecraft.world.level.storage.ValueOutput;
  * client-side item floating animation.
  */
 public class ConveyorBeltBlockEntity extends BlockEntity implements IKineticReceiver {
+
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     /** Ticks between item transfer steps when powered. */
     public static final int TRANSFER_INTERVAL = 8;
@@ -91,7 +102,12 @@ public class ConveyorBeltBlockEntity extends BlockEntity implements IKineticRece
         if (be.transferTimer >= TRANSFER_INTERVAL) {
             be.transferTimer = 0;
             be.animProgress  = 0f;
+            ItemStack before = be.items.get(0).copy();
             performTransfer(level, pos, state, be);
+            // If the held item changed, push the new state to nearby clients.
+            if (!ItemStack.matches(before, be.items.get(0))) {
+                level.sendBlockUpdated(pos, state, state, 3);
+            }
         }
 
         be.setChanged();
@@ -181,6 +197,28 @@ public class ConveyorBeltBlockEntity extends BlockEntity implements IKineticRece
 
     public ItemStack getHeldItem()     { return items.get(0); }
     public float     getAnimProgress() { return animProgress;  }
+
+    // ── Client sync ───────────────────────────────────────────────────────────
+
+    /** Sends a block entity data packet to nearby clients whenever the held item changes. */
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    /**
+     * Data included in the update packet — only the item slot needs to be
+     * visible on the client (for the floating item renderer).
+     */
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        try (ProblemReporter.ScopedCollector reporter =
+                new ProblemReporter.ScopedCollector(this.problemPath(), LOGGER)) {
+            TagValueOutput output = TagValueOutput.createWithContext(reporter, registries);
+            ContainerHelper.saveAllItems(output, items, true);
+            return output.buildResult();
+        }
+    }
 
     // ── Persistence ───────────────────────────────────────────────────────────
 

@@ -2,19 +2,19 @@ package com.dev1lroot.mcmods.omnitech.client;
 
 import net.minecraft.client.renderer.block.MovingBlockRenderState;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.core.Direction;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 public class ConveyorBeltRenderState extends BlockEntityRenderState {
-    /** Belt block model (includes the 4-pixel slab geometry). */
+    /** Belt block model (4-pixel slab geometry + powered texture variant). */
     public @Nullable MovingBlockRenderState beltModel = null;
-    /** Facing direction of the belt (used to orient the item animation). */
+    /** Facing direction of the belt (drives item slide direction). */
     public Direction facing = Direction.NORTH;
-    /** Whether KF is flowing — selects the moving/stopped belt model variant. */
+    /** Whether KF is flowing — used to gate animation. */
     public boolean powered = false;
     /** Transfer progress [0, 1] — drives item sliding animation. */
     public float animProgress = 0f;
-    /** Item currently held on the belt, or {@link ItemStack#EMPTY}. */
-    public ItemStack heldItem = ItemStack.EMPTY;
+    /** Prepared item render state, or {@code null} when the slot is empty. */
+    public @Nullable ItemStackRenderState heldItemState = null;
 }
