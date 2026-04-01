@@ -13,6 +13,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -50,7 +51,7 @@ import org.slf4j.Logger;
  * <p>Items are <em>never</em> ejected into the world; the belt simply stalls.
  */
 public class ConveyorBeltBlockEntity extends BlockEntity
-        implements IKineticReceiver, Container {
+        implements IKineticReceiver, WorldlyContainer {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -108,7 +109,7 @@ public class ConveyorBeltBlockEntity extends BlockEntity
                     if (tryPushToBack(level, pos, state, be)) {
                         be.transferTimer = 0;
                         // Immediately pull a new item from the front
-                        tryPullFromFront(level, pos, state, be);
+                        tryPullFromAnySide(level, pos, state, be);
                         level.sendBlockUpdated(pos, state, state, 3);
                     }
                     // If push failed: stay blocked, timer stays at TRANSFER_INTERVAL
@@ -117,7 +118,7 @@ public class ConveyorBeltBlockEntity extends BlockEntity
             } else {
                 be.transferTimer = 0;
                 // Empty slot: try to pull from the front every tick
-                if (tryPullFromFront(level, pos, state, be)) {
+                if (tryPullFromAnySide(level, pos, state, be)) {
                     level.sendBlockUpdated(pos, state, state, 3);
                 }
             }
@@ -148,6 +149,12 @@ public class ConveyorBeltBlockEntity extends BlockEntity
         BlockEntity backBe = level.getBlockEntity(pos.relative(backDir));
         if (!(backBe instanceof Container output)) return false; // no container → stall
 
+        // Respect WorldlyContainer: we are entering from backDir's opposite (= our facing).
+        // The receiving face is backDir as seen by the neighbor.
+        Direction enterFace = backDir.getOpposite(); // = our FACING = the face we push into
+        if (output instanceof WorldlyContainer wc
+                && !wc.canPlaceItemThroughFace(0, be.items.get(0), enterFace)) return false;
+
         ItemStack held = be.items.get(0);
         if (!tryInsert(output, held)) return false;  // destination full → stall
 
@@ -156,23 +163,33 @@ public class ConveyorBeltBlockEntity extends BlockEntity
     }
 
     /**
-     * Attempts to pull one item from the container directly in front of the
-     * belt ({@code FACING} direction) into the belt's own slot.
+     * Attempts to pull one item from any neighboring container except the back
+     * (output) side.  Iterates all six directions; the back face is skipped
+     * because it is output-only.
      *
      * @return {@code true} if an item was pulled.
      */
-    private static boolean tryPullFromFront(Level level, BlockPos pos, BlockState state,
+    private static boolean tryPullFromAnySide(Level level, BlockPos pos, BlockState state,
             ConveyorBeltBlockEntity be) {
         if (!be.items.get(0).isEmpty()) return false; // already holding something
-        Direction frontDir = state.getValue(ConveyorBeltBlock.FACING);
-        BlockEntity frontBe = level.getBlockEntity(pos.relative(frontDir));
-        if (!(frontBe instanceof Container input)) return false;
-
-        ItemStack pulled = tryExtract(input);
-        if (pulled.isEmpty()) return false;
-
-        be.items.set(0, pulled);
-        return true;
+        Direction backDir = state.getValue(ConveyorBeltBlock.FACING).getOpposite();
+        for (Direction dir : Direction.values()) {
+            if (dir == backDir) continue; // back face is output-only
+            BlockEntity neighbor = level.getBlockEntity(pos.relative(dir));
+            if (!(neighbor instanceof Container input)) continue;
+            // We pull from the neighbor's face that faces us (opposite of dir).
+            Direction neighborFace = dir.getOpposite();
+            if (input instanceof WorldlyContainer wc) {
+                ItemStack candidate = input.getItem(0);
+                if (!wc.canTakeItemThroughFace(0, candidate, neighborFace)) continue;
+            }
+            ItemStack pulled = tryExtract(input);
+            if (!pulled.isEmpty()) {
+                be.items.set(0, pulled);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -265,6 +282,33 @@ public class ConveyorBeltBlockEntity extends BlockEntity
     public void clearContent() {
         items.set(0, ItemStack.EMPTY);
         setChanged();
+    }
+
+    // ── WorldlyContainer — side-aware access rules ────────────────────────────
+
+    private static final int[] SLOT_ARRAY = {0};
+    private static final int[] EMPTY_ARRAY = {};
+
+    /** Every side exposes slot 0 (hoppers etc. query this before inserting/extracting). */
+    @Override
+    public int[] getSlotsForFace(Direction side) {
+        return SLOT_ARRAY;
+    }
+
+    /** Items may be inserted from any side EXCEPT the output (back) face. */
+    @Override
+    public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction side) {
+        if (slot != 0) return false;
+        Direction back = getBlockState().getValue(ConveyorBeltBlock.FACING).getOpposite();
+        return side != back;
+    }
+
+    /** Items may only be extracted from the output (back) face. */
+    @Override
+    public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
+        if (slot != 0) return false;
+        Direction back = getBlockState().getValue(ConveyorBeltBlock.FACING).getOpposite();
+        return side == back;
     }
 
     // ── Accessors ─────────────────────────────────────────────────────────────
