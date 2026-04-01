@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceScreen;
+import com.dev1lroot.mcmods.omnitech.gui.KineticGeneratorScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ManualCentrifugeScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ManualMaceratorScreen;
 import net.minecraft.core.registries.Registries;
@@ -27,9 +28,10 @@ public class OmniTechGUI {
                         output.accept(OmniTechItems.MANUAL_MACERATOR_ITEM.get());
                         output.accept(OmniTechItems.MANUAL_CENTRIFUGE_ITEM.get());
                         output.accept(OmniTechItems.CRANK_ITEM.get());
-                        output.accept(OmniTechMaterials.TIN.blockItem("%_ore").get());
+                        //output.accept(OmniTechMaterials.TIN.blockItem("%").get());
+                        output.accept(OmniTechItems.KF_GENERATOR_ITEM.get());
+                        output.accept(OmniTechItems.KF_PIPE_ITEM.get());
                         output.accept(OmniTechItems.STEEL_INGOT.get());
-                        output.accept(OmniTechItems.EXAMPLE_ITEM.get());
                     }).build());
 
     public static void register(IEventBus modEventBus) {
@@ -37,16 +39,16 @@ public class OmniTechGUI {
         modEventBus.addListener(OmniTechGUI::addCreative);
     }
 
-    public static void registerScreens(RegisterMenuScreensEvent event) {
+    public static void registerScreens(RegisterMenuScreensEvent event)
+    {
         event.register(OmniTechMenuTypes.ALLOY_FURNACE.get(), AlloyFurnaceScreen::new);
         event.register(OmniTechMenuTypes.MANUAL_MACERATOR.get(), ManualMaceratorScreen::new);
         event.register(OmniTechMenuTypes.MANUAL_CENTRIFUGE.get(), ManualCentrifugeScreen::new);
+        event.register(OmniTechMenuTypes.KF_GENERATOR.get(), KineticGeneratorScreen::new);
     }
 
-    private static void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
-            event.accept(OmniTechItems.EXAMPLE_BLOCK_ITEM);
-        }
+    private static void addCreative(BuildCreativeModeTabContentsEvent event)
+    {
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             event.accept(OmniTechItems.ALLOY_FURNACE_ITEM);
             event.accept(OmniTechItems.MANUAL_MACERATOR_ITEM);

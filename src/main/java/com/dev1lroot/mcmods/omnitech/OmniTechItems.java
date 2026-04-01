@@ -7,20 +7,11 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-public class OmniTechItems {
+public class OmniTechItems
+{
     public static final DeferredRegister.Items REGISTRY = DeferredRegister.createItems(OmniTech.MODID);
 
-    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = REGISTRY.registerSimpleBlockItem(
-            "example_block", OmniTechBlocks.EXAMPLE_BLOCK);
-
-    public static final DeferredItem<Item> EXAMPLE_ITEM = REGISTRY.registerSimpleItem(
-            "example_item",
-            p -> p.food(new FoodProperties.Builder()
-                    .alwaysEdible()
-                    .nutrition(1)
-                    .saturationModifier(2f)
-                    .build()));
-
+    // BlockItems of Mechanisms
     public static final DeferredItem<BlockItem> ALLOY_FURNACE_ITEM = REGISTRY.registerSimpleBlockItem(
             "alloy_furnace", OmniTechBlocks.ALLOY_FURNACE);
 
@@ -30,13 +21,29 @@ public class OmniTechItems {
     public static final DeferredItem<BlockItem> MANUAL_CENTRIFUGE_ITEM = REGISTRY.registerSimpleBlockItem(
             "manual_centrifuge", OmniTechBlocks.MANUAL_CENTRIFUGE);
 
-    public static final DeferredItem<Item> SILICIUM = REGISTRY.registerSimpleItem("silicium", p -> p);
-
     public static final DeferredItem<BlockItem> CRANK_ITEM = REGISTRY.registerSimpleBlockItem(
             "crank", OmniTechBlocks.CRANK);
 
+    public static final DeferredItem<BlockItem> KF_GENERATOR_ITEM = REGISTRY.registerSimpleBlockItem(
+            "kf_generator", OmniTechBlocks.KF_GENERATOR);
+
+    public static final DeferredItem<BlockItem> KF_PIPE_ITEM = REGISTRY.registerSimpleBlockItem(
+            "kf_pipe", OmniTechBlocks.KF_PIPE);
+
+    // Real Items
     public static final DeferredItem<Item> STEEL_INGOT = REGISTRY.registerSimpleItem(
             "steel_ingot", p -> p);
+
+
+    // Vanilla Material Additions
+    public static final DeferredItem<Item> GRANITE_DUST = REGISTRY.registerSimpleItem(
+            "granite_dust", p -> p);
+
+    public static final DeferredItem<Item> ANDESITE_DUST = REGISTRY.registerSimpleItem(
+            "andesite_dust", p -> p);
+
+    public static final DeferredItem<Item> DIORITE_DUST = REGISTRY.registerSimpleItem(
+            "diorite_dust", p -> p);
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

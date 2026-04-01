@@ -34,17 +34,25 @@ public class OmniTechMaterials {
     public static final MaterialSet TUNGSTEN = MaterialSet.create(
             "tungsten",
             OmniTechItems.REGISTRY,
-            new String[]{ "%_ore", "raw_%", "%_ingot", "%_mote", "%_dust", "%_plate" },
+            new String[]{ "raw_%", "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil" },
             OmniTechBlocks.REGISTRY,
-            new String[]{ "%_ore", "%_block" }
+            new String[]{ "%_ore", "%_block", "raw_%_block" }
+    );
+
+    public static final MaterialSet CHROMIUM = MaterialSet.create(
+            "chromium",
+            OmniTechItems.REGISTRY,
+            new String[]{ "raw_%", "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%_ore", "%_block", "raw_%_block" }
     );
 
     public static final MaterialSet TIN = MaterialSet.create(
             "tin",
             OmniTechItems.REGISTRY,
-            new String[]{ "%_ore", "raw_%", "%_ingot", "%_dust", "%_plate" },
+            new String[]{ "raw_%", "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil" },
             OmniTechBlocks.REGISTRY,
-            new String[]{ "%_ore", "%_block" },
+            new String[]{ "%_ore", "%_block", "raw_%_block" },
             Map.of("%_ore", new OreSpawnConfig(
                     new GenerationConfig(
                             "#minecraft:is_overworld", // all overworld biomes
@@ -69,17 +77,133 @@ public class OmniTechMaterials {
             ))
     );
 
-    // Add more materials here, e.g.:
-    // public static final MaterialSet TITANIUM = MaterialSet.create(
-    //         "titanium",
-    //         OmniTechItems.REGISTRY,
-    //         new String[]{ "%_ore", "raw_%", "%_ingot", "%_dust", "%_plate" },
-    //         OmniTechBlocks.REGISTRY,
-    //         new String[]{ "%_ore", "%_block" },
-    //         Map.of("%_ore", new OreSpawnConfig(...))
-    // );
+    public static final MaterialSet ALUMINIUM = MaterialSet.create(
+            "aluminium",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%_block" } // there is no mineral aluminium in real life
+    );
 
-    // ── Init ──────────────────────────────────────────────────────────────────
+    public static final MaterialSet COBALT = MaterialSet.create(
+            "cobalt",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%_block" } // there is no mineral aluminium in real life
+    );
+
+    public static final MaterialSet NICKEL = MaterialSet.create(
+            "nickel",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%_block" } // there is no mineral aluminium in real life
+    );
+
+    public static final MaterialSet IRON = MaterialSet.create(
+            "iron",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_dust", "%_plate", "%_mote" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ } // the ore exists in vanilla game therefore only missing variations
+    );
+
+    public static final MaterialSet COPPER = MaterialSet.create(
+            "copper",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_dust", "%_plate", "%_mote" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ } // the ore exists in vanilla game therefore only missing variations
+    );
+
+    public static final MaterialSet SKUTTERUDITE = MaterialSet.create(
+            "skutterudite",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_dust" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%" },
+            Map.of("%", new OreSpawnConfig(
+                    new GenerationConfig(
+                            "#minecraft:is_overworld", // all overworld biomes
+                            0, 32,                    // minY, maxY
+                            20,                         // veinSize (max blocks per cluster)
+                            0, 1                      // minCount, maxCount per chunk
+                    ),
+                    List.of(
+                            new BiomeOverride(
+                                    "#minecraft:is_mountain", // mountains get extra tin
+                                    0, 60,                    // minY, maxY
+                                    20,                         // veinSize (max blocks per cluster)
+                                    0, 1                      // minCount, maxCount per chunk
+                            ),
+                            new BiomeOverride(
+                                    "#minecraft:is_taiga",   // jungle / tropical biomes
+                                    0, 24,                    // minY, maxY
+                                    25,                         // veinSize (max blocks per cluster)
+                                    0, 1                      // minCount, maxCount per chunk
+                            )
+                    )
+            ))
+    );
+
+    public static final MaterialSet GALENA = MaterialSet.create(
+            "galena",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_dust" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%" },
+            Map.of("%", new OreSpawnConfig(
+                    new GenerationConfig(
+                            "#minecraft:is_overworld", // all overworld biomes
+                            0, 32,                    // minY, maxY
+                            20,                         // veinSize (max blocks per cluster)
+                            0, 1                      // minCount, maxCount per chunk
+                    ),
+                    List.of(
+                            new BiomeOverride(
+                                    "#minecraft:is_mountain", // mountains get extra tin
+                                    0, 60,                    // minY, maxY
+                                    20,                         // veinSize (max blocks per cluster)
+                                    0, 1                      // minCount, maxCount per chunk
+                            )
+                    )
+            ))
+    );
+
+    public static final MaterialSet SPHALERITE = MaterialSet.create(
+            "sphalerite",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_dust" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%" },
+            Map.of("%", new OreSpawnConfig(
+                    new GenerationConfig(
+                            "#minecraft:is_overworld", // all overworld biomes
+                            0, 32,                    // minY, maxY
+                            32,                         // veinSize (max blocks per cluster)
+                            0, 1                      // minCount, maxCount per chunk
+                    ),
+                    List.of()
+            ))
+    );
+
+    public static final MaterialSet LEPIDOLITE = MaterialSet.create(
+            "lepidolite",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_dust" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%" },
+            Map.of("%", new OreSpawnConfig(
+                    new GenerationConfig(
+                            "#minecraft:is_overworld", // all overworld biomes
+                            0, 32,                    // minY, maxY
+                            32,                         // veinSize (max blocks per cluster)
+                            0, 1                      // minCount, maxCount per chunk
+                    ),
+                    List.of()
+            ))
+    );
 
     /**
      * Triggers class loading, which runs all static field initializers.

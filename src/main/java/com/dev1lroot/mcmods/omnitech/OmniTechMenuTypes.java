@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceMenu;
+import com.dev1lroot.mcmods.omnitech.gui.KineticGeneratorMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ManualCentrifugeMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ManualMaceratorMenu;
 import net.minecraft.core.registries.Registries;
@@ -26,6 +27,10 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<ManualCentrifugeMenu>> MANUAL_CENTRIFUGE =
             REGISTRY.register("manual_centrifuge",
                     () -> IMenuTypeExtension.create(ManualCentrifugeMenu::new));
+
+    public static final Supplier<MenuType<KineticGeneratorMenu>> KF_GENERATOR =
+            REGISTRY.register("kf_generator",
+                    () -> IMenuTypeExtension.create(KineticGeneratorMenu::new));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_taiga",
+  "features": "omnitech:skutterudite_biome_1",
+  "step": "underground_ores"
+}

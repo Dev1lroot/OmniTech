@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "lit=false": { "model": "omnitech:block/kf_generator" },
+    "lit=true":  { "model": "omnitech:block/kf_generator_on" }
+  }
+}

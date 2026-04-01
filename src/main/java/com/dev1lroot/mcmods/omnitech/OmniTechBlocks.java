@@ -2,6 +2,8 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.blocks.AlloyFurnaceBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.CrankBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.KineticGeneratorBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.KineticPipeBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.ManualCentrifugeBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.ManualMaceratorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.OmniTechOreBlock;
@@ -40,6 +42,9 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> MANUAL_CENTRIFUGE;
     public static final DeferredBlock<Block> CRANK;
 
+    public static final DeferredBlock<Block> KF_GENERATOR;
+    public static final DeferredBlock<Block> KF_PIPE;
+
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
         MANUAL_MACERATOR = register("manual_macerator",
@@ -48,6 +53,11 @@ public class OmniTechBlocks {
                 p -> new ManualCentrifugeBlock(p.mapColor(MapColor.STONE).strength(3.5F).sound(SoundType.STONE)));
         CRANK = register("crank",
                 p -> new CrankBlock(p.mapColor(MapColor.WOOD).strength(1.5F).sound(SoundType.WOOD).noOcclusion()));
+
+        KF_GENERATOR = register("kf_generator",
+                p -> new KineticGeneratorBlock(p.mapColor(MapColor.STONE).strength(3.5F).sound(SoundType.STONE)));
+        KF_PIPE = register("kf_pipe",
+                p -> new KineticPipeBlock(p.mapColor(MapColor.METAL).strength(3.0F).sound(SoundType.METAL).noOcclusion()));
     }
 
     // ── Registration helpers ───────────────────────────────────────────────

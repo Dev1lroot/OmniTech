@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "axis=y": { "model": "omnitech:block/kf_pipe" },
+    "axis=z": { "model": "omnitech:block/kf_pipe", "x": 90 },
+    "axis=x": { "model": "omnitech:block/kf_pipe", "x": 90, "y": 90 }
+  }
+}

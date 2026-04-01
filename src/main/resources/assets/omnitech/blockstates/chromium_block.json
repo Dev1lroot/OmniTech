@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "omnitech:block/chromium_block" }
+  }
+}

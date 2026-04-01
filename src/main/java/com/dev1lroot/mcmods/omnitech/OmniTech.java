@@ -63,7 +63,7 @@ public class OmniTech {
 
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-        LOGGER.info("HELLO from server starting");
+        LOGGER.info("OmniTech by Dev1lroot (c) 2026");
     }
 
     @SubscribeEvent
