@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceMenu;
+import com.dev1lroot.mcmods.omnitech.gui.FluidTankMenu;
 import com.dev1lroot.mcmods.omnitech.gui.HeaterMenu;
 import com.dev1lroot.mcmods.omnitech.gui.KineticGeneratorMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ManualCentrifugeMenu;
@@ -41,6 +42,10 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<StirlingEngineMenu>> STIRLING_ENGINE =
             REGISTRY.register("stirling_engine",
                     () -> IMenuTypeExtension.create(StirlingEngineMenu::new));
+
+    public static final Supplier<MenuType<FluidTankMenu>> FLUID_TANK =
+            REGISTRY.register("fluid_tank",
+                    () -> IMenuTypeExtension.create(FluidTankMenu::new));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

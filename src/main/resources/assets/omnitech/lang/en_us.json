@@ -117,5 +117,16 @@
   "item.omnitech.diorite_dust": "Diorite Dust",
 
   "block.omnitech.conveyor_belt": "Conveyor Belt",
-  "item.omnitech.conveyor_belt": "Conveyor Belt"
+  "item.omnitech.conveyor_belt": "Conveyor Belt",
+
+  "block.omnitech.fluid_pipe": "Fluid Pipe",
+  "item.omnitech.fluid_pipe": "Fluid Pipe",
+
+  "block.omnitech.pump": "Fluid Pump",
+  "item.omnitech.pump": "Fluid Pump",
+
+  "block.omnitech.fluid_tank": "Fluid Tank",
+  "item.omnitech.fluid_tank": "Fluid Tank",
+
+  "container.omnitech.fluid_tank": "Fluid Tank"
 }

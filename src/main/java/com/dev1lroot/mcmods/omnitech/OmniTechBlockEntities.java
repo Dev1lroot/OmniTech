@@ -3,12 +3,15 @@ package com.dev1lroot.mcmods.omnitech;
 import com.dev1lroot.mcmods.omnitech.blocks.AlloyFurnaceBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.ConveyorBeltBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.CrankBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.FluidPipeBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.FluidTankBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.HeaterBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticGeneratorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticPipeBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticReductorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.ManualCentrifugeBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.ManualMaceratorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.PumpBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.StirlingEngineBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -66,6 +69,21 @@ public class OmniTechBlockEntities {
             REGISTRY.register("conveyor_belt",
                     () -> new BlockEntityType<>(ConveyorBeltBlockEntity::new,
                             OmniTechBlocks.CONVEYOR_BELT.get()));
+
+    public static final Supplier<BlockEntityType<FluidPipeBlockEntity>> FLUID_PIPE =
+            REGISTRY.register("fluid_pipe",
+                    () -> new BlockEntityType<>(FluidPipeBlockEntity::new,
+                            OmniTechBlocks.FLUID_PIPE.get()));
+
+    public static final Supplier<BlockEntityType<PumpBlockEntity>> PUMP =
+            REGISTRY.register("pump",
+                    () -> new BlockEntityType<>(PumpBlockEntity::new,
+                            OmniTechBlocks.PUMP.get()));
+
+    public static final Supplier<BlockEntityType<FluidTankBlockEntity>> FLUID_TANK =
+            REGISTRY.register("fluid_tank",
+                    () -> new BlockEntityType<>(FluidTankBlockEntity::new,
+                            OmniTechBlocks.FLUID_TANK.get()));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

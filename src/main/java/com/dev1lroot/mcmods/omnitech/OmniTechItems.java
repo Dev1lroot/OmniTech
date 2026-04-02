@@ -42,6 +42,15 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> CONVEYOR_BELT_ITEM = REGISTRY.registerSimpleBlockItem(
             "conveyor_belt", OmniTechBlocks.CONVEYOR_BELT);
 
+    public static final DeferredItem<BlockItem> FLUID_PIPE_ITEM = REGISTRY.registerSimpleBlockItem(
+            "fluid_pipe", OmniTechBlocks.FLUID_PIPE);
+
+    public static final DeferredItem<BlockItem> PUMP_ITEM = REGISTRY.registerSimpleBlockItem(
+            "pump", OmniTechBlocks.PUMP);
+
+    public static final DeferredItem<BlockItem> FLUID_TANK_ITEM = REGISTRY.registerSimpleBlockItem(
+            "fluid_tank", OmniTechBlocks.FLUID_TANK);
+
     // Real Items
     public static final DeferredItem<Item> STEEL_INGOT = REGISTRY.registerSimpleItem(
             "steel_ingot", p -> p);

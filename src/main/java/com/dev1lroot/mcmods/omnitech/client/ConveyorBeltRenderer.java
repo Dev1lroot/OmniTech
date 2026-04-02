@@ -61,12 +61,36 @@ public class ConveyorBeltRenderer
         // animProgress is driven by the server-authoritative PROGRESS blockstate.
         // When powered, partialTicks provides sub-tick smoothing.
         // When unpowered, the item stays frozen at the last PROGRESS value.
+        //
+        // Anti-shiver: partialTicks is not perfectly stable between frames (it
+        // reflects real elapsed time and can fluctuate ±frame).  If we naively
+        // use (PROGRESS + partialTicks) each frame the item can drift backward
+        // on frames where partialTicks is slightly lower than the previous frame.
+        // Fix: within the same PROGRESS tick we only allow animProgress to
+        // increase (Math.max).  When PROGRESS itself changes we snap to the new
+        // computed value so we never lag behind the server.
         if (!entity.getHeldItem().isEmpty()) {
             int progress = entity.getBlockState().getValue(ConveyorBeltBlock.PROGRESS);
-            float smoothT = state.powered ? (progress + partialTicks) : (float) progress;
-            state.animProgress = Math.min(1.0f,
-                    smoothT / ConveyorBeltBlockEntity.TRANSFER_INTERVAL);
+
+            // Вычисляем текущий кандидат на прогресс
+            float candidate = Math.min(1.0f,
+                    (state.powered ? (progress + partialTicks) : (float) progress)
+                            / ConveyorBeltBlockEntity.TRANSFER_INTERVAL);
+
+            // Если это новый тик или новый предмет — сбрасываем "предохранитель"
+            if (progress != entity.lastRenderTick) {
+                entity.lastRenderProgress = candidate;
+                entity.lastRenderTick = progress;
+            } else {
+                // В рамках одного тика разрешаем только движение вперед
+                entity.lastRenderProgress = Math.max(entity.lastRenderProgress, candidate);
+            }
+
+            state.animProgress = entity.lastRenderProgress;
         } else {
+            // Очистка состояния, если предмета нет
+            entity.lastRenderTick = -1;
+            entity.lastRenderProgress = 0f;
             state.animProgress = 0f;
         }
 
@@ -104,7 +128,11 @@ public class ConveyorBeltRenderer
         if (state.beltModel == null) return;
 
         // ── Belt block model ───────────────────────────────────────────────────
+        // Push/pop so submitMovingBlock cannot leave residual matrix state that
+        // would offset the item translation below.
+        poseStack.pushPose();
         submitNodeCollector.submitMovingBlock(poseStack, state.beltModel);
+        poseStack.popPose();
 
         // ── Floating item ──────────────────────────────────────────────────────
         if (state.heldItemState == null) return;

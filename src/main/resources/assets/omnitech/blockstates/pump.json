@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,powered=false": { "model": "omnitech:block/pump"    },
+    "facing=south,powered=false": { "model": "omnitech:block/pump",    "y": 180 },
+    "facing=east,powered=false":  { "model": "omnitech:block/pump",    "y": 90  },
+    "facing=west,powered=false":  { "model": "omnitech:block/pump",    "y": 270 },
+    "facing=north,powered=true":  { "model": "omnitech:block/pump_on" },
+    "facing=south,powered=true":  { "model": "omnitech:block/pump_on", "y": 180 },
+    "facing=east,powered=true":   { "model": "omnitech:block/pump_on", "y": 90  },
+    "facing=west,powered=true":   { "model": "omnitech:block/pump_on", "y": 270 }
+  }
+}

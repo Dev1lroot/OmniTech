@@ -69,6 +69,10 @@ public class ConveyorBeltBlockEntity extends BlockEntity
      */
     private int transferTimer = 0;
 
+    // Внутри ConveyorBeltBlockEntity.java
+    public float lastRenderProgress = 0f;
+    public int lastRenderTick = -1;
+
     public ConveyorBeltBlockEntity(BlockPos pos, BlockState state) {
         super(OmniTechBlockEntities.CONVEYOR_BELT.get(), pos, state);
     }
@@ -252,7 +256,9 @@ public class ConveyorBeltBlockEntity extends BlockEntity
     @Override
     public ItemStack removeItem(int slot, int amount) {
         if (slot != 0) return ItemStack.EMPTY;
-        return ContainerHelper.removeItem(items, 0, amount);
+        ItemStack removed = ContainerHelper.removeItem(items, 0, amount);
+        if (!removed.isEmpty()) resetTimerAndProgress();
+        return removed;
     }
 
     @Override
@@ -260,18 +266,20 @@ public class ConveyorBeltBlockEntity extends BlockEntity
         if (slot != 0) return ItemStack.EMPTY;
         ItemStack held = items.get(0);
         items.set(0, ItemStack.EMPTY);
+        resetTimerAndProgress();
         return held;
     }
 
     /**
      * Sets the item in the belt's slot (always clamped to count = 1).
-     * Notifies nearby clients so the item renderer updates immediately
-     * when another machine pushes into this belt.
+     * Resets the transfer timer so the new item always starts its journey
+     * from position 0.  Notifies nearby clients immediately.
      */
     @Override
     public void setItem(int slot, ItemStack stack) {
         if (slot != 0) return;
         items.set(0, stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1));
+        resetTimerAndProgress();
         setChanged();
         if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
@@ -281,13 +289,29 @@ public class ConveyorBeltBlockEntity extends BlockEntity
     @Override
     public void clearContent() {
         items.set(0, ItemStack.EMPTY);
+        resetTimerAndProgress();
         setChanged();
+    }
+
+    /**
+     * Resets the transfer timer to 0 and immediately pushes {@code PROGRESS=0}
+     * to clients, so the item display clears as soon as the slot changes —
+     * not after the next server tick.
+     */
+    private void resetTimerAndProgress() {
+        if (transferTimer == 0) return;
+        transferTimer = 0;
+        if (level != null && !level.isClientSide()) {
+            BlockState bs = getBlockState();
+            if (bs.getValue(ConveyorBeltBlock.PROGRESS) != 0) {
+                level.setBlock(getBlockPos(), bs.setValue(ConveyorBeltBlock.PROGRESS, 0), 2);
+            }
+        }
     }
 
     // ── WorldlyContainer — side-aware access rules ────────────────────────────
 
     private static final int[] SLOT_ARRAY = {0};
-    private static final int[] EMPTY_ARRAY = {};
 
     /** Every side exposes slot 0 (hoppers etc. query this before inserting/extracting). */
     @Override
@@ -303,12 +327,17 @@ public class ConveyorBeltBlockEntity extends BlockEntity
         return side != back;
     }
 
-    /** Items may only be extracted from the output (back) face. */
+    /**
+     * Items may only be extracted from the output (back) face AND only once the
+     * belt has completed its full {@link #TRANSFER_INTERVAL}-tick journey.
+     * This prevents downstream belts from pulling an item early and causing the
+     * cascade-fill problem when a gap in a belt line is reconnected.
+     */
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
         if (slot != 0) return false;
         Direction back = getBlockState().getValue(ConveyorBeltBlock.FACING).getOpposite();
-        return side == back;
+        return side == back && transferTimer >= TRANSFER_INTERVAL;
     }
 
     // ── Accessors ─────────────────────────────────────────────────────────────

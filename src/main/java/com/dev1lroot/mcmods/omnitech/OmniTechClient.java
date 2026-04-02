@@ -2,6 +2,7 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.client.ConveyorBeltRenderer;
 import com.dev1lroot.mcmods.omnitech.client.CrankBlockEntityRenderer;
+import com.dev1lroot.mcmods.omnitech.client.FluidTankRenderer;
 import com.dev1lroot.mcmods.omnitech.client.KineticPipeRenderer;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
@@ -36,5 +37,6 @@ public class OmniTechClient {
         event.registerBlockEntityRenderer(OmniTechBlockEntities.CRANK.get(), CrankBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.KF_PIPE.get(), KineticPipeRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.CONVEYOR_BELT.get(), ConveyorBeltRenderer::new);
+        event.registerBlockEntityRenderer(OmniTechBlockEntities.FLUID_TANK.get(), FluidTankRenderer::new);
     }
 }

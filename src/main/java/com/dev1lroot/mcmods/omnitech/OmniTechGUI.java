@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceScreen;
+import com.dev1lroot.mcmods.omnitech.gui.FluidTankScreen;
 import com.dev1lroot.mcmods.omnitech.gui.HeaterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.KineticGeneratorScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ManualCentrifugeScreen;
@@ -37,6 +38,9 @@ public class OmniTechGUI {
                         output.accept(OmniTechItems.HEATER_ITEM.get());
                         output.accept(OmniTechItems.STIRLING_ENGINE_ITEM.get());
                         output.accept(OmniTechItems.CONVEYOR_BELT_ITEM.get());
+                        output.accept(OmniTechItems.FLUID_PIPE_ITEM.get());
+                        output.accept(OmniTechItems.PUMP_ITEM.get());
+                        output.accept(OmniTechItems.FLUID_TANK_ITEM.get());
                         output.accept(OmniTechItems.STEEL_INGOT.get());
                     }).build());
 
@@ -53,6 +57,7 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.KF_GENERATOR.get(), KineticGeneratorScreen::new);
         event.register(OmniTechMenuTypes.HEATER.get(), HeaterScreen::new);
         event.register(OmniTechMenuTypes.STIRLING_ENGINE.get(), StirlingEngineScreen::new);
+        event.register(OmniTechMenuTypes.FLUID_TANK.get(), FluidTankScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)

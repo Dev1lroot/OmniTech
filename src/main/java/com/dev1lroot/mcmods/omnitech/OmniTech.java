@@ -12,6 +12,8 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -33,6 +35,7 @@ public class OmniTech {
 
     public OmniTech(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::registerCapabilities);
         modEventBus.addListener(OmniTechDatagen::gatherData);
 
         // Load material sets before registries fire so deferred entries are queued
@@ -47,6 +50,19 @@ public class OmniTech {
         NeoForge.EVENT_BUS.register(this);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+    }
+
+    private void registerCapabilities(RegisterCapabilitiesEvent event) {
+        // Expose ResourceHandler<FluidResource> on fluid pipes and tanks so pumps
+        // and bucket interactions work via the NeoForge capability system.
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.FLUID_PIPE.get(),
+                (be, side) -> be.fluidHandler);
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.FLUID_TANK.get(),
+                (be, side) -> be.fluidHandler);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

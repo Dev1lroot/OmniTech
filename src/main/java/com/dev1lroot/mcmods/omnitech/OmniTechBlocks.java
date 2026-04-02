@@ -3,14 +3,17 @@ package com.dev1lroot.mcmods.omnitech;
 import com.dev1lroot.mcmods.omnitech.blocks.AlloyFurnaceBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.ConveyorBeltBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.CrankBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.FluidPipeBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.FluidTankBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.HeaterBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticGeneratorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticPipeBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticReductorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.ManualCentrifugeBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.ManualMaceratorBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.StirlingEngineBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.OmniTechOreBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.PumpBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.StirlingEngineBlock;
 import com.dev1lroot.mcmods.omnitech.worldgen.OreSpawnConfig;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -55,6 +58,10 @@ public class OmniTechBlocks {
 
     public static final DeferredBlock<Block> CONVEYOR_BELT;
 
+    public static final DeferredBlock<Block> FLUID_PIPE;
+    public static final DeferredBlock<Block> PUMP;
+    public static final DeferredBlock<Block> FLUID_TANK;
+
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
         MANUAL_MACERATOR = register("manual_macerator",
@@ -79,6 +86,16 @@ public class OmniTechBlocks {
         CONVEYOR_BELT = register("conveyor_belt",
                 p -> new ConveyorBeltBlock(p.mapColor(MapColor.METAL).strength(2.5F)
                         .sound(SoundType.METAL).noOcclusion()));
+
+        FLUID_PIPE = register("fluid_pipe",
+                p -> new FluidPipeBlock(p.mapColor(MapColor.METAL).strength(2.0F)
+                        .sound(SoundType.METAL).noOcclusion()));
+        PUMP = register("pump",
+                p -> new PumpBlock(p.mapColor(MapColor.METAL).strength(3.0F)
+                        .sound(SoundType.METAL)));
+        FLUID_TANK = register("fluid_tank",
+                p -> new FluidTankBlock(p.mapColor(MapColor.METAL).strength(3.0F)
+                        .sound(SoundType.METAL)));
     }
 
     // ── Registration helpers ───────────────────────────────────────────────
