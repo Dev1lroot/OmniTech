@@ -18,6 +18,7 @@ out/
 .apt_generated
 .classpath
 .eclipse/
+decompiled/
 .factorypath
 .project
 .settings

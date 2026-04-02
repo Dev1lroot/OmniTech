@@ -105,12 +105,13 @@ public class FluidTankBlockEntity extends BaseContainerBlockEntity {
 
     public FluidStack getFluid() { return fluid; }
 
-    // ── Server tick — bucket → tank ────────────────────────────────────────────
+    // ── Server tick — bucket → tank, gravity flow ─────────────────────────────
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
             FluidTankBlockEntity be) {
         boolean dirty = false;
 
+        // Bucket slot processing
         ItemStack inStack = be.items.get(SLOT_BUCKET_IN);
         if (inStack.getItem() instanceof BucketItem b) {
             Fluid bucketFluid = b.getContent();
@@ -139,6 +140,27 @@ public class FluidTankBlockEntity extends BaseContainerBlockEntity {
             }
         }
 
+        // Gravity: drain fluid into the tank directly below, filling it first
+        if (!be.fluid.isEmpty()) {
+            BlockPos below = pos.below();
+            if (level.getBlockEntity(below) instanceof FluidTankBlockEntity belowTank) {
+                boolean compatible = belowTank.fluid.isEmpty()
+                        || FluidResource.of(belowTank.fluid).matches(be.fluid);
+                int space = CAPACITY - belowTank.fluid.getAmount();
+                if (compatible && space > 0) {
+                    int toTransfer = Math.min(be.fluid.getAmount(), space);
+                    belowTank.fluid = belowTank.fluid.isEmpty()
+                            ? be.fluid.copyWithAmount(toTransfer)
+                            : belowTank.fluid.copyWithAmount(belowTank.fluid.getAmount() + toTransfer);
+                    be.fluid = be.fluid.copyWithAmount(be.fluid.getAmount() - toTransfer);
+                    if (be.fluid.getAmount() <= 0) be.fluid = FluidStack.EMPTY;
+                    belowTank.setChanged();
+                    level.sendBlockUpdated(below, belowTank.getBlockState(), belowTank.getBlockState(), 3);
+                    dirty = true;
+                }
+            }
+        }
+
         if (dirty) {
             be.setChanged();
             level.sendBlockUpdated(pos, state, state, 3);
@@ -153,6 +175,15 @@ public class FluidTankBlockEntity extends BaseContainerBlockEntity {
         @Override
         protected FluidStack createSnapshot() {
             return fluid; // FluidStack is immutable — safe reference
+        }
+
+        @Override
+        protected void onRootCommit(FluidStack originalState) {
+            setChanged();
+            if (level != null && !level.isClientSide()) {
+                // Update neighbors and send the sync packet to clients
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+            }
         }
 
         @Override
