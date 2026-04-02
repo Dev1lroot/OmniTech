@@ -29,13 +29,18 @@ import org.jetbrains.annotations.Nullable;
  * The animation is driven purely by Minecraft's built-in .mcmeta texture
  * animation system — no custom BlockEntityRenderer is needed.
  */
-public class KineticReductorBlock extends BaseEntityBlock {
+public class KineticReductorBlock extends BaseEntityBlock
+{
     public static final MapCodec<KineticReductorBlock> CODEC = simpleCodec(KineticReductorBlock::new);
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+    public static final BooleanProperty SIGNALED = BooleanProperty.create("signaled");
 
     public KineticReductorBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(POWERED, false));
+        registerDefaultState(stateDefinition.any()
+                .setValue(POWERED, false)
+                .setValue(SIGNALED, false)
+        );
     }
 
     @Override
@@ -60,6 +65,6 @@ public class KineticReductorBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(POWERED);
+        builder.add(POWERED, SIGNALED);
     }
 }

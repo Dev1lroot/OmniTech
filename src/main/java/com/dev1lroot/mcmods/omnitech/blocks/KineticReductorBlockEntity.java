@@ -20,7 +20,7 @@ import net.minecraft.world.level.storage.ValueOutput;
  */
 public class KineticReductorBlockEntity extends BlockEntity {
     /** Ticks before POWERED turns off after the last BFS refresh. */
-    public static final int POWERED_DECAY_TICKS = 3;
+    public static final int POWERED_DECAY_TICKS = 20;
 
     private int poweredTimer = 0;
 
@@ -47,8 +47,15 @@ public class KineticReductorBlockEntity extends BlockEntity {
      * through this reductor.  Resets the decay timer and ensures the POWERED
      * blockstate (and therefore the animated texture) is active.
      */
-    public void refreshPoweredTimer(Level level, BlockPos pos, BlockState state) {
+    public void refreshPoweredTimer(Level level, BlockPos pos, BlockState state)
+    {
+        if (state.getValue(KineticReductorBlock.SIGNALED)) {
+            // TODO: Feature to block Kinetic Force passage while reductor is redstone signaled
+            return;
+        }
+
         poweredTimer = POWERED_DECAY_TICKS;
+
         if (!state.getValue(KineticReductorBlock.POWERED)) {
             level.setBlock(pos, state.setValue(KineticReductorBlock.POWERED, true), 3);
         }

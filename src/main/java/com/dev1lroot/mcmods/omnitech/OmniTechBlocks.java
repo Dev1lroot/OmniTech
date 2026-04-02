@@ -76,7 +76,10 @@ public class OmniTechBlocks {
         KF_PIPE = register("kf_pipe",
                 p -> new KineticPipeBlock(p.mapColor(MapColor.METAL).strength(3.0F).sound(SoundType.METAL).noOcclusion()));
         KF_REDUCTOR = register("kf_reductor",
-                p -> new KineticReductorBlock(p.mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.METAL)));
+                p -> new KineticReductorBlock(p
+                        .mapColor(MapColor.METAL)
+                        .strength(3.5F)
+                        .sound(SoundType.METAL)));
 
         HEATER = register("heater",
                 p -> new HeaterBlock(p.mapColor(MapColor.STONE).strength(3.5F).sound(SoundType.STONE)));
@@ -92,10 +95,10 @@ public class OmniTechBlocks {
                         .sound(SoundType.METAL).noOcclusion()));
         PUMP = register("pump",
                 p -> new PumpBlock(p.mapColor(MapColor.METAL).strength(3.0F)
-                        .sound(SoundType.METAL)));
+                        .sound(SoundType.METAL).noOcclusion()));
         FLUID_TANK = register("fluid_tank",
                 p -> new FluidTankBlock(p.mapColor(MapColor.METAL).strength(3.0F)
-                        .sound(SoundType.METAL)));
+                        .sound(SoundType.METAL).noOcclusion()));
     }
 
     // ── Registration helpers ───────────────────────────────────────────────

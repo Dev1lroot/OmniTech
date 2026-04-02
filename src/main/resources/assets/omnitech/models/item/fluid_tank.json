@@ -1,6 +1,3 @@
 {
-  "model": {
-    "type": "minecraft:model",
-    "model": "omnitech:block/fluid_tank"
-  }
+  "parent": "omnitech:block/fluid_tank"
 }

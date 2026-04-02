@@ -44,13 +44,13 @@ public class FluidPipeBlock extends BaseEntityBlock {
     public static final BooleanProperty DOWN  = BooleanProperty.create("down");
 
     // VoxelShapes: 4×4 pipe bore (6-10 in the two non-axis dimensions)
-    private static final VoxelShape CORE      = Block.box( 6,  6,  6, 10, 10, 10);
-    private static final VoxelShape ARM_NORTH = Block.box( 6,  6,  0, 10, 10,  6);
-    private static final VoxelShape ARM_SOUTH = Block.box( 6,  6, 10, 10, 10, 16);
-    private static final VoxelShape ARM_EAST  = Block.box(10,  6,  6, 16, 10, 10);
-    private static final VoxelShape ARM_WEST  = Block.box( 0,  6,  6,  6, 10, 10);
-    private static final VoxelShape ARM_UP    = Block.box( 6, 10,  6, 10, 16, 10);
-    private static final VoxelShape ARM_DOWN  = Block.box( 6,  0,  6, 10,  6, 10);
+    private static final VoxelShape CORE      = Block.box( 4,  4,  4, 12, 12, 12);
+    private static final VoxelShape ARM_NORTH = Block.box( 4,  4,  0, 12, 12,  4);
+    private static final VoxelShape ARM_SOUTH = Block.box( 4,  4, 12, 12, 12, 16);
+    private static final VoxelShape ARM_EAST  = Block.box(10,  4,  4, 16, 12, 12);
+    private static final VoxelShape ARM_WEST  = Block.box( 0,  4,  4,  4, 12, 12);
+    private static final VoxelShape ARM_UP    = Block.box( 4, 10,  4, 12, 16, 12);
+    private static final VoxelShape ARM_DOWN  = Block.box( 4,  0,  4, 12,  4, 12);
 
     public FluidPipeBlock(Properties properties) {
         super(properties);

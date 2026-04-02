@@ -53,11 +53,12 @@ public class FluidPipeBlockEntity extends BlockEntity {
 
     // ── Server tick — equalization between adjacent pipes ─────────────────────
 
-    public static void serverTick(Level level, BlockPos pos, BlockState state,
-            FluidPipeBlockEntity be) {
+    public static void serverTick(Level level, BlockPos pos, BlockState state, FluidPipeBlockEntity be)
+    {
         boolean dirty = false;
 
-        for (Direction dir : Direction.values()) {
+        for (Direction dir : Direction.values())
+        {
             if (!state.getValue(FluidPipeBlock.propertyFor(dir))) continue;
 
             BlockPos neighborPos = pos.relative(dir);

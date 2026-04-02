@@ -21,7 +21,7 @@ import net.minecraft.world.level.storage.ValueOutput;
  */
 public class KineticPipeBlockEntity extends BlockEntity {
     /** Ticks before POWERED turns off after the last refresh. */
-    public static final int   POWERED_DECAY_TICKS = 3;
+    public static final int   POWERED_DECAY_TICKS = 20;
     /** Degrees per tick for the spinning animation (client-side only). */
     public static final float ROTATION_SPEED      = 9.0f;
 
