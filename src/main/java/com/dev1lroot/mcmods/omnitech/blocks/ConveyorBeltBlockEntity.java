@@ -173,27 +173,68 @@ public class ConveyorBeltBlockEntity extends BlockEntity
      *
      * @return {@code true} if an item was pulled.
      */
+    /**
+     * Updated pull logic: It now scans the neighbor for ALL accessible slots.
+     * This allows it to "see" slots 1, 2, and 3 on your Macerator.
+     */
     private static boolean tryPullFromAnySide(Level level, BlockPos pos, BlockState state,
-            ConveyorBeltBlockEntity be) {
-        if (!be.items.get(0).isEmpty()) return false; // already holding something
-        Direction backDir = state.getValue(ConveyorBeltBlock.FACING).getOpposite();
+                                              ConveyorBeltBlockEntity be) {
+        if (!be.items.get(0).isEmpty()) return false;
+
+        // The direction the belt is POINTING (the Front/Output)
+        Direction facing = state.getValue(ConveyorBeltBlock.FACING);
+
         for (Direction dir : Direction.values()) {
-            if (dir == backDir) continue; // back face is output-only
+            // BLOCK the BACK: Never pull from the side we are pushing into
+            if (dir == facing.getOpposite()) continue;
+
             BlockEntity neighbor = level.getBlockEntity(pos.relative(dir));
             if (!(neighbor instanceof Container input)) continue;
-            // We pull from the neighbor's face that faces us (opposite of dir).
+
+            // The face of the Macerator (or other block) touching the conveyor
             Direction neighborFace = dir.getOpposite();
-            if (input instanceof WorldlyContainer wc) {
-                ItemStack candidate = input.getItem(0);
-                if (!wc.canTakeItemThroughFace(0, candidate, neighborFace)) continue;
-            }
-            ItemStack pulled = tryExtract(input);
+
+            // Use the extraction helper to check slots 1, 2, and 3 of the Macerator
+            ItemStack pulled = tryExtract(input, neighborFace);
             if (!pulled.isEmpty()) {
                 be.items.set(0, pulled);
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * The Helper: This handles the actual item snatching.
+     */
+    private static ItemStack tryExtract(Container container, Direction sideToExtractFrom) {
+        int[] accessibleSlots;
+
+        // Ask the neighbor: "Which slots can I see from this side?"
+        if (container instanceof WorldlyContainer wc) {
+            accessibleSlots = wc.getSlotsForFace(sideToExtractFrom);
+        } else {
+            accessibleSlots = new int[container.getContainerSize()];
+            for (int i = 0; i < accessibleSlots.length; i++) accessibleSlots[i] = i;
+        }
+
+        for (int slotIndex : accessibleSlots) {
+            ItemStack stack = container.getItem(slotIndex);
+            if (stack.isEmpty()) continue;
+
+            // Check the Macerator's security rule (index != SLOT_INPUT)
+            if (container instanceof WorldlyContainer wc) {
+                if (!wc.canTakeItemThroughFace(slotIndex, stack, sideToExtractFrom)) continue;
+            }
+
+            // Snatch exactly 1 item
+            ItemStack extracted = stack.copyWithCount(1);
+            stack.shrink(1);
+            if (stack.isEmpty()) container.setItem(slotIndex, ItemStack.EMPTY);
+
+            return extracted;
+        }
+        return ItemStack.EMPTY;
     }
 
     /**
@@ -227,18 +268,6 @@ public class ConveyorBeltBlockEntity extends BlockEntity
      *
      * @return the extracted single-item stack, or {@link ItemStack#EMPTY}.
      */
-    private static ItemStack tryExtract(Container container) {
-        for (int i = 0; i < container.getContainerSize(); i++) {
-            ItemStack slot = container.getItem(i);
-            if (!slot.isEmpty()) {
-                ItemStack extracted = slot.copyWithCount(1);
-                slot.shrink(1);
-                if (slot.isEmpty()) container.setItem(i, ItemStack.EMPTY);
-                return extracted;
-            }
-        }
-        return ItemStack.EMPTY;
-    }
 
     // ── Container implementation ──────────────────────────────────────────────
 

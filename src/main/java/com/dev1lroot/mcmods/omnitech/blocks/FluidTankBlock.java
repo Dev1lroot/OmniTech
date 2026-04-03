@@ -28,7 +28,8 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>All six faces are valid attachment points for fluid pipes and pumps.
  */
-public class FluidTankBlock extends BaseEntityBlock {
+public class FluidTankBlock extends BaseEntityBlock implements IFluidContainer
+{
     public static final MapCodec<FluidTankBlock> CODEC = simpleCodec(FluidTankBlock::new);
 
     public FluidTankBlock(Properties properties) {

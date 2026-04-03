@@ -63,6 +63,10 @@ public class OmniTech {
                 Capabilities.Fluid.BLOCK,
                 OmniTechBlockEntities.FLUID_TANK.get(),
                 (be, side) -> be.fluidHandler);
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.STIRLING_ENGINE.get(),
+                (be, side) -> be.fluidHandler);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

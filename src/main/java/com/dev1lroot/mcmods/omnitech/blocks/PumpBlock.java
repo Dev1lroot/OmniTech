@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>The pump separates fluid pipe networks: pipes on the input side and
  * output side do NOT equalize through the pump, only through it.
  */
-public class PumpBlock extends BaseEntityBlock {
+public class PumpBlock extends BaseEntityBlock implements IFluidContainer {
     public static final MapCodec<PumpBlock> CODEC = simpleCodec(PumpBlock::new);
 
     /** Direction the pump outputs toward (= "front" face). */
@@ -44,6 +44,15 @@ public class PumpBlock extends BaseEntityBlock {
         registerDefaultState(stateDefinition.any()
                 .setValue(FACING,  Direction.NORTH)
                 .setValue(POWERED, false));
+    }
+
+    @Override
+    public boolean isConnectable(BlockState state, Direction face)
+    {
+        Direction facing = state.getValue(FACING);
+
+        // только перед и зад
+        return face == facing || face == facing.getOpposite();
     }
 
     @Override

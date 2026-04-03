@@ -9,8 +9,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -25,6 +27,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -40,7 +43,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>The engine accepts heat via {@link IHeatReceiver} from all six faces so it
  * can be placed adjacent to the heater in any orientation.
  */
-public class StirlingEngineBlock extends BaseEntityBlock {
+public class StirlingEngineBlock extends BaseEntityBlock implements IFluidContainer {
     public static final MapCodec<StirlingEngineBlock> CODEC = simpleCodec(StirlingEngineBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty         LIT    = BlockStateProperties.LIT;
@@ -83,12 +86,21 @@ public class StirlingEngineBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
-            Player player, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+
+        // Off-hand bucket → fluid interaction
+        for (InteractionHand hand : InteractionHand.values()) {
+            if (player.getItemInHand(hand).getItem() instanceof BucketItem) {
+                if (level.isClientSide()) return InteractionResult.SUCCESS;
+                boolean interacted = FluidUtil.interactWithFluidHandler( player, hand, level, pos, hit.getDirection());
+                return interacted ? InteractionResult.SUCCESS : InteractionResult.FAIL;
+            }
+        }
+        // No bucket → open GUI
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof StirlingEngineBlockEntity engine) {
-                ((ServerPlayer) player).openMenu(engine, pos);
+            if (be instanceof StirlingEngineBlockEntity tank) {
+                ((ServerPlayer) player).openMenu(tank, pos);
             }
         }
         return InteractionResult.SUCCESS;

@@ -5,9 +5,11 @@ import com.dev1lroot.mcmods.omnitech.gui.ManualMaceratorMenu;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualMaceratorRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualMaceratorRecipeManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
@@ -17,11 +19,12 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 
-public class ManualMaceratorBlockEntity extends BaseContainerBlockEntity implements IKineticReceiver {
+public class ManualMaceratorBlockEntity extends BaseContainerBlockEntity implements IKineticReceiver, WorldlyContainer {
     public static final int SLOT_INPUT = 0;
     public static final int SLOT_OUTPUT_1 = 1;
     public static final int SLOT_OUTPUT_2 = 2;
@@ -173,5 +176,43 @@ public class ManualMaceratorBlockEntity extends BaseContainerBlockEntity impleme
         ContainerHelper.saveAllItems(output, this.items);
         output.putInt("KineticForce", this.kineticForce);
         output.putInt("RequiredKineticForce", this.requiredKineticForce);
+    }
+
+    // 1. Define which slots are "visible" from which side.
+// This is the first filter a hopper or pipe checks.
+    @Override
+    public int[] getSlotsForFace(Direction direction) {
+        // Front and Bottom faces can see the Output slots.
+        // We assume 'front' is the FACING property of your block.
+        Direction facing = getBlockState().getValue(ManualMaceratorBlock.FACING);
+
+        if (direction == Direction.DOWN || direction == facing) {
+            return new int[]{SLOT_OUTPUT_1, SLOT_OUTPUT_2, SLOT_OUTPUT_3};
+        }
+
+        // All other faces (Top, Back, Sides) see the Input slot.
+        return new int[]{SLOT_INPUT};
+    }
+
+    // 2. Control what can be PUSHED into the machine.
+    @Override
+    public boolean canPlaceItemThroughFace(int index, ItemStack itemStack, @Nullable Direction direction) {
+        // Only allow insertion into the input slot.
+        // Even if a hopper is at the 'front', it cannot push into output slots.
+        return index == SLOT_INPUT;
+    }
+
+    // 3. Control what can be PULLED out of the machine.
+    @Override
+    public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
+        // NEVER allow extraction from the input slot.
+        // This protects your ingredients from being stolen by hoppers before processing.
+        if (index == SLOT_INPUT) {
+            return false;
+        }
+
+        // Only allow extraction from output slots if the side is Bottom or Front.
+        Direction facing = getBlockState().getValue(ManualMaceratorBlock.FACING);
+        return direction == Direction.DOWN || direction == facing;
     }
 }

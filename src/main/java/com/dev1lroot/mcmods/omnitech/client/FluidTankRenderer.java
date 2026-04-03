@@ -86,6 +86,6 @@ public class FluidTankRenderer
 
     /** Returns the block used to represent the stored fluid visually. */
     private static net.minecraft.world.level.block.state.BlockState pickFluidBlock(FluidStack fluid) {
-        return Blocks.WATER.defaultBlockState();
+        return Blocks.BLUE_CONCRETE.defaultBlockState();
     }
 }

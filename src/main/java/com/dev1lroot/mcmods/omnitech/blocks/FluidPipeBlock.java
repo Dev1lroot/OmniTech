@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
  * Connected pipes within the same network equalize their fluid levels every tick.
  * Pumps act as network separators — equalization does not cross a pump.
  */
-public class FluidPipeBlock extends BaseEntityBlock {
+public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer {
     public static final MapCodec<FluidPipeBlock> CODEC = simpleCodec(FluidPipeBlock::new);
 
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
@@ -119,19 +119,18 @@ public class FluidPipeBlock extends BaseEntityBlock {
      * Returns {@code true} if this pipe should connect to {@code neighborState}
      * when the neighbor is in direction {@code fromPipe} relative to this pipe.
      */
-    static boolean canConnectTo(BlockState neighborState, Direction fromPipe) {
-        Block b = neighborState.getBlock();
-        if (b instanceof FluidPipeBlock)  return true;
-        if (b instanceof FluidTankBlock)  return true;
-        if (b instanceof PumpBlock) {
-            Direction pumpFacing = neighborState.getValue(PumpBlock.FACING);
-            // Pipes connect only to the pump's front (FACING) or back (FACING.opposite) face.
-            // fromPipe = direction from this pipe to the pump.
-            // The face of the pump that faces this pipe = fromPipe.getOpposite().
-            // We connect iff that face is the pump's front or back.
-            Direction pumpFaceTowardPipe = fromPipe.getOpposite();
-            return pumpFaceTowardPipe == pumpFacing || pumpFaceTowardPipe == pumpFacing.getOpposite();
+    static boolean canConnectTo(BlockState neighborState, Direction fromPipe)
+    {
+        Block block = neighborState.getBlock();
+
+        if (block instanceof IFluidContainer container)
+        {
+            // сторона соседа, которая смотрит на трубу
+            Direction neighborFace = fromPipe.getOpposite();
+
+            return container.isConnectable(neighborState, neighborFace);
         }
+
         return false;
     }
 
