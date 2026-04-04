@@ -1,19 +1,6 @@
 package com.dev1lroot.mcmods.omnitech;
 
-import com.dev1lroot.mcmods.omnitech.blocks.AlloyFurnaceBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.ConveyorBeltBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.CrankBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.FluidPipeBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.FluidTankBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.HeaterBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.KineticGeneratorBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.KineticPipeBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.KineticReductorBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.ManualCentrifugeBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.ManualMaceratorBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.OmniTechOreBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.PumpBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.StirlingEngineBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.*;
 import com.dev1lroot.mcmods.omnitech.worldgen.OreSpawnConfig;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -61,6 +48,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> FLUID_PIPE;
     public static final DeferredBlock<Block> PUMP;
     public static final DeferredBlock<Block> FLUID_TANK;
+    public static final DeferredBlock<Block> BOILER;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -98,6 +86,9 @@ public class OmniTechBlocks {
                         .sound(SoundType.METAL).noOcclusion()));
         FLUID_TANK = register("fluid_tank",
                 p -> new FluidTankBlock(p.mapColor(MapColor.METAL).strength(3.0F)
+                        .sound(SoundType.METAL).noOcclusion()));
+        BOILER = register("boiler",
+                p -> new BoilerBlock(p.mapColor(MapColor.METAL).strength(3.0F)
                         .sound(SoundType.METAL).noOcclusion()));
     }
 

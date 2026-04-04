@@ -1,18 +1,6 @@
 package com.dev1lroot.mcmods.omnitech;
 
-import com.dev1lroot.mcmods.omnitech.blocks.AlloyFurnaceBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.ConveyorBeltBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.CrankBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.FluidPipeBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.FluidTankBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.HeaterBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.KineticGeneratorBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.KineticPipeBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.KineticReductorBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.ManualCentrifugeBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.ManualMaceratorBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.PumpBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.StirlingEngineBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
@@ -84,6 +72,11 @@ public class OmniTechBlockEntities {
             REGISTRY.register("fluid_tank",
                     () -> new BlockEntityType<>(FluidTankBlockEntity::new,
                             OmniTechBlocks.FLUID_TANK.get()));
+
+    public static final Supplier<BlockEntityType<BoilerBlockEntity>> BOILER =
+            REGISTRY.register("boiler",
+                    () -> new BlockEntityType<>(BoilerBlockEntity::new,
+                            OmniTechBlocks.BOILER.get()));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

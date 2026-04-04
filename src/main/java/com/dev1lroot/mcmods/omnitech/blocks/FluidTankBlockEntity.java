@@ -1,6 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks;
 
-import com.dev1lroot.mcmods.omnitech.FluidNetworkUtil;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.gui.FluidTankMenu;
 import com.mojang.logging.LogUtils;

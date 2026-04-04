@@ -1,5 +1,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
+import com.dev1lroot.mcmods.omnitech.blocks.BoilerBlockEntity;
+import net.minecraft.core.Direction;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -41,6 +43,7 @@ public class OmniTech {
         // Load material sets before registries fire so deferred entries are queued
         OmniTechMaterials.init();
 
+        OmniTechFluids.register(modEventBus); // Добавьте это
         OmniTechBlocks.REGISTRY.register(modEventBus);
         OmniTechBlockEntities.REGISTRY.register(modEventBus);
         OmniTechItems.REGISTRY.register(modEventBus);
@@ -67,6 +70,18 @@ public class OmniTech {
                 Capabilities.Fluid.BLOCK,
                 OmniTechBlockEntities.STIRLING_ENGINE.get(),
                 (be, side) -> be.fluidHandler);
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.BOILER.get(),
+                (be, side) -> {
+                    // Если труба подключена СВЕРХУ — даем доступ к баку пара
+                    if (side == Direction.UP) {
+                        return ((BoilerBlockEntity) be).steamHandler;
+                    }
+                    // Для всех остальных сторон (низ и бока) — даем доступ к баку воды
+                    return ((BoilerBlockEntity) be).waterHandler;
+                }
+        );
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

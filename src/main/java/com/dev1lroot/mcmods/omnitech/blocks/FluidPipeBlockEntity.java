@@ -1,10 +1,9 @@
 package com.dev1lroot.mcmods.omnitech.blocks;
 
-import com.dev1lroot.mcmods.omnitech.FluidNetworkUtil;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;

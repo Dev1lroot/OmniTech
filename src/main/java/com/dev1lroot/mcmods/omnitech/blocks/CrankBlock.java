@@ -1,6 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks;
 
-import com.dev1lroot.mcmods.omnitech.KineticNetworkUtil;
+import com.dev1lroot.mcmods.omnitech.util.KineticNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;

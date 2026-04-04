@@ -1,4 +1,4 @@
-package com.dev1lroot.mcmods.omnitech;
+package com.dev1lroot.mcmods.omnitech.util;
 
 import com.dev1lroot.mcmods.omnitech.blocks.IKineticReceiver;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticPipeBlock;

@@ -1,5 +1,6 @@
-package com.dev1lroot.mcmods.omnitech;
+package com.dev1lroot.mcmods.omnitech.util;
 
+import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
 import com.dev1lroot.mcmods.omnitech.blocks.FluidPipeBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.FluidPipeBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.FluidTankBlockEntity;
@@ -29,7 +30,7 @@ public final class FluidNetworkUtil {
         if (be instanceof StirlingEngineBlockEntity) {
             // Двигатель участвует в сети только если мы распределяем воду
             // Если reference пуст, мы позволяем ему войти в сеть, чтобы он стал источником воды
-            return reference.isEmpty() || reference.is(net.minecraft.world.level.material.Fluids.WATER);
+            return reference.isEmpty() || reference.is(OmniTechFluids.STEAM);
         }
 
         return false;
