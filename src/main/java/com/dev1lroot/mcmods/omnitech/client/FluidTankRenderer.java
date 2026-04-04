@@ -77,9 +77,9 @@ public class FluidTankRenderer
 
         poseStack.pushPose();
         // Position inner cube: 1 px inward on X and Z, starting at bottom (Y=0)
-        poseStack.translate(1 / 16.0, 0.0, 1 / 16.0);
+        poseStack.translate(0.05f / 16.0, 0.0, 0.05f / 16.0);
         // Scale to 14 px wide × fillLevel tall × 14 px deep
-        poseStack.scale(14 / 16.0f, state.fillLevel, 14 / 16.0f);
+        poseStack.scale(15.9f / 16.0f, state.fillLevel, 15.9f / 16.0f);
         submitNodeCollector.submitMovingBlock(poseStack, state.fluidModel);
         poseStack.popPose();
     }
@@ -102,7 +102,11 @@ public class FluidTankRenderer
             return Blocks.WHITE_CONCRETE.defaultBlockState();
         }
 
+        if (fluidName.contains("steam")) {
+            return Blocks.GRAY_CONCRETE.defaultBlockState();
+        }
+
         // Плейсхолдер для всех остальных жидкостей
-        return Blocks.GRAY_CONCRETE.defaultBlockState();
+        return Blocks.BLACK_CONCRETE.defaultBlockState();
     }
 }

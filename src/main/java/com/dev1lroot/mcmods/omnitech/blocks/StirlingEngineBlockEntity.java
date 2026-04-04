@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks;
 
+import com.dev1lroot.mcmods.omnitech.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.KineticNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.gui.StirlingEngineMenu;
@@ -52,6 +53,21 @@ public class StirlingEngineBlockEntity extends BaseContainerBlockEntity
     private int storedHeat    = 0;
     private int heatLossTimer = 0;
 
+    // В StirlingEngineBlockEntity.java
+    public void setFluid(FluidStack newStack) {
+        boolean wasRunning = this.isRunning();
+        this.fluid = newStack;
+        this.setChanged();
+
+        // Если состояние "запущен" изменилось после получения воды
+        if (wasRunning != this.isRunning()) {
+            if (level != null) {
+                // Обновляем BlockState (LIT) не дожидаясь следующего тика
+                level.setBlock(worldPosition, getBlockState().setValue(StirlingEngineBlock.LIT, isRunning()), 3);
+            }
+        }
+    }
+
     // Unified fluid storage
     private FluidStack fluid = FluidStack.EMPTY;
     public final ResourceHandler<FluidResource> fluidHandler = new TankHandler();
@@ -100,9 +116,14 @@ public class StirlingEngineBlockEntity extends BaseContainerBlockEntity
         return true;
     }
 
-    public static void serverTick(Level level, BlockPos pos, BlockState state, StirlingEngineBlockEntity be) {
+    public static void serverTick(Level level, BlockPos pos, BlockState state, StirlingEngineBlockEntity be)
+    {
         boolean dirty = false;
         boolean wasRunning = be.isRunning();
+
+        if (level.getGameTime() % 5 == 0) { // Раз в 5 тиков для оптимизации
+            FluidNetworkUtil.syncNetwork(level, pos);
+        }
 
         // ── Process Water Bucket ──
         ItemStack waterBucket = be.items.get(SLOT_WATER_IN);
