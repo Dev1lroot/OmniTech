@@ -1,16 +1,15 @@
 package com.dev1lroot.mcmods.omnitech.util;
 
-import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
 import com.dev1lroot.mcmods.omnitech.blocks.FluidPipeBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.FluidPipeBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.FluidTankBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.StirlingEngineBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
+import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
 
 import java.util.*;
 
@@ -27,26 +26,18 @@ public final class FluidNetworkUtil {
             return true;
         }
 
-        if (be instanceof StirlingEngineBlockEntity) {
-            // Двигатель участвует в сети только если мы распределяем воду
-            // Если reference пуст, мы позволяем ему войти в сеть, чтобы он стал источником воды
-            return reference.isEmpty() || reference.is(OmniTechFluids.STEAM);
-        }
-
         return false;
     }
 
     private static FluidStack getFluidFromEntity(BlockEntity be) {
         if (be instanceof FluidPipeBlockEntity p) return p.getFluid();
         if (be instanceof FluidTankBlockEntity t) return t.getFluid();
-        if (be instanceof StirlingEngineBlockEntity s) return s.getFluid(); // ДОБАВИТЬ ЭТО
         return FluidStack.EMPTY;
     }
 
     private static int getCapacity(BlockEntity be) {
         if (be instanceof FluidPipeBlockEntity) return FluidPipeBlockEntity.CAPACITY;
         if (be instanceof FluidTankBlockEntity) return FluidTankBlockEntity.CAPACITY;
-        if (be instanceof StirlingEngineBlockEntity) return StirlingEngineBlockEntity.MAX_WATER; // ДОБАВИТЬ ЭТО
         return 0;
     }
 
@@ -115,11 +106,25 @@ public final class FluidNetworkUtil {
         return levels;
     }
 
-    private static void distributeFluids(Level level, Map<Integer, List<BlockEntity>> levels, long totalAmount, FluidStack ref) {
+    private static void distributeFluids(Level level, Map<Integer, List<BlockEntity>> levels, long totalAmount, FluidStack ref)
+    {
+        if (ref.isEmpty()) return;
+
         long remaining = totalAmount;
 
-        for (Map.Entry<Integer, List<BlockEntity>> entry : levels.entrySet()) {
-            List<BlockEntity> levelNodes = entry.getValue();
+        // Выбираем стратегию заполнения
+        boolean isGas = ref.is(OmniTechFluids.STEAM.get());
+
+        // Получаем ключи (высоты) и сортируем их
+        List<Integer> keys = new ArrayList<>(levels.keySet());
+        if (isGas) {
+            keys.sort(Comparator.reverseOrder()); // Пар летит в потолок
+        } else {
+            keys.sort(Comparator.naturalOrder()); // Жидкость течет на пол
+        }
+
+        for (int y : keys) {
+            List<BlockEntity> levelNodes = levels.get(y);
             long levelCapacity = calculateTotalCapacity(levelNodes);
 
             if (remaining <= 0) {
@@ -127,6 +132,7 @@ public final class FluidNetworkUtil {
                 continue;
             }
 
+            // Если оставшейся жидкости меньше, чем вместимость уровня — распределяем пропорционально
             if (remaining < levelCapacity) {
                 double ratio = (double) remaining / levelCapacity;
                 for (BlockEntity be : levelNodes) {
@@ -134,7 +140,9 @@ public final class FluidNetworkUtil {
                     updateBlockFluid(be, amount, ref, level);
                 }
                 remaining = 0;
-            } else {
+            }
+            // Если жидкости хватает на весь уровень — заполняем полностью
+            else {
                 for (BlockEntity be : levelNodes) {
                     updateBlockFluid(be, getCapacity(be), ref, level);
                 }
@@ -175,13 +183,6 @@ public final class FluidNetworkUtil {
 
         if (be instanceof FluidPipeBlockEntity p) p.setFluid(nextStack);
         else if (be instanceof FluidTankBlockEntity t) t.setFluid(nextStack);
-        else if (be instanceof StirlingEngineBlockEntity s) {
-            // Здесь нужна проверка, что мы не заливаем в двигатель лаву, если там была вода
-            // Но syncNetwork уже проверяет это через referenceStack
-            // Тебе нужно будет добавить метод setFluid в StirlingEngineBlockEntity или
-            // просто сделать поле fluid доступным (или через сеттер)
-            s.setFluid(nextStack);
-        }
 
         be.setChanged();
         BlockState state = be.getBlockState();

@@ -69,7 +69,16 @@ public class OmniTech {
         event.registerBlockEntity(
                 Capabilities.Fluid.BLOCK,
                 OmniTechBlockEntities.STIRLING_ENGINE.get(),
-                (be, side) -> be.fluidHandler);
+                (be, side) -> {
+                    // Двигатель Стирлинга:
+                    // Снизу отдаем воду (конденсат)
+                    if (side == Direction.DOWN) {
+                        return be.waterHandler;
+                    }
+                    // Со всех остальных сторон принимаем пар
+                    return be.steamHandler;
+                }
+        );
         event.registerBlockEntity(
                 Capabilities.Fluid.BLOCK,
                 OmniTechBlockEntities.BOILER.get(),

@@ -5,14 +5,11 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -27,32 +24,24 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Stirling Engine — converts heat energy (from an adjacent {@link HeaterBlock})
- * into Kinetic Force, exactly like {@link KineticGeneratorBlock} but heat-driven.
- *
- * <p>Requirements to run:
- * <ul>
- *   <li>Internal heat must exceed {@link StirlingEngineBlockEntity#MIN_RUNNING_HEAT} (100 °C).</li>
- *   <li>Water tank must contain at least 1 mb.</li>
- * </ul>
- *
- * <p>The engine accepts heat via {@link IHeatReceiver} from all six faces so it
- * can be placed adjacent to the heater in any orientation.
- */
 public class StirlingEngineBlock extends BaseEntityBlock implements IFluidContainer {
     public static final MapCodec<StirlingEngineBlock> CODEC = simpleCodec(StirlingEngineBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final BooleanProperty         LIT    = BlockStateProperties.LIT;
+    public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
     public StirlingEngineBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(LIT, false));
+    }
+
+    @Override
+    public boolean isConnectable(BlockState state, Direction face) {
+        // Принимаем пар со всех сторон, отдаем воду снизу
+        return true;
     }
 
     @Override
@@ -67,11 +56,8 @@ public class StirlingEngineBlock extends BaseEntityBlock implements IFluidContai
     }
 
     @Override
-    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(
-            Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide() ? null
-                : createTickerHelper(type, OmniTechBlockEntities.STIRLING_ENGINE.get(),
-                        StirlingEngineBlockEntity::serverTick);
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return level.isClientSide() ? null : createTickerHelper(type, OmniTechBlockEntities.STIRLING_ENGINE.get(), StirlingEngineBlockEntity::serverTick);
     }
 
     @Override
@@ -81,43 +67,31 @@ public class StirlingEngineBlock extends BaseEntityBlock implements IFluidContai
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState()
-                .setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-
-        // Off-hand bucket → fluid interaction
-        for (InteractionHand hand : InteractionHand.values()) {
-            if (player.getItemInHand(hand).getItem() instanceof BucketItem) {
-                if (level.isClientSide()) return InteractionResult.SUCCESS;
-                boolean interacted = FluidUtil.interactWithFluidHandler( player, hand, level, pos, hit.getDirection());
-                return interacted ? InteractionResult.SUCCESS : InteractionResult.FAIL;
-            }
-        }
-        // No bucket → open GUI
-        if (!level.isClientSide()) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        } else {
             BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof StirlingEngineBlockEntity tank) {
-                ((ServerPlayer) player).openMenu(tank, pos);
+            if (be instanceof StirlingEngineBlockEntity engine) {
+                // Открываем меню на стороне сервера
+                player.openMenu(engine, pos);
             }
+            return InteractionResult.CONSUME;
         }
-        return InteractionResult.SUCCESS;
     }
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         if (!state.getValue(LIT)) return;
         double x = pos.getX() + 0.5, y = pos.getY() + 0.5, z = pos.getZ() + 0.5;
-        if (random.nextDouble() < 0.15) {
-            level.playLocalSound(x, y, z, SoundEvents.LAVA_EXTINGUISH,
-                    SoundSource.BLOCKS, 0.3F, 1.0F + random.nextFloat() * 0.3F, false);
+        if (random.nextDouble() < 0.1) {
+            level.playLocalSound(x, y, z, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 0.2F, 0.8F + random.nextFloat() * 0.4F, false);
         }
         Direction facing = state.getValue(FACING);
-        double fx = 0.55 * facing.getStepX();
-        double fz = 0.55 * facing.getStepZ();
-        level.addParticle(ParticleTypes.CLOUD, x + fx, y + 0.4, z + fz,
-                0, 0.04, 0);
+        level.addParticle(ParticleTypes.SMOKE, x + 0.55 * facing.getStepX(), y + 0.4, z + 0.55 * facing.getStepZ(), 0, 0.02, 0);
     }
 }
