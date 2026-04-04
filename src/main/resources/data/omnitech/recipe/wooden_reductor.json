@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "misc",
+    "key": {
+        "C": "omnitech:wooden_cog",
+        "S": "minecraft:stick"
+    },
+    "pattern": [
+        "SC",
+        "CS"
+    ],
+    "result": {
+        "count": 1,
+        "id": "omnitech:wooden_reductor"
+    }
+}

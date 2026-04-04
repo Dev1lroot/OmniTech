@@ -1,0 +1,7 @@
+{
+  "requiredKineticForce": 20,
+  "input": "minecraft:andesite",
+  "output": [
+    { "item":  "omnitech:andesite_dust", "count":  4, "chance":  1.0 }
+  ]
+}

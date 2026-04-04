@@ -1,0 +1,7 @@
+{
+    "requiredKineticForce": 20,
+    "input": "minecraft:diorite",
+    "output": [
+        { "item":  "omnitech:diorite_dust", "count":  4, "chance":  1.0 }
+    ]
+}

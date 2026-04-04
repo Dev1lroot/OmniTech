@@ -5,10 +5,12 @@ import com.dev1lroot.mcmods.omnitech.gui.ManualCentrifugeMenu;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualCentrifugeRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualCentrifugeRecipeManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
@@ -18,10 +20,11 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
-public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implements IKineticReceiver {
+public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implements IKineticReceiver, WorldlyContainer {
     public static final int SLOT_INPUT    = 0;
     public static final int SLOT_OUTPUT_1 = 1;
     public static final int SLOT_OUTPUT_2 = 2;
@@ -31,7 +34,7 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
     public static final int SLOT_COUNT    = 6;
 
     private static final int[] OUTPUT_SLOTS = {
-        SLOT_OUTPUT_1, SLOT_OUTPUT_2, SLOT_OUTPUT_3, SLOT_OUTPUT_4, SLOT_OUTPUT_5
+            SLOT_OUTPUT_1, SLOT_OUTPUT_2, SLOT_OUTPUT_3, SLOT_OUTPUT_4, SLOT_OUTPUT_5
     };
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
@@ -88,24 +91,24 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, ManualCentrifugeBlockEntity be) {
         ManualCentrifugeRecipeManager.findRecipe(be.items.get(SLOT_INPUT)).ifPresentOrElse(
-            recipe -> {
-                if (!recipe.getId().equals(be.currentRecipeId)) {
-                    be.currentRecipe = recipe;
-                    be.currentRecipeId = recipe.getId();
-                    be.kineticForce = 0;
-                    be.requiredKineticForce = recipe.getRequiredKineticForce();
-                    be.setChanged();
+                recipe -> {
+                    if (!recipe.getId().equals(be.currentRecipeId)) {
+                        be.currentRecipe = recipe;
+                        be.currentRecipeId = recipe.getId();
+                        be.kineticForce = 0;
+                        be.requiredKineticForce = recipe.getRequiredKineticForce();
+                        be.setChanged();
+                    }
+                },
+                () -> {
+                    if (be.currentRecipe != null) {
+                        be.currentRecipe = null;
+                        be.currentRecipeId = null;
+                        be.kineticForce = 0;
+                        be.requiredKineticForce = 0;
+                        be.setChanged();
+                    }
                 }
-            },
-            () -> {
-                if (be.currentRecipe != null) {
-                    be.currentRecipe = null;
-                    be.currentRecipeId = null;
-                    be.kineticForce = 0;
-                    be.requiredKineticForce = 0;
-                    be.setChanged();
-                }
-            }
         );
     }
 
@@ -128,13 +131,10 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
         RandomSource random = level != null ? level.getRandom() : RandomSource.create();
         List<ItemStack> rolled = currentRecipe.rollOutputs(random);
 
-        // Check there is at least one free or compatible output slot for each rolled result
         if (!canFitOutputs(rolled)) return;
 
-        // Consume input
         items.get(SLOT_INPUT).shrink(1);
 
-        // Place rolled outputs into output slots in order
         int slotIdx = 0;
         for (ItemStack result : rolled) {
             while (slotIdx < OUTPUT_SLOTS.length) {
@@ -158,7 +158,6 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
     }
 
     private boolean canFitOutputs(List<ItemStack> rolled) {
-        // Simulate placing each rolled output into output slots
         ItemStack[] snapshot = new ItemStack[OUTPUT_SLOTS.length];
         for (int i = 0; i < OUTPUT_SLOTS.length; i++) {
             snapshot[i] = items.get(OUTPUT_SLOTS[i]).copy();
@@ -200,5 +199,34 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
         ContainerHelper.saveAllItems(output, this.items);
         output.putInt("KineticForce", this.kineticForce);
         output.putInt("RequiredKineticForce", this.requiredKineticForce);
+    }
+
+    // Logic for Sides (WorldlyContainer)
+
+    @Override
+    public int[] getSlotsForFace(Direction direction) {
+        // Assume the block has a FACING property like ManualMacerator
+        Direction facing = getBlockState().getValue(ManualCentrifugeBlock.FACING);
+
+        if (direction == Direction.DOWN || direction == facing) {
+            return OUTPUT_SLOTS;
+        }
+
+        return new int[]{SLOT_INPUT};
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(int index, ItemStack itemStack, @Nullable Direction direction) {
+        return index == SLOT_INPUT;
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
+        if (index == SLOT_INPUT) {
+            return false;
+        }
+
+        Direction facing = getBlockState().getValue(ManualCentrifugeBlock.FACING);
+        return direction == Direction.DOWN || direction == facing;
     }
 }

@@ -1,5 +1,7 @@
 {
-  "requiredKineticForce": 20,
-  "input": "minecraft:cobblestone",
-  "output": ["minecraft:gravel"]
+    "requiredKineticForce": 20,
+    "input": "minecraft:cobblestone",
+    "output": [
+        { "item":  "minecraft:gravel", "count":  1, "chance":  1.0 }
+    ]
 }

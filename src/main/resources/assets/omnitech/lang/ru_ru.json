@@ -1,0 +1,20 @@
+{
+  "itemGroup.omnitech": "OmniTech",
+  "item.omnitech.alloy_furnace": "Доменная Печь",
+  "item.omnitech.aluminium_block": "Блок Алюминия",
+  "item.omnitech.aluminium_cog": "Алюминиевая Шестерня",
+  "item.omnitech.aluminium_coil": "Алюминиевая Катушка",
+  "item.omnitech.aluminium_dust": "Алюминиевая Пыль",
+  "item.omnitech.aluminium_ingot": "Алюминиевый Слиток",
+  "item.omnitech.aluminium_mote": "Алюминиевая Пылинка",
+  "item.omnitech.aluminium_nugget": "Алюминиевый Самородок",
+  "item.omnitech.aluminium_plate": "Алюминиевая Пластина",
+  "item.omnitech.aluminium_reductor": "Алюминиевый Редуктор",
+  "item.omnitech.galena": "Галенит",
+  "item.omnitech.cobalt_cog": "Кобальтовая Шестерня",
+  "item.omnitech.tin_ore": "Оловянная Руда",
+  "item.omnitech.copper_dust": "Медная Пыль",
+  "item.omnitech.copper_plate": "Медная Пластина",
+  "item.omnitech.stone_dust": "Каменная Пыль",
+  "item.omnitech.tin_wire": "Оловянный Провод"
+}

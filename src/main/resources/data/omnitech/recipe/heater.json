@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "S": "minecraft:cobblestone"
+  },
+  "pattern": [
+    "CCC",
+    "S S",
+    "SSS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:heater"
+  }
+}

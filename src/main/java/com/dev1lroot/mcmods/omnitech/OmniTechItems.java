@@ -66,6 +66,21 @@ public class OmniTechItems
     public static final DeferredItem<Item> DIORITE_DUST = REGISTRY.registerSimpleItem(
             "diorite_dust", p -> p);
 
+    public static final DeferredItem<Item> STONE_DUST = REGISTRY.registerSimpleItem(
+            "stone_dust", p -> p);
+
+    public static final DeferredItem<Item> HEMATITE_DUST = REGISTRY.registerSimpleItem(
+            "hematite_dust", p -> p);
+
+    public static final DeferredItem<Item> DEEPSLATE_DUST = REGISTRY.registerSimpleItem(
+            "deepslate_dust", p -> p);
+
+    public static final DeferredItem<Item> WOODEN_COG = REGISTRY.registerSimpleItem(
+            "wooden_cog", p -> p);
+
+    public static final DeferredItem<Item> WOODEN_REDUCTOR = REGISTRY.registerSimpleItem(
+            "wooden_reductor", p -> p);
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "S": "minecraft:cobblestone",
+    "B": "minecraft:bucket",
+    "I": "minecraft:iron_ingot",
+    "R": "omnitech:wooden_reductor"
+  },
+  "pattern": [
+    "SIS",
+    "RBR",
+    "SCS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:stirling_engine"
+  }
+}

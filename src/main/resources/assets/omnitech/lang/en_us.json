@@ -100,33 +100,28 @@
   "item.omnitech.copper_mote": "Copper Mote",
   "block.omnitech.lepidolite": "Lepidolite",
   "item.omnitech.lepidolite_dust": "Lepidolite Dust",
-
   "block.omnitech.kf_reductor": "Kinetic Reductor",
   "item.omnitech.kf_reductor": "Kinetic Reductor",
-
   "block.omnitech.heater": "Heater",
   "item.omnitech.heater": "Heater",
   "container.omnitech.heater": "Heater",
-
   "block.omnitech.stirling_engine": "Stirling Engine",
   "item.omnitech.stirling_engine": "Stirling Engine",
   "container.omnitech.stirling_engine": "Stirling Engine",
-
   "item.omnitech.granite_dust": "Granite Dust",
   "item.omnitech.andesite_dust": "Andesite Dust",
   "item.omnitech.diorite_dust": "Diorite Dust",
-
   "block.omnitech.conveyor_belt": "Conveyor Belt",
   "item.omnitech.conveyor_belt": "Conveyor Belt",
-
   "block.omnitech.fluid_pipe": "Fluid Pipe",
   "item.omnitech.fluid_pipe": "Fluid Pipe",
-
   "block.omnitech.pump": "Fluid Pump",
   "item.omnitech.pump": "Fluid Pump",
-
   "block.omnitech.fluid_tank": "Fluid Tank",
   "item.omnitech.fluid_tank": "Fluid Tank",
-
-  "container.omnitech.fluid_tank": "Fluid Tank"
+  "container.omnitech.fluid_tank": "Fluid Tank",
+  "item.omnitech.wooden_cog": "Wooden Cog",
+  "item.omnitech.wooden_reductor": "Wooden Reductor",
+  "item.omnitech.hematite_dust": "Hematite Dust",
+  "item.omnitech.stone_dust": "Stone Dust"
 }

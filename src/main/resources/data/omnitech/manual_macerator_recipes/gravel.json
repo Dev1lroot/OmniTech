@@ -1,5 +1,7 @@
 {
   "requiredKineticForce": 20,
   "input": "minecraft:gravel",
-  "output": ["minecraft:sand"]
+  "output": [
+    { "item":  "minecraft:sand", "count":  1, "chance":  1.0 }
+  ]
 }

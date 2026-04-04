@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "omnitech:wooden_cog",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    "S  ",
+    "SSS",
+    " C "
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:crank"
+  }
+}

@@ -1,0 +1,17 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "misc",
+    "key": {
+        "P": "#minecraft:planks",
+        "S": "minecraft:stick"
+    },
+    "pattern": [
+        "SSS",
+        "SPS",
+        "SSS"
+    ],
+    "result": {
+        "count": 1,
+        "id": "omnitech:wooden_cog"
+    }
+}
