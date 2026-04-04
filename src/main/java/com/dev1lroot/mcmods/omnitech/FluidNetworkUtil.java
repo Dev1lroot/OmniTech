@@ -35,8 +35,30 @@ public final class FluidNetworkUtil {
             FluidStack fs = FluidStack.EMPTY;
             if (be instanceof FluidPipeBlockEntity pipe) {
                 fs = pipe.getFluid();
-                // Обход по соединениям трубы
-                BlockState state = level.getBlockState(pos);
+            } else if (be instanceof FluidTankBlockEntity tank) {
+                fs = tank.getFluid();
+            } else {
+                continue;
+            }
+
+            // ПРОВЕРКА НА СМЕШИВАНИЕ:
+            // Если в сети уже определена жидкость, а в текущем блоке другая (не пустая)
+            if (!referenceStack.isEmpty() && !fs.isEmpty() && !FluidStack.isSameFluid(referenceStack, fs)) {
+                // Пропускаем этот блок, не добавляем в узлы и не идем от него к соседям
+                continue;
+            }
+
+            // Устанавливаем эталонную жидкость, если еще не нашли
+            if (referenceStack.isEmpty() && !fs.isEmpty()) {
+                referenceStack = fs;
+            }
+
+            totalAmount += fs.getAmount();
+            nodes.add(be);
+
+            // Рекурсивный поиск соседей (только если блок подошел по типу жидкости)
+            BlockState state = level.getBlockState(pos);
+            if (be instanceof FluidPipeBlockEntity) {
                 for (Direction dir : Direction.values()) {
                     if (state.hasProperty(FluidPipeBlock.propertyFor(dir)) && state.getValue(FluidPipeBlock.propertyFor(dir))) {
                         BlockPos next = pos.relative(dir);
@@ -46,9 +68,7 @@ public final class FluidNetworkUtil {
                         }
                     }
                 }
-            } else if (be instanceof FluidTankBlockEntity tank) {
-                fs = tank.getFluid();
-                // Танки соединяются со всеми соседями
+            } else { // Для танков
                 for (Direction dir : Direction.values()) {
                     BlockPos next = pos.relative(dir);
                     if (!visited.contains(next)) {
@@ -56,11 +76,7 @@ public final class FluidNetworkUtil {
                         queue.add(next);
                     }
                 }
-            } else continue;
-
-            if (referenceStack.isEmpty() && !fs.isEmpty()) referenceStack = fs;
-            totalAmount += fs.getAmount();
-            nodes.add(be);
+            }
         }
 
         if (nodes.isEmpty() || (totalAmount <= 0 && referenceStack.isEmpty())) return;

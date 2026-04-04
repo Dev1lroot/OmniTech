@@ -85,7 +85,24 @@ public class FluidTankRenderer
     }
 
     /** Returns the block used to represent the stored fluid visually. */
+    /** Returns the block used to represent the stored fluid visually. */
     private static net.minecraft.world.level.block.state.BlockState pickFluidBlock(FluidStack fluid) {
-        return Blocks.BLUE_CONCRETE.defaultBlockState();
+        // Получаем имя типа жидкости для сравнения
+        String fluidName = fluid.getFluid().getFluidType().toString().toLowerCase();
+
+        if (fluidName.contains("water")) {
+            return Blocks.BLUE_CONCRETE.defaultBlockState();
+        }
+
+        if (fluidName.contains("lava")) {
+            return Blocks.ORANGE_CONCRETE.defaultBlockState();
+        }
+
+        if (fluidName.contains("milk")) {
+            return Blocks.WHITE_CONCRETE.defaultBlockState();
+        }
+
+        // Плейсхолдер для всех остальных жидкостей
+        return Blocks.GRAY_CONCRETE.defaultBlockState();
     }
 }
