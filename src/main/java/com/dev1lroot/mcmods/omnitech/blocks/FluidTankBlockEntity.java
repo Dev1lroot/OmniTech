@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks;
 
+import com.dev1lroot.mcmods.omnitech.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.gui.FluidTankMenu;
 import com.mojang.logging.LogUtils;
@@ -104,61 +105,42 @@ public class FluidTankBlockEntity extends BaseContainerBlockEntity {
     // ── Fluid access for renderer ──────────────────────────────────────────────
 
     public FluidStack getFluid() { return fluid; }
+    public void setFluid(FluidStack stack) {
+        // Важно: всегда заменяем ссылку, чтобы избежать проблем с кешированием рендера
+        this.fluid = stack;
+    }
 
     // ── Server tick — bucket → tank, gravity flow ─────────────────────────────
 
-    public static void serverTick(Level level, BlockPos pos, BlockState state,
-            FluidTankBlockEntity be) {
+    public static void serverTick(Level level, BlockPos pos, BlockState state, FluidTankBlockEntity be)
+    {
         boolean dirty = false;
 
-        // Bucket slot processing
+        // 1. Логика ведер (Оставляем как есть)
         ItemStack inStack = be.items.get(SLOT_BUCKET_IN);
-        if (inStack.getItem() instanceof BucketItem b) {
-            Fluid bucketFluid = b.getContent();
+        if (inStack.getItem() instanceof BucketItem bucketItem) {
+            Fluid bucketFluid = bucketItem.getContent();
             if (bucketFluid != Fluids.EMPTY) {
-                // Compatible if tank is empty or holds the same fluid type
-                boolean compatible = be.fluid.isEmpty()
-                        || FluidResource.of(be.fluid).matches(new FluidStack(bucketFluid, 1));
+                boolean compatible = be.fluid.isEmpty() || be.fluid.is(bucketFluid);
                 int space = CAPACITY - be.fluid.getAmount();
                 ItemStack outStack = be.items.get(SLOT_BUCKET_OUT);
-                boolean canOutput = outStack.isEmpty()
-                        || (outStack.is(Items.BUCKET)
-                                && outStack.getCount() < outStack.getMaxStackSize());
+                boolean canOutput = outStack.isEmpty() || (outStack.is(Items.BUCKET) && outStack.getCount() < outStack.getMaxStackSize());
 
                 if (compatible && space >= 1000 && canOutput) {
-                    FluidStack toAdd = new FluidStack(bucketFluid, 1000);
-                    be.fluid = be.fluid.isEmpty() ? toAdd
-                            : be.fluid.copyWithAmount(be.fluid.getAmount() + 1000);
-                    be.items.set(SLOT_BUCKET_IN, ItemStack.EMPTY);
-                    if (outStack.isEmpty()) {
-                        be.items.set(SLOT_BUCKET_OUT, new ItemStack(Items.BUCKET));
-                    } else {
-                        outStack.grow(1);
-                    }
+                    if (be.fluid.isEmpty()) be.fluid = new FluidStack(bucketFluid, 1000);
+                    else be.fluid.grow(1000);
+
+                    inStack.shrink(1);
+                    if (outStack.isEmpty()) be.items.set(SLOT_BUCKET_OUT, new ItemStack(Items.BUCKET));
+                    else outStack.grow(1);
                     dirty = true;
                 }
             }
         }
 
-        // Gravity: drain fluid into the tank directly below, filling it first
-        if (!be.fluid.isEmpty()) {
-            BlockPos below = pos.below();
-            if (level.getBlockEntity(below) instanceof FluidTankBlockEntity belowTank) {
-                boolean compatible = belowTank.fluid.isEmpty()
-                        || FluidResource.of(belowTank.fluid).matches(be.fluid);
-                int space = CAPACITY - belowTank.fluid.getAmount();
-                if (compatible && space > 0) {
-                    int toTransfer = Math.min(be.fluid.getAmount(), space);
-                    belowTank.fluid = belowTank.fluid.isEmpty()
-                            ? be.fluid.copyWithAmount(toTransfer)
-                            : belowTank.fluid.copyWithAmount(belowTank.fluid.getAmount() + toTransfer);
-                    be.fluid = be.fluid.copyWithAmount(be.fluid.getAmount() - toTransfer);
-                    if (be.fluid.getAmount() <= 0) be.fluid = FluidStack.EMPTY;
-                    belowTank.setChanged();
-                    level.sendBlockUpdated(below, belowTank.getBlockState(), belowTank.getBlockState(), 3);
-                    dirty = true;
-                }
-            }
+        // 2. Сетевая синхронизация (Теперь включает и гравитацию, и выравнивание)
+        if (level.getGameTime() % 2 == 0) {
+            FluidNetworkUtil.syncNetwork(level, pos);
         }
 
         if (dirty) {

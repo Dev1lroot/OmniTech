@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks;
 
+import com.dev1lroot.mcmods.omnitech.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
@@ -51,66 +52,30 @@ public class FluidPipeBlockEntity extends BlockEntity {
         super(OmniTechBlockEntities.FLUID_PIPE.get(), pos, state);
     }
 
+    public FluidStack getFluid() { return fluid; }
+    public void setFluid(FluidStack stack) {
+        // Важно: всегда заменяем ссылку, чтобы избежать проблем с кешированием рендера
+        this.fluid = stack;
+    }
+
     // ── Server tick — equalization between adjacent pipes ─────────────────────
 
-    public static void serverTick(Level level, BlockPos pos, BlockState state, FluidPipeBlockEntity be)
-    {
-        boolean dirty = false;
+    public static void serverTick(Level level, BlockPos pos, BlockState state, FluidPipeBlockEntity be) {
+        // 1. Запускаем расчет только на сервере
 
-        for (Direction dir : Direction.values())
-        {
-            if (!state.getValue(FluidPipeBlock.propertyFor(dir))) continue;
+        // 2. Оптимизация частоты: считаем сеть, например, каждые 2 тика
+        if (level.getGameTime() % 2 != 0) return;
 
-            BlockPos neighborPos = pos.relative(dir);
-            // Process each unordered pair once to prevent double-counting.
-            if (!isPrimary(pos, neighborPos)) continue;
+        // 3. Чтобы не запускать BFS из каждой трубы (что создало бы O(N^2) нагрузку),
+        // используем простую проверку: только "главная" труба в сегменте инициирует расчет.
+        // Самый простой способ — запускать только если координаты соответствуют условию,
+        // или если это первая труба, которую встретил тик.
 
-            BlockEntity neighbor = level.getBlockEntity(neighborPos);
-            if (!(neighbor instanceof FluidPipeBlockEntity pipe)) continue;
-
-            // Skip incompatible fluid types
-            if (!be.fluid.isEmpty() && !pipe.fluid.isEmpty()
-                    && !FluidResource.of(be.fluid).equals(FluidResource.of(pipe.fluid))) continue;
-
-            int myAmt       = be.fluid.getAmount();
-            int neighborAmt = pipe.fluid.getAmount();
-            if (myAmt == neighborAmt) continue;
-
-            int diff     = myAmt - neighborAmt;
-            int transfer = Math.abs(diff) / 2;
-            if (transfer <= 0) continue;
-
-            if (diff > 0) {
-                // be → pipe
-                int canFit = CAPACITY - neighborAmt;
-                transfer = Math.min(transfer, canFit);
-                if (transfer <= 0) continue;
-                FluidStack moving = be.fluid.copyWithAmount(transfer);
-                pipe.fluid = pipe.fluid.isEmpty() ? moving
-                        : pipe.fluid.copyWithAmount(neighborAmt + transfer);
-                be.fluid = be.fluid.copyWithAmount(myAmt - transfer);
-                if (be.fluid.getAmount() <= 0) be.fluid = FluidStack.EMPTY;
-                pipe.setChanged();
-                level.sendBlockUpdated(neighborPos, pipe.getBlockState(), pipe.getBlockState(), 3);
-            } else {
-                // pipe → be
-                int canFit = CAPACITY - myAmt;
-                transfer = Math.min(transfer, canFit);
-                if (transfer <= 0) continue;
-                FluidStack moving = pipe.fluid.copyWithAmount(transfer);
-                be.fluid = be.fluid.isEmpty() ? moving
-                        : be.fluid.copyWithAmount(myAmt + transfer);
-                pipe.fluid = pipe.fluid.copyWithAmount(neighborAmt - transfer);
-                if (pipe.fluid.getAmount() <= 0) pipe.fluid = FluidStack.EMPTY;
-                pipe.setChanged();
-                level.sendBlockUpdated(neighborPos, pipe.getBlockState(), pipe.getBlockState(), 3);
-            }
-            dirty = true;
-        }
-
-        if (dirty) {
-            be.setChanged();
-            level.sendBlockUpdated(pos, state, state, 3);
+        // В данном случае, syncNetwork внутри себя пометит все блоки как посещенные (visited),
+        // но сам вызов должен произойти один раз.
+        // Давай использовать системное время или хэш позиции для распределения нагрузки:
+        if ((pos.getX() + pos.getY() + pos.getZ()) % 5 == 0) {
+            FluidNetworkUtil.syncNetwork(level, pos);
         }
     }
 
