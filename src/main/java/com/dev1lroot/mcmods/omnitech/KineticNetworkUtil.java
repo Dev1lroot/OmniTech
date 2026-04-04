@@ -80,7 +80,19 @@ public final class KineticNetworkUtil {
                     }
                 }
 
-            } else if (state.getBlock() instanceof KineticReductorBlock) {
+            }
+            else if (state.getBlock() instanceof KineticReductorBlock)
+            {
+                if (state.getValue(KineticReductorBlock.SIGNALED)) {
+                    // Опционально: гасим анимацию сразу, если BFS дошел сюда
+                    BlockEntity reductorBe = level.getBlockEntity(step.pos());
+                    if (reductorBe instanceof KineticReductorBlockEntity reductor) {
+                        // Вызываем метод, который мы обновили ранее, чтобы он сбросил таймер
+                        reductor.refreshPoweredTimer(level, step.pos(), state);
+                    }
+                    continue; // ПРЕРЫВАЕМ цепь: соседи этого редуктора не попадут в очередь
+                }
+
                 // Reductors accept from any direction and output to all six faces
                 BlockEntity reductorBe = level.getBlockEntity(step.pos());
                 if (reductorBe instanceof KineticReductorBlockEntity reductor) {

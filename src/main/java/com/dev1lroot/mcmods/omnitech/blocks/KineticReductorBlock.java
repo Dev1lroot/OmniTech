@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -14,6 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.redstone.Orientation;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -41,6 +43,24 @@ public class KineticReductorBlock extends BaseEntityBlock
                 .setValue(POWERED, false)
                 .setValue(SIGNALED, false)
         );
+    }
+
+    @Override
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, @Nullable Orientation orientation, boolean moving) {
+        super.neighborChanged(state, level, pos, neighborBlock, orientation, moving);
+
+        // Проверяем, есть ли сигнал
+        boolean hasSignal = level.hasNeighborSignal(pos);
+
+        // Сравниваем с текущим состоянием SIGNALED, чтобы не спамить обновлениями блока
+        if (state.getValue(SIGNALED) != hasSignal) {
+            level.setBlock(pos, state.setValue(SIGNALED, hasSignal), 3);
+        }
+    }
+
+    @Override
+    public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext context) {
+        return this.defaultBlockState().setValue(SIGNALED, context.getLevel().hasNeighborSignal(context.getClickedPos()));
     }
 
     @Override
