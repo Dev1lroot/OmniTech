@@ -85,6 +85,13 @@ public class SmelterMenu extends AbstractContainerMenu {
         return total != 0 ? getCookProgress() * 24 / total : 0;
     }
 
+    public float getCookProgressScaled() {
+        int total = getCookTotalTime();
+        if (total <= 0) return 0f;
+        // Возвращаем значение от 0.0 до 100.0
+        return (float) getCookProgress() * 100f / total;
+    }
+
     /** Fluid gauge fill height in pixels (0–52). */
     public int getFluidBarHeight() {
         int cap = getFluidCapacity();

@@ -15,6 +15,9 @@ public class GuiUtil
     private static final Identifier SLOT_TEXTURE =
             Identifier.fromNamespaceAndPath(OmniTech.MODID, "textures/gui/slot.png");
 
+    private static final Identifier PROGRESS_TEXTURE =
+            Identifier.fromNamespaceAndPath(OmniTech.MODID, "textures/gui/progression_arrow.png");
+
     /**
      * Рендерит стандартный спрайт слота.
      * @param graphics Экстрактор графики
@@ -119,6 +122,69 @@ public class GuiUtil
         // 4. Центр (заполнение)
         if (w > s * 2 && h > s * 2) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x + s, y + s, s, s, w - s * 2, h - s * 2, 18, 18);
+        }
+    }
+
+    /**
+     * Рендерит прогресс-бар в виде стрелки.
+     * @param graphics Экстрактор графики
+     * @param x        Координата X
+     * @param y        Координата Y
+     * @param w        Общая ширина всей стрелки (включая рукоять и наконечник)
+     * @param progress Прогресс в процентах (от 0.0 до 100.0)
+     */
+    public static void renderProgressBar(GuiGraphicsExtractor graphics, int x, int y, int w, float progress) {
+        // ВАЖНО: tipWidth всегда 8, так как это физический размер наконечника в твоей текстуре 9x32
+        int tipWidth = 8;
+
+        // Переводим проценты (0-100) в коэффициент (0.0-1.0)
+        float percent = Math.max(0, Math.min(100, progress)) / 100f;
+
+        // Вычисляем, сколько всего пикселей по горизонтали должна занимать "активная" часть
+        int activeWidth = (int) (w * percent);
+
+        // 1. Рендерим деактивированную стрелку (фон)
+        // v = 16.0f (нижняя половина атласа), limitW = w (рисуем всю ширину)
+        renderArrowPart(graphics, x, y, w, 16.0f, tipWidth, w);
+
+        // 2. Рендерим активную стрелку поверх
+        // v = 0.0f (верхняя половина атласа), limitW = activeWidth (рисуем только часть прогресса)
+        if (activeWidth > 0) {
+            renderArrowPart(graphics, x, y, w, 0.0f, tipWidth, activeWidth);
+        }
+    }
+
+    private static void renderArrowPart(GuiGraphicsExtractor graphics, int x, int y, int totalW, float v, int tipW, int limitW) {
+        int handleWidth = totalW - tipW;
+
+        // Размеры твоего PNG файла 9x32
+        int texW = 9;
+        int texH = 32;
+
+        // 1. Рисуем рукоять
+        int drawHandleW = Math.min(handleWidth, limitW);
+        if (drawHandleW > 0) {
+            // Мы берем 1 пиксель из текстуры (srcWidth = 1)
+            // и растягиваем его на drawHandleW на экране
+            graphics.blit(RenderPipelines.GUI_TEXTURED, PROGRESS_TEXTURE,
+                    x, y,              // x, y на экране
+                    0f, v,             // u, v в текстуре (начало рукояти)
+                    drawHandleW, 16,   // width, height на ЭКРАНЕ
+                    1, 16,             // srcWidth, srcHeight в ТЕКСТУРЕ (берем только 1 пиксель ширины)
+                    texW, texH);       // полные размеры атласа
+        }
+
+        // 2. Рисуем наконечник
+        int drawTipW = Math.min(tipW, limitW - handleWidth);
+        if (drawTipW > 0) {
+            // Начинаем со второго пикселя (u = 1f)
+            // Берем из текстуры столько же пикселей, сколько рисуем на экране (srcWidth = drawTipW)
+            graphics.blit(RenderPipelines.GUI_TEXTURED, PROGRESS_TEXTURE,
+                    x + handleWidth, y,
+                    1f, v,             // u = 1.0 (пропускаем рукоять), v
+                    drawTipW, 16,      // width, height на ЭКРАНЕ
+                    drawTipW, 16,      // srcWidth, srcHeight в ТЕКСТУРЕ
+                    texW, texH);
         }
     }
 }
