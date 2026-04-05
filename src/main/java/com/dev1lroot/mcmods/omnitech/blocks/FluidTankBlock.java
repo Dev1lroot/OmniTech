@@ -11,6 +11,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
@@ -69,11 +70,15 @@ public class FluidTankBlock extends BaseEntityBlock implements IFluidContainer
     }
 
     @Override
+    public float getShadeBrightness(BlockState state, BlockGetter level, BlockPos pos) {
+        return 1.0F; // Убираем тени внутри блока
+    }
+
+    @Override
     public BlockState updateShape(BlockState state, LevelReader level,
                                   ScheduledTickAccess scheduledTickAccess, BlockPos pos, Direction direction,
                                   BlockPos neighborPos, BlockState neighborState, RandomSource random) {
-
-        // Если в направлении 'direction' появился или исчез наш бак — обновляем свойство
+        // Проверяем, является ли сосед таким же танком
         return state.setValue(propertyFor(direction), neighborState.is(this));
     }
 
@@ -88,23 +93,12 @@ public class FluidTankBlock extends BaseEntityBlock implements IFluidContainer
         };
     }
 
-    /*
-    @Override
-    protected boolean skipRendering(BlockState state, BlockState adjacentState, net.minecraft.core.Direction direction) {
-        // Если соседний блок — это такой же FluidTankBlock, скрываем общую грань
-        if (adjacentState.is(this)) {
-            return true;
-        }
-        return super.skipRendering(state, adjacentState, direction);
-    }
-     */
-
-    @Override
-    protected net.minecraft.world.phys.shapes.VoxelShape getVisualShape(BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos, net.minecraft.world.phys.shapes.CollisionContext context) {
-        // Это позволяет свету и рендеру понимать, что блок прозрачный,
-        // но при этом участвует в расчетах окклюзии
-        return net.minecraft.world.phys.shapes.Shapes.empty();
-    }
+//    @Override
+//    protected net.minecraft.world.phys.shapes.VoxelShape getVisualShape(BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos, net.minecraft.world.phys.shapes.CollisionContext context) {
+//        // Это позволяет свету и рендеру понимать, что блок прозрачный,
+//        // но при этом участвует в расчетах окклюзии
+//        return net.minecraft.world.phys.shapes.Shapes.empty();
+//    }
 
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(

@@ -77,9 +77,9 @@ public class FluidTankRenderer
 
         poseStack.pushPose();
         // Position inner cube: 1 px inward on X and Z, starting at bottom (Y=0)
-        poseStack.translate(0.05f / 16.0, 0.0, 0.05f / 16.0);
+        poseStack.translate(0.02f / 16.0, 0.001, 0.02f / 16.0);
         // Scale to 14 px wide × fillLevel tall × 14 px deep
-        poseStack.scale(15.9f / 16.0f, state.fillLevel, 15.9f / 16.0f);
+        poseStack.scale(15.95f / 16.0f, state.fillLevel - 0.002F, 15.95f / 16.0f);
         submitNodeCollector.submitMovingBlock(poseStack, state.fluidModel);
         poseStack.popPose();
     }

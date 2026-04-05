@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "lit=false": { "model": "omnitech:block/boiler" },
+    "lit=true": { "model": "omnitech:block/boiler_on" }
+  }
+}

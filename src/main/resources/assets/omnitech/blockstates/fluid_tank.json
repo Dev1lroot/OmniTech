@@ -1,5 +1,40 @@
 {
-  "variants": {
-    "": { "model": "omnitech:block/fluid_tank" }
-  }
+  "multipart": [
+    { "when": { "north": "false" }, "apply": { "model": "omnitech:block/fluid_tank_wall" } },
+    { "when": { "south": "false" }, "apply": { "model": "omnitech:block/fluid_tank_wall", "y": 180 } },
+    { "when": { "east": "false"  }, "apply": { "model": "omnitech:block/fluid_tank_wall", "y": 90 } },
+    { "when": { "west": "false"  }, "apply": { "model": "omnitech:block/fluid_tank_wall", "y": 270 } },
+    { "when": { "up": "false"    }, "apply": { "model": "omnitech:block/fluid_tank_wall", "x": 270 } },
+    { "when": { "down": "false"  }, "apply": { "model": "omnitech:block/fluid_tank_wall", "x": 90 } },
+
+    { "when": { "north": "false", "down": "false" }, "apply": { "model": "omnitech:block/fluid_tank_edge" } },
+    { "when": { "north": "false", "up": "false"    }, "apply": { "model": "omnitech:block/fluid_tank_edge", "z": 180 } },
+    { "when": { "north": "false", "west": "false"  }, "apply": { "model": "omnitech:block/fluid_tank_edge", "z": 90 } },
+    { "when": { "north": "false", "east": "false"  }, "apply": { "model": "omnitech:block/fluid_tank_edge", "z": 270 } },
+
+    { "when": { "south": "false", "down": "false" }, "apply": { "model": "omnitech:block/fluid_tank_edge", "y": 180 } },
+    { "when": { "south": "false", "up": "false"    }, "apply": { "model": "omnitech:block/fluid_tank_edge", "y": 180, "z": 180 } },
+    { "when": { "south": "false", "west": "false"  }, "apply": { "model": "omnitech:block/fluid_tank_edge", "y": 180, "z": 90 } },
+    { "when": { "south": "false", "east": "false"  }, "apply": { "model": "omnitech:block/fluid_tank_edge", "y": 180, "z": 270 } },
+
+    { "when": { "east": "false", "down": "false" }, "apply": { "model": "omnitech:block/fluid_tank_edge", "y": 90 } },
+    { "when": { "east": "false", "up": "false"    }, "apply": { "model": "omnitech:block/fluid_tank_edge", "y": 270, "x": 180 } },
+    { "when": { "east": "false", "north": "false" }, "apply": { "model": "omnitech:block/fluid_tank_edge", "y": 0, "x": -90, "z": 90 } },
+    { "when": { "east": "false", "south": "false" }, "apply": { "model": "omnitech:block/fluid_tank_edge", "y": 180, "x": -90, "z": 90 } },
+
+    { "when": { "west": "false", "down": "false" }, "apply": { "model": "omnitech:block/fluid_tank_edge", "y": 270 } },
+    { "when": { "west": "false", "up": "false"    }, "apply": { "model": "omnitech:block/fluid_tank_edge", "y": 90, "x": 180 } },
+    { "when": { "west": "false", "north": "false" }, "apply": { "model": "omnitech:block/fluid_tank_edge", "y": 180, "x": 90, "z": 90 } },
+    { "when": { "west": "false", "south": "false" }, "apply": { "model": "omnitech:block/fluid_tank_edge", "y": 180, "x": -90, "z": 270 } },
+
+    { "when": { "up": "false", "north": "false" }, "apply": { "model": "omnitech:block/fluid_tank_edge", "x": 270, "y": 0 } },
+    { "when": { "up": "false", "south": "false" }, "apply": { "model": "omnitech:block/fluid_tank_edge", "x": 270, "y": 180 } },
+    { "when": { "up": "false", "east": "false"  }, "apply": { "model": "omnitech:block/fluid_tank_edge", "x": 270, "y": 90 } },
+    { "when": { "up": "false", "west": "false"  }, "apply": { "model": "omnitech:block/fluid_tank_edge", "x": 270, "y": 270 } },
+
+    { "when": { "down": "false", "north": "false" }, "apply": { "model": "omnitech:block/fluid_tank_edge", "x": 90, "y": 180 } },
+    { "when": { "down": "false", "south": "false" }, "apply": { "model": "omnitech:block/fluid_tank_edge", "x": 90, "y": 0 } },
+    { "when": { "down": "false", "east": "false"  }, "apply": { "model": "omnitech:block/fluid_tank_edge", "x": 90, "y": 270 } },
+    { "when": { "down": "false", "west": "false"  }, "apply": { "model": "omnitech:block/fluid_tank_edge", "x": 90, "y": 90 } }
+  ]
 }

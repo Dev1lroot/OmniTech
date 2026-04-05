@@ -85,8 +85,13 @@ public class OmniTechBlocks {
                 p -> new PumpBlock(p.mapColor(MapColor.METAL).strength(3.0F)
                         .sound(SoundType.METAL).noOcclusion()));
         FLUID_TANK = register("fluid_tank",
-                p -> new FluidTankBlock(p.mapColor(MapColor.METAL).strength(3.0F)
-                        .sound(SoundType.METAL).noOcclusion()));
+                p -> new FluidTankBlock(p
+                        .mapColor(MapColor.METAL)
+                        .strength(3.0F)
+                        .sound(SoundType.METAL)
+                        .noOcclusion()
+                        .isViewBlocking((state, level, pos) -> false)
+                ));
         BOILER = register("boiler",
                 p -> new BoilerBlock(p.mapColor(MapColor.METAL).strength(3.0F)
                         .sound(SoundType.METAL).noOcclusion()));
