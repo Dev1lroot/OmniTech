@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.blocks;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -16,12 +17,16 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 /**
  * Block entity for {@link PumpBlock}.
  *
- * <p>Each server tick while powered by Kinetic Force, attempts to transfer up to
- * {@link #TRANSFER_RATE} mb from the block on the input side
- * ({@code FACING.getOpposite()}) to the block on the output side ({@code FACING}).
+ * <p>Each server tick while powered by Kinetic Force, pulls up to
+ * {@link #TRANSFER_RATE} mb from the input side ({@code FACING.getOpposite()})
+ * and routes it to the first node in the output network that has available space.
  *
- * <p>Uses a simulate-then-execute transaction pair so the transfer is always
- * atomic: nothing is lost if the output is full or contains an incompatible fluid.
+ * <p>The output target is found by BFS through connected pipes and tanks starting
+ * from the block directly in front of the pump. This allows fluid to bypass a full
+ * adjacent pipe and reach any container further along the network — enabling upward
+ * flow, downward gas flow, or any path regardless of gravity.
+ *
+ * <p>Uses a simulate-then-execute transaction pair so the transfer is atomic.
  */
 public class PumpBlockEntity extends BlockEntity implements IKineticReceiver {
 
@@ -64,16 +69,13 @@ public class PumpBlockEntity extends BlockEntity implements IKineticReceiver {
         Direction outputDir = state.getValue(PumpBlock.FACING);
         Direction inputDir  = outputDir.getOpposite();
 
-        // Query fluid handlers on each side.
-        // The context direction is the face of the NEIGHBOR that faces this pump.
-        ResourceHandler<FluidResource> inputHandler  = level.getCapability(
-                Capabilities.Fluid.BLOCK, pos.relative(inputDir),  outputDir);
-        ResourceHandler<FluidResource> outputHandler = level.getCapability(
-                Capabilities.Fluid.BLOCK, pos.relative(outputDir), inputDir);
+        // Query the input side via the NeoForge capability system.
+        // The context direction is the face of the neighbour that faces this pump.
+        ResourceHandler<FluidResource> inputHandler = level.getCapability(
+                Capabilities.Fluid.BLOCK, pos.relative(inputDir), outputDir);
+        if (inputHandler == null) return;
 
-        if (inputHandler == null || outputHandler == null) return;
-
-        // Find the first non-empty slot in the input handler
+        // Determine what fluid is available on the input side
         FluidResource available = FluidResource.EMPTY;
         int availableAmount = 0;
         for (int i = 0; i < inputHandler.size(); i++) {
@@ -86,18 +88,25 @@ public class PumpBlockEntity extends BlockEntity implements IKineticReceiver {
         }
         if (available.isEmpty() || availableAmount <= 0) return;
 
-        // Simulate: determine how much can actually be transferred this tick
+        // ── Find the output target via BFS ─────────────────────────────────────
+        // Walk the output network (pipes + tanks, stopping at other pumps) and
+        // return the handler of the first node that has room for this fluid.
+        // This lets the pump route past a full adjacent pipe to reach empty space
+        // further along, enabling fluid to travel against gravity.
+        ResourceHandler<FluidResource> outputHandler =
+                FluidNetworkUtil.findOutputTarget(level, pos.relative(outputDir), available);
+        if (outputHandler == null) return;
+
+        // ── Simulate then execute ──────────────────────────────────────────────
         int toTransfer;
         try (Transaction simTx = Transaction.openRoot()) {
             int simExtracted = inputHandler.extract(available, availableAmount, simTx);
             if (simExtracted <= 0) return;
             toTransfer = outputHandler.insert(available, simExtracted, simTx);
-            // simTx closes without commit → everything rolled back
+            // simTx closes without commit → rolled back
         }
-
         if (toTransfer <= 0) return;
 
-        // Execute: perform the actual transfer
         try (Transaction execTx = Transaction.openRoot()) {
             inputHandler.extract(available, toTransfer, execTx);
             outputHandler.insert(available, toTransfer, execTx);

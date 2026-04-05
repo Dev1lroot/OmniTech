@@ -105,10 +105,7 @@ public class FluidTankBlockEntity extends BaseContainerBlockEntity {
     // ── Fluid access for renderer ──────────────────────────────────────────────
 
     public FluidStack getFluid() { return fluid; }
-    public void setFluid(FluidStack stack) {
-        // Важно: всегда заменяем ссылку, чтобы избежать проблем с кешированием рендера
-        this.fluid = stack;
-    }
+    public void setFluid(FluidStack stack) { this.fluid = stack; }
 
     // ── Server tick — bucket → tank, gravity flow ─────────────────────────────
 
@@ -245,7 +242,7 @@ public class FluidTankBlockEntity extends BaseContainerBlockEntity {
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
+        items    = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(input, items);
         fluid = input.read("Fluid", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
     }

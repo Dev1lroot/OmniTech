@@ -52,17 +52,11 @@ public class FluidPipeBlockEntity extends BlockEntity {
     }
 
     public FluidStack getFluid() { return fluid; }
-    public void setFluid(FluidStack stack) {
-        // Важно: всегда заменяем ссылку, чтобы избежать проблем с кешированием рендера
-        this.fluid = stack;
-    }
+    public void setFluid(FluidStack stack) { this.fluid = stack; }
 
     // ── Server tick — equalization between adjacent pipes ─────────────────────
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, FluidPipeBlockEntity be) {
-        // 1. Запускаем расчет только на сервере
-
-        // 2. Оптимизация частоты: считаем сеть, например, каждые 2 тика
         if (level.getGameTime() % 2 != 0) return;
 
         // 3. Чтобы не запускать BFS из каждой трубы (что создало бы O(N^2) нагрузку),
