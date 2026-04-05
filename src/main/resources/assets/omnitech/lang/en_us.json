@@ -123,5 +123,11 @@
   "item.omnitech.wooden_cog": "Wooden Cog",
   "item.omnitech.wooden_reductor": "Wooden Reductor",
   "item.omnitech.hematite_dust": "Hematite Dust",
-  "item.omnitech.stone_dust": "Stone Dust"
+  "item.omnitech.stone_dust": "Stone Dust",
+  "block.omnitech.zinc_block": "Zinc Block",
+  "item.omnitech.zinc_ingot": "Zinc Ingot",
+  "item.omnitech.zinc_dust": "Zinc Dust",
+  "item.omnitech.zinc_plate": "Zinc Plate",
+  "item.omnitech.zinc_mote": "Zinc Mote",
+  "item.omnitech.zinc_nugget": "Zinc Nugget"
 }
