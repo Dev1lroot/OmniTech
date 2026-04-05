@@ -6,8 +6,13 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.Minecraft;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 public class FoundryScreen extends AbstractContainerScreen<FoundryMenu> {
 
@@ -38,15 +43,17 @@ public class FoundryScreen extends AbstractContainerScreen<FoundryMenu> {
 
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        // Обязательно первым делом рисуем стандартный фон (слоты рисуются здесь в супер-классе)
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
+
         int x = this.leftPos;
         int y = this.topPos;
 
-        // Background
+        // 1. Рисуем фон (основное окно)
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,
                 x, y, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
 
-        // Progress arrow (left → right fill)
+        // 2. Стрелочка прогресса
         int arrowWidth = menu.getCookProgressWidth();
         if (arrowWidth > 0) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,
@@ -55,14 +62,40 @@ public class FoundryScreen extends AbstractContainerScreen<FoundryMenu> {
                     arrowWidth, ARROW_H, 256, 256);
         }
 
-        // Fluid gauge (bottom → top fill)
+        // 3. Шкала жидкости (Исправлено)
+        renderFluidBar(graphics, x + FLUID_X, y + FLUID_Y);
+    }
+
+    private void renderFluidBar(GuiGraphicsExtractor graphics, int x, int y) {
+        FluidStack fluidStack = menu.getInputFluid();
         int fluidH = menu.getFluidBarHeight();
-        if (fluidH > 0) {
+
+        if (!fluidStack.isEmpty() && fluidH > 0) {
+            // Получаем спрайт и цвет из примера, который вы скинули
+            var modelSet = Minecraft.getInstance().getModelManager().getFluidStateModelSet();
+            FluidModel fluidModel = modelSet.get(fluidStack.getFluid().defaultFluidState());
+            TextureAtlasSprite sprite = fluidModel.stillMaterial().sprite();
+
+            int color = -1;
+            if (fluidModel.fluidTintSource() != null) {
+                color = fluidModel.fluidTintSource().colorAsStack(fluidStack);
+            }
+
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8) & 0xFF;
+            int b = color & 0xFF;
+            int a = 0xFF; // В GUI обычно рисуем непрозрачно
+
             int yOff = FLUID_H - fluidH;
-            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,
-                    x + FLUID_X, y + FLUID_Y + yOff,
-                    (float) FLUID_U, (float) (FLUID_V + yOff),
-                    FLUID_W, fluidH, 256, 256);
+
+            // Рисуем текстуру жидкости из атласа блоков
+            // ВАЖНО: переключаем RenderPipeline, так как текстура жидкости не в нашем foundry.png
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite,
+                    x, y + yOff, FLUID_W, fluidH,
+                    ARGB.color(a, r, g, b));
+
+            // Сбрасываем цвет для последующих отрисовок
+            //RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
     }
 
