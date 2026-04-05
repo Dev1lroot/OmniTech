@@ -44,8 +44,8 @@ public class FluidTankRenderer
         implements BlockEntityRenderer<FluidTankBlockEntity, FluidTankRenderState> {
 
     // Inner cube boundaries – 1 px inset from each block face (1/16 = 0.0625)
-    private static final float X0 = 1f / 16f, X1 = 15f / 16f;
-    private static final float Z0 = 1f / 16f, Z1 = 15f / 16f;
+    private static final float X0 = 0.02f / 16f, X1 = 15.97f / 16f;
+    private static final float Z0 = 0.02f / 16f, Z1 = 15.97f / 16f;
     private static final float Y_BOT = 0.002f;           // lift off the bottom face slightly
     private static final float Y_TOP = 1f - 0.002f;      // stay clear of the top face
 

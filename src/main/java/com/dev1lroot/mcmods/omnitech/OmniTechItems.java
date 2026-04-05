@@ -63,9 +63,6 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> FOUNDRY_ITEM = REGISTRY.registerSimpleBlockItem(
             "foundry", OmniTechBlocks.FOUNDRY);
 
-    public static final DeferredItem<Item> BRASS_COG = REGISTRY.registerSimpleItem(
-            "brass_cog", p -> p);
-
     // Real Items
     public static final DeferredItem<Item> STEEL_INGOT = REGISTRY.registerSimpleItem(
             "steel_ingot", p -> p);

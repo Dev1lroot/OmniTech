@@ -96,7 +96,7 @@ public class OmniTechMaterials {
     public static final MaterialSet NICKEL = MaterialSet.create(
             "nickel",
             OmniTechItems.REGISTRY,
-            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget" },
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil" },
             OmniTechBlocks.REGISTRY,
             new String[]{ "%_block" } // there is no mineral aluminium in real life
     );
@@ -104,7 +104,7 @@ public class OmniTechMaterials {
     public static final MaterialSet ZINC = MaterialSet.create(
             "zinc",
             OmniTechItems.REGISTRY,
-            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget" },
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil" },
             OmniTechBlocks.REGISTRY,
             new String[]{ "%_block" } // sphalerite is the mineral for zinc
     );
@@ -112,7 +112,7 @@ public class OmniTechMaterials {
     public static final MaterialSet BRASS = MaterialSet.create(
             "brass",
             OmniTechItems.REGISTRY,
-            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget" },
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil" },
             OmniTechBlocks.REGISTRY,
             new String[]{ "%_block" } // produced in smelter and foundry
     );
@@ -120,7 +120,7 @@ public class OmniTechMaterials {
     public static final MaterialSet IRON = MaterialSet.create(
             "iron",
             OmniTechItems.REGISTRY,
-            new String[]{ "%_dust", "%_plate", "%_mote" },
+            new String[]{ "%_dust", "%_plate", "%_mote", "%_reductor", "%_wire", "%_coil" },
             OmniTechBlocks.REGISTRY,
             new String[]{ } // the ore exists in vanilla game therefore only missing variations
     );
@@ -128,7 +128,7 @@ public class OmniTechMaterials {
     public static final MaterialSet COPPER = MaterialSet.create(
             "copper",
             OmniTechItems.REGISTRY,
-            new String[]{ "%_dust", "%_plate", "%_mote" },
+            new String[]{ "%_dust", "%_plate", "%_mote", "%_reductor", "%_wire", "%_coil" },
             OmniTechBlocks.REGISTRY,
             new String[]{ } // the ore exists in vanilla game therefore only missing variations
     );

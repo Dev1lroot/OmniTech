@@ -249,11 +249,19 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        try (ProblemReporter.ScopedCollector reporter =
-                new ProblemReporter.ScopedCollector(this.problemPath(), LOGGER)) {
-            TagValueOutput output = TagValueOutput.createWithContext(reporter, registries);
-            output.store("InputFluid", FluidStack.OPTIONAL_CODEC, inputFluid);
+    public net.minecraft.nbt.CompoundTag getUpdateTag(net.minecraft.core.HolderLookup.Provider registries) {
+        // Вместо super или ручного создания, используем системный сборщик
+        try (net.minecraft.util.ProblemReporter.ScopedCollector reporter =
+                     new net.minecraft.util.ProblemReporter.ScopedCollector(this.problemPath(), LOGGER)) {
+
+            // Создаем чистый выход
+            net.minecraft.world.level.storage.TagValueOutput output =
+                    net.minecraft.world.level.storage.TagValueOutput.createWithContext(reporter, registries);
+
+            // ВАЖНО: Вызываем ТВОЙ метод, который сохраняет предметы, температуру и жидкость!
+            // Это гарантирует, что в пакете будет ВЕСЬ инвентарь (через ContainerHelper)
+            this.saveAdditional(output);
+
             return output.buildResult();
         }
     }

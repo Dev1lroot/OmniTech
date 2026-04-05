@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -65,7 +66,13 @@ public class OmniTechBlocks {
         KF_GENERATOR = register("kf_generator",
                 p -> new KineticGeneratorBlock(p.mapColor(MapColor.STONE).strength(3.5F).sound(SoundType.STONE)));
         KF_PIPE = register("kf_pipe",
-                p -> new KineticPipeBlock(p.mapColor(MapColor.METAL).strength(3.0F).sound(SoundType.METAL).noOcclusion()));
+                p -> new KineticPipeBlock(p
+                        .mapColor(MapColor.METAL)
+                        .strength(3.0F)
+                        .sound(SoundType.METAL)
+                        .noOcclusion()
+                        .pushReaction(PushReaction.NORMAL)
+                ));
         KF_REDUCTOR = register("kf_reductor",
                 p -> new KineticReductorBlock(p
                         .mapColor(MapColor.METAL)
@@ -82,8 +89,13 @@ public class OmniTechBlocks {
                         .sound(SoundType.METAL).noOcclusion()));
 
         FLUID_PIPE = register("fluid_pipe",
-                p -> new FluidPipeBlock(p.mapColor(MapColor.METAL).strength(2.0F)
-                        .sound(SoundType.METAL).noOcclusion()));
+                p -> new FluidPipeBlock(p
+                        .mapColor(MapColor.METAL)
+                        .strength(2.0F)
+                        .sound(SoundType.METAL)
+                        .noOcclusion()
+                        .pushReaction(PushReaction.NORMAL)
+                ));
         PUMP = register("pump",
                 p -> new PumpBlock(p.mapColor(MapColor.METAL).strength(3.0F)
                         .sound(SoundType.METAL).noOcclusion()));

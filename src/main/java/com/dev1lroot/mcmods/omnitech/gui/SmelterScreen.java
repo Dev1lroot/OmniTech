@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.gui;
 
 import com.dev1lroot.mcmods.omnitech.OmniTech;
+import com.dev1lroot.mcmods.omnitech.util.GuiUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -11,7 +12,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class SmelterScreen extends AbstractContainerScreen<SmelterMenu> {
 
     private static final Identifier TEXTURE =
-            Identifier.fromNamespaceAndPath(OmniTech.MODID, "textures/gui/smelter.png");
+            Identifier.fromNamespaceAndPath(OmniTech.MODID, "textures/gui/empty.png");
 
     // Progress arrow sprite at UV (176, 14) — 24×16 pixels, drawn left to right
     private static final int ARROW_U = 176, ARROW_V = 14;
@@ -55,15 +56,30 @@ public class SmelterScreen extends AbstractContainerScreen<SmelterMenu> {
                     arrowWidth, ARROW_H, 256, 256);
         }
 
-        // Fluid gauge (bottom → top fill)
-        int fluidH = menu.getFluidBarHeight();
-        if (fluidH > 0) {
-            int yOff = FLUID_H - fluidH;
-            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,
-                    x + FLUID_X, y + FLUID_Y + yOff,
-                    (float) FLUID_U, (float) (FLUID_V + yOff),
-                    FLUID_W, fluidH, 256, 256);
-        }
+//        // Fluid gauge (bottom → top fill)
+//        int fluidH = menu.getFluidBarHeight();
+//        if (fluidH > 0) {
+//            int yOff = FLUID_H - fluidH;
+//            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,
+//                    x + FLUID_X, y + FLUID_Y + yOff,
+//                    (float) FLUID_U, (float) (FLUID_V + yOff),
+//                    FLUID_W, fluidH, 256, 256);
+//        }
+
+        // Рамка блока с жидкостью
+        GuiUtil.renderFrame(graphics, x + FLUID_X, y + FLUID_Y, FLUID_W, FLUID_H);
+
+        // Шкала жидкости
+        GuiUtil.renderFluidBar(
+                graphics,
+                menu.getOutputFluid(),
+                menu.getFluidAmount(),
+                menu.getFluidCapacity(),
+                x + FLUID_X,
+                y + FLUID_Y,
+                FLUID_W,
+                FLUID_H
+        );
     }
 
     @Override

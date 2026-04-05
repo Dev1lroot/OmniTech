@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.gui;
 
 import com.dev1lroot.mcmods.omnitech.OmniTech;
+import com.dev1lroot.mcmods.omnitech.util.GuiUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -17,7 +18,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 public class FoundryScreen extends AbstractContainerScreen<FoundryMenu> {
 
     private static final Identifier TEXTURE =
-            Identifier.fromNamespaceAndPath(OmniTech.MODID, "textures/gui/foundry.png");
+            Identifier.fromNamespaceAndPath(OmniTech.MODID, "textures/gui/empty.png");
 
     // Texture layout (176×166 background + sprites at U≥176):
     //   Progress arrow : UV (176, 14), 24×16 px — left-to-right fill
@@ -62,41 +63,24 @@ public class FoundryScreen extends AbstractContainerScreen<FoundryMenu> {
                     arrowWidth, ARROW_H, 256, 256);
         }
 
-        // 3. Шкала жидкости (Исправлено)
-        renderFluidBar(graphics, x + FLUID_X, y + FLUID_Y);
-    }
+        // Рамка блока с жидкостью
+        GuiUtil.renderFrame(graphics, x + FLUID_X, y + FLUID_Y, FLUID_W, FLUID_H);
 
-    private void renderFluidBar(GuiGraphicsExtractor graphics, int x, int y) {
-        FluidStack fluidStack = menu.getInputFluid();
-        int fluidH = menu.getFluidBarHeight();
+        // Шкала жидкости
+        GuiUtil.renderFluidBar(
+                graphics,
+                menu.getInputFluid(),
+                menu.getFluidAmount(),
+                menu.getFluidCapacity(),
+                x + FLUID_X,
+                y + FLUID_Y,
+                FLUID_W,
+                FLUID_H
+        );
 
-        if (!fluidStack.isEmpty() && fluidH > 0) {
-            // Получаем спрайт и цвет из примера, который вы скинули
-            var modelSet = Minecraft.getInstance().getModelManager().getFluidStateModelSet();
-            FluidModel fluidModel = modelSet.get(fluidStack.getFluid().defaultFluidState());
-            TextureAtlasSprite sprite = fluidModel.stillMaterial().sprite();
-
-            int color = -1;
-            if (fluidModel.fluidTintSource() != null) {
-                color = fluidModel.fluidTintSource().colorAsStack(fluidStack);
-            }
-
-            int r = (color >> 16) & 0xFF;
-            int g = (color >> 8) & 0xFF;
-            int b = color & 0xFF;
-            int a = 0xFF; // В GUI обычно рисуем непрозрачно
-
-            int yOff = FLUID_H - fluidH;
-
-            // Рисуем текстуру жидкости из атласа блоков
-            // ВАЖНО: переключаем RenderPipeline, так как текстура жидкости не в нашем foundry.png
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite,
-                    x, y + yOff, FLUID_W, fluidH,
-                    ARGB.color(a, r, g, b));
-
-            // Сбрасываем цвет для последующих отрисовок
-            //RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        }
+        // Слоты интерфейса
+        GuiUtil.renderSlot(graphics, x + FoundryMenu.TEMPLATE_X, y + FoundryMenu.TEMPLATE_Y);
+        GuiUtil.renderSlot(graphics, x + FoundryMenu.OUTPUT_X,y + FoundryMenu.OUTPUT_Y);
     }
 
     @Override
@@ -107,13 +91,13 @@ public class FoundryScreen extends AbstractContainerScreen<FoundryMenu> {
         int requiredTemp = menu.getRequiredTemperature();
 
         // Current temperature
-        graphics.text(this.font, currentTemp + " °C", 26, 72, getTempColor(currentTemp, requiredTemp), false);
+        graphics.text(this.font, currentTemp + " °C", 128, 0, getTempColor(currentTemp, requiredTemp), false);
 
         // Required temperature (only when a recipe is matched)
         if (requiredTemp > 0) {
             String reqStr = "Min: " + requiredTemp + " °C";
             int reqColor  = currentTemp >= requiredTemp ? 0xFF00AA00 : 0xFFAA0000;
-            graphics.text(this.font, reqStr, 105, 25, reqColor, false);
+            graphics.text(this.font, reqStr, 0, 0, reqColor, false);
         }
 
         // Input fluid — type (from synced BE) and amount (from ContainerData)
@@ -122,11 +106,11 @@ public class FoundryScreen extends AbstractContainerScreen<FoundryMenu> {
         int capacity = menu.getFluidCapacity();
         if (!fluid.isEmpty() && amount > 0) {
             String fluidName = fluid.getFluidType().getDescription().getString();
-            graphics.text(this.font, fluidName, 105, 35, 0xFFCCCCCC, false);
-            graphics.text(this.font, amount + " mb", 105, 44, 0xFFFF8800, false);
-            graphics.text(this.font, "/ " + capacity, 105, 53, 0xFF886644, false);
+            graphics.text(this.font, fluidName, 64, 0, 0xFFCCCCCC, false);
+            graphics.text(this.font, amount + " mb", 16, 0, 0xFFFF8800, false);
+            graphics.text(this.font, "/ " + capacity, 16, 64, 0xFF886644, false);
         } else {
-            graphics.text(this.font, "Empty", 105, 40, 0xFFAAAAAA, false);
+            graphics.text(this.font, "Empty", 64, 0, 0xFFAAAAAA, false);
         }
     }
 

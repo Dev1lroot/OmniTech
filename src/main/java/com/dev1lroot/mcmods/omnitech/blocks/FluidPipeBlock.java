@@ -13,12 +13,16 @@ import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -33,8 +37,11 @@ import org.jetbrains.annotations.Nullable;
  * Connected pipes within the same network equalize their fluid levels every tick.
  * Pumps act as network separators — equalization does not cross a pump.
  */
-public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer {
+public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, SimpleWaterloggedBlock
+{
     public static final MapCodec<FluidPipeBlock> CODEC = simpleCodec(FluidPipeBlock::new);
+
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
@@ -57,7 +64,9 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer {
         registerDefaultState(stateDefinition.any()
                 .setValue(NORTH, false).setValue(SOUTH, false)
                 .setValue(EAST,  false).setValue(WEST,  false)
-                .setValue(UP,    false).setValue(DOWN,  false));
+                .setValue(UP,    false).setValue(DOWN,  false)
+                .setValue(WATERLOGGED,  false)
+        );
     }
 
     @Override
@@ -85,6 +94,11 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer {
     }
 
     @Override
+    public FluidState getFluidState(BlockState state) {
+        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+    }
+
+    @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(
             Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide()) return null;
@@ -94,7 +108,7 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(NORTH, SOUTH, EAST, WEST, UP, DOWN);
+        builder.add(NORTH, SOUTH, EAST, WEST, UP, DOWN, WATERLOGGED);
     }
 
     @Override
@@ -108,8 +122,16 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer {
      */
     @Override
     public BlockState updateShape(BlockState state, LevelReader level,
-            ScheduledTickAccess scheduledTickAccess, BlockPos pos, Direction direction,
-            BlockPos neighborPos, BlockState neighborState, RandomSource random) {
+                                  ScheduledTickAccess scheduledTickAccess, BlockPos pos, Direction direction,
+                                  BlockPos neighborPos, BlockState neighborState, RandomSource random) {
+
+        // ЭТО КРИТИЧЕСКИ ВАЖНО:
+        // Если блок помечен как WATERLOGGED, нужно запланировать тик жидкости
+        if (state.getValue(WATERLOGGED)) {
+            scheduledTickAccess.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+        }
+
+        // Ваша существующая логика соединений
         return state.setValue(propertyFor(direction), canConnectTo(neighborState, direction));
     }
 
@@ -135,11 +157,15 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer {
     }
 
     /** Calculates all 6 connection properties from scratch using the given level. */
-    private static BlockState calculateState(BlockState state, BlockGetter level, BlockPos pos) {
+    private static BlockState calculateState(BlockState state, LevelReader level, BlockPos pos) {
         for (Direction dir : Direction.values()) {
             state = state.setValue(propertyFor(dir),
                     canConnectTo(level.getBlockState(pos.relative(dir)), dir));
         }
+        // Проверяем наличие воды при установке
+        FluidState fluidState = level.getFluidState(pos);
+        state = state.setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
+
         return state;
     }
 

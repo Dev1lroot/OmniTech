@@ -24,31 +24,34 @@ public class OmniTechGUI {
     public static final DeferredRegister<CreativeModeTab> REGISTRY =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, OmniTech.MODID);
 
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> OMNITECH_TAB =
-            REGISTRY.register("omnitech_tab", () -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemGroup.omnitech"))
-                    .withTabsBefore(CreativeModeTabs.COMBAT)
-                    .icon(() -> OmniTechItems.STEEL_INGOT.get().getDefaultInstance())
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MACHINES_TAB =
+            REGISTRY.register("omnitech.machines", () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.omnitech.machines"))
+                    .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
+                    .icon(() -> OmniTechItems.BOILER.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
+                        // Генерация и обработка
+                        output.accept(OmniTechItems.BOILER.get());
+                        output.accept(OmniTechItems.STIRLING_ENGINE_ITEM.get());
+                        output.accept(OmniTechItems.KF_GENERATOR_ITEM.get());
+                        output.accept(OmniTechItems.HEATER_ITEM.get());
+
+                        // Станки
                         output.accept(OmniTechItems.ALLOY_FURNACE_ITEM.get());
                         output.accept(OmniTechItems.MANUAL_MACERATOR_ITEM.get());
                         output.accept(OmniTechItems.MANUAL_CENTRIFUGE_ITEM.get());
+                        output.accept(OmniTechItems.SMELTER_ITEM.get());
+                        output.accept(OmniTechItems.FOUNDRY_ITEM.get());
+
+                        // Логистика и трубы
                         output.accept(OmniTechItems.CRANK_ITEM.get());
-                        //output.accept(OmniTechMaterials.TIN.blockItem("%").get());
-                        output.accept(OmniTechItems.KF_GENERATOR_ITEM.get());
                         output.accept(OmniTechItems.KF_PIPE_ITEM.get());
                         output.accept(OmniTechItems.KF_REDUCTOR_ITEM.get());
-                        output.accept(OmniTechItems.HEATER_ITEM.get());
-                        output.accept(OmniTechItems.STIRLING_ENGINE_ITEM.get());
                         output.accept(OmniTechItems.CONVEYOR_BELT_ITEM.get());
                         output.accept(OmniTechItems.SORTER_ITEM.get());
                         output.accept(OmniTechItems.FLUID_PIPE_ITEM.get());
                         output.accept(OmniTechItems.PUMP_ITEM.get());
                         output.accept(OmniTechItems.FLUID_TANK_ITEM.get());
-                        output.accept(OmniTechItems.STEEL_INGOT.get());
-                        output.accept(OmniTechItems.SMELTER_ITEM.get());
-                        output.accept(OmniTechItems.FOUNDRY_ITEM.get());
-                        output.accept(OmniTechItems.BRASS_COG.get());
                     }).build());
 
     public static void register(IEventBus modEventBus) {

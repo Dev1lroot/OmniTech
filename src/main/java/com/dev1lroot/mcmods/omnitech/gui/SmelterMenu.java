@@ -2,6 +2,7 @@ package com.dev1lroot.mcmods.omnitech.gui;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
+import com.dev1lroot.mcmods.omnitech.blocks.FoundryBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.SmelterBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
@@ -10,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class SmelterMenu extends AbstractContainerMenu {
 
@@ -17,8 +19,8 @@ public class SmelterMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     // 3×3 input grid top-left at (8, 17)
-    private static final int GRID_START_X = 8;
-    private static final int GRID_START_Y = 17;
+    public static final int GRID_START_X = 8;
+    public static final int GRID_START_Y = 17;
 
     // Client constructor
     public SmelterMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
@@ -58,6 +60,14 @@ public class SmelterMenu extends AbstractContainerMenu {
         for (int col = 0; col < 9; col++) {
             addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
         }
+    }
+
+    public FluidStack getOutputFluid()
+    {
+        if (container instanceof SmelterBlockEntity be) {
+            return be.getOutputFluid();
+        }
+        return FluidStack.EMPTY;
     }
 
     // ── Data accessors ─────────────────────────────────────────────────────────

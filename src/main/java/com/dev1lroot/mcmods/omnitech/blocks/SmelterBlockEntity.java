@@ -4,9 +4,13 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.gui.SmelterMenu;
 import com.dev1lroot.mcmods.omnitech.recipes.SmelterRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.SmelterRecipeManager;
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -23,12 +27,15 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class SmelterBlockEntity extends BaseContainerBlockEntity implements IHeatReceiver {
+
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     public static final int SLOT_COUNT = 9;
     public static final int OUTPUT_TANK_CAPACITY = 64_000;
@@ -50,6 +57,29 @@ public class SmelterBlockEntity extends BaseContainerBlockEntity implements IHea
 
     /** Capability-exposed output-only fluid handler. */
     public final ResourceHandler<FluidResource> fluidHandler = new OutputTankHandler();
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public net.minecraft.nbt.CompoundTag getUpdateTag(net.minecraft.core.HolderLookup.Provider registries) {
+        // Вместо super или ручного создания, используем системный сборщик
+        try (net.minecraft.util.ProblemReporter.ScopedCollector reporter =
+                     new net.minecraft.util.ProblemReporter.ScopedCollector(this.problemPath(), LOGGER)) {
+
+            // Создаем чистый выход
+            net.minecraft.world.level.storage.TagValueOutput output =
+                    net.minecraft.world.level.storage.TagValueOutput.createWithContext(reporter, registries);
+
+            // ВАЖНО: Вызываем ТВОЙ метод, который сохраняет предметы, температуру и жидкость!
+            // Это гарантирует, что в пакете будет ВЕСЬ инвентарь (через ContainerHelper)
+            this.saveAdditional(output);
+
+            return output.buildResult();
+        }
+    }
 
     protected final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -159,7 +189,15 @@ public class SmelterBlockEntity extends BaseContainerBlockEntity implements IHea
             changed = true;
         }
 
-        if (changed) be.setChanged();
+        if (changed) {
+            be.setChanged(); // Пометка для сохранения в файл региона (NBT)
+
+            // Отправляем пакет обновления всем игрокам поблизости
+            if (level != null && !level.isClientSide()) {
+                level.sendBlockUpdated(pos, state, state, 3);
+            }
+        }
+
     }
 
     private boolean findAndUpdateRecipe() {
