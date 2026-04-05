@@ -100,7 +100,7 @@ public class HeaterBlock extends BaseEntityBlock {
         Direction facing = state.getValue(FACING);
         double fx = 0.52 * facing.getStepX();
         double fz = 0.52 * facing.getStepZ();
-        level.addParticle(ParticleTypes.SMOKE, x + fx, y + 0.3, z + fz, 0, 0.02, 0);
-        level.addParticle(ParticleTypes.FLAME, x + fx, y + 0.3, z + fz, 0, 0.01, 0);
+        level.addParticle(ParticleTypes.SMOKE, x + fx, y + 0.1, z + fz, 0, 0.02, 0);
+        level.addParticle(ParticleTypes.FLAME, x + fx, y, z + fz, 0, 0.01, 0);
     }
 }

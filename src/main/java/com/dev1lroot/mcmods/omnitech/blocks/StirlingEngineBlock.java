@@ -89,9 +89,12 @@ public class StirlingEngineBlock extends BaseEntityBlock implements IFluidContai
         if (!state.getValue(LIT)) return;
         double x = pos.getX() + 0.5, y = pos.getY() + 0.5, z = pos.getZ() + 0.5;
         if (random.nextDouble() < 0.1) {
-            level.playLocalSound(x, y, z, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 0.2F, 0.8F + random.nextFloat() * 0.4F, false);
+            level.playLocalSound(x, y, z, SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS, 0.2F, 0.8F + random.nextFloat() * 0.4F, false);
+            Direction facing = state.getValue(FACING);
+            level.addParticle(ParticleTypes.CLOUD, x + 0.55 * facing.getStepX(), y + 0.4, z + 0.55 * facing.getStepZ(), 0, 0.02, 0);
         }
-        Direction facing = state.getValue(FACING);
-        level.addParticle(ParticleTypes.SMOKE, x + 0.55 * facing.getStepX(), y + 0.4, z + 0.55 * facing.getStepZ(), 0, 0.02, 0);
+        if (level.getGameTime() % 5 == 0) {
+            level.playLocalSound(x, y, z, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.2F, 0.8F + random.nextFloat() * 0.4F, false);
+        }
     }
 }

@@ -4,6 +4,10 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -50,5 +54,24 @@ public class BoilerBlock extends BaseEntityBlock implements IFluidContainer {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
         builder.add(LIT);
+    }
+
+    @Override
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if (!state.getValue(LIT)) return;
+        double x = pos.getX() + 0.5, y = pos.getY() + 0.5, z = pos.getZ() + 0.5;
+        if (random.nextDouble() < 0.1)
+        {
+            double topY = pos.getY() + 1.0;
+
+            level.playLocalSound(x, y, z, SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS, 0.2F, 0.8F + random.nextFloat() * 0.4F, false);
+            // Спавним строго по центру верхней грани
+            level.addParticle(ParticleTypes.CLOUD,
+                    x,          // Центр по X
+                    topY + 0.1, // Чуть выше верхней грани (чтобы не проваливалось внутрь)
+                    z,          // Центр по Z
+                    0, 0.05, 0  // Скорость: только вверх по Y
+            );
+        }
     }
 }

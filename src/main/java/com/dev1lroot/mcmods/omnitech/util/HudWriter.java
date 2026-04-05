@@ -14,10 +14,12 @@ public class HudWriter
     private int x;
     private int y;
     private int currentColor;
+    private boolean dropShadow;
 
-    public HudWriter(GuiGraphicsExtractor graphics, Font font, int x, int y, int lineHeight)
+    public HudWriter(GuiGraphicsExtractor graphics, Font font, int x, int y, int lineHeight, boolean dropShadow)
     {
         this.graphics = graphics;
+        this.dropShadow = dropShadow;
         this.font = font;
         this.startX = x;
         this.x = x;
@@ -88,7 +90,7 @@ public class HudWriter
         if (buffer.length() == 0) return;
 
         String str = buffer.toString();
-        graphics.text(font, str, x, y, currentColor);
+        graphics.text(font, str, x, y, currentColor, dropShadow);
         x += font.width(str);
 
         buffer.setLength(0);

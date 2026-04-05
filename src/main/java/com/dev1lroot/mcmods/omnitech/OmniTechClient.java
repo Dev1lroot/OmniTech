@@ -59,10 +59,10 @@ public class OmniTechClient
 
         // Для латуни
         event.register(new FluidModel.Unbaked(
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/melted_brass_still")),
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/melted_brass_flow")),
+                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/molten_brass_still")),
+                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/molten_brass_flow")),
                 null,
                 null
-        ), OmniTechFluids.MELTED_BRASS.get(), OmniTechFluids.FLOWING_MELTED_BRASS.get());
+        ), OmniTechFluids.MOLTEN_BRASS.get(), OmniTechFluids.FLOWING_MOLTEN_BRASS.get());
     }
 }

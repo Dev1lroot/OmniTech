@@ -6,7 +6,7 @@
       "omnitech:zinc_dust","omnitech:zinc_dust","omnitech:zinc_dust"
     ],
     "output": {
-      "fluid": "melted_brass",
+      "fluid": "molten_brass",
       "amount": 9000
     }
 }

@@ -19,13 +19,13 @@ public class SmelterScreen extends AbstractContainerScreen<SmelterMenu> {
 
     // Progress arrow sprite at UV (176, 14) — 24×16 pixels, drawn left to right
     private static final int ARROW_U = 176, ARROW_V = 14;
-    private static final int ARROW_W = 32,  ARROW_H = 16;
-    private static final int ARROW_X = 80,  ARROW_Y = 35;
+    private static final int ARROW_W = 54,  ARROW_H = 16;
+    private static final int ARROW_X = 79,  ARROW_Y = 54;
 
     // Fluid gauge sprite at UV (176, 0) — 12×52 pixels, drawn bottom to top
     private static final int FLUID_U = 176, FLUID_V = 0;
     private static final int FLUID_W = 16,  FLUID_H = 52;
-    private static final int FLUID_X = 134,  FLUID_Y = 17;
+    private static final int FLUID_X = 153,  FLUID_Y = 17;
 
     public SmelterScreen(SmelterMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -93,7 +93,7 @@ public class SmelterScreen extends AbstractContainerScreen<SmelterMenu> {
         int currentTemp  = menu.getTemperature();
         int requiredTemp = menu.getRequiredTemperature();
 
-        HudWriter writer = new HudWriter(graphics,this.font,66,16,10);
+        HudWriter writer = new HudWriter(graphics,this.font,66,20,10, false);
 
         // Current temperature
         int curColor = getTempColor(currentTemp, requiredTemp);
@@ -102,28 +102,29 @@ public class SmelterScreen extends AbstractContainerScreen<SmelterMenu> {
         // Required temperature (only if recipe present)
         if (requiredTemp > 0) {
             int reqColor = currentTemp >= requiredTemp ? 0xFF00AA00 : 0xFFAA0000;
-            writer.setColor(0xFFAAAAAA).write(" / ")
+            writer.setColor(0xFF404040).write("/")
                     .setColor(reqColor)
-                    .write( requiredTemp + " °C");
+                    .write( requiredTemp + "°C");
         }
 
         // Fluid amount
         int amount   = menu.getFluidAmount();
         int capacity = menu.getFluidCapacity();
         if (amount > 0) {
-            writer.write("\n\n\n")
+            writer.write("\n")
+                    .setColor(0xFF404040)
+                    .write(menu.getOutputFluid().getHoverName().getString())
+                    .newLine()
                     .setColor(0xFFFF8800)
                     .write(amount + "")
-                    .setColor(0xFFAAAAAA)
+                    .setColor(0xFF404040)
                     .write("/")
                     .setColor(0xFF886644)
-                    .write(capacity + " mb")
-                    .setColor(0xFFAAAAAA)
-                    .write("\n" + menu.getOutputFluid().getHoverName());
+                    .write(capacity + " mb");
         } else {
-            writer.write("\n\n\n\n\n")
-                    .setColor(0xFFAAAAAA)
-                    .write( "Empty");
+            writer.write("\n")
+                    .setColor(0xFF404040)
+                    .write("Empty");
         }
     }
 

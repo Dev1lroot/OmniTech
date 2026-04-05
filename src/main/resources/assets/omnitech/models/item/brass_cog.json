@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "omnitech:item/brass_mote"
+    "layer0": "omnitech:item/brass_cog"
   }
 }
