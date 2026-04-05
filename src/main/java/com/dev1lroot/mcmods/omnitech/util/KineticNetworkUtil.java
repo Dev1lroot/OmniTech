@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.util;
 
 import com.dev1lroot.mcmods.omnitech.blocks.IKineticReceiver;
+import com.dev1lroot.mcmods.omnitech.blocks.IKineticSupplier;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticPipeBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticPipeBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticReductorBlock;
@@ -12,7 +13,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -28,27 +31,52 @@ import java.util.Set;
  *   <li>A {@link KineticReductorBlock} is entered from any direction and propagates
  *       to all six faces (omnidirectional junction).</li>
  *   <li>Any other block that implements {@link IKineticReceiver} receives the force.</li>
+ *   <li>Any other block that implements {@link IKineticSupplier} contributes its
+ *       supply to the shared network total.</li>
  * </ul>
+ *
+ * <p><b>Supply/demand accounting:</b> the BFS first collects every node reachable
+ * from {@code source}, sums up total supply (own + all other generators found) and
+ * total demand (from all {@link IKineticReceiver} nodes).  If supply ≥ demand,
+ * every receiver gets {@link IKineticReceiver#addKineticForce} called and every
+ * pipe's rotation speed is set proportional to the total KF.  If supply &lt;
+ * demand, receivers are <em>not</em> powered (the network stalls) but pipes still
+ * animate so the player can see the generator is running.
+ *
+ * <p>KF values use a fixed-point scale: <b>10 units = 1 KF</b>.
  */
 public final class KineticNetworkUtil {
     private KineticNetworkUtil() {}
 
+    // ── Collected-node records ─────────────────────────────────────────────────
+
+    private record PipeNode(BlockPos pos, KineticPipeBlockEntity be) {}
+    private record ReductorNode(BlockPos pos, KineticReductorBlockEntity be) {}
+
     /**
-     * BFS from {@code source} through the kinetic pipe network, delivering
-     * {@code forcePerReceiver} to every reachable {@link IKineticReceiver}.
+     * BFS from {@code source} through the kinetic pipe network.
      *
-     * <p>Pipes and reductors in the path have their powered timers refreshed so
-     * that their animations stay active.
+     * <p>Phase 1 collects all reachable nodes and computes total supply vs demand.
+     * Phase 2 dispatches force if supply ≥ demand, or withholds it to stall
+     * machines when the network is overloaded.
      *
-     * @param level           the server-side level
-     * @param source          position of the KF source (generator / stirling engine)
-     * @param forcePerReceiver kinetic force units delivered to each terminal receiver
+     * @param level        the server-side level
+     * @param source       position of the KF source (generator / stirling engine)
+     * @param ownKfUnits   fixed-point KF units (10 = 1 KF) this source produces
      */
-    public static void propagateKineticForce(Level level, BlockPos source, int forcePerReceiver) {
+    public static void propagateKineticForce(Level level, BlockPos source, int ownKfUnits) {
         record Step(BlockPos pos, Direction.Axis entryAxis) {}
 
-        Set<BlockPos>    visited = new HashSet<>();
-        ArrayDeque<Step> queue   = new ArrayDeque<>();
+        Set<BlockPos>         visited   = new HashSet<>();
+        ArrayDeque<Step>      queue     = new ArrayDeque<>();
+        List<PipeNode>        pipes     = new ArrayList<>();
+        List<ReductorNode>    reductors = new ArrayList<>();
+        List<IKineticReceiver> receivers = new ArrayList<>();
+
+        int totalSupply = ownKfUnits;
+        int totalDemand = 0;
+
+        // ── Phase 1: BFS collection ────────────────────────────────────────────
 
         visited.add(source);
         for (Direction dir : Direction.values()) {
@@ -67,9 +95,9 @@ public final class KineticNetworkUtil {
                 // Pipes only accept entry from the matching axis face
                 if (step.entryAxis() != pipeAxis) continue;
 
-                BlockEntity pipeEntity = level.getBlockEntity(step.pos());
-                if (pipeEntity instanceof KineticPipeBlockEntity pipe) {
-                    pipe.refreshPoweredTimer(level, step.pos(), state);
+                BlockEntity be = level.getBlockEntity(step.pos());
+                if (be instanceof KineticPipeBlockEntity pipe) {
+                    pipes.add(new PipeNode(step.pos(), pipe));
                 }
 
                 for (Direction dir : Direction.values()) {
@@ -80,24 +108,18 @@ public final class KineticNetworkUtil {
                     }
                 }
 
-            }
-            else if (state.getBlock() instanceof KineticReductorBlock)
-            {
+            } else if (state.getBlock() instanceof KineticReductorBlock) {
                 if (state.getValue(KineticReductorBlock.SIGNALED)) {
-                    // Опционально: гасим анимацию сразу, если BFS дошел сюда
-                    BlockEntity reductorBe = level.getBlockEntity(step.pos());
-                    if (reductorBe instanceof KineticReductorBlockEntity reductor) {
-                        // Вызываем метод, который мы обновили ранее, чтобы он сбросил таймер
-                        reductor.refreshPoweredTimer(level, step.pos(), state);
-                    }
-                    continue; // ПРЕРЫВАЕМ цепь: соседи этого редуктора не попадут в очередь
+                    // Blocked by redstone — do not traverse past this reductor
+                    continue;
                 }
 
-                // Reductors accept from any direction and output to all six faces
-                BlockEntity reductorBe = level.getBlockEntity(step.pos());
-                if (reductorBe instanceof KineticReductorBlockEntity reductor) {
-                    reductor.refreshPoweredTimer(level, step.pos(), state);
+                BlockEntity be = level.getBlockEntity(step.pos());
+                if (be instanceof KineticReductorBlockEntity reductor) {
+                    reductors.add(new ReductorNode(step.pos(), reductor));
                 }
+
+                // Reductors accept from any direction and propagate to all six faces
                 for (Direction dir : Direction.values()) {
                     BlockPos next = step.pos().relative(dir);
                     if (!visited.contains(next)) {
@@ -106,11 +128,41 @@ public final class KineticNetworkUtil {
                 }
 
             } else {
-                // Terminal node — deliver force if the block accepts it
+                // Terminal node — check if supplier or consumer (or both)
                 BlockEntity be = level.getBlockEntity(step.pos());
-                if (be instanceof IKineticReceiver receiver) {
-                    receiver.addKineticForce(forcePerReceiver);
+
+                if (be instanceof IKineticSupplier supplier) {
+                    totalSupply += supplier.getKfSupply();
                 }
+
+                if (be instanceof IKineticReceiver receiver) {
+                    receivers.add(receiver);
+                    totalDemand += receiver.getKfDemand();
+                }
+            }
+        }
+
+        // ── Phase 2: dispatch ──────────────────────────────────────────────────
+
+        boolean powered = totalSupply >= totalDemand;
+
+        // Always refresh pipe animations (so they spin whenever a generator is running,
+        // even if the network is stalled — player can see supply is available)
+        for (PipeNode pn : pipes) {
+            BlockState pipeState = level.getBlockState(pn.pos());
+            pn.be().refreshPoweredTimer(level, pn.pos(), pipeState, powered ? totalSupply : 0);
+        }
+
+        // Reductors animate whenever KF passes through them
+        for (ReductorNode rn : reductors) {
+            BlockState rState = level.getBlockState(rn.pos());
+            rn.be().refreshPoweredTimer(level, rn.pos(), rState);
+        }
+
+        // Only deliver force to machines if supply is sufficient
+        if (powered) {
+            for (IKineticReceiver receiver : receivers) {
+                receiver.addKineticForce(totalSupply);
             }
         }
     }

@@ -106,6 +106,10 @@ public class ManualMaceratorBlockEntity extends BaseContainerBlockEntity impleme
         }
     }
 
+    /** Only draw from the KF network when there is something to process. */
+    @Override
+    public int getKfDemand() { return currentRecipe != null ? 5 : 0; }
+
     /**
      * Called by the Crank block when the player turns the crank.
      * @return true if the force was accepted (recipe exists), false otherwise

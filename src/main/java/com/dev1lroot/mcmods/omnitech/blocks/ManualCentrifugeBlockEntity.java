@@ -112,6 +112,10 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
         );
     }
 
+    /** Only draw from the KF network when there is something to process. */
+    @Override
+    public int getKfDemand() { return currentRecipe != null ? 5 : 0; }
+
     @Override
     public boolean addKineticForce(int amount) {
         if (currentRecipe == null) return false;

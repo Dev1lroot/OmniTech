@@ -17,8 +17,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Renders the Kinetic Pipe with a spinning animation while POWERED=true.
- * The model rotates around the pipe's axis at {@link KineticPipeBlockEntity#ROTATION_SPEED}
- * degrees per tick, interpolated smoothly using partial ticks.
+ * The model rotates around the pipe's axis at a speed proportional to the network's
+ * total KF level, interpolated smoothly using partial ticks.
  */
 public class KineticPipeRenderer
         implements BlockEntityRenderer<KineticPipeBlockEntity, KineticPipeRenderState> {
@@ -45,9 +45,12 @@ public class KineticPipeRenderer
         state.axis    = entity.getBlockState().getValue(KineticPipeBlock.AXIS);
 
         if (powered && entity.getLevel() instanceof ClientLevel cl) {
-            // Drive all pipes from the same global clock so they stay in sync
-            state.rotationAngle = ((cl.getGameTime() + partialTicks)
-                    * KineticPipeBlockEntity.ROTATION_SPEED) % 360f;
+            // Drive all pipes from the same global clock so they stay in sync.
+            // Speed scales with the network's total KF level.
+            float speed = entity.getRotationSpeed();
+            state.rotationAngle = speed > 0f
+                    ? ((cl.getGameTime() + partialTicks) * speed) % 360f
+                    : 0f;
         } else {
             state.rotationAngle = 0f;
         }

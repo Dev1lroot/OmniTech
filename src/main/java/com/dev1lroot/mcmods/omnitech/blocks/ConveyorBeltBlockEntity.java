@@ -85,6 +85,10 @@ public class ConveyorBeltBlockEntity extends BlockEntity
         return true;
     }
 
+    /** Conveyor belts are very cheap: 0.1 KF (1 fixed-point unit). */
+    @Override
+    public int getKfDemand() { return 1; }
+
     // ── Server tick ───────────────────────────────────────────────────────────
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,

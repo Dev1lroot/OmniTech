@@ -27,12 +27,13 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
-public class StirlingEngineBlockEntity extends BlockEntity implements MenuProvider {
+public class StirlingEngineBlockEntity extends BlockEntity implements MenuProvider, IKineticSupplier {
 
     public static final int MAX_FLUID = 4000;
     public static final int CONSUMPTION_RATE = 10;
     public static final int WATER_OUTPUT_RATE = 10;
-    public static final int KF_PRODUCTION = 2;
+    /** Fixed-point KF units produced per tick (10 = 1 KF). */
+    public static final int KF_SUPPLY = 20;
 
     private FluidStack steamTank = FluidStack.EMPTY;
     private FluidStack waterTank = FluidStack.EMPTY;
@@ -58,6 +59,11 @@ public class StirlingEngineBlockEntity extends BlockEntity implements MenuProvid
 
     public StirlingEngineBlockEntity(BlockPos pos, BlockState state) {
         super(OmniTechBlockEntities.STIRLING_ENGINE.get(), pos, state);
+    }
+
+    @Override
+    public int getKfSupply() {
+        return getBlockState().getValue(StirlingEngineBlock.LIT) ? KF_SUPPLY : 0;
     }
 
     @Override
@@ -96,7 +102,7 @@ public class StirlingEngineBlockEntity extends BlockEntity implements MenuProvid
             if (be.waterTank.isEmpty()) be.waterTank = new FluidStack(Fluids.WATER, WATER_OUTPUT_RATE);
             else be.waterTank.grow(WATER_OUTPUT_RATE);
 
-            KineticNetworkUtil.propagateKineticForce(level, pos, KF_PRODUCTION);
+            KineticNetworkUtil.propagateKineticForce(level, pos, KF_SUPPLY);
             dirty = true;
         }
 

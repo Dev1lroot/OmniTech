@@ -18,11 +18,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
-public class KineticGeneratorBlockEntity extends BaseContainerBlockEntity {
+public class KineticGeneratorBlockEntity extends BaseContainerBlockEntity implements IKineticSupplier {
     public static final int SLOT_FUEL = 0;
     public static final int SLOT_COUNT = 1;
-    /** Kinetic Force units pushed to each adjacent receiver per tick while burning. */
-    public static final int KF_PER_TICK = 1;
+    /** Fixed-point KF units produced per tick (10 = 1 KF). */
+    public static final int KF_SUPPLY = 10;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
     private int burnTime    = 0;
@@ -87,11 +87,14 @@ public class KineticGeneratorBlockEntity extends BaseContainerBlockEntity {
 
         // Walk the pipe network via BFS and deliver KF to every reachable machine
         if (be.isLit()) {
-            KineticNetworkUtil.propagateKineticForce(level, pos, KF_PER_TICK);
+            KineticNetworkUtil.propagateKineticForce(level, pos, KF_SUPPLY);
         }
 
         be.setChanged();
     }
+
+    @Override
+    public int getKfSupply() { return isLit() ? KF_SUPPLY : 0; }
 
     public boolean isLit()       { return burnTime > 0; }
     public int getBurnTime()     { return burnTime; }
