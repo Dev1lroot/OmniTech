@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceScreen;
+import com.dev1lroot.mcmods.omnitech.gui.FoundryScreen;
 import com.dev1lroot.mcmods.omnitech.gui.FluidTankScreen;
 import com.dev1lroot.mcmods.omnitech.gui.HeaterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.KineticGeneratorScreen;
@@ -46,6 +47,8 @@ public class OmniTechGUI {
                         output.accept(OmniTechItems.FLUID_TANK_ITEM.get());
                         output.accept(OmniTechItems.STEEL_INGOT.get());
                         output.accept(OmniTechItems.SMELTER_ITEM.get());
+                        output.accept(OmniTechItems.FOUNDRY_ITEM.get());
+                        output.accept(OmniTechItems.BRASS_COG.get());
                     }).build());
 
     public static void register(IEventBus modEventBus) {
@@ -64,6 +67,7 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.FLUID_TANK.get(), FluidTankScreen::new);
         event.register(OmniTechMenuTypes.SORTER.get(), SorterScreen::new);
         event.register(OmniTechMenuTypes.SMELTER.get(), SmelterScreen::new);
+        event.register(OmniTechMenuTypes.FOUNDRY.get(), FoundryScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)

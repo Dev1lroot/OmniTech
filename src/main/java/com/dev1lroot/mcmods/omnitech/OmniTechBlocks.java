@@ -51,6 +51,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> BOILER;
     public static final DeferredBlock<Block> SORTER;
     public static final DeferredBlock<Block> SMELTER;
+    public static final DeferredBlock<Block> FOUNDRY;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -102,6 +103,9 @@ public class OmniTechBlocks {
                         .sound(SoundType.METAL)));
         SMELTER = register("smelter",
                 p -> new SmelterBlock(p.mapColor(MapColor.METAL).strength(4.0F)
+                        .sound(SoundType.METAL)));
+        FOUNDRY = register("foundry",
+                p -> new FoundryBlock(p.mapColor(MapColor.METAL).strength(4.0F)
                         .sound(SoundType.METAL)));
     }
 

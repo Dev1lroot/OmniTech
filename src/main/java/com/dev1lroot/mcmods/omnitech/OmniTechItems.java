@@ -60,6 +60,12 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> SMELTER_ITEM = REGISTRY.registerSimpleBlockItem(
             "smelter", OmniTechBlocks.SMELTER);
 
+    public static final DeferredItem<BlockItem> FOUNDRY_ITEM = REGISTRY.registerSimpleBlockItem(
+            "foundry", OmniTechBlocks.FOUNDRY);
+
+    public static final DeferredItem<Item> BRASS_COG = REGISTRY.registerSimpleItem(
+            "brass_cog", p -> p);
+
     // Real Items
     public static final DeferredItem<Item> STEEL_INGOT = REGISTRY.registerSimpleItem(
             "steel_ingot", p -> p);
@@ -89,6 +95,9 @@ public class OmniTechItems
 
     public static final DeferredItem<Item> WOODEN_REDUCTOR = REGISTRY.registerSimpleItem(
             "wooden_reductor", p -> p);
+
+    public static final DeferredItem<Item> COG_TEMPLATE = REGISTRY.registerSimpleItem(
+            "cog_template", p -> p);
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

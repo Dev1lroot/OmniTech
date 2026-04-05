@@ -133,5 +133,11 @@
   "block.omnitech.smelter": "Smelter",
   "item.omnitech.smelter": "Smelter",
   "container.omnitech.smelter": "Smelter",
-  "fluid.omnitech.melted_brass": "Melted Brass"
+  "fluid.omnitech.melted_brass": "Melted Brass",
+  "block.omnitech.brass_block": "Brass Block",
+  "item.omnitech.brass_ingot": "Brass Ingot",
+  "item.omnitech.brass_dust": "Brass Dust",
+  "item.omnitech.brass_plate": "Brass Plate",
+  "item.omnitech.brass_mote": "Brass Mote",
+  "item.omnitech.brass_nugget": "Brass Nugget"
 }

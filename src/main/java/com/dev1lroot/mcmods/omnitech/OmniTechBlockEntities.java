@@ -88,6 +88,11 @@ public class OmniTechBlockEntities {
                     () -> new BlockEntityType<>(SmelterBlockEntity::new,
                             OmniTechBlocks.SMELTER.get()));
 
+    public static final Supplier<BlockEntityType<FoundryBlockEntity>> FOUNDRY =
+            REGISTRY.register("foundry",
+                    () -> new BlockEntityType<>(FoundryBlockEntity::new,
+                            OmniTechBlocks.FOUNDRY.get()));
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }

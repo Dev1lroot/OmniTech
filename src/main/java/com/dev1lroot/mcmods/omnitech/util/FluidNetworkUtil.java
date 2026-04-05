@@ -8,6 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
@@ -87,8 +88,16 @@ public final class FluidNetworkUtil {
                 for (BlockPos next : getConnectedNeighbors(level, pos, be)) {
                     if (visited.add(next)) queue.add(next);
                 }
+            } else {
+                // Any other block (machine, etc.) — check if it can accept fluid via
+                // the capability system. These are terminal insertion targets; BFS
+                // does not traverse further from them (no pipe/network inside machines).
+                ResourceHandler<FluidResource> capHandler =
+                        level.getCapability(Capabilities.Fluid.BLOCK, pos, null);
+                if (capHandler != null && hasSpace(capHandler, resource)) {
+                    tankTargets.add(capHandler); // prefer machines over pipes
+                }
             }
-            // Any other block (other pump, machine, air) — stop traversal on this path
         }
 
         // Prefer the first tank with space; fall back to the first pipe with space
