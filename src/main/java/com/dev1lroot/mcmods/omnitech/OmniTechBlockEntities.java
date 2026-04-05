@@ -78,6 +78,11 @@ public class OmniTechBlockEntities {
                     () -> new BlockEntityType<>(BoilerBlockEntity::new,
                             OmniTechBlocks.BOILER.get()));
 
+    public static final Supplier<BlockEntityType<SorterBlockEntity>> SORTER =
+            REGISTRY.register("sorter",
+                    () -> new BlockEntityType<>(SorterBlockEntity::new,
+                            OmniTechBlocks.SORTER.get()));
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }

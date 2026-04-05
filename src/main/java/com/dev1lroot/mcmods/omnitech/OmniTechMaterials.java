@@ -101,6 +101,14 @@ public class OmniTechMaterials {
             new String[]{ "%_block" } // there is no mineral aluminium in real life
     );
 
+    public static final MaterialSet ZINC = MaterialSet.create(
+            "zinc",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%_block" } // sphalerite is the mineral for zinc
+    );
+
     public static final MaterialSet IRON = MaterialSet.create(
             "iron",
             OmniTechItems.REGISTRY,

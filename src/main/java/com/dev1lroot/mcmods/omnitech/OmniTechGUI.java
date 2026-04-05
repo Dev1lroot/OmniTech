@@ -6,6 +6,7 @@ import com.dev1lroot.mcmods.omnitech.gui.HeaterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.KineticGeneratorScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ManualCentrifugeScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ManualMaceratorScreen;
+import com.dev1lroot.mcmods.omnitech.gui.SorterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.StirlingEngineScreen;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -38,6 +39,7 @@ public class OmniTechGUI {
                         output.accept(OmniTechItems.HEATER_ITEM.get());
                         output.accept(OmniTechItems.STIRLING_ENGINE_ITEM.get());
                         output.accept(OmniTechItems.CONVEYOR_BELT_ITEM.get());
+                        output.accept(OmniTechItems.SORTER_ITEM.get());
                         output.accept(OmniTechItems.FLUID_PIPE_ITEM.get());
                         output.accept(OmniTechItems.PUMP_ITEM.get());
                         output.accept(OmniTechItems.FLUID_TANK_ITEM.get());
@@ -58,6 +60,7 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.HEATER.get(), HeaterScreen::new);
         event.register(OmniTechMenuTypes.STIRLING_ENGINE.get(), StirlingEngineScreen::new);
         event.register(OmniTechMenuTypes.FLUID_TANK.get(), FluidTankScreen::new);
+        event.register(OmniTechMenuTypes.SORTER.get(), SorterScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)

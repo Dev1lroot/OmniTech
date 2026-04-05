@@ -205,6 +205,12 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
         output.putInt("RequiredKineticForce", this.requiredKineticForce);
     }
 
+    /** Output slots are extraction-only; input slot accepts items. */
+    @Override
+    public boolean canPlaceItem(int index, ItemStack stack) {
+        return index == SLOT_INPUT;
+    }
+
     // Logic for Sides (WorldlyContainer)
 
     @Override

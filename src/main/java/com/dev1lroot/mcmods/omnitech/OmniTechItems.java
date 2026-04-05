@@ -48,6 +48,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> PUMP_ITEM = REGISTRY.registerSimpleBlockItem(
             "pump", OmniTechBlocks.PUMP);
 
+    public static final DeferredItem<BlockItem> SORTER_ITEM = REGISTRY.registerSimpleBlockItem(
+            "sorter", OmniTechBlocks.SORTER);
+
     public static final DeferredItem<BlockItem> FLUID_TANK_ITEM = REGISTRY.registerSimpleBlockItem(
             "fluid_tank", OmniTechBlocks.FLUID_TANK);
 

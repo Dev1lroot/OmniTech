@@ -182,6 +182,12 @@ public class ManualMaceratorBlockEntity extends BaseContainerBlockEntity impleme
         output.putInt("RequiredKineticForce", this.requiredKineticForce);
     }
 
+    /** Output slots are extraction-only; input slot accepts items. */
+    @Override
+    public boolean canPlaceItem(int index, ItemStack stack) {
+        return index == SLOT_INPUT;
+    }
+
     // 1. Define which slots are "visible" from which side.
 // This is the first filter a hopper or pipe checks.
     @Override

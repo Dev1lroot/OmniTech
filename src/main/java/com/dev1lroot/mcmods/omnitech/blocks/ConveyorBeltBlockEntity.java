@@ -157,14 +157,11 @@ public class ConveyorBeltBlockEntity extends BlockEntity
         BlockEntity backBe = level.getBlockEntity(pos.relative(backDir));
         if (!(backBe instanceof Container output)) return false; // no container → stall
 
-        // Respect WorldlyContainer: we are entering from backDir's opposite (= our facing).
-        // The receiving face is backDir as seen by the neighbor.
-        Direction enterFace = backDir.getOpposite(); // = our FACING = the face we push into
-        if (output instanceof WorldlyContainer wc
-                && !wc.canPlaceItemThroughFace(0, be.items.get(0), enterFace)) return false;
+        // The face of the receiving block that the belt pushes into
+        Direction enterFace = backDir.getOpposite(); // = our FACING
 
         ItemStack held = be.items.get(0);
-        if (!tryInsert(output, held)) return false;  // destination full → stall
+        if (!tryInsert(output, held, enterFace)) return false;  // destination full → stall
 
         be.items.set(0, ItemStack.EMPTY);
         return true;
@@ -231,6 +228,10 @@ public class ConveyorBeltBlockEntity extends BlockEntity
                 if (!wc.canTakeItemThroughFace(slotIndex, stack, sideToExtractFrom)) continue;
             }
 
+            // Skip slots that still accept items (input / fuel slots).
+            // Only extract from output-only slots (canPlaceItem == false).
+            if (container instanceof WorldlyContainer && container.canPlaceItem(slotIndex, stack)) continue;
+
             // Snatch exactly 1 item
             ItemStack extracted = stack.copyWithCount(1);
             stack.shrink(1);
@@ -242,23 +243,31 @@ public class ConveyorBeltBlockEntity extends BlockEntity
     }
 
     /**
-     * Inserts exactly one item into {@code container}.
-     * Respects {@link Container#getMaxStackSize()} so belts (max=1) are not
-     * over-filled.
+     * Inserts exactly one item into {@code container} via {@code enterFace}.
+     * Iterates all slots and checks {@link WorldlyContainer#canPlaceItemThroughFace}
+     * plus {@link Container#canPlaceItem}, without using {@code getSlotsForFace}.
+     * This allows, e.g., inserting iron ore into a vanilla furnace's input slot
+     * from the side (furnace {@code canPlaceItemThroughFace} is face-agnostic).
      *
      * @return {@code true} if the item was inserted.
      */
-    private static boolean tryInsert(Container container, ItemStack stack) {
+    private static boolean tryInsert(Container container, ItemStack stack, Direction enterFace) {
+        int size = container.getContainerSize();
         int containerMax = container.getMaxStackSize();
-        for (int i = 0; i < container.getContainerSize(); i++) {
-            ItemStack slot = container.getItem(i);
-            if (slot.isEmpty()) {
-                container.setItem(i, stack.copyWithCount(1));
+        for (int slotIdx = 0; slotIdx < size; slotIdx++) {
+            if (container instanceof WorldlyContainer wc
+                    && !wc.canPlaceItemThroughFace(slotIdx, stack, enterFace)) continue;
+            if (!container.canPlaceItem(slotIdx, stack)) continue;
+
+            ItemStack existing = container.getItem(slotIdx);
+            if (existing.isEmpty()) {
+                container.setItem(slotIdx, stack.copyWithCount(1));
+                container.setChanged();
                 return true;
             }
-            if (ItemStack.isSameItemSameComponents(slot, stack)
-                    && slot.getCount() < Math.min(slot.getMaxStackSize(), containerMax)) {
-                slot.grow(1);
+            if (ItemStack.isSameItemSameComponents(existing, stack)
+                    && existing.getCount() < Math.min(existing.getMaxStackSize(), containerMax)) {
+                existing.grow(1);
                 container.setChanged();
                 return true;
             }

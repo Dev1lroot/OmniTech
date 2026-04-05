@@ -49,6 +49,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> PUMP;
     public static final DeferredBlock<Block> FLUID_TANK;
     public static final DeferredBlock<Block> BOILER;
+    public static final DeferredBlock<Block> SORTER;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -95,6 +96,9 @@ public class OmniTechBlocks {
         BOILER = register("boiler",
                 p -> new BoilerBlock(p.mapColor(MapColor.METAL).strength(3.0F)
                         .sound(SoundType.METAL).noOcclusion()));
+        SORTER = register("sorter",
+                p -> new SorterBlock(p.mapColor(MapColor.METAL).strength(3.0F)
+                        .sound(SoundType.METAL)));
     }
 
     // ── Registration helpers ───────────────────────────────────────────────
