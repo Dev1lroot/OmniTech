@@ -129,5 +129,9 @@
   "item.omnitech.zinc_dust": "Zinc Dust",
   "item.omnitech.zinc_plate": "Zinc Plate",
   "item.omnitech.zinc_mote": "Zinc Mote",
-  "item.omnitech.zinc_nugget": "Zinc Nugget"
+  "item.omnitech.zinc_nugget": "Zinc Nugget",
+  "block.omnitech.smelter": "Smelter",
+  "item.omnitech.smelter": "Smelter",
+  "container.omnitech.smelter": "Smelter",
+  "fluid.omnitech.melted_brass": "Melted Brass"
 }

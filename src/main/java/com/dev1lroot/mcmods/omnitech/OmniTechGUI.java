@@ -6,6 +6,7 @@ import com.dev1lroot.mcmods.omnitech.gui.HeaterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.KineticGeneratorScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ManualCentrifugeScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ManualMaceratorScreen;
+import com.dev1lroot.mcmods.omnitech.gui.SmelterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.SorterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.StirlingEngineScreen;
 import net.minecraft.core.registries.Registries;
@@ -44,6 +45,7 @@ public class OmniTechGUI {
                         output.accept(OmniTechItems.PUMP_ITEM.get());
                         output.accept(OmniTechItems.FLUID_TANK_ITEM.get());
                         output.accept(OmniTechItems.STEEL_INGOT.get());
+                        output.accept(OmniTechItems.SMELTER_ITEM.get());
                     }).build());
 
     public static void register(IEventBus modEventBus) {
@@ -61,6 +63,7 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.STIRLING_ENGINE.get(), StirlingEngineScreen::new);
         event.register(OmniTechMenuTypes.FLUID_TANK.get(), FluidTankScreen::new);
         event.register(OmniTechMenuTypes.SORTER.get(), SorterScreen::new);
+        event.register(OmniTechMenuTypes.SMELTER.get(), SmelterScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)

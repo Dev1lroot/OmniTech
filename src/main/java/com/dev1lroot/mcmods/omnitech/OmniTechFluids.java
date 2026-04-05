@@ -29,6 +29,27 @@ public class OmniTechFluids
     public static final DeferredHolder<Fluid, Fluid> FLOWING_STEAM = REGISTRY.register("flowing_steam",
             () -> new BaseFlowingFluid.Flowing(createProperties()));
 
+    public static final DeferredHolder<FluidType, FluidType> MELTED_BRASS_TYPE = TYPE_REGISTRY.register("melted_brass",
+            () -> new FluidType(FluidType.Properties.create()
+                    .descriptionId("fluid.omnitech.melted_brass")
+                    .density(8900)
+                    .viscosity(3000)
+                    .temperature(1200)));
+
+    public static final DeferredHolder<Fluid, Fluid> MELTED_BRASS = REGISTRY.register("melted_brass",
+            () -> new BaseFlowingFluid.Source(createMeltedBrassProperties()));
+
+    public static final DeferredHolder<Fluid, Fluid> FLOWING_MELTED_BRASS = REGISTRY.register("flowing_melted_brass",
+            () -> new BaseFlowingFluid.Flowing(createMeltedBrassProperties()));
+
+    private static BaseFlowingFluid.Properties createMeltedBrassProperties() {
+        return new BaseFlowingFluid.Properties(
+                MELTED_BRASS_TYPE,
+                MELTED_BRASS,
+                FLOWING_MELTED_BRASS
+        );
+    }
+
     private static BaseFlowingFluid.Properties createProperties() {
         return new BaseFlowingFluid.Properties(
                 STEAM_TYPE,

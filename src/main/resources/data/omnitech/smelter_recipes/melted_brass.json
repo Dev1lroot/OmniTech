@@ -1,12 +1,8 @@
 {
     "requiredMinimalTemperature": 1000,
-    "input":[
-      "omnitech:copper_dust","omnitech:copper_dust","omnitech:copper_dust",
-      "omnitech:copper_dust","omnitech:copper_dust","omnitech:copper_dust",
-      "omnitech:zinc_dust","omnitech:zinc_dust","omnitech:zinc_dust"
-    ],
-    "output": {
+    "input": {
       "fluid": "melted_brass",
-      "amount": 9000
-    }
+      "amount": 200
+    },
+    "output": "omnitech:brass_cog"
 }

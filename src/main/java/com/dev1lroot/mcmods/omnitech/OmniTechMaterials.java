@@ -109,6 +109,14 @@ public class OmniTechMaterials {
             new String[]{ "%_block" } // sphalerite is the mineral for zinc
     );
 
+    public static final MaterialSet BRASS = MaterialSet.create(
+            "brass",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%_block" } // produced in smelter and foundry
+    );
+
     public static final MaterialSet IRON = MaterialSet.create(
             "iron",
             OmniTechItems.REGISTRY,

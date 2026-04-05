@@ -24,9 +24,11 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.Profiler;
 import com.dev1lroot.mcmods.omnitech.datagen.OmniTechDatagen;
+import com.dev1lroot.mcmods.omnitech.blocks.SmelterBlockEntity;
 import com.dev1lroot.mcmods.omnitech.recipes.AlloyFurnaceRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualCentrifugeRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualMaceratorRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.SmelterRecipeManager;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -91,6 +93,11 @@ public class OmniTech {
                     return ((BoilerBlockEntity) be).waterHandler;
                 }
         );
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.SMELTER.get(),
+                (be, side) -> ((SmelterBlockEntity) be).fluidHandler
+        );
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -136,6 +143,15 @@ public class OmniTech {
                     PreparationBarrier barrier, Executor reloadExecutor) {
                 return CompletableFuture.runAsync(() -> {
                     ManualCentrifugeRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "smelter_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    SmelterRecipeManager.loadRecipes(sharedState.resourceManager());
                 }, taskExecutor).thenCompose(barrier::wait);
             }
         });

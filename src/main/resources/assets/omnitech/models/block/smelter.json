@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "particle": "omnitech:block/machine_side",
+    "top":   "omnitech:block/machine_side",
+    "front": "omnitech:block/blastfurnace",
+    "side":  "omnitech:block/machine_side"
+  }
+}

@@ -6,6 +6,7 @@ import com.dev1lroot.mcmods.omnitech.gui.HeaterMenu;
 import com.dev1lroot.mcmods.omnitech.gui.KineticGeneratorMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ManualCentrifugeMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ManualMaceratorMenu;
+import com.dev1lroot.mcmods.omnitech.gui.SmelterMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SorterMenu;
 import com.dev1lroot.mcmods.omnitech.gui.StirlingEngineMenu;
 import net.minecraft.core.registries.Registries;
@@ -51,6 +52,10 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<SorterMenu>> SORTER =
             REGISTRY.register("sorter",
                     () -> IMenuTypeExtension.create(SorterMenu::new));
+
+    public static final Supplier<MenuType<SmelterMenu>> SMELTER =
+            REGISTRY.register("smelter",
+                    () -> IMenuTypeExtension.create(SmelterMenu::new));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
