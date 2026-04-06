@@ -2,10 +2,24 @@ package com.dev1lroot.mcmods.omnitech.blocks;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
+import com.dev1lroot.mcmods.omnitech.gui.BoilerMenu;
+import com.dev1lroot.mcmods.omnitech.recipes.BoilerRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.BoilerRecipeManager;
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.ValueInput;
@@ -17,26 +31,94 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.slf4j.Logger;
 
-public class BoilerBlockEntity extends BlockEntity implements IHeatReceiver {
+import java.util.Optional;
 
-    public static final int MAX_FLUID = 8000;
-    public static final int CONVERSION_RATE = 20; // мб воды в пар за тик
-    public static final int TRANSFER_RATE = 100;  // скорость всасывания/выталкивания
+public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeatReceiver {
+
+    // ── Constants ─────────────────────────────────────────────────────────────
+    private static final Logger LOGGER = LogUtils.getLogger();
+
+    public static final int MAX_FLUID     = 8000;
+    public static final int TRANSFER_RATE = 100;
     public static final int MIN_BOIL_HEAT = 100;
-    public static final int MAX_HEAT = 500;
+    public static final int MAX_HEAT      = 500;
 
-    private int storedHeat = 0;
+    /** One output slot for recipe result items. */
+    public static final int SLOT_COUNT  = 1;
+    public static final int SLOT_OUTPUT = 0;
+
+    // ── State ─────────────────────────────────────────────────────────────────
+
+    private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
+
+    private int storedHeat    = 0;
+    private int processProgress = 0;
+    private int processTotalTime = 20;
+
     private FluidStack waterTank = FluidStack.EMPTY;
     private FluidStack steamTank = FluidStack.EMPTY;
 
-    // Публичные обработчики для регистрации в Capabilities
+    private BoilerRecipe currentRecipe = null;
+
+    // ── Fluid capability handlers ─────────────────────────────────────────────
+
     public final ResourceHandler<FluidResource> waterHandler = new InternalTank(true);
     public final ResourceHandler<FluidResource> steamHandler = new InternalTank(false);
+
+    // ── ContainerData (synced to GUI) ─────────────────────────────────────────
+    // Indices: 0=temperature, 1=requiredTemperature, 2=processProgress, 3=processTotalTime,
+    //          4=waterAmount, 5=steamAmount
+
+    protected final ContainerData dataAccess = new ContainerData() {
+        @Override public int get(int i) {
+            return switch (i) {
+                case 0 -> storedHeat;
+                case 1 -> currentRecipe != null ? currentRecipe.getRequiredMinimalTemperature() : 0;
+                case 2 -> processProgress;
+                case 3 -> processTotalTime;
+                case 4 -> waterTank.getAmount();
+                case 5 -> steamTank.getAmount();
+                default -> 0;
+            };
+        }
+        @Override public void set(int i, int value) {
+            switch (i) {
+                case 0 -> storedHeat      = value;
+                case 2 -> processProgress = value;
+                case 3 -> processTotalTime = value;
+            }
+        }
+        @Override public int getCount() { return 6; }
+    };
+
+    // ── Constructor ───────────────────────────────────────────────────────────
 
     public BoilerBlockEntity(BlockPos pos, BlockState state) {
         super(OmniTechBlockEntities.BOILER.get(), pos, state);
     }
+
+    // IMPORTANT FOR CUSTOM GUIs
+    @Override
+    public net.minecraft.nbt.CompoundTag getUpdateTag(net.minecraft.core.HolderLookup.Provider registries) {
+        // Вместо super или ручного создания, используем системный сборщик
+        try (net.minecraft.util.ProblemReporter.ScopedCollector reporter =
+                     new net.minecraft.util.ProblemReporter.ScopedCollector(this.problemPath(), LOGGER)) {
+
+            // Создаем чистый выход
+            net.minecraft.world.level.storage.TagValueOutput output =
+                    net.minecraft.world.level.storage.TagValueOutput.createWithContext(reporter, registries);
+
+            // ВАЖНО: Вызываем ТВОЙ метод, который сохраняет предметы, температуру и жидкость!
+            // Это гарантирует, что в пакете будет ВЕСЬ инвентарь (через ContainerHelper)
+            this.saveAdditional(output);
+
+            return output.buildResult();
+        }
+    }
+
+    // ── IHeatReceiver ─────────────────────────────────────────────────────────
 
     @Override
     public boolean addHeat(int celsius) {
@@ -45,70 +127,164 @@ public class BoilerBlockEntity extends BlockEntity implements IHeatReceiver {
         return true;
     }
 
+    // ── BaseContainerBlockEntity ──────────────────────────────────────────────
+
+    @Override protected Component getDefaultName() {
+        return Component.translatable("container.omnitech.boiler");
+    }
+
+    @Override protected NonNullList<ItemStack> getItems()               { return items; }
+    @Override protected void setItems(NonNullList<ItemStack> items)     { this.items = items; }
+    @Override public int getContainerSize()                             { return SLOT_COUNT; }
+
+    @Override protected AbstractContainerMenu createMenu(int containerId, Inventory playerInventory) {
+        return new BoilerMenu(containerId, playerInventory, this, dataAccess);
+    }
+
+    // ── Network sync ──────────────────────────────────────────────────────────
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    // ── Server tick ───────────────────────────────────────────────────────────
+
     public static void serverTick(Level level, BlockPos pos, BlockState state, BoilerBlockEntity be) {
         boolean dirty = false;
 
-        // 1. АКТИВНОЕ ВТЯГИВАНИЕ ВОДЫ (со всех сторон, кроме верха)
+        // 1. Pull water from all sides except top
         for (Direction face : Direction.values()) {
             if (face == Direction.UP) continue;
+            if (be.waterTank.getAmount() >= MAX_FLUID) continue;
 
-            if (be.waterTank.getAmount() < MAX_FLUID) {
-                ResourceHandler<FluidResource> neighbor = level.getCapability(
-                        Capabilities.Fluid.BLOCK, pos.relative(face), face.getOpposite());
-
-                if (neighbor != null) {
-                    dirty |= tryPullFluid(neighbor, be.waterHandler, Fluids.WATER);
-                }
-            }
+            ResourceHandler<FluidResource> neighbor = level.getCapability(
+                    Capabilities.Fluid.BLOCK, pos.relative(face), face.getOpposite());
+            if (neighbor != null)
+                dirty |= tryPullFluid(neighbor, be.waterHandler, Fluids.WATER);
         }
 
-        // 2. ПРОЦЕСС КИПЕНИЯ
-        if (be.storedHeat >= MIN_BOIL_HEAT && !be.waterTank.isEmpty()) {
-            int toConvert = Math.min(be.waterTank.getAmount(), CONVERSION_RATE);
-            int canFit = MAX_FLUID - be.steamTank.getAmount();
-            int finalAmount = Math.min(toConvert, canFit);
-
-            if (finalAmount > 0) {
-                be.waterTank.shrink(finalAmount);
-
-                // ВНИМАНИЕ: Замените Fluids.WATER на ваш кастомный пар (например, OmniTechFluids.STEAM.get())
-                FluidStack steam = new FluidStack(OmniTechFluids.STEAM.flowing.get(), finalAmount);
-
-                if (be.steamTank.isEmpty()) be.steamTank = steam;
-                else be.steamTank.grow(finalAmount);
-
-                if (level.getGameTime() % 40 == 0) be.storedHeat--; // Остывание при работе
+        // 2. Recipe matching
+        Optional<BoilerRecipe> found = BoilerRecipeManager.findRecipe(be.waterTank);
+        if (found.isPresent()) {
+            BoilerRecipe recipe = found.get();
+            if (be.currentRecipe == null || !be.currentRecipe.getId().equals(recipe.getId())) {
+                be.currentRecipe   = recipe;
+                be.processTotalTime = recipe.getProductionTime();
+                be.processProgress = 0;
+                dirty = true;
+            }
+        } else {
+            if (be.currentRecipe != null) {
+                be.currentRecipe   = null;
+                be.processProgress = 0;
                 dirty = true;
             }
         }
 
-        // 3. АКТИВНОЕ ВЫТАЛКИВАНИЕ ПАРА (только вверх)
+        // 3. Process recipe cycle
+        if (be.currentRecipe != null && be.canProcess()) {
+            be.processProgress++;
+            dirty = true;
+
+            if (be.processProgress >= be.processTotalTime) {
+                be.process(level);
+                be.processProgress = 0;
+                dirty = true;
+            }
+        } else if (be.processProgress > 0) {
+            be.processProgress = 0;
+            dirty = true;
+        }
+
+        // 4. Push steam upward only
         if (!be.steamTank.isEmpty()) {
             ResourceHandler<FluidResource> output = level.getCapability(
                     Capabilities.Fluid.BLOCK, pos.above(), Direction.DOWN);
-
-            if (output != null) {
+            if (output != null)
                 dirty |= tryPushFluid(be.steamHandler, output);
+        }
+
+        // 5. Update LIT blockstate
+        boolean isLit = be.storedHeat >= MIN_BOIL_HEAT && be.currentRecipe != null;
+        if (state.getValue(BoilerBlock.LIT) != isLit) {
+            level.setBlock(pos, state.setValue(BoilerBlock.LIT, isLit), 3);
+            dirty = true;
+        }
+
+        if (dirty) {
+            be.setChanged();
+            level.sendBlockUpdated(pos, state, state, 3);
+        }
+    }
+
+    private boolean canProcess() {
+        if (currentRecipe == null) return false;
+        if (storedHeat < currentRecipe.getRequiredMinimalTemperature()) return false;
+
+        // Check input water
+        if (waterTank.getAmount() < currentRecipe.getInputAmount()) return false;
+
+        // Check steam tank has space
+        FluidStack outFluid = currentRecipe.getOutputFluidStack();
+        if (outFluid.isEmpty()) return false;
+        if (!steamTank.isEmpty() && !steamTank.is(outFluid.getFluid())) return false;
+        if ((MAX_FLUID - steamTank.getAmount()) < currentRecipe.getOutputAmount()) return false;
+
+        // Check output slot has space for result item (if guaranteed drop)
+        if (currentRecipe.hasResult() && currentRecipe.getResultChance() >= 1.0f) {
+            ItemStack slot = items.get(SLOT_OUTPUT);
+            if (!slot.isEmpty()) {
+                // Check if the result item fits in the existing stack
+                if (slot.getCount() >= slot.getMaxStackSize()) return false;
             }
         }
 
-        // Обновление визуального состояния LIT
-        boolean isLit = be.storedHeat >= MIN_BOIL_HEAT;
-        if (state.getValue(BoilerBlock.LIT) != isLit) {
-            level.setBlock(pos, state.setValue(BoilerBlock.LIT, isLit), 3);
-        }
-
-        if (dirty) be.setChanged();
+        return true;
     }
 
-    // Вспомогательные методы для логики перемещения жидкостей
-    private static boolean tryPullFluid(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to, net.minecraft.world.level.material.Fluid filter) {
+    private void process(Level level) {
+        if (currentRecipe == null) return;
+
+        // Consume input water
+        int toConsume = currentRecipe.getInputAmount();
+        waterTank = waterTank.copyWithAmount(waterTank.getAmount() - toConsume);
+        if (waterTank.getAmount() <= 0) waterTank = FluidStack.EMPTY;
+
+        // Produce output fluid (steam)
+        FluidStack out = currentRecipe.getOutputFluidStack();
+        if (!out.isEmpty()) {
+            if (steamTank.isEmpty()) steamTank = out.copy();
+            else steamTank.grow(out.getAmount());
+        }
+
+        // Roll item result
+        ItemStack result = currentRecipe.rollResult(level.getRandom());
+        if (!result.isEmpty()) {
+            ItemStack existing = items.get(SLOT_OUTPUT);
+            if (existing.isEmpty()) {
+                items.set(SLOT_OUTPUT, result.copy());
+            } else if (existing.is(result.getItem()) && existing.getCount() < existing.getMaxStackSize()) {
+                existing.grow(result.getCount());
+            }
+            // If slot is full and item was rolled, it is lost (blocked by canProcess for chance=1.0)
+        }
+
+        // Natural heat loss per cycle
+        if (storedHeat > 0) storedHeat = Math.max(0, storedHeat - 1);
+    }
+
+    // ── Fluid transfer helpers ────────────────────────────────────────────────
+
+    private static boolean tryPullFluid(ResourceHandler<FluidResource> from,
+                                        ResourceHandler<FluidResource> to,
+                                        net.minecraft.world.level.material.Fluid filter) {
         try (Transaction tx = Transaction.openRoot()) {
             for (int i = 0; i < from.size(); i++) {
                 FluidResource res = from.getResource(i);
                 if (!res.isEmpty() && res.is(filter)) {
                     int available = Math.min(TRANSFER_RATE, from.getAmountAsInt(i));
-                    int accepted = to.insert(res, available, tx);
+                    int accepted  = to.insert(res, available, tx);
                     if (accepted > 0) {
                         from.extract(res, accepted, tx);
                         tx.commit();
@@ -120,12 +296,13 @@ public class BoilerBlockEntity extends BlockEntity implements IHeatReceiver {
         return false;
     }
 
-    private static boolean tryPushFluid(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to) {
+    private static boolean tryPushFluid(ResourceHandler<FluidResource> from,
+                                        ResourceHandler<FluidResource> to) {
         try (Transaction tx = Transaction.openRoot()) {
             FluidResource res = from.getResource(0);
             if (!res.isEmpty()) {
-                int available = Math.min(TRANSFER_RATE, (int)from.getAmountAsLong(0));
-                int accepted = to.insert(res, available, tx);
+                int available = Math.min(TRANSFER_RATE, (int) from.getAmountAsLong(0));
+                int accepted  = to.insert(res, available, tx);
                 if (accepted > 0) {
                     from.extract(res, accepted, tx);
                     tx.commit();
@@ -136,10 +313,16 @@ public class BoilerBlockEntity extends BlockEntity implements IHeatReceiver {
         return false;
     }
 
+    // ── Persistence ───────────────────────────────────────────────────────────
+
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        storedHeat = input.getIntOr("StoredHeat", 0);
+        items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(input, items);
+        storedHeat     = input.getIntOr("StoredHeat", 0);
+        processProgress = input.getIntOr("ProcessProgress", 0);
+        processTotalTime = input.getIntOr("ProcessTotalTime", 20);
         waterTank = input.read("WaterTank", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
         steamTank = input.read("SteamTank", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
     }
@@ -147,18 +330,33 @@ public class BoilerBlockEntity extends BlockEntity implements IHeatReceiver {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.putInt("StoredHeat", storedHeat);
+        ContainerHelper.saveAllItems(output, items);
+        output.putInt("StoredHeat",      storedHeat);
+        output.putInt("ProcessProgress", processProgress);
+        output.putInt("ProcessTotalTime", processTotalTime);
         output.store("WaterTank", FluidStack.OPTIONAL_CODEC, waterTank);
         output.store("SteamTank", FluidStack.OPTIONAL_CODEC, steamTank);
     }
 
-    private class InternalTank extends SnapshotJournal<FluidStack> implements ResourceHandler<FluidResource> {
+    // ── Accessors ─────────────────────────────────────────────────────────────
+
+    public FluidStack getWaterTank()    { return waterTank; }
+    public FluidStack getSteamTank()    { return steamTank; }
+    public int getStoredHeat()          { return storedHeat; }
+    public ContainerData getContainerData() { return dataAccess; }
+
+    // ── InternalTank (fluid capability) ──────────────────────────────────────
+
+    private class InternalTank extends SnapshotJournal<FluidStack>
+            implements ResourceHandler<FluidResource> {
+
         private final boolean isWater;
+
         InternalTank(boolean water) { this.isWater = water; }
 
-        @Override protected FluidStack createSnapshot() { return isWater ? waterTank : steamTank; }
+        @Override protected FluidStack createSnapshot()        { return isWater ? waterTank : steamTank; }
         @Override protected void revertToSnapshot(FluidStack s) {
-            if(isWater) waterTank = s; else steamTank = s;
+            if (isWater) waterTank = s; else steamTank = s;
         }
 
         @Override public int size() { return 1; }
@@ -168,25 +366,26 @@ public class BoilerBlockEntity extends BlockEntity implements IHeatReceiver {
             return s.isEmpty() ? FluidResource.EMPTY : FluidResource.of(s);
         }
 
-        @Override public long getAmountAsLong(int index) { return isWater ? waterTank.getAmount() : steamTank.getAmount(); }
+        @Override public long getAmountAsLong(int index) {
+            return isWater ? waterTank.getAmount() : steamTank.getAmount();
+        }
 
         @Override public long getCapacityAsLong(int index, FluidResource res) { return MAX_FLUID; }
 
-        @Override
-        public boolean isValid(int index, FluidResource resource) {
-            // Разрешаем вставлять только воду в водяной бак
+        @Override public boolean isValid(int index, FluidResource resource) {
             return isWater && resource.is(Fluids.WATER);
         }
 
         @Override
         public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
             if (!isValid(index, resource)) return 0;
-            int space = MAX_FLUID - waterTank.getAmount();
+            int space    = MAX_FLUID - waterTank.getAmount();
             int toInsert = Math.min(amount, space);
             if (toInsert <= 0) return 0;
-
             updateSnapshots(tx);
-            waterTank = waterTank.isEmpty() ? resource.toStack(toInsert) : waterTank.copyWithAmount(waterTank.getAmount() + toInsert);
+            waterTank = waterTank.isEmpty()
+                    ? resource.toStack(toInsert)
+                    : waterTank.copyWithAmount(waterTank.getAmount() + toInsert);
             return toInsert;
         }
 
@@ -194,10 +393,8 @@ public class BoilerBlockEntity extends BlockEntity implements IHeatReceiver {
         public int extract(int index, FluidResource resource, int amount, TransactionContext tx) {
             FluidStack current = isWater ? waterTank : steamTank;
             if (current.isEmpty() || !resource.matches(current)) return 0;
-
             int toExt = Math.min(amount, current.getAmount());
             if (toExt <= 0) return 0;
-
             updateSnapshots(tx);
             if (isWater) {
                 waterTank = waterTank.copyWithAmount(waterTank.getAmount() - toExt);

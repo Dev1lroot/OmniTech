@@ -26,6 +26,7 @@ public class OmniTechFluids
     public static final FluidObject CHLORINE = new FluidObject("chlorine", gasProps());
     public static final FluidObject SODIUM = new FluidObject("sodium", gasProps());
     public static final FluidObject BRINE = new FluidObject("brine", gasProps());
+    public static final FluidObject DISTILLED_WATER = new FluidObject("distilled_water", gasProps());
     public static final FluidObject SODIUM_HYDROXIDE = new FluidObject("sodium_hydroxide", gasProps());
     public static final FluidObject MOLTEN_BRASS = new FluidObject("molten_brass",
             FluidType.Properties.create().density(8900).viscosity(3000).temperature(1200));

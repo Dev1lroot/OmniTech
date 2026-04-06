@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech;
 
+import com.dev1lroot.mcmods.omnitech.gui.BoilerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceScreen;
 import com.dev1lroot.mcmods.omnitech.gui.FoundryScreen;
 import com.dev1lroot.mcmods.omnitech.gui.FluidTankScreen;
@@ -61,6 +62,7 @@ public class OmniTechGUI {
 
     public static void registerScreens(RegisterMenuScreensEvent event)
     {
+        event.register(OmniTechMenuTypes.BOILER.get(), BoilerScreen::new);
         event.register(OmniTechMenuTypes.ALLOY_FURNACE.get(), AlloyFurnaceScreen::new);
         event.register(OmniTechMenuTypes.MANUAL_MACERATOR.get(), ManualMaceratorScreen::new);
         event.register(OmniTechMenuTypes.MANUAL_CENTRIFUGE.get(), ManualCentrifugeScreen::new);

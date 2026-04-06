@@ -86,7 +86,7 @@ public class StirlingEngineBlockEntity extends BlockEntity implements MenuProvid
                 if (face == Direction.DOWN) continue;
                 var neighbor = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(face), face.getOpposite());
                 if (neighbor != null) {
-                    dirty |= tryPullFluid(neighbor, be.steamHandler, OmniTechFluids.STEAM.flowing.get());
+                    dirty |= tryPullFluid(neighbor, be.steamHandler, OmniTechFluids.STEAM.source.get());
                 }
             }
         }
@@ -99,7 +99,7 @@ public class StirlingEngineBlockEntity extends BlockEntity implements MenuProvid
             be.steamTank.shrink(CONSUMPTION_RATE);
             if (be.steamTank.isEmpty()) be.steamTank = FluidStack.EMPTY;
 
-            if (be.waterTank.isEmpty()) be.waterTank = new FluidStack(Fluids.WATER, WATER_OUTPUT_RATE);
+            if (be.waterTank.isEmpty()) be.waterTank = new FluidStack(OmniTechFluids.DISTILLED_WATER.source, WATER_OUTPUT_RATE);
             else be.waterTank.grow(WATER_OUTPUT_RATE);
 
             KineticNetworkUtil.propagateKineticForce(level, pos, KF_SUPPLY);
@@ -190,7 +190,7 @@ public class StirlingEngineBlockEntity extends BlockEntity implements MenuProvid
 
         @Override
         public boolean isValid(int index, FluidResource resource) {
-            return isSteam ? resource.is(OmniTechFluids.STEAM.type.get()) : resource.is(Fluids.WATER);
+            return isSteam ? resource.is(OmniTechFluids.STEAM.type.get()) : resource.is(OmniTechFluids.DISTILLED_WATER.type.get());
         }
 
         @Override

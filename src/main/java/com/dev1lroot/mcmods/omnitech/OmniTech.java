@@ -25,6 +25,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.Profiler;
 import com.dev1lroot.mcmods.omnitech.datagen.OmniTechDatagen;
 import com.dev1lroot.mcmods.omnitech.blocks.SmelterBlockEntity;
+import com.dev1lroot.mcmods.omnitech.recipes.BoilerRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.AlloyFurnaceRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.FoundryRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualCentrifugeRecipeManager;
@@ -125,6 +126,15 @@ public class OmniTech {
 
     @SubscribeEvent
     public void onAddReloadListener(AddServerReloadListenersEvent event) {
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "boiler_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    BoilerRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
         event.addListener(Identifier.fromNamespaceAndPath(MODID, "alloy_furnace_recipes"), new PreparableReloadListener() {
             @Override
             public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,

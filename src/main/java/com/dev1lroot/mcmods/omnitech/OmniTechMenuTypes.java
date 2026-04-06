@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech;
 
+import com.dev1lroot.mcmods.omnitech.gui.BoilerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceMenu;
 import com.dev1lroot.mcmods.omnitech.gui.FoundryMenu;
 import com.dev1lroot.mcmods.omnitech.gui.FluidTankMenu;
@@ -21,6 +22,10 @@ import java.util.function.Supplier;
 public class OmniTechMenuTypes {
     public static final DeferredRegister<MenuType<?>> REGISTRY =
             DeferredRegister.create(Registries.MENU, OmniTech.MODID);
+
+    public static final Supplier<MenuType<BoilerMenu>> BOILER =
+            REGISTRY.register("boiler",
+                    () -> IMenuTypeExtension.create(BoilerMenu::new));
 
     public static final Supplier<MenuType<AlloyFurnaceMenu>> ALLOY_FURNACE =
             REGISTRY.register("alloy_furnace",

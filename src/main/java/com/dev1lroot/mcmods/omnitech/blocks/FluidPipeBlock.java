@@ -214,6 +214,7 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, 
                     if(dyeColor == DyeColor.WHITE) newColor = 1;
                     if(dyeColor == DyeColor.LIGHT_GRAY) newColor = 2;
                     if(dyeColor == DyeColor.GRAY) newColor = 3;
+                    if(dyeColor == DyeColor.BLACK) newColor = 4;
 
                     // Обновляем состояние блока
                     level.setBlock(pos, state.setValue(COLOR, newColor), 3);
