@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "lit=false": { "model": "omnitech:block/foundry" },
+    "lit=true": { "model": "omnitech:block/foundry_on" }
+  }
+}

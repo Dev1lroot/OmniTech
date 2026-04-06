@@ -18,8 +18,8 @@ public class FoundryMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     // Machine slot positions
-    public static final int TEMPLATE_X = 35, TEMPLATE_Y = 35;
-    public static final int OUTPUT_X   = 98, OUTPUT_Y   = 35;
+    public static final int TEMPLATE_X = 44, TEMPLATE_Y = 35;
+    public static final int OUTPUT_X   = 116, OUTPUT_Y   = 35;
 
     // Client constructor
     public FoundryMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {

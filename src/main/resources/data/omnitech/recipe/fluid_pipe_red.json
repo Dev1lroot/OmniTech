@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "omnitech:fluid_pipe" },
+    { "item": "minecraft:red_dye" }
+  ],
+  "result": {
+    "item": "omnitech:fluid_pipe",
+    "nbt": "{color:1}"
+  }
+}

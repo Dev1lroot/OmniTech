@@ -1,6 +1,9 @@
 {
   "parent": "minecraft:block/block",
-  "textures": { "all": "omnitech:block/fluid_tank_viewport" },
+  "textures": {
+    "particle": "minecraft:block/boiler_side",
+    "all": "omnitech:block/fluid_tank_viewport"
+  },
   "elements": [
     {
       "from": [0, 0, 0.01],

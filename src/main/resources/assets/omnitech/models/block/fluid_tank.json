@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "minecraft:block/glass",
+    "particle": "minecraft:block/boiler_side",
     "all":      "minecraft:block/glass"
   },
   "elements": [

@@ -25,8 +25,8 @@ public class FoundryScreen extends AbstractContainerScreen<FoundryMenu> {
     //   Fluid gauge    : UV (176,  0), 12×52 px — bottom-to-top fill
 
     private static final int ARROW_U = 176, ARROW_V = 14;
-    private static final int ARROW_W = 24,  ARROW_H = 16;
-    private static final int ARROW_X = 62,  ARROW_Y = 35;
+    private static final int ARROW_W = 36,  ARROW_H = 16;
+    private static final int ARROW_X = 70,  ARROW_Y = 35;
 
     private static final int FLUID_U = 176, FLUID_V = 0;
     private static final int FLUID_W = 16,  FLUID_H = 52;

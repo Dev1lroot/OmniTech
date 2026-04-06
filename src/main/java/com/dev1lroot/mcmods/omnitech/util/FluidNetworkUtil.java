@@ -19,6 +19,17 @@ import java.util.*;
 public final class FluidNetworkUtil {
     private FluidNetworkUtil() {}
 
+
+    // Добавьте этот метод в раздел Helpers для удобства
+    private static int getBlockColor(BlockState state) {
+        // Предполагаем, что COLOR — это IntegerProperty.
+        // Если свойства нет (например, у танка), возвращаем -1 или другое спец. значение
+        if (state.hasProperty(FluidPipeBlock.COLOR)) {
+            return state.getValue(FluidPipeBlock.COLOR);
+        }
+        return -1; // "Нейтральный" цвет
+    }
+
     // ── Public API ────────────────────────────────────────────────────────────
 
     /**
@@ -234,16 +245,27 @@ public final class FluidNetworkUtil {
     private static List<BlockPos> getConnectedNeighbors(Level level, BlockPos pos, BlockEntity be) {
         List<BlockPos> neighbors = new ArrayList<>();
         BlockState state = level.getBlockState(pos);
+        int currentColor = getBlockColor(state);
 
         if (be instanceof FluidPipeBlockEntity) {
             for (Direction dir : Direction.values()) {
-                if (state.hasProperty(FluidPipeBlock.propertyFor(dir))
-                        && state.getValue(FluidPipeBlock.propertyFor(dir))) {
-                    neighbors.add(pos.relative(dir));
+                // Проверяем визуальное соединение (North, South и т.д.)
+                if (state.hasProperty(FluidPipeBlock.propertyFor(dir)) && state.getValue(FluidPipeBlock.propertyFor(dir))) {
+                    BlockPos nextPos = pos.relative(dir);
+                    BlockState nextState = level.getBlockState(nextPos);
+
+                    // ЛОГИКА ЦВЕТА:
+                    // Если следующий блок — тоже труба, их цвета должны совпадать.
+                    // Если следующий блок не имеет цвета (например, танк), разрешаем соединение.
+                    int nextColor = getBlockColor(nextState);
+                    if (nextColor == -1 || nextColor == currentColor) {
+                        neighbors.add(nextPos);
+                    }
                 }
             }
         } else if (be instanceof FluidTankBlockEntity) {
             for (Direction dir : Direction.values()) {
+                // Танки соединяются со всеми соседями
                 neighbors.add(pos.relative(dir));
             }
         }

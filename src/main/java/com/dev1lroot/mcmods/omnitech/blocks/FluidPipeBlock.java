@@ -4,7 +4,16 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -21,11 +30,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -42,6 +54,8 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, 
     public static final MapCodec<FluidPipeBlock> CODEC = simpleCodec(FluidPipeBlock::new);
 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+
+    public static final IntegerProperty COLOR = IntegerProperty.create("color",0,16);
 
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
@@ -66,6 +80,7 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, 
                 .setValue(EAST,  false).setValue(WEST,  false)
                 .setValue(UP,    false).setValue(DOWN,  false)
                 .setValue(WATERLOGGED,  false)
+                .setValue(COLOR,  0)
         );
     }
 
@@ -108,7 +123,7 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, 
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(NORTH, SOUTH, EAST, WEST, UP, DOWN, WATERLOGGED);
+        builder.add(NORTH, SOUTH, EAST, WEST, UP, DOWN, WATERLOGGED, COLOR);
     }
 
     @Override
@@ -132,7 +147,7 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, 
         }
 
         // Ваша существующая логика соединений
-        return state.setValue(propertyFor(direction), canConnectTo(neighborState, direction));
+        return state.setValue(propertyFor(direction), canConnectTo(state, neighborState, direction));
     }
 
     // ── Connection logic ──────────────────────────────────────────────────────
@@ -141,7 +156,7 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, 
      * Returns {@code true} if this pipe should connect to {@code neighborState}
      * when the neighbor is in direction {@code fromPipe} relative to this pipe.
      */
-    static boolean canConnectTo(BlockState neighborState, Direction fromPipe)
+    static boolean canConnectTo(BlockState state, BlockState neighborState, Direction fromPipe)
     {
         Block block = neighborState.getBlock();
 
@@ -149,6 +164,16 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, 
         {
             // сторона соседа, которая смотрит на трубу
             Direction neighborFace = fromPipe.getOpposite();
+
+
+            if (block instanceof FluidPipeBlock)
+            {
+                int neighborColor = neighborState.getValue(FluidPipeBlock.COLOR);
+                int thisColor = state.getValue(FluidPipeBlock.COLOR);
+
+                if (thisColor != neighborColor)
+                    return false;
+            }
 
             return container.isConnectable(neighborState, neighborFace);
         }
@@ -160,13 +185,42 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, 
     private static BlockState calculateState(BlockState state, LevelReader level, BlockPos pos) {
         for (Direction dir : Direction.values()) {
             state = state.setValue(propertyFor(dir),
-                    canConnectTo(level.getBlockState(pos.relative(dir)), dir));
+                    canConnectTo(state, level.getBlockState(pos.relative(dir)), dir));
         }
         // Проверяем наличие воды при установке
         FluidState fluidState = level.getFluidState(pos);
         state = state.setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
 
         return state;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        for (InteractionHand hand : InteractionHand.values()) {
+            ItemStack itemStack = player.getItemInHand(hand);
+
+            // Проверяем, является ли предмет красителем
+            if (itemStack.getItem() instanceof DyeItem) {
+                // Достаем цвет из компонентов ItemStack
+                DyeColor dyeColor = itemStack.get(DataComponents.DYE);
+
+                // Проверяем, что компонент существует и цвет — красный
+                if (dyeColor != null && dyeColor == DyeColor.RED) {
+                    if (level.isClientSide()) return InteractionResult.SUCCESS;
+
+                    // Обновляем состояние блока
+                    level.setBlock(pos, state.setValue(COLOR, 1), 3);
+
+                    // Тратим краситель
+                    if (!player.getAbilities().instabuild) {
+                        itemStack.shrink(1);
+                    }
+
+                    return InteractionResult.CONSUME;
+                }
+            }
+        }
+        return InteractionResult.PASS;
     }
 
     /** Maps a Direction to the corresponding connection BooleanProperty. */
