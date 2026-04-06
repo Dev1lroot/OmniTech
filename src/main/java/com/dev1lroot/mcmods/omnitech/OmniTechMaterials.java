@@ -58,20 +58,20 @@ public class OmniTechMaterials {
                             "#minecraft:is_overworld", // all overworld biomes
                             12, 64,                    // minY, maxY
                             8,                         // veinSize (max blocks per cluster)
-                            1, 32                      // minCount, maxCount per chunk
+                            1, 2                      // minCount, maxCount per chunk
                     ),
                     List.of(
                             new BiomeOverride(
                                     "#minecraft:is_mountain", // mountains get extra tin
-                                    12, 32,                   // slightly higher ceiling
-                                    8,                        // larger clusters
+                                    12, 100,                   // slightly higher ceiling
+                                    12,                        // larger clusters
                                     1, 6                      // extra 1-6 clusters per chunk
                             ),
                             new BiomeOverride(
                                     "#minecraft:is_jungle",   // jungle / tropical biomes
                                     8, 50,                    // slightly lower floor
-                                    64,                       // smaller clusters
-                                    1, 32                     // extra 1-32 clusters per chunk
+                                    12,                       // smaller clusters
+                                    1, 6                     // extra 1-32 clusters per chunk
                             )
                     )
             ))
@@ -133,6 +133,14 @@ public class OmniTechMaterials {
             new String[]{ } // the ore exists in vanilla game therefore only missing variations
     );
 
+    public static final MaterialSet SODIUM_CHLORINE = MaterialSet.create(
+            "sodium_chlorine",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_dust", "%_mote"},
+            OmniTechBlocks.REGISTRY,
+            new String[]{ }
+    );
+
     public static final MaterialSet SKUTTERUDITE = MaterialSet.create(
             "skutterudite",
             OmniTechItems.REGISTRY,
@@ -182,6 +190,30 @@ public class OmniTechMaterials {
                                     0, 60,                    // minY, maxY
                                     20,                         // veinSize (max blocks per cluster)
                                     0, 1                      // minCount, maxCount per chunk
+                            )
+                    )
+            ))
+    );
+
+    public static final MaterialSet HALITE = MaterialSet.create(
+            "halite",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_dust" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%" },
+            Map.of("%", new OreSpawnConfig(
+                    new GenerationConfig(
+                            "#minecraft:is_overworld", // all overworld biomes
+                            0, 32,                    // minY, maxY
+                            1,                         // veinSize (max blocks per cluster)
+                            0, 1                      // minCount, maxCount per chunk
+                    ),
+                    List.of(
+                            new BiomeOverride(
+                                    "#minecraft:is_ocean", // mountains get extra tin
+                                    0, 60,                    // minY, maxY
+                                    30,                         // veinSize (max blocks per cluster)
+                                    3, 6                      // minCount, maxCount per chunk
                             )
                     )
             ))

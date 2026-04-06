@@ -72,7 +72,7 @@ public class BoilerBlockEntity extends BlockEntity implements IHeatReceiver {
                 be.waterTank.shrink(finalAmount);
 
                 // ВНИМАНИЕ: Замените Fluids.WATER на ваш кастомный пар (например, OmniTechFluids.STEAM.get())
-                FluidStack steam = new FluidStack(OmniTechFluids.STEAM.get(), finalAmount);
+                FluidStack steam = new FluidStack(OmniTechFluids.STEAM.flowing.get(), finalAmount);
 
                 if (be.steamTank.isEmpty()) be.steamTank = steam;
                 else be.steamTank.grow(finalAmount);

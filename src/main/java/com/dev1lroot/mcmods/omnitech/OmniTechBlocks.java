@@ -47,6 +47,8 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> CONVEYOR_BELT;
 
     public static final DeferredBlock<Block> FLUID_PIPE;
+    /** Ghost block – holds the {@code fluid_pipe_trim} blockstate for BER tinted overlay rendering. */
+    public static final DeferredBlock<Block> FLUID_PIPE_TRIM;
     public static final DeferredBlock<Block> PUMP;
     public static final DeferredBlock<Block> FLUID_TANK;
     public static final DeferredBlock<Block> BOILER;
@@ -95,6 +97,14 @@ public class OmniTechBlocks {
                         .sound(SoundType.METAL)
                         .noOcclusion()
                         .pushReaction(PushReaction.NORMAL)
+                ));
+        FLUID_PIPE_TRIM = register("fluid_pipe_trim",
+                p -> new FluidPipeTrimBlock(p
+                        .mapColor(MapColor.METAL)
+                        .strength(2.0F)
+                        .sound(SoundType.METAL)
+                        .noOcclusion()
+                        .noLootTable()
                 ));
         PUMP = register("pump",
                 p -> new PumpBlock(p.mapColor(MapColor.METAL).strength(3.0F)

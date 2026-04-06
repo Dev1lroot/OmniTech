@@ -158,5 +158,9 @@
   "item.omnitech.copper_reductor": "Copper Reductor",
   "item.omnitech.copper_wire": "Copper Wire",
   "item.omnitech.copper_coil": "Copper Coil",
-  "fluid.omnitech.molten_brass": "Molten Brass"
+  "fluid.omnitech.molten_brass": "Molten Brass",
+  "block.omnitech.halite": "Halite",
+  "item.omnitech.halite_dust": "Halite Dust",
+  "item.omnitech.sodium_chlorine_dust": "Sodium Chlorine Dust",
+  "item.omnitech.sodium_chlorine_mote": "Sodium Chlorine Mote"
 }

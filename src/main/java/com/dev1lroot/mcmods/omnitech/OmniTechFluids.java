@@ -16,46 +16,46 @@ public class OmniTechFluids
     public static final DeferredRegister<FluidType> TYPE_REGISTRY =
             DeferredRegister.create(NeoForgeRegistries.FLUID_TYPES, OmniTech.MODID);
 
-    public static final DeferredHolder<FluidType, FluidType> STEAM_TYPE = TYPE_REGISTRY.register("steam",
-            () -> new FluidType(FluidType.Properties.create()
-                    .descriptionId("fluid.omnitech.steam")
-                    .density(-1000)
-                    .viscosity(10)
-                    .temperature(373)));
+    // Универсальная регистрация через вспомогательный объект
+    public static final FluidObject STEAM = new FluidObject("steam", gasProps());
+    public static final FluidObject HYDROGEN = new FluidObject("hydrogen", gasProps());
+    public static final FluidObject OXYGEN = new FluidObject("oxygen", gasProps());
+    public static final FluidObject HYDRAZINE = new FluidObject("hydrazine", gasProps());
+    public static final FluidObject NITROGEN = new FluidObject("nitrogen", gasProps());
+    public static final FluidObject AMMONIA = new FluidObject("ammonia", gasProps());
+    public static final FluidObject CHLORINE = new FluidObject("chlorine", gasProps());
+    public static final FluidObject SODIUM = new FluidObject("sodium", gasProps());
+    public static final FluidObject BRINE = new FluidObject("brine", gasProps());
+    public static final FluidObject SODIUM_HYDROXIDE = new FluidObject("sodium_hydroxide", gasProps());
+    public static final FluidObject MOLTEN_BRASS = new FluidObject("molten_brass",
+            FluidType.Properties.create().density(8900).viscosity(3000).temperature(1200));
 
-    public static final DeferredHolder<Fluid, Fluid> STEAM = REGISTRY.register("steam",
-            () -> new BaseFlowingFluid.Source(createProperties()));
-
-    public static final DeferredHolder<Fluid, Fluid> FLOWING_STEAM = REGISTRY.register("flowing_steam",
-            () -> new BaseFlowingFluid.Flowing(createProperties()));
-
-    public static final DeferredHolder<FluidType, FluidType> MOLTEM_BRASS_TYPE = TYPE_REGISTRY.register("molten_brass",
-            () -> new FluidType(FluidType.Properties.create()
-                    .descriptionId("fluid.omnitech.molten_brass")
-                    .density(8900)
-                    .viscosity(3000)
-                    .temperature(1200)));
-
-    public static final DeferredHolder<Fluid, Fluid> MOLTEN_BRASS = REGISTRY.register("molten_brass",
-            () -> new BaseFlowingFluid.Source(createMeltedBrassProperties()));
-
-    public static final DeferredHolder<Fluid, Fluid> FLOWING_MOLTEN_BRASS = REGISTRY.register("flowing_molten_brass",
-            () -> new BaseFlowingFluid.Flowing(createMeltedBrassProperties()));
-
-    private static BaseFlowingFluid.Properties createMeltedBrassProperties() {
-        return new BaseFlowingFluid.Properties(
-                MOLTEM_BRASS_TYPE,
-                MOLTEN_BRASS,
-                FLOWING_MOLTEN_BRASS
-        );
+    // Вспомогательный метод для свойств газа
+    private static FluidType.Properties gasProps() {
+        return FluidType.Properties.create().density(-1000).viscosity(10).temperature(373);
     }
 
-    private static BaseFlowingFluid.Properties createProperties() {
-        return new BaseFlowingFluid.Properties(
-                STEAM_TYPE,
-                STEAM,
-                FLOWING_STEAM
-        );
+    /**
+     * Компактный контейнер для холдеров одной жидкости
+     */
+    public static class FluidObject {
+        public final DeferredHolder<FluidType, FluidType> type;
+        public final DeferredHolder<Fluid, Fluid> source;
+        public final DeferredHolder<Fluid, Fluid> flowing;
+
+        public FluidObject(String name, FluidType.Properties typeProps) {
+            this.type = TYPE_REGISTRY.register(name, () -> new FluidType(typeProps.descriptionId("fluid.omnitech." + name)));
+
+            // Регистрируем Source и Flowing, передавая ссылки друг на друга через "this"
+            this.source = REGISTRY.register(name,
+                    () -> new BaseFlowingFluid.Source(this.makeProperties()));
+            this.flowing = REGISTRY.register("flowing_" + name,
+                    () -> new BaseFlowingFluid.Flowing(this.makeProperties()));
+        }
+
+        private BaseFlowingFluid.Properties makeProperties() {
+            return new BaseFlowingFluid.Properties(type, source, flowing);
+        }
     }
 
     public static void register(IEventBus modEventBus) {

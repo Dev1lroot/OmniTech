@@ -86,7 +86,7 @@ public class StirlingEngineBlockEntity extends BlockEntity implements MenuProvid
                 if (face == Direction.DOWN) continue;
                 var neighbor = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(face), face.getOpposite());
                 if (neighbor != null) {
-                    dirty |= tryPullFluid(neighbor, be.steamHandler, OmniTechFluids.STEAM.get());
+                    dirty |= tryPullFluid(neighbor, be.steamHandler, OmniTechFluids.STEAM.flowing.get());
                 }
             }
         }
@@ -190,7 +190,7 @@ public class StirlingEngineBlockEntity extends BlockEntity implements MenuProvid
 
         @Override
         public boolean isValid(int index, FluidResource resource) {
-            return isSteam ? resource.is(OmniTechFluids.STEAM.get()) : resource.is(Fluids.WATER);
+            return isSteam ? resource.is(OmniTechFluids.STEAM.type.get()) : resource.is(Fluids.WATER);
         }
 
         @Override
