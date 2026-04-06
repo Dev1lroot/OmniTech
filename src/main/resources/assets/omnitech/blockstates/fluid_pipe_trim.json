@@ -1,0 +1,115 @@
+{
+  "multipart": [
+    {
+      "apply": { "model": "omnitech:block/fluid_pipe_trim_deadend" },
+      "when": {
+        "OR": [
+          { "north":"true", "south":"false", "east":"false", "west":"false", "up":"false", "down":"false" },
+          { "south":"true", "north":"false", "east":"false", "west":"false", "up":"false", "down":"false" },
+          { "south":"true", "north":"true", "east":"false", "west":"false", "up":"false", "down":"false" }
+        ]
+      }
+    },
+    {
+      "apply": { "model": "omnitech:block/fluid_pipe_trim_deadend", "y": 90  },
+      "when": {
+        "OR": [
+          { "north":"false", "south":"false", "east":"true", "west":"false", "up":"false", "down":"false" },
+          { "north":"false", "south":"false", "east":"false", "west":"true", "up":"false", "down":"false" },
+          { "north":"false", "south":"false", "east":"true", "west":"true", "up":"false", "down":"false" }
+        ]
+      }
+    },
+    {
+      "apply": { "model": "omnitech:block/fluid_pipe_trim_deadend", "x": 90  },
+      "when": {
+        "OR": [
+          { "north":"false", "south":"false", "east":"false", "west":"false", "up":"true", "down":"false" },
+          { "north":"false", "south":"false", "east":"false", "west":"false", "up":"false", "down":"true" },
+          { "north":"false", "south":"false", "east":"false", "west":"false", "up":"true", "down":"true" }
+        ]
+      }
+    },
+    {
+      "apply": { "model": "omnitech:block/fluid_pipe_trim_small_core" },
+      "when": {
+        "OR": [
+          { "north":"true", "east":"true", "south":"false", "west":"false", "up":"false", "down":"false" },
+          { "north":"true", "west":"true", "south":"false", "east":"false", "up":"false", "down":"false" },
+          { "north":"true", "up":"true", "south":"false", "east":"false", "west":"false", "down":"false" },
+          { "north":"true", "down":"true", "south":"false", "east":"false", "west":"false", "up":"false" },
+          { "south":"true", "east":"true", "north":"false", "west":"false", "up":"false", "down":"false" },
+          { "south":"true", "west":"true", "north":"false", "east":"false", "up":"false", "down":"false" },
+          { "south":"true", "up":"true", "north":"false", "east":"false", "west":"false", "down":"false" },
+          { "south":"true", "down":"true", "north":"false", "east":"false", "west":"false", "up":"false" },
+          { "east":"true", "up":"true", "north":"false", "south":"false", "west":"false", "down":"false" },
+          { "east":"true", "down":"true", "north":"false", "south":"false", "west":"false", "up":"false" },
+          { "west":"true", "up":"true", "north":"false", "south":"false", "east":"false", "down":"false" },
+          { "west":"true", "down":"true", "north":"false", "south":"false", "east":"false", "up":"false" }
+        ]
+      }
+    },
+    {
+      "apply": { "model": "omnitech:block/fluid_pipe_trim_core" },
+      "when": {
+        "OR": [
+          { "north":"false", "south":"false", "east":"false", "west":"false", "up":"false", "down":"false" },
+          { "north":"true", "south":"true", "east":"true", "west":"false", "up":"false", "down":"false" },
+          { "north":"true", "south":"true", "west":"true", "east":"false", "up":"false", "down":"false" },
+          { "north":"true", "south":"true", "up":"true", "east":"false", "west":"false", "down":"false" },
+          { "north":"true", "south":"true", "down":"true", "east":"false", "west":"false", "up":"false" },
+          { "east":"true", "west":"true", "north":"true", "south":"false", "up":"false", "down":"false" },
+          { "east":"true", "west":"true", "south":"true", "north":"false", "up":"false", "down":"false" },
+          { "east":"true", "west":"true", "up":"true", "north":"false", "south":"false", "down":"false" },
+          { "east":"true", "west":"true", "down":"true", "north":"false", "south":"false", "up":"false" },
+          { "up":"true", "down":"true", "north":"true", "south":"false", "east":"false", "west":"false" },
+          { "up":"true", "down":"true", "south":"true", "north":"false", "east":"false", "west":"false" },
+          { "up":"true", "down":"true", "east":"true", "north":"false", "south":"false", "west":"false" },
+          { "up":"true", "down":"true", "west":"true", "north":"false", "south":"false", "east":"false" },
+          { "north":"true", "east":"true", "west":"true", "south":"false", "up":"false", "down":"false" },
+          { "north":"true", "east":"true", "up":"true", "south":"false", "west":"false", "down":"false" },
+          { "north":"true", "east":"true", "down":"true", "south":"false", "west":"false", "up":"false" },
+          { "north":"true", "west":"true", "up":"true", "south":"false", "east":"false", "down":"false" },
+          { "north":"true", "west":"true", "down":"true", "south":"false", "east":"false", "up":"false" },
+          { "north":"true", "up":"true", "down":"true", "south":"false", "east":"false", "west":"false" },
+          { "south":"true", "east":"true", "west":"true", "north":"false", "up":"false", "down":"false" },
+          { "south":"true", "east":"true", "up":"true", "north":"false", "west":"false", "down":"false" },
+          { "south":"true", "east":"true", "down":"true", "north":"false", "west":"false", "up":"false" },
+          { "south":"true", "west":"true", "up":"true", "north":"false", "east":"false", "down":"false" },
+          { "south":"true", "west":"true", "down":"true", "north":"false", "east":"false", "up":"false" },
+          { "south":"true", "up":"true", "down":"true", "north":"false", "east":"false", "west":"false" },
+          { "east":"true", "west":"true", "up":"true", "down":"true", "north":"false", "south":"false" },
+          { "north":"true", "south":"true", "east":"true", "west":"true", "up":"false", "down":"false" },
+          { "north":"true", "south":"true", "east":"true", "up":"true", "west":"false", "down":"false" },
+          { "north":"true", "south":"true", "east":"true", "down":"true", "west":"false", "up":"false" },
+          { "north":"true", "south":"true", "west":"true", "up":"true", "east":"false", "down":"false" },
+          { "north":"true", "south":"true", "west":"true", "down":"true", "east":"false", "up":"false" },
+          { "north":"true", "south":"true", "up":"true", "down":"true", "east":"false", "west":"false" },
+          { "north":"true", "east":"true", "west":"true", "up":"true", "south":"false", "down":"false" },
+          { "north":"true", "east":"true", "west":"true", "down":"true", "south":"false", "up":"false" },
+          { "north":"true", "east":"true", "up":"true", "down":"true", "south":"false", "west":"false" },
+          { "north":"true", "west":"true", "up":"true", "down":"true", "south":"false", "east":"false" },
+          { "south":"true", "east":"true", "west":"true", "up":"true", "north":"false", "down":"false" },
+          { "south":"true", "east":"true", "west":"true", "down":"true", "north":"false", "up":"false" },
+          { "south":"true", "east":"true", "up":"true", "down":"true", "north":"false", "west":"false" },
+          { "south":"true", "west":"true", "up":"true", "down":"true", "north":"false", "east":"false" },
+          { "east":"true", "west":"true", "up":"true", "down":"true", "north":"true", "south":"false" },
+          { "east":"true", "west":"true", "up":"true", "down":"true", "south":"true", "north":"false" },
+          { "north":"true", "south":"true", "east":"true", "west":"true", "up":"true", "down":"false" },
+          { "north":"true", "south":"true", "east":"true", "west":"true", "down":"true", "up":"false" },
+          { "north":"true", "south":"true", "east":"true", "up":"true", "down":"true", "west":"false" },
+          { "north":"true", "south":"true", "west":"true", "up":"true", "down":"true", "east":"false" },
+          { "north":"true", "east":"true", "west":"true", "up":"true", "down":"true", "south":"false" },
+          { "south":"true", "east":"true", "west":"true", "up":"true", "down":"true", "north":"false" },
+          { "north":"true", "south":"true", "east":"true", "west":"true", "up":"true", "down":"true" }
+        ]
+      }
+    },
+    { "when": { "north": "true" }, "apply": { "model": "omnitech:block/fluid_pipe_trim_arm" } },
+    { "when": { "south": "true" }, "apply": { "model": "omnitech:block/fluid_pipe_trim_arm", "y": 180 } },
+    { "when": { "east":  "true" }, "apply": { "model": "omnitech:block/fluid_pipe_trim_arm", "y": 90 } },
+    { "when": { "west":  "true" }, "apply": { "model": "omnitech:block/fluid_pipe_trim_arm", "y": 270 } },
+    { "when": { "up":    "true" }, "apply": { "model": "omnitech:block/fluid_pipe_trim_arm", "x": 270 } },
+    { "when": { "down":  "true" }, "apply": { "model": "omnitech:block/fluid_pipe_trim_arm", "x": 90 } }
+  ]
+}

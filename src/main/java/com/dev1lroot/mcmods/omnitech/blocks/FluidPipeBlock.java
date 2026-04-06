@@ -205,11 +205,18 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, 
                 DyeColor dyeColor = itemStack.get(DataComponents.DYE);
 
                 // Проверяем, что компонент существует и цвет — красный
-                if (dyeColor != null && dyeColor == DyeColor.RED) {
+                if (dyeColor != null)
+                {
                     if (level.isClientSide()) return InteractionResult.SUCCESS;
 
+                    int newColor = 0;
+
+                    if(dyeColor == DyeColor.WHITE) newColor = 1;
+                    if(dyeColor == DyeColor.LIGHT_GRAY) newColor = 2;
+                    if(dyeColor == DyeColor.GRAY) newColor = 3;
+
                     // Обновляем состояние блока
-                    level.setBlock(pos, state.setValue(COLOR, 1), 3);
+                    level.setBlock(pos, state.setValue(COLOR, newColor), 3);
 
                     // Тратим краситель
                     if (!player.getAbilities().instabuild) {

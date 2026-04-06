@@ -6,6 +6,7 @@ import com.dev1lroot.mcmods.omnitech.recipes.SmelterRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.SmelterRecipeManager;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -22,10 +23,12 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.slf4j.Logger;
 
@@ -141,6 +144,23 @@ public class SmelterBlockEntity extends BaseContainerBlockEntity implements IHea
         return true;
     }
 
+    private static boolean tryPushFluid(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to) {
+        try (Transaction tx = Transaction.openRoot()) {
+            FluidResource res = from.getResource(0);
+            if (!res.isEmpty()) {
+                // Eject 1000mB per tick (or whatever rate you prefer)
+                int available = Math.min(1000, (int)from.getAmountAsLong(0));
+                int accepted = to.insert(res, available, tx);
+                if (accepted > 0) {
+                    from.extract(res, accepted, tx);
+                    tx.commit();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     // ── Server tick ───────────────────────────────────────────────────────────
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, SmelterBlockEntity be) {
@@ -187,6 +207,21 @@ public class SmelterBlockEntity extends BaseContainerBlockEntity implements IHea
         if (state.getValue(SmelterBlock.LIT) != shouldBeLit) {
             level.setBlock(pos, state.setValue(SmelterBlock.LIT, shouldBeLit), 3);
             changed = true;
+        }
+
+        // NEW: Auto-ejection logic
+        if (!be.outputFluid.isEmpty()) {
+            // You can choose a specific direction (e.g., pos.below())
+            // or loop through Direction.values() to eject to all sides.
+            for (Direction direction : Direction.values()) {
+                var neighbor = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(direction), direction.getOpposite());
+                if (neighbor != null) {
+                    if (tryPushFluid(be.fluidHandler, neighbor)) {
+                        changed = true;
+                        // Optional: break; if you only want to push to one side per tick
+                    }
+                }
+            }
         }
 
         if (changed) {
