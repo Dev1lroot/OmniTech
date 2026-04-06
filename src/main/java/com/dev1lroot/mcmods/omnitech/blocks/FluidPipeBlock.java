@@ -10,10 +10,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.DyeItem;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -55,7 +52,8 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, 
 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-    public static final IntegerProperty COLOR = IntegerProperty.create("color",0,16);
+    // RGB COLOR
+    public static final IntegerProperty COLOR = IntegerProperty.create("color",0,17);
 
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
@@ -200,24 +198,19 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, 
             ItemStack itemStack = player.getItemInHand(hand);
 
             // Проверяем, является ли предмет красителем
-            if (itemStack.getItem() instanceof DyeItem) {
-                // Достаем цвет из компонентов ItemStack
-                DyeColor dyeColor = itemStack.get(DataComponents.DYE);
+            if (itemStack.getItem() instanceof DyeItem)
+            {
+                // Используем встроенный метод DyeColor для получения цвета из стака
+                DyeColor dyeColor = DyeColor.getColor(itemStack);
 
-                // Проверяем, что компонент существует и цвет — красный
-                if (dyeColor != null)
-                {
+                if (dyeColor != null) {
                     if (level.isClientSide()) return InteractionResult.SUCCESS;
 
-                    int newColor = 0;
+                    // Получаем ID цвета (0-15) напрямую из перечисления
+                    int newColor = dyeColor.getId();
 
-                    if(dyeColor == DyeColor.WHITE) newColor = 1;
-                    if(dyeColor == DyeColor.LIGHT_GRAY) newColor = 2;
-                    if(dyeColor == DyeColor.GRAY) newColor = 3;
-                    if(dyeColor == DyeColor.BLACK) newColor = 4;
-
-                    // Обновляем состояние блока
-                    level.setBlock(pos, state.setValue(COLOR, newColor), 3);
+                    // + 1 важен, т.к. труба без цвета имеет код 0
+                    level.setBlock(pos, state.setValue(COLOR, newColor + 1), 3);
 
                     // Тратим краситель
                     if (!player.getAbilities().instabuild) {
@@ -226,6 +219,18 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, 
 
                     return InteractionResult.CONSUME;
                 }
+
+                return InteractionResult.PASS;
+            }
+            if(itemStack.getItem() instanceof BrushItem && state.getValue(COLOR) != 0)
+            {
+                level.setBlock(pos, state.setValue(COLOR, 0), 3);
+
+                if (!player.getAbilities().instabuild) {
+                    itemStack.hurtWithoutBreaking(1,player);
+                }
+
+                return InteractionResult.CONSUME;
             }
         }
         return InteractionResult.PASS;

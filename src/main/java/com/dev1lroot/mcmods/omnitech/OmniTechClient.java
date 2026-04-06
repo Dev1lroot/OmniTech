@@ -7,11 +7,9 @@ import com.dev1lroot.mcmods.omnitech.client.FluidPipeRenderer;
 import com.dev1lroot.mcmods.omnitech.client.FluidTankRenderer;
 import com.dev1lroot.mcmods.omnitech.client.KineticPipeRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.DyeColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -24,8 +22,6 @@ import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import java.util.List;
-
 @Mod(value = OmniTech.MODID, dist = Dist.CLIENT)
 public class OmniTechClient
 {
@@ -34,7 +30,6 @@ public class OmniTechClient
         modEventBus.addListener(this::onClientSetup);
         modEventBus.addListener(this::registerScreens);
         modEventBus.addListener(this::registerBlockEntityRenderers);
-        modEventBus.addListener(OmniTechClient::onRegisterBlockColors);
         modEventBus.register(OmniTechClient.class);
     }
 
@@ -53,17 +48,6 @@ public class OmniTechClient
         event.registerBlockEntityRenderer(OmniTechBlockEntities.CONVEYOR_BELT.get(), ConveyorBeltRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.FLUID_TANK.get(), FluidTankRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.FLUID_PIPE.get(), FluidPipeRenderer::new);
-    }
-
-    static void onRegisterBlockColors(RegisterColorHandlersEvent.BlockTintSources event) {
-        // Tint layer 0: maps COLOR block-state (1-16) to the corresponding DyeColor.
-        BlockTintSource pipeTrimTint = state -> {
-            int colorIndex = state.getValue(FluidPipeBlock.COLOR);
-            if (colorIndex == 0) return -1; // white / no tint
-            DyeColor dye = DyeColor.values()[Math.clamp(colorIndex - 1, 0, DyeColor.values().length - 1)];
-            return dye.getTextureDiffuseColor();
-        };
-        event.register(List.of(pipeTrimTint), OmniTechBlocks.FLUID_PIPE_TRIM.get());
     }
 
     @SubscribeEvent

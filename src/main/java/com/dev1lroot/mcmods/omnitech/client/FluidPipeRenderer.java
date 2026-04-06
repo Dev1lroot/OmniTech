@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.item.DyeColor;
@@ -25,17 +26,17 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Renders the {@code fluid_pipe_trim} blockstate overlay on top of the base pipe model.
  *
- * <p>The trim blockstate uses the same multipart conditions as {@code fluid_pipe.json}
- * but references {@code *_trim} model variants that have {@code "tintindex": 0} on every
- * face, so the registered {@link net.minecraft.client.color.block.BlockTintSource} can
- * apply dye color to them.
+ * <p>The trim models have {@code "tintindex": 0} on every face. Rather than registering
+ * a {@code BlockTintSource}, the tint color is computed directly here from the pipe's
+ * {@link FluidPipeBlock#COLOR} block-state integer and pushed into
+ * {@link net.minecraft.client.renderer.block.BlockModelRenderState#tintLayers()} after
+ * the model parts are collected.
  *
  * <p>COLOR 0 = uncolored (no overlay). COLOR 1–16 maps to {@link DyeColor#values()} 0–15.
  */
 
-public class FluidPipeRenderer
-        implements BlockEntityRenderer<FluidPipeBlockEntity, FluidPipeRenderState> {
-
+public class FluidPipeRenderer implements BlockEntityRenderer<FluidPipeBlockEntity, FluidPipeRenderState>
+{
     private static final BlockDisplayContext DISPLAY_CTX = BlockDisplayContext.create();
 
     public FluidPipeRenderer(BlockEntityRendererProvider.Context ctx) {}
@@ -56,7 +57,7 @@ public class FluidPipeRenderer
         BlockEntityRenderer.super.extractRenderState(entity, state, partialTick, cameraPos, crumbling);
 
         BlockState pipeState = entity.getBlockState();
-        state.colorIndex = pipeState.getValue(FluidPipeBlock.COLOR);
+        state.color = pipeState.getValue(FluidPipeBlock.COLOR);
         state.north = pipeState.getValue(FluidPipeBlock.NORTH);
         state.south = pipeState.getValue(FluidPipeBlock.SOUTH);
         state.east  = pipeState.getValue(FluidPipeBlock.EAST);
@@ -72,8 +73,9 @@ public class FluidPipeRenderer
 
         state.trimRenderState.clear();
 
-        if (state.colorIndex != 0) {
-            // Build a matching trim BlockState from the pipe's connection properties + color.
+        if (state.color != 0) {
+            // Build trim BlockState mirroring the pipe's connection properties.
+            // COLOR is set but ignored by the blockstate's multipart conditions.
             BlockState trimState = OmniTechBlocks.FLUID_PIPE_TRIM.get().defaultBlockState()
                     .setValue(FluidPipeBlock.NORTH, state.north)
                     .setValue(FluidPipeBlock.SOUTH, state.south)
@@ -81,11 +83,19 @@ public class FluidPipeRenderer
                     .setValue(FluidPipeBlock.WEST,  state.west)
                     .setValue(FluidPipeBlock.UP,    state.up)
                     .setValue(FluidPipeBlock.DOWN,  state.down)
-                    .setValue(FluidPipeBlock.COLOR, state.colorIndex);
+                    .setValue(FluidPipeBlock.COLOR, state.color);
 
+            // Populate model parts. No BlockTintSource is registered for this block,
+            // so update() leaves tintLayers empty — we fill it manually below.
             ModelManager modelManager = Minecraft.getInstance().getModelManager();
             modelManager.getBlockModelSet().get(trimState)
                     .update(state.trimRenderState, trimState, DISPLAY_CTX, 42L);
+
+            // Directly convert the COLOR index to a DyeColor ARGB and inject it as
+            // tint layer 0, which maps to "tintindex": 0 on every trim model face.
+            int dyeIdx = Math.clamp(state.color - 1, 0, DyeColor.values().length - 1);
+            int argb   = DyeColor.values()[dyeIdx].getTextureDiffuseColor();
+            state.trimRenderState.tintLayers().add(argb);
         }
     }
 
@@ -96,12 +106,12 @@ public class FluidPipeRenderer
             FluidPipeRenderState state, PoseStack poseStack,
             SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
 
-        if (state.colorIndex == 0 || state.trimRenderState.isEmpty()) return;
+        if (state.color == 0 || state.trimRenderState.isEmpty()) return;
 
         state.trimRenderState.submitMultiLayer(
                 poseStack, submitNodeCollector,
                 state.lightCoords,
-                net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY,
+                OverlayTexture.NO_OVERLAY,
                 0);
     }
 }

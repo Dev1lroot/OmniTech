@@ -33,6 +33,7 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeatReceiver {
@@ -150,18 +151,28 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
 
     // ── Server tick ───────────────────────────────────────────────────────────
 
-    public static void serverTick(Level level, BlockPos pos, BlockState state, BoilerBlockEntity be) {
+    public static void serverTick(Level level, BlockPos pos, BlockState state, BoilerBlockEntity be)
+    {
         boolean dirty = false;
 
-        // 1. Pull water from all sides except top
+        // 1. Pull fluids from all sides except top
         for (Direction face : Direction.values()) {
             if (face == Direction.UP) continue;
             if (be.waterTank.getAmount() >= MAX_FLUID) continue;
 
             ResourceHandler<FluidResource> neighbor = level.getCapability(
                     Capabilities.Fluid.BLOCK, pos.relative(face), face.getOpposite());
-            if (neighbor != null)
-                dirty |= tryPullFluid(neighbor, be.waterHandler, Fluids.WATER);
+
+            if (neighbor != null) {
+                // Определяем, какой фильтр использовать
+                // Если бак пуст, фильтр не нужен (null или любая жидкость)
+                // Если не пуст, достаем текущую жидкость из бака
+                net.minecraft.world.level.material.Fluid currentFluid = be.waterTank.isEmpty()
+                        ? null
+                        : be.waterTank.getFluid();
+
+                dirty |= tryPullAnyFluid(neighbor, be.waterHandler, currentFluid);
+            }
         }
 
         // 2. Recipe matching
@@ -216,6 +227,29 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
             be.setChanged();
             level.sendBlockUpdated(pos, state, state, 3);
         }
+    }
+
+    private static boolean tryPullAnyFluid(ResourceHandler<FluidResource> from,
+                                           ResourceHandler<FluidResource> to,
+                                           @Nullable net.minecraft.world.level.material.Fluid filter) {
+        try (Transaction tx = Transaction.openRoot()) {
+            for (int i = 0; i < from.size(); i++) {
+                FluidResource res = from.getResource(i);
+                if (!res.isEmpty()) {
+                    // Если фильтр задан, проверяем совпадение. Если null — берем любую.
+                    if (filter == null || res.is(filter)) {
+                        int available = Math.min(TRANSFER_RATE, from.getAmountAsInt(i));
+                        int accepted  = to.insert(res, available, tx);
+                        if (accepted > 0) {
+                            from.extract(res, accepted, tx);
+                            tx.commit();
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private boolean canProcess() {
@@ -373,7 +407,7 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
         @Override public long getCapacityAsLong(int index, FluidResource res) { return MAX_FLUID; }
 
         @Override public boolean isValid(int index, FluidResource resource) {
-            return isWater && resource.is(Fluids.WATER);
+            return isWater; // && resource.is(Fluids.WATER);
         }
 
         @Override
