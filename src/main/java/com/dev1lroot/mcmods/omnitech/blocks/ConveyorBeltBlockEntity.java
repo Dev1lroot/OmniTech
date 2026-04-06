@@ -80,14 +80,14 @@ public class ConveyorBeltBlockEntity extends BlockEntity
     // ── IKineticReceiver ──────────────────────────────────────────────────────
 
     @Override
-    public boolean addKineticForce(int amount) {
+    public boolean addKineticForce(float amount) {
         poweredTimer = POWERED_DECAY_TICKS;
         return true;
     }
 
     /** Conveyor belts are very cheap: 0.1 KF (1 fixed-point unit). */
     @Override
-    public int getKfDemand() { return 1; }
+    public float getKfDemand() { return 1.0F; }
 
     // ── Server tick ───────────────────────────────────────────────────────────
 

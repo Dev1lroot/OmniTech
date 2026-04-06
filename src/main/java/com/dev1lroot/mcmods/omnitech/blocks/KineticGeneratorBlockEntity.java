@@ -22,7 +22,7 @@ public class KineticGeneratorBlockEntity extends BaseContainerBlockEntity implem
     public static final int SLOT_FUEL = 0;
     public static final int SLOT_COUNT = 1;
     /** Fixed-point KF units produced per tick (10 = 1 KF). */
-    public static final int KF_SUPPLY = 10;
+    public static final float KF_SUPPLY = 0.1f;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
     private int burnTime    = 0;
@@ -94,7 +94,7 @@ public class KineticGeneratorBlockEntity extends BaseContainerBlockEntity implem
     }
 
     @Override
-    public int getKfSupply() { return isLit() ? KF_SUPPLY : 0; }
+    public float getKfSupply() { return isLit() ? KF_SUPPLY : 0.0F; }
 
     public boolean isLit()       { return burnTime > 0; }
     public int getBurnTime()     { return burnTime; }

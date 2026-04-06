@@ -32,13 +32,13 @@ public class KineticPipeBlockEntity extends BlockEntity {
     /** Ticks before POWERED turns off after the last refresh. */
     public static final int   POWERED_DECAY_TICKS  = 20;
     /** Degrees per tick at 1 KF (10 fixed-point units) — scales linearly with KF. */
-    public static final float ROTATION_SPEED_BASE  = 9.0f;
+    public static final float ROTATION_SPEED_BASE  = 200.0F;
     /** Maximum rotation speed: 5× the base (= 45 °/tick). */
     public static final float ROTATION_SPEED_MAX   = ROTATION_SPEED_BASE * 5f;
 
     private int poweredTimer   = 0;
     /** Fixed-point KF units received this network clock (10 = 1 KF). Synced to client. */
-    int currentKfUnits = 0;
+    float currentKfUnits = 0;
 
     public KineticPipeBlockEntity(BlockPos pos, BlockState state) {
         super(OmniTechBlockEntities.KF_PIPE.get(), pos, state);
@@ -72,7 +72,7 @@ public class KineticPipeBlockEntity extends BlockEntity {
      *                pass 0 when the network is stalled (supply &lt; demand) so
      *                the pipe still spins but machines stay off
      */
-    public void refreshPoweredTimer(Level level, BlockPos pos, BlockState state, int kfUnits) {
+    public void refreshPoweredTimer(Level level, BlockPos pos, BlockState state, float kfUnits) {
         poweredTimer   = POWERED_DECAY_TICKS;
         currentKfUnits = kfUnits;
 
@@ -104,7 +104,7 @@ public class KineticPipeBlockEntity extends BlockEntity {
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag tag = new CompoundTag();
-        tag.putInt("KfUnits", currentKfUnits);
+        tag.putFloat("KfUnits", currentKfUnits);
         return tag;
     }
 
@@ -114,13 +114,13 @@ public class KineticPipeBlockEntity extends BlockEntity {
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         poweredTimer   = input.getIntOr("PoweredTimer", 0);
-        currentKfUnits = input.getIntOr("KfUnits",      0);
+        currentKfUnits = input.getFloatOr("KfUnits",      0);
     }
 
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         output.putInt("PoweredTimer", poweredTimer);
-        output.putInt("KfUnits",      currentKfUnits);
+        output.putFloat("KfUnits",      currentKfUnits);
     }
 }

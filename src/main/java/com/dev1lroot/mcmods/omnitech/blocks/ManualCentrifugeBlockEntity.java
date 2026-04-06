@@ -114,28 +114,33 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
 
     /** Only draw from the KF network when there is something to process. */
     @Override
-    public int getKfDemand() { return currentRecipe != null ? 5 : 0; }
+    public float getKfDemand() { return currentRecipe != null ? 0.1F : 0; }
 
     @Override
-    public boolean addKineticForce(int amount) {
+    public boolean addKineticForce(float amount) {
         if (currentRecipe == null) return false;
 
         kineticForce += amount;
         setChanged();
 
-        if (kineticForce >= requiredKineticForce) {
-            process();
+        if (kineticForce >= requiredKineticForce)
+        {
+            return process();
         }
         return true;
     }
 
-    private void process() {
-        if (currentRecipe == null) return;
+    private boolean process() {
+        if (currentRecipe == null) return false;
 
         RandomSource random = level != null ? level.getRandom() : RandomSource.create();
         List<ItemStack> rolled = currentRecipe.rollOutputs(random);
 
-        if (!canFitOutputs(rolled)) return;
+        if (!canFitOutputs(rolled))
+        {
+            kineticForce = 0;
+            return false;
+        }
 
         items.get(SLOT_INPUT).shrink(1);
 
@@ -159,6 +164,7 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
 
         kineticForce = 0;
         setChanged();
+        return true;
     }
 
     private boolean canFitOutputs(List<ItemStack> rolled) {

@@ -33,7 +33,7 @@ public class StirlingEngineBlockEntity extends BlockEntity implements MenuProvid
     public static final int CONSUMPTION_RATE = 10;
     public static final int WATER_OUTPUT_RATE = 10;
     /** Fixed-point KF units produced per tick (10 = 1 KF). */
-    public static final int KF_SUPPLY = 20;
+    public static final float KF_SUPPLY = 0.1F;
 
     private FluidStack steamTank = FluidStack.EMPTY;
     private FluidStack waterTank = FluidStack.EMPTY;
@@ -62,7 +62,7 @@ public class StirlingEngineBlockEntity extends BlockEntity implements MenuProvid
     }
 
     @Override
-    public int getKfSupply() {
+    public float getKfSupply() {
         return getBlockState().getValue(StirlingEngineBlock.LIT) ? KF_SUPPLY : 0;
     }
 

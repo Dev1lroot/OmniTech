@@ -64,7 +64,7 @@ public final class KineticNetworkUtil {
      * @param source       position of the KF source (generator / stirling engine)
      * @param ownKfUnits   fixed-point KF units (10 = 1 KF) this source produces
      */
-    public static void propagateKineticForce(Level level, BlockPos source, int ownKfUnits) {
+    public static void propagateKineticForce(Level level, BlockPos source, float ownKfUnits) {
         record Step(BlockPos pos, Direction.Axis entryAxis) {}
 
         Set<BlockPos>         visited   = new HashSet<>();
@@ -73,8 +73,8 @@ public final class KineticNetworkUtil {
         List<ReductorNode>    reductors = new ArrayList<>();
         List<IKineticReceiver> receivers = new ArrayList<>();
 
-        int totalSupply = ownKfUnits;
-        int totalDemand = 0;
+        float totalSupply = ownKfUnits;
+        float totalDemand = 0;
 
         // ── Phase 1: BFS collection ────────────────────────────────────────────
 

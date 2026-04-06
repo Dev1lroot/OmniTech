@@ -33,15 +33,15 @@ public class ManualMaceratorBlockEntity extends BaseContainerBlockEntity impleme
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
 
-    private int kineticForce = 0;
-    private int requiredKineticForce = 0;
+    private float kineticForce = 0;
+    private float requiredKineticForce = 0;
     private ManualMaceratorRecipe currentRecipe = null;
     private String currentRecipeId = null;
 
     protected final ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
-            return switch (index) {
+            return (int) switch (index) {
                 case 0 -> kineticForce;
                 case 1 -> requiredKineticForce;
                 default -> 0;
@@ -108,14 +108,21 @@ public class ManualMaceratorBlockEntity extends BaseContainerBlockEntity impleme
 
     /** Only draw from the KF network when there is something to process. */
     @Override
-    public int getKfDemand() { return currentRecipe != null ? 5 : 0; }
+    public float getKfDemand() {
+        return currentRecipe != null ? 0.1F : 0F; //
+    }
 
     /**
      * Called by the Crank block when the player turns the crank.
      * @return true if the force was accepted (recipe exists), false otherwise
      */
-    public boolean addKineticForce(int amount) {
+    public boolean addKineticForce(float amount)
+    {
         if (currentRecipe == null) return false;
+        if (!canOutput(currentRecipe)) {
+            kineticForce = 0;
+            return true;
+        }
 
         kineticForce += amount;
         setChanged();
@@ -128,7 +135,11 @@ public class ManualMaceratorBlockEntity extends BaseContainerBlockEntity impleme
 
     private void process() {
         if (currentRecipe == null) return;
-        if (!canOutput(currentRecipe)) return;
+        if (!canOutput(currentRecipe))
+        {
+            kineticForce = 0;
+            return;
+        }
 
         // Consume input
         items.get(SLOT_INPUT).shrink(1);
@@ -178,8 +189,8 @@ public class ManualMaceratorBlockEntity extends BaseContainerBlockEntity impleme
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         ContainerHelper.saveAllItems(output, this.items);
-        output.putInt("KineticForce", this.kineticForce);
-        output.putInt("RequiredKineticForce", this.requiredKineticForce);
+        output.putFloat("KineticForce", this.kineticForce);
+        output.putFloat("RequiredKineticForce", this.requiredKineticForce);
     }
 
     /** Output slots are extraction-only; input slot accepts items. */

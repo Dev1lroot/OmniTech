@@ -10,11 +10,11 @@ package com.dev1lroot.mcmods.omnitech.blocks;
  */
 public interface IKineticReceiver {
     /** @return true if force was accepted */
-    boolean addKineticForce(int amount);
+    boolean addKineticForce(float amount);
 
     /**
      * Fixed-point KF units (10 = 1 KF) this machine requires per network clock.
      * Default: 5 (= 0.5 KF).
      */
-    default int getKfDemand() { return 5; }
+    default float getKfDemand() { return 1.0F; }
 }

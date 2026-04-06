@@ -44,7 +44,7 @@ public class PumpBlockEntity extends BlockEntity implements IKineticReceiver {
     // ── IKineticReceiver ──────────────────────────────────────────────────────
 
     @Override
-    public boolean addKineticForce(int amount) {
+    public boolean addKineticForce(float amount) {
         poweredTimer = POWERED_DECAY_TICKS;
         return true;
     }

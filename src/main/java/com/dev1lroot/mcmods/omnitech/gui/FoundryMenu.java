@@ -75,15 +75,11 @@ public class FoundryMenu extends AbstractContainerMenu {
     public int getFluidCapacity()       { return data.get(5); }
 
     /** Progress arrow width in pixels (0–24). */
-    public int getCookProgressWidth() {
+    public float getCookProgressScaled() {
         int total = getCookTotalTime();
-        return total != 0 ? getCookProgress() * 24 / total : 0;
-    }
-
-    /** Fluid gauge fill height in pixels (0–52). */
-    public int getFluidBarHeight() {
-        int cap = getFluidCapacity();
-        return cap != 0 ? getFluidAmount() * 52 / cap : 0;
+        if (total <= 0) return 0f;
+        // Возвращаем значение от 0.0 до 100.0
+        return (float) getCookProgress() * 100f / total;
     }
 
     // ── Shift-click logic ──────────────────────────────────────────────────────

@@ -9,5 +9,5 @@ package com.dev1lroot.mcmods.omnitech.blocks;
  */
 public interface IKineticSupplier {
     /** Fixed-point KF units (10 = 1 KF) produced per network clock. */
-    int getKfSupply();
+    float getKfSupply();
 }

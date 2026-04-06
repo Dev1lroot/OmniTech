@@ -29,7 +29,7 @@ public class FoundryScreen extends AbstractContainerScreen<FoundryMenu> {
     private static final int ARROW_X = 62,  ARROW_Y = 35;
 
     private static final int FLUID_U = 176, FLUID_V = 0;
-    private static final int FLUID_W = 12,  FLUID_H = 52;
+    private static final int FLUID_W = 16,  FLUID_H = 52;
     private static final int FLUID_X = 8,   FLUID_Y = 17;
 
     public FoundryScreen(FoundryMenu menu, Inventory playerInventory, Component title) {
@@ -43,7 +43,8 @@ public class FoundryScreen extends AbstractContainerScreen<FoundryMenu> {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick)
+    {
         // Обязательно первым делом рисуем стандартный фон (слоты рисуются здесь в супер-классе)
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
 
@@ -55,13 +56,7 @@ public class FoundryScreen extends AbstractContainerScreen<FoundryMenu> {
                 x, y, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
 
         // 2. Стрелочка прогресса
-        int arrowWidth = menu.getCookProgressWidth();
-        if (arrowWidth > 0) {
-            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,
-                    x + ARROW_X, y + ARROW_Y,
-                    (float) ARROW_U, (float) ARROW_V,
-                    arrowWidth, ARROW_H, 256, 256);
-        }
+        GuiUtil.renderProgressBar(graphics, x + ARROW_X, y + ARROW_Y, ARROW_W, menu.getCookProgressScaled());
 
         // Рамка блока с жидкостью
         GuiUtil.renderFrame(graphics, x + FLUID_X, y + FLUID_Y, FLUID_W, FLUID_H);
