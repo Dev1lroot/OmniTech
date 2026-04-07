@@ -25,10 +25,18 @@ public class OmniTechGUI {
     public static final DeferredRegister<CreativeModeTab> REGISTRY =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, OmniTech.MODID);
 
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MATERIALS_TAB =
+            REGISTRY.register("omnitech.materials", () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.omnitech.materials"))
+                    .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
+                    .icon(() -> OmniTechMaterials.TUNGSTEN.item("%_ingot").get().getDefaultInstance())
+                    .displayItems((parameters, output) -> MaterialSet.addAllToTab(output))
+                    .build());
+
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MACHINES_TAB =
             REGISTRY.register("omnitech.machines", () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.omnitech.machines"))
-                    .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
+                    .withTabsBefore(MATERIALS_TAB.getKey())
                     .icon(() -> OmniTechItems.BOILER.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
                         // Генерация и обработка

@@ -1,0 +1,8 @@
+{
+  "multipart": [
+    { "when": { "facing": "north" }, "apply": { "model": "omnitech:block/valve_wheel", "y": 180  } },
+    { "when": { "facing": "south" }, "apply": { "model": "omnitech:block/valve_wheel", "y": 180  } },
+    { "when": { "facing": "east"  }, "apply": { "model": "omnitech:block/valve_wheel", "y": 180   } },
+    { "when": { "facing": "west"  }, "apply": { "model": "omnitech:block/valve_wheel", "y": 180  } }
+  ]
+}

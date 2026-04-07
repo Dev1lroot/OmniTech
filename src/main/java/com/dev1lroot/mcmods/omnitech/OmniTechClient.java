@@ -6,6 +6,7 @@ import com.dev1lroot.mcmods.omnitech.client.CrankBlockEntityRenderer;
 import com.dev1lroot.mcmods.omnitech.client.FluidPipeRenderer;
 import com.dev1lroot.mcmods.omnitech.client.FluidTankRenderer;
 import com.dev1lroot.mcmods.omnitech.client.KineticPipeRenderer;
+import com.dev1lroot.mcmods.omnitech.client.ValveRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.resources.model.sprite.Material;
@@ -48,6 +49,7 @@ public class OmniTechClient
         event.registerBlockEntityRenderer(OmniTechBlockEntities.CONVEYOR_BELT.get(), ConveyorBeltRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.FLUID_TANK.get(), FluidTankRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.FLUID_PIPE.get(), FluidPipeRenderer::new);
+        event.registerBlockEntityRenderer(OmniTechBlockEntities.VALVE.get(), ValveRenderer::new);
     }
 
     @SubscribeEvent

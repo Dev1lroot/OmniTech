@@ -57,6 +57,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> BOILER = REGISTRY.registerSimpleBlockItem(
             "boiler", OmniTechBlocks.BOILER);
 
+    public static final DeferredItem<BlockItem> VALVE_ITEM = REGISTRY.registerSimpleBlockItem(
+            "valve", OmniTechBlocks.VALVE);
+
     public static final DeferredItem<BlockItem> SMELTER_ITEM = REGISTRY.registerSimpleBlockItem(
             "smelter", OmniTechBlocks.SMELTER);
 

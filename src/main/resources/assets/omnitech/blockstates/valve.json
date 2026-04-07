@@ -1,0 +1,12 @@
+{
+  "multipart": [
+    { "when": { "vertical": "false", "facing": "north" }, "apply": { "model": "omnitech:block/valve_body_horizontal"            } },
+    { "when": { "vertical": "false", "facing": "south" }, "apply": { "model": "omnitech:block/valve_body_horizontal", "y": 180  } },
+    { "when": { "vertical": "false", "facing": "east"  }, "apply": { "model": "omnitech:block/valve_body_horizontal", "y": 90   } },
+    { "when": { "vertical": "false", "facing": "west"  }, "apply": { "model": "omnitech:block/valve_body_horizontal", "y": 270  } },
+    { "when": { "vertical": "true",  "facing": "north" }, "apply": { "model": "omnitech:block/valve_body_vertical"              } },
+    { "when": { "vertical": "true",  "facing": "south" }, "apply": { "model": "omnitech:block/valve_body_vertical",  "y": 180  } },
+    { "when": { "vertical": "true",  "facing": "east"  }, "apply": { "model": "omnitech:block/valve_body_vertical",  "y": 90   } },
+    { "when": { "vertical": "true",  "facing": "west"  }, "apply": { "model": "omnitech:block/valve_body_vertical",  "y": 270  } }
+  ]
+}

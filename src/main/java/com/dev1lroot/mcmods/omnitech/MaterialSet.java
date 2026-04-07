@@ -16,6 +16,8 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import net.minecraft.world.item.CreativeModeTab;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -49,6 +51,13 @@ import java.util.*;
 public class MaterialSet {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+    /**
+     * All MaterialSet instances in the order they were created.
+     * Populated automatically by every {@link #create} call.
+     * Used by {@link #addAllToTab} to populate the Materials creative tab.
+     */
+    public static final List<MaterialSet> ALL_SETS = new ArrayList<>();
 
     private final String material;
     private final Map<String, DeferredItem<Item>>      items      = new LinkedHashMap<>();
@@ -141,7 +150,35 @@ public class MaterialSet {
             updateLangFile(resourcesDir, material, itemPatterns, blockPatterns, blockPatternSet);
         }
 
+        ALL_SETS.add(set);
         return set;
+    }
+
+    // ── Creative tab ──────────────────────────────────────────────────────────
+
+    /**
+     * Adds all items in this set to the given creative tab output.
+     * Order: block-items first (in block-pattern order), then standalone items
+     * (in item-pattern order) — matching the patterns arrays passed to {@link #create}.
+     */
+    public void addToTab(CreativeModeTab.Output output) {
+        for (DeferredItem<BlockItem> bi : blockItems.values()) {
+            output.accept(bi.get());
+        }
+        for (DeferredItem<Item> it : items.values()) {
+            output.accept(it.get());
+        }
+    }
+
+    /**
+     * Adds all items from every registered {@link MaterialSet} to the given output.
+     * Sets are added in the order they were created (i.e. the order they appear in
+     * {@link OmniTechMaterials}).
+     */
+    public static void addAllToTab(CreativeModeTab.Output output) {
+        for (MaterialSet set : ALL_SETS) {
+            set.addToTab(output);
+        }
     }
 
     // ── Accessors ─────────────────────────────────────────────────────────────

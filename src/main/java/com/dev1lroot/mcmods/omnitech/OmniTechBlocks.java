@@ -52,6 +52,9 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> PUMP;
     public static final DeferredBlock<Block> FLUID_TANK;
     public static final DeferredBlock<Block> BOILER;
+    public static final DeferredBlock<Block> VALVE;
+    /** Ghost block – holds the {@code valve_wheel} blockstate for BER spinning wheel rendering. */
+    public static final DeferredBlock<Block> VALVE_WHEEL;
     public static final DeferredBlock<Block> SORTER;
     public static final DeferredBlock<Block> SMELTER;
     public static final DeferredBlock<Block> FOUNDRY;
@@ -120,6 +123,12 @@ public class OmniTechBlocks {
         BOILER = register("boiler",
                 p -> new BoilerBlock(p.mapColor(MapColor.METAL).strength(3.0F)
                         .sound(SoundType.METAL).noOcclusion()));
+        VALVE = register("valve",
+                p -> new ValveBlock(p.mapColor(MapColor.METAL).strength(3.0F)
+                        .sound(SoundType.METAL).noOcclusion()));
+        VALVE_WHEEL = register("valve_wheel",
+                p -> new ValveWheelBlock(p.mapColor(MapColor.METAL).strength(3.0F)
+                        .sound(SoundType.METAL).noOcclusion().noLootTable()));
         SORTER = register("sorter",
                 p -> new SorterBlock(p.mapColor(MapColor.METAL).strength(3.0F)
                         .sound(SoundType.METAL)));

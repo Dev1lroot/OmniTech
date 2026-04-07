@@ -1,5 +1,7 @@
 {
   "itemGroup.omnitech": "OmniTech",
+  "itemGroup.omnitech.materials": "OmniTech: Materials",
+  "itemGroup.omnitech.machines": "OmniTech: Machines",
   "block.omnitech.example_block": "Example Block",
   "block.omnitech.alloy_furnace": "Alloy Furnace",
   "item.omnitech.example_item": "Example Item",
@@ -162,5 +164,14 @@
   "block.omnitech.halite": "Halite",
   "item.omnitech.halite_dust": "Halite Dust",
   "item.omnitech.sodium_chlorine_dust": "Sodium Chlorine Dust",
-  "item.omnitech.sodium_chlorine_mote": "Sodium Chlorine Mote"
+  "item.omnitech.sodium_chlorine_mote": "Sodium Chlorine Mote",
+  "block.omnitech.foundry": "Foundry",
+  "item.omnitech.foundry": "Foundry",
+  "container.omnitech.foundry": "Foundry",
+  "block.omnitech.boiler": "Boiler",
+  "item.omnitech.boiler": "Boiler",
+  "container.omnitech.boiler": "Boiler",
+  "block.omnitech.sorter": "Sorter",
+  "item.omnitech.sorter": "Sorter",
+  "container.omnitech.sorter": "Sorter"
 }
