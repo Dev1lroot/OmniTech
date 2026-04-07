@@ -2,6 +2,9 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.gui.BoilerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceScreen;
+import com.dev1lroot.mcmods.omnitech.gui.ElectricCapacitorScreen;
+import com.dev1lroot.mcmods.omnitech.gui.ElectricEngineScreen;
+import com.dev1lroot.mcmods.omnitech.gui.ElectricFurnaceScreen;
 import com.dev1lroot.mcmods.omnitech.gui.FoundryScreen;
 import com.dev1lroot.mcmods.omnitech.gui.FluidTankScreen;
 import com.dev1lroot.mcmods.omnitech.gui.HeaterScreen;
@@ -61,6 +64,12 @@ public class OmniTechGUI {
                         output.accept(OmniTechItems.FLUID_PIPE_ITEM.get());
                         output.accept(OmniTechItems.PUMP_ITEM.get());
                         output.accept(OmniTechItems.FLUID_TANK_ITEM.get());
+
+                        // Electricity
+                        output.accept(OmniTechItems.ELECTRIC_ENGINE_ITEM.get());
+                        output.accept(OmniTechItems.ELECTRIC_WIRE_ITEM.get());
+                        output.accept(OmniTechItems.ELECTRIC_CAPACITOR_ITEM.get());
+                        output.accept(OmniTechItems.ELECTRIC_FURNACE_ITEM.get());
                     }).build());
 
     public static void register(IEventBus modEventBus) {
@@ -81,6 +90,9 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.SORTER.get(), SorterScreen::new);
         event.register(OmniTechMenuTypes.SMELTER.get(), SmelterScreen::new);
         event.register(OmniTechMenuTypes.FOUNDRY.get(), FoundryScreen::new);
+        event.register(OmniTechMenuTypes.ELECTRIC_ENGINE.get(), ElectricEngineScreen::new);
+        event.register(OmniTechMenuTypes.ELECTRIC_CAPACITOR.get(), ElectricCapacitorScreen::new);
+        event.register(OmniTechMenuTypes.ELECTRIC_FURNACE.get(), ElectricFurnaceScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)

@@ -59,6 +59,11 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> SMELTER;
     public static final DeferredBlock<Block> FOUNDRY;
 
+    public static final DeferredBlock<Block> ELECTRIC_ENGINE;
+    public static final DeferredBlock<Block> ELECTRIC_CAPACITOR;
+    public static final DeferredBlock<Block> ELECTRIC_WIRE;
+    public static final DeferredBlock<Block> ELECTRIC_FURNACE;
+
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
         MANUAL_MACERATOR = register("manual_macerator",
@@ -137,6 +142,20 @@ public class OmniTechBlocks {
                         .sound(SoundType.METAL)));
         FOUNDRY = register("foundry",
                 p -> new FoundryBlock(p.mapColor(MapColor.METAL).strength(4.0F)
+                        .sound(SoundType.METAL)));
+
+        ELECTRIC_ENGINE = register("electric_engine",
+                p -> new ElectricEngineBlock(p.mapColor(MapColor.METAL).strength(3.5F)
+                        .sound(SoundType.METAL)));
+        ELECTRIC_CAPACITOR = register("electric_capacitor",
+                p -> new ElectricCapacitorBlock(p.mapColor(MapColor.METAL).strength(3.0F)
+                        .sound(SoundType.METAL)));
+        ELECTRIC_WIRE = register("electric_wire",
+                p -> new ElectricWireBlock(p.mapColor(MapColor.METAL).strength(1.5F)
+                        .sound(SoundType.METAL).noOcclusion()
+                        .pushReaction(net.minecraft.world.level.material.PushReaction.NORMAL)));
+        ELECTRIC_FURNACE = register("electric_furnace",
+                p -> new ElectricFurnaceBlock(p.mapColor(MapColor.METAL).strength(3.5F)
                         .sound(SoundType.METAL)));
     }
 

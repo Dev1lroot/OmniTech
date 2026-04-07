@@ -173,5 +173,17 @@
   "container.omnitech.boiler": "Boiler",
   "block.omnitech.sorter": "Sorter",
   "item.omnitech.sorter": "Sorter",
-  "container.omnitech.sorter": "Sorter"
+  "container.omnitech.sorter": "Sorter",
+
+  "block.omnitech.electric_engine": "Electric Engine",
+  "item.omnitech.electric_engine": "Electric Engine",
+  "container.omnitech.electric_engine": "Electric Engine",
+  "block.omnitech.electric_capacitor": "Electric Capacitor",
+  "item.omnitech.electric_capacitor": "Electric Capacitor",
+  "container.omnitech.electric_capacitor": "Electric Capacitor",
+  "block.omnitech.electric_wire": "Electric Wire",
+  "item.omnitech.electric_wire": "Electric Wire",
+  "block.omnitech.electric_furnace": "Electric Furnace",
+  "item.omnitech.electric_furnace": "Electric Furnace",
+  "container.omnitech.electric_furnace": "Electric Furnace"
 }

@@ -66,6 +66,15 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> FOUNDRY_ITEM = REGISTRY.registerSimpleBlockItem(
             "foundry", OmniTechBlocks.FOUNDRY);
 
+    public static final DeferredItem<BlockItem> ELECTRIC_ENGINE_ITEM = REGISTRY.registerSimpleBlockItem(
+            "electric_engine", OmniTechBlocks.ELECTRIC_ENGINE);
+    public static final DeferredItem<BlockItem> ELECTRIC_CAPACITOR_ITEM = REGISTRY.registerSimpleBlockItem(
+            "electric_capacitor", OmniTechBlocks.ELECTRIC_CAPACITOR);
+    public static final DeferredItem<BlockItem> ELECTRIC_WIRE_ITEM = REGISTRY.registerSimpleBlockItem(
+            "electric_wire", OmniTechBlocks.ELECTRIC_WIRE);
+    public static final DeferredItem<BlockItem> ELECTRIC_FURNACE_ITEM = REGISTRY.registerSimpleBlockItem(
+            "electric_furnace", OmniTechBlocks.ELECTRIC_FURNACE);
+
     // Real Items
     public static final DeferredItem<Item> STEEL_INGOT = REGISTRY.registerSimpleItem(
             "steel_ingot", p -> p);

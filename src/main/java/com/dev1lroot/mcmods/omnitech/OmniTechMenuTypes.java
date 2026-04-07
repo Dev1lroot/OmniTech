@@ -2,6 +2,9 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.gui.BoilerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceMenu;
+import com.dev1lroot.mcmods.omnitech.gui.ElectricCapacitorMenu;
+import com.dev1lroot.mcmods.omnitech.gui.ElectricEngineMenu;
+import com.dev1lroot.mcmods.omnitech.gui.ElectricFurnaceMenu;
 import com.dev1lroot.mcmods.omnitech.gui.FoundryMenu;
 import com.dev1lroot.mcmods.omnitech.gui.FluidTankMenu;
 import com.dev1lroot.mcmods.omnitech.gui.HeaterMenu;
@@ -66,6 +69,18 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<FoundryMenu>> FOUNDRY =
             REGISTRY.register("foundry",
                     () -> IMenuTypeExtension.create(FoundryMenu::new));
+
+    public static final Supplier<MenuType<ElectricEngineMenu>> ELECTRIC_ENGINE =
+            REGISTRY.register("electric_engine",
+                    () -> IMenuTypeExtension.create(ElectricEngineMenu::new));
+
+    public static final Supplier<MenuType<ElectricCapacitorMenu>> ELECTRIC_CAPACITOR =
+            REGISTRY.register("electric_capacitor",
+                    () -> IMenuTypeExtension.create(ElectricCapacitorMenu::new));
+
+    public static final Supplier<MenuType<ElectricFurnaceMenu>> ELECTRIC_FURNACE =
+            REGISTRY.register("electric_furnace",
+                    () -> IMenuTypeExtension.create(ElectricFurnaceMenu::new));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

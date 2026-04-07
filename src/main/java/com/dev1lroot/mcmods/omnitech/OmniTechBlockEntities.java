@@ -98,6 +98,21 @@ public class OmniTechBlockEntities {
                     () -> new BlockEntityType<>(FoundryBlockEntity::new,
                             OmniTechBlocks.FOUNDRY.get()));
 
+    public static final Supplier<BlockEntityType<ElectricEngineBlockEntity>> ELECTRIC_ENGINE =
+            REGISTRY.register("electric_engine",
+                    () -> new BlockEntityType<>(ElectricEngineBlockEntity::new,
+                            OmniTechBlocks.ELECTRIC_ENGINE.get()));
+
+    public static final Supplier<BlockEntityType<ElectricCapacitorBlockEntity>> ELECTRIC_CAPACITOR =
+            REGISTRY.register("electric_capacitor",
+                    () -> new BlockEntityType<>(ElectricCapacitorBlockEntity::new,
+                            OmniTechBlocks.ELECTRIC_CAPACITOR.get()));
+
+    public static final Supplier<BlockEntityType<ElectricFurnaceBlockEntity>> ELECTRIC_FURNACE =
+            REGISTRY.register("electric_furnace",
+                    () -> new BlockEntityType<>(ElectricFurnaceBlockEntity::new,
+                            OmniTechBlocks.ELECTRIC_FURNACE.get()));
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }

@@ -16,5 +16,17 @@
   "item.omnitech.copper_dust": "Медная Пыль",
   "item.omnitech.copper_plate": "Медная Пластина",
   "item.omnitech.stone_dust": "Каменная Пыль",
-  "item.omnitech.tin_wire": "Оловянный Провод"
+  "item.omnitech.tin_wire": "Оловянный Провод",
+
+  "block.omnitech.electric_engine": "Электрический Двигатель",
+  "item.omnitech.electric_engine": "Электрический Двигатель",
+  "container.omnitech.electric_engine": "Электрический Двигатель",
+  "block.omnitech.electric_capacitor": "Электрический Конденсатор",
+  "item.omnitech.electric_capacitor": "Электрический Конденсатор",
+  "container.omnitech.electric_capacitor": "Электрический Конденсатор",
+  "block.omnitech.electric_wire": "Электрический Провод",
+  "item.omnitech.electric_wire": "Электрический Провод",
+  "block.omnitech.electric_furnace": "Электрическая Печь",
+  "item.omnitech.electric_furnace": "Электрическая Печь",
+  "container.omnitech.electric_furnace": "Электрическая Печь"
 }

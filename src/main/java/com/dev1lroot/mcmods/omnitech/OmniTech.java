@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.blocks.BoilerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.ElectricCapacitorBlockEntity;
 import net.minecraft.core.Direction;
 import org.slf4j.Logger;
 
@@ -104,6 +105,14 @@ public class OmniTech {
                 Capabilities.Fluid.BLOCK,
                 OmniTechBlockEntities.FOUNDRY.get(),
                 (be, side) -> be.fluidHandler
+        );
+
+        // Electric Capacitor exposes the NeoForge EnergyHandler capability for
+        // interoperability with other mods using NeoForge's energy system.
+        event.registerBlockEntity(
+                Capabilities.Energy.BLOCK,
+                OmniTechBlockEntities.ELECTRIC_CAPACITOR.get(),
+                (be, side) -> be.energyHandler
         );
     }
 
