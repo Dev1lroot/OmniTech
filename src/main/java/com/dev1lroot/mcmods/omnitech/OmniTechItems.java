@@ -74,6 +74,8 @@ public class OmniTechItems
             "electric_wire", OmniTechBlocks.ELECTRIC_WIRE);
     public static final DeferredItem<BlockItem> ELECTRIC_FURNACE_ITEM = REGISTRY.registerSimpleBlockItem(
             "electric_furnace", OmniTechBlocks.ELECTRIC_FURNACE);
+    public static final DeferredItem<BlockItem> SOLAR_PANEL_ITEM = REGISTRY.registerSimpleBlockItem(
+            "solar_panel", OmniTechBlocks.SOLAR_PANEL);
 
     // Real Items
     public static final DeferredItem<Item> STEEL_INGOT = REGISTRY.registerSimpleItem(

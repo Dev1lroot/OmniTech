@@ -185,5 +185,11 @@
   "item.omnitech.electric_wire": "Electric Wire",
   "block.omnitech.electric_furnace": "Electric Furnace",
   "item.omnitech.electric_furnace": "Electric Furnace",
-  "container.omnitech.electric_furnace": "Electric Furnace"
+  "container.omnitech.electric_furnace": "Electric Furnace",
+
+  "block.omnitech.solar_panel": "Solar Panel",
+  "item.omnitech.solar_panel": "Solar Panel",
+  "container.omnitech.solar_panel": "Solar Panel",
+  "gui.omnitech.solar_panel.sun_intensity": "Sun Intensity:",
+  "gui.omnitech.solar_panel.output": "Output:"
 }

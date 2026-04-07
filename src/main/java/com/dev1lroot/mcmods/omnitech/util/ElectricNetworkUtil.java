@@ -21,9 +21,9 @@ import java.util.Set;
  * divided equally among all {@link IElectricReceiver} nodes found in the BFS.
  * Float division prevents energy loss when there are many receivers.
  *
- * <p>The BFS seed is restricted to {@code outputDirections}, so an engine can
- * limit propagation to its 5 non-front faces and a capacitor can restrict
- * discharge to its single front face.
+ * <p>Returns the total EU actually accepted by all receivers so that the
+ * source (e.g. a capacitor) can drain exactly that amount — no more, no less.
+ * This prevents the source from losing EU that receivers could not store.
  */
 public final class ElectricNetworkUtil {
     private ElectricNetworkUtil() {}
@@ -37,12 +37,13 @@ public final class ElectricNetworkUtil {
      * @param source           position of the EU source (engine / capacitor)
      * @param euAmount         total EU to distribute this network clock
      * @param outputDirections faces from which the source may output EU
-     * @return {@code true} if at least one receiver accepted the energy
+     * @return total EU actually accepted by all receivers (may be less than
+     *         {@code euAmount} if some buffers were full)
      */
-    public static boolean propagateElectricity(Level level, BlockPos source,
+    public static float propagateElectricity(Level level, BlockPos source,
             float euAmount, Direction[] outputDirections) {
 
-        if (euAmount <= 0f) return false;
+        if (euAmount <= 0f) return 0f;
 
         Set<BlockPos>           visited   = new HashSet<>();
         ArrayDeque<BlockPos>    queue     = new ArrayDeque<>();
@@ -64,7 +65,6 @@ public final class ElectricNetworkUtil {
             BlockState state = level.getBlockState(pos);
 
             if (state.getBlock() instanceof ElectricWireBlock) {
-                // Wire: continue BFS in all 6 directions
                 for (Direction dir : Direction.values()) {
                     BlockPos next = pos.relative(dir);
                     if (!visited.contains(next)) {
@@ -73,7 +73,6 @@ public final class ElectricNetworkUtil {
                     }
                 }
             } else {
-                // Terminal node — collect receiver if present
                 BlockEntity be = level.getBlockEntity(pos);
                 if (be instanceof IElectricReceiver receiver) {
                     receivers.add(receiver);
@@ -81,15 +80,16 @@ public final class ElectricNetworkUtil {
             }
         }
 
-        if (receivers.isEmpty()) return false;
+        if (receivers.isEmpty()) return 0f;
 
-        // ── Phase 2: divide EU equally among all receivers (float precision) ──
+        // ── Phase 2: divide EU equally, sum what is actually accepted ─────────
         float share = euAmount / receivers.size();
+        float totalAccepted = 0f;
 
-        boolean anyAccepted = false;
         for (IElectricReceiver receiver : receivers) {
-            if (receiver.addElectricity(share)) anyAccepted = true;
+            totalAccepted += receiver.addElectricity(share);
         }
-        return anyAccepted;
+
+        return totalAccepted;
     }
 }

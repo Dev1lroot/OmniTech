@@ -14,7 +14,7 @@ public interface IElectricReceiver {
      * during BFS dispatch to deliver EU to this machine.
      *
      * @param amount EU being offered this network clock
-     * @return true if the receiver accepted any energy
+     * @return the amount actually accepted (0 if the buffer is full)
      */
-    boolean addElectricity(float amount);
+    float addElectricity(float amount);
 }

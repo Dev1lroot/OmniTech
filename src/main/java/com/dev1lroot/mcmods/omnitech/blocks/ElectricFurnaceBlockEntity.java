@@ -27,23 +27,24 @@ import java.util.Optional;
  * Block entity for the Electric Furnace.
  *
  * <h3>Energy and cook model</h3>
+ * <p>Each tick that a valid smelting recipe is present <em>and</em> the buffer
+ * holds at least {@link #EU_PER_TICK} EU:
  * <ol>
- *   <li>EU arrives from the network into {@link #energyStored} (float, 0..EU_PER_RECIPE).</li>
- *   <li>When a recipe is present and {@code energyStored >= EU_PER_RECIPE}, deduct
- *       {@value #EU_PER_RECIPE} EU and start the cook timer ({@link #cookProgress}).</li>
- *   <li>The cook timer advances every tick regardless of energy. The buffer may
- *       refill during cooking — it will be ready for the next recipe immediately.</li>
- *   <li>When {@code cookProgress >= COOK_TIME} ({@value #COOK_TIME} ticks = 5 s),
- *       output the item and reset progress. If energy is already full, the next
- *       recipe starts in the same tick.</li>
+ *   <li>Deduct {@link #EU_PER_TICK} (= {@link #EU_PER_RECIPE} / {@link #COOK_TIME}) from the buffer.</li>
+ *   <li>Advance {@link #cookProgress} by 1.</li>
+ *   <li>When {@code cookProgress} reaches {@link #COOK_TIME} the item is output
+ *       and progress resets to 0.</li>
  * </ol>
+ * <p>If the buffer is empty, progress <em>pauses</em> (holds its current value)
+ * until EU arrives. If the input slot is cleared the progress resets to 0.
  *
  * <h3>ContainerData layout</h3>
  * <ul>
- *   <li>0 – energyStored × 10 (fixed-point; divide by 10 on client)</li>
- *   <li>1 – EU_PER_RECIPE × 10</li>
+ *   <li>0 – energyStored × 10 (fixed-point)</li>
+ *   <li>1 – MAX_EU × 10 (bar scale)</li>
  *   <li>2 – cookProgress (0..COOK_TIME)</li>
  *   <li>3 – COOK_TIME</li>
+ *   <li>4 – EU_PER_RECIPE × 10 (recipe cost for display)</li>
  * </ul>
  */
 public class ElectricFurnaceBlockEntity extends BaseContainerBlockEntity
@@ -53,39 +54,26 @@ public class ElectricFurnaceBlockEntity extends BaseContainerBlockEntity
     public static final int SLOT_OUTPUT = 1;
     public static final int SLOT_COUNT  = 2;
 
-    /** EU required to start one smelting recipe. */
+    /** Total EU cost of one smelting recipe. */
     public static final float EU_PER_RECIPE = 100f;
 
     /** Maximum EU the internal buffer can hold. */
     public static final float MAX_EU = 800f;
 
-    /** Ticks for one recipe to complete (5 seconds at 20 TPS). */
+    /** Ticks for one recipe to complete (5 s at 20 TPS). */
     public static final int COOK_TIME = 100;
+
+    /** EU consumed per tick of cook progress (EU_PER_RECIPE / COOK_TIME). */
+    private static final float EU_PER_TICK = EU_PER_RECIPE / COOK_TIME;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
 
-    /** EU accumulated in the buffer (0..MAX_EU). Charges independently from cooking. */
+    /** EU in the buffer (0..MAX_EU). */
     private float energyStored = 0f;
 
-    /**
-     * Cook timer (0..COOK_TIME). 0 = not cooking.
-     * Once started (EU deducted), advances every tick until COOK_TIME.
-     */
+    /** Cook progress (0..COOK_TIME). Pauses when energy is unavailable; resets when input is cleared. */
     private int cookProgress = 0;
 
-    /** True while the cook timer is running. */
-    private boolean isCooking = false;
-
-    /**
-     * ContainerData layout:
-     * <ul>
-     *   <li>0 – energyStored × 10</li>
-     *   <li>1 – MAX_EU × 10 (bar scale)</li>
-     *   <li>2 – cookProgress (0..COOK_TIME)</li>
-     *   <li>3 – COOK_TIME</li>
-     *   <li>4 – EU_PER_RECIPE × 10 (recipe cost for display)</li>
-     * </ul>
-     */
     protected final ContainerData dataAccess = new ContainerData() {
         @Override public int get(int index) {
             return switch (index) {
@@ -126,17 +114,14 @@ public class ElectricFurnaceBlockEntity extends BaseContainerBlockEntity
 
     // ── IElectricReceiver ─────────────────────────────────────────────────────
 
-    /**
-     * Accepts EU into the internal buffer (capped at {@link #EU_PER_RECIPE}).
-     * The furnace never wastes EU — it only absorbs what fits.
-     */
     @Override
-    public boolean addElectricity(float amount) {
+    public float addElectricity(float amount) {
         float space = MAX_EU - energyStored;
-        if (space <= 0f) return false;
-        energyStored += Math.min(amount, space);
+        if (space <= 0f) return 0f;
+        float accepted = Math.min(amount, space);
+        energyStored += accepted;
         setChanged();
-        return true;
+        return accepted;
     }
 
     // ── Server tick ───────────────────────────────────────────────────────────
@@ -146,55 +131,34 @@ public class ElectricFurnaceBlockEntity extends BaseContainerBlockEntity
 
         boolean changed = false;
 
-        // ── Start a new cook if buffer is full and not already cooking ─────────
-        if (!be.isCooking && be.energyStored >= EU_PER_RECIPE) {
-            Optional<RecipeHolder<SmeltingRecipe>> recipe =
-                    findRecipe(level, be.items.get(SLOT_INPUT));
+        Optional<RecipeHolder<SmeltingRecipe>> recipeOpt =
+                findRecipe(level, be.items.get(SLOT_INPUT));
 
-            if (recipe.isPresent() && be.canSmelt(recipe.get().value())) {
-                be.energyStored -= EU_PER_RECIPE;
+        if (recipeOpt.isPresent() && be.canSmelt(recipeOpt.get().value())) {
+            if (be.energyStored >= EU_PER_TICK) {
+                // Consume 1 EU worth of progress
+                be.energyStored -= EU_PER_TICK;
                 if (be.energyStored < 0f) be.energyStored = 0f;
-                be.isCooking    = true;
+                be.cookProgress++;
+                changed = true;
+
+                if (be.cookProgress >= COOK_TIME) {
+                    be.smelt(recipeOpt.get().value());
+                    be.cookProgress = 0;
+                }
+            }
+            // else: energy unavailable — progress pauses, nothing consumed
+        } else {
+            // No valid recipe — reset progress
+            if (be.cookProgress > 0) {
                 be.cookProgress = 0;
                 changed = true;
             }
         }
 
-        // ── Advance cook timer ────────────────────────────────────────────────
-        if (be.isCooking) {
-            be.cookProgress++;
-            changed = true;
-
-            if (be.cookProgress >= COOK_TIME) {
-                // Recipe complete — output item
-                Optional<RecipeHolder<SmeltingRecipe>> recipe =
-                        findRecipe(level, be.items.get(SLOT_INPUT));
-
-                if (recipe.isPresent() && be.canSmelt(recipe.get().value())) {
-                    be.smelt(recipe.get().value());
-                }
-
-                be.cookProgress = 0;
-                be.isCooking    = false;
-
-                // If buffer already has enough energy and item is still present, chain immediately
-                if (be.energyStored >= EU_PER_RECIPE) {
-                    Optional<RecipeHolder<SmeltingRecipe>> next =
-                            findRecipe(level, be.items.get(SLOT_INPUT));
-                    if (next.isPresent() && be.canSmelt(next.get().value())) {
-                        be.energyStored -= EU_PER_RECIPE;
-                        if (be.energyStored < 0f) be.energyStored = 0f;
-                        be.isCooking    = true;
-                        be.cookProgress = 0;
-                    }
-                }
-            }
-        }
-
-        // ── LIT = buffer has energy OR is actively cooking ────────────────────
-        boolean hasRecipe = !be.items.get(SLOT_INPUT).isEmpty()
-                && findRecipe(level, be.items.get(SLOT_INPUT)).isPresent();
-        boolean isLit  = hasRecipe && (be.energyStored > 0f || be.isCooking);
+        // LIT = actively cooking (progress > 0) or has energy and a smeltable item
+        boolean hasRecipe = recipeOpt.isPresent();
+        boolean isLit  = hasRecipe && (be.cookProgress > 0 || be.energyStored >= EU_PER_TICK);
         boolean wasLit = state.getValue(ElectricFurnaceBlock.LIT);
 
         if (wasLit != isLit) {
@@ -246,7 +210,6 @@ public class ElectricFurnaceBlockEntity extends BaseContainerBlockEntity
         ContainerHelper.loadAllItems(input, items);
         energyStored = input.getFloatOr("EnergyStored", 0f);
         cookProgress = input.getIntOr("CookProgress", 0);
-        isCooking    = input.getBooleanOr("IsCooking", false);
     }
 
     @Override
@@ -255,6 +218,5 @@ public class ElectricFurnaceBlockEntity extends BaseContainerBlockEntity
         ContainerHelper.saveAllItems(output, items);
         output.putFloat("EnergyStored", energyStored);
         output.putInt("CookProgress",   cookProgress);
-        output.putBoolean("IsCooking",  isCooking);
     }
 }

@@ -88,12 +88,12 @@ public class ElectricCapacitorBlockEntity extends BaseContainerBlockEntity
     // ── IElectricReceiver ─────────────────────────────────────────────────────
 
     @Override
-    public boolean addElectricity(float amount) {
+    public float addElectricity(float amount) {
         float accepted = Math.min(amount, MAX_EU - storedEu);
-        if (accepted <= 0f) return false;
+        if (accepted <= 0f) return 0f;
         storedEu += accepted;
         setChanged();
-        return true;
+        return accepted;
     }
 
     // ── IElectricSupplier ─────────────────────────────────────────────────────
@@ -126,10 +126,10 @@ public class ElectricCapacitorBlockEntity extends BaseContainerBlockEntity
             be.clockCounter = 0;
             Direction front = state.getValue(ElectricCapacitorBlock.FACING);
             float burstAmount = Math.min(DISCHARGE_RATE * CLOCK_INTERVAL, be.storedEu);
-            boolean delivered = ElectricNetworkUtil.propagateElectricity(
+            float actualDelivered = ElectricNetworkUtil.propagateElectricity(
                     level, pos, burstAmount, new Direction[]{ front });
-            if (delivered) {
-                be.storedEu -= burstAmount;
+            if (actualDelivered > 0f) {
+                be.storedEu -= actualDelivered;
                 if (be.storedEu < 0f) be.storedEu = 0f;
                 be.setChanged();
             }

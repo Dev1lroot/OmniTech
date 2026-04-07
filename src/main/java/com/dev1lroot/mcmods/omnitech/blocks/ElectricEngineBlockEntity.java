@@ -32,7 +32,7 @@ public class ElectricEngineBlockEntity extends BaseContainerBlockEntity
         implements IKineticReceiver, IElectricSupplier {
 
     /** EU produced per game tick when receiving KF. */
-    public static final float EU_PER_TICK = 10f;
+    public static final float EU_PER_TICK = 1f;
 
     /** Propagate electricity every N ticks to reduce BFS overhead. */
     private static final int CLOCK_INTERVAL = 5;
