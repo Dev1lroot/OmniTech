@@ -24,31 +24,34 @@ import net.minecraft.world.level.storage.ValueOutput;
  * <p>Implements {@link IKineticReceiver} to accept KF from the kinetic network,
  * and {@link IElectricSupplier} to declare its EU output to the electric network.
  *
- * <p>Each tick that KF is present the engine propagates {@link #EU_PER_TICK}
- * EU through all electric wires reachable from its 5 non-front output faces.
- *
- * <p>Conversion rate: 1 KF (10 KF units) → {@value #EU_PER_TICK} EU/tick.
- * The GUI shows the live KF input and EU output for the player.
+ * <p>Energy is propagated every {@value #CLOCK_INTERVAL} ticks, delivering
+ * {@code EU_PER_TICK * CLOCK_INTERVAL} EU per propagation event to maintain
+ * the same effective per-tick rate.
  */
 public class ElectricEngineBlockEntity extends BaseContainerBlockEntity
         implements IKineticReceiver, IElectricSupplier {
 
-    /** EU produced per tick when receiving KF. */
-    public static final int EU_PER_TICK = 10;
+    /** EU produced per game tick when receiving KF. */
+    public static final float EU_PER_TICK = 10f;
+
+    /** Propagate electricity every N ticks to reduce BFS overhead. */
+    private static final int CLOCK_INTERVAL = 5;
 
     /** Ticks before the engine powers down without fresh KF. */
     private static final int POWERED_DECAY_TICKS = 3;
 
     private int poweredTimer = 0;
-    /** Fixed-point KF units received last network clock (10 = 1 KF). Displayed in GUI. */
+    private int clockCounter = 0;
+
+    /** KF units received last network clock (displayed in GUI). */
     private float lastKfAmount = 0f;
 
     /**
      * ContainerData indices:
      * <ul>
      *   <li>0 – powered (1) / idle (0)</li>
-     *   <li>1 – KF received × 100 (fixed-point → centi-KF for int transport)</li>
-     *   <li>2 – EU/tick output (0 when idle, EU_PER_TICK when active)</li>
+     *   <li>1 – KF received × 100 (fixed-point centi-KF for int transport)</li>
+     *   <li>2 – EU/tick output × 10 (fixed-point for int transport)</li>
      * </ul>
      */
     protected final ContainerData dataAccess = new ContainerData() {
@@ -56,7 +59,7 @@ public class ElectricEngineBlockEntity extends BaseContainerBlockEntity
             return switch (index) {
                 case 0 -> isPowered() ? 1 : 0;
                 case 1 -> (int)(lastKfAmount * 100f);
-                case 2 -> isPowered() ? EU_PER_TICK : 0;
+                case 2 -> isPowered() ? (int)(EU_PER_TICK * 10f) : 0;
                 default -> 0;
             };
         }
@@ -88,8 +91,8 @@ public class ElectricEngineBlockEntity extends BaseContainerBlockEntity
 
     @Override
     public boolean addKineticForce(float amount) {
-        poweredTimer  = POWERED_DECAY_TICKS;
-        lastKfAmount  = amount;
+        poweredTimer = POWERED_DECAY_TICKS;
+        lastKfAmount = amount;
         setChanged();
         return true;
     }
@@ -100,7 +103,7 @@ public class ElectricEngineBlockEntity extends BaseContainerBlockEntity
     // ── IElectricSupplier ─────────────────────────────────────────────────────
 
     @Override
-    public int getEuSupply() { return isPowered() ? EU_PER_TICK : 0; }
+    public float getEuSupply() { return isPowered() ? EU_PER_TICK : 0f; }
 
     // ── Server tick ───────────────────────────────────────────────────────────
 
@@ -112,7 +115,6 @@ public class ElectricEngineBlockEntity extends BaseContainerBlockEntity
         if (be.poweredTimer > 0) {
             be.poweredTimer--;
         } else {
-            // Timer expired — clear KF reading so GUI shows 0
             if (be.lastKfAmount != 0f) {
                 be.lastKfAmount = 0f;
                 be.setChanged();
@@ -121,17 +123,24 @@ public class ElectricEngineBlockEntity extends BaseContainerBlockEntity
 
         boolean isLit = be.isPowered();
 
-        // Sync LIT blockstate
         if (wasLit != isLit) {
             level.setBlock(pos, state.setValue(ElectricEngineBlock.LIT, isLit), 3);
         }
 
-        if (!isLit) return;
+        if (!isLit) {
+            be.clockCounter = 0;
+            return;
+        }
 
-        // Propagate EU from all output faces (every face except the KF input front)
-        Direction front = state.getValue(ElectricEngineBlock.FACING);
-        Direction[] outputDirs = outputFaces(front);
-        ElectricNetworkUtil.propagateElectricity(level, pos, EU_PER_TICK, outputDirs);
+        // Propagate every CLOCK_INTERVAL ticks, deliver the accumulated EU amount
+        be.clockCounter++;
+        if (be.clockCounter >= CLOCK_INTERVAL) {
+            be.clockCounter = 0;
+            Direction front = state.getValue(ElectricEngineBlock.FACING);
+            Direction[] outputDirs = outputFaces(front);
+            float euBurst = EU_PER_TICK * CLOCK_INTERVAL;
+            ElectricNetworkUtil.propagateElectricity(level, pos, euBurst, outputDirs);
+        }
     }
 
     public boolean isPowered()              { return poweredTimer > 0; }

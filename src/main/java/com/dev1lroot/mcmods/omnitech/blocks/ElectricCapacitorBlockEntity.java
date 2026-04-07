@@ -27,23 +27,28 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * <p>Implements both {@link IElectricReceiver} (charges from 5 non-front sides)
  * and {@link IElectricSupplier} (discharges from the front face).
  *
- * <p>Exposes a NeoForge {@link EnergyHandler} via {@link #energyHandler} for
- * interoperability with other mods.  The handler is transaction-aware using
- * {@link SnapshotJournal}.
+ * <p>Stored EU is a float for precise distribution when multiple capacitors are
+ * connected to a single engine. ContainerData encodes it as an int (×1 for display,
+ * clamped to MAX_EU which fits in a short).
  *
- * <p>Capacity: {@value #MAX_EU} EU. Discharge propagation happens each tick
- * from the capacitor's front face, making stored EU available to downstream
- * machines via the electric wire network.
+ * <p>Discharge propagation happens every {@value #CLOCK_INTERVAL} ticks to keep
+ * BFS overhead low, delivering the accumulated EU burst at once.
+ *
+ * <p>Capacity: {@value #MAX_EU} EU. Discharge rate: {@value #DISCHARGE_RATE} EU/tick.
  */
 public class ElectricCapacitorBlockEntity extends BaseContainerBlockEntity
         implements IElectricReceiver, IElectricSupplier {
 
     public static final int MAX_EU = 50_000;
 
-    /** EU discharged into the network per tick (when has stored energy). */
-    private static final int DISCHARGE_RATE = 40;
+    /** EU discharged into the network per tick (effective rate). */
+    private static final float DISCHARGE_RATE = 40f;
 
-    int storedEu = 0;
+    /** Propagate electricity every N ticks. */
+    private static final int CLOCK_INTERVAL = 5;
+
+    float storedEu = 0f;
+    private int clockCounter = 0;
 
     /** NeoForge-compatible energy handler (transaction-aware). */
     public final CapacitorEnergyHandler energyHandler = new CapacitorEnergyHandler();
@@ -51,7 +56,7 @@ public class ElectricCapacitorBlockEntity extends BaseContainerBlockEntity
     protected final ContainerData dataAccess = new ContainerData() {
         @Override public int get(int index) {
             return switch (index) {
-                case 0 -> storedEu;
+                case 0 -> (int) storedEu;
                 case 1 -> MAX_EU;
                 default -> 0;
             };
@@ -71,7 +76,6 @@ public class ElectricCapacitorBlockEntity extends BaseContainerBlockEntity
         return Component.translatable("container.omnitech.electric_capacitor");
     }
 
-    // BaseContainerBlockEntity requires item handling even for non-item blocks
     @Override protected NonNullList<ItemStack> getItems() { return NonNullList.create(); }
     @Override protected void setItems(NonNullList<ItemStack> items) {}
     @Override public int getContainerSize() { return 0; }
@@ -84,9 +88,9 @@ public class ElectricCapacitorBlockEntity extends BaseContainerBlockEntity
     // ── IElectricReceiver ─────────────────────────────────────────────────────
 
     @Override
-    public boolean addElectricity(int amount) {
-        int accepted = Math.min(amount, MAX_EU - storedEu);
-        if (accepted <= 0) return false;
+    public boolean addElectricity(float amount) {
+        float accepted = Math.min(amount, MAX_EU - storedEu);
+        if (accepted <= 0f) return false;
         storedEu += accepted;
         setChanged();
         return true;
@@ -95,7 +99,7 @@ public class ElectricCapacitorBlockEntity extends BaseContainerBlockEntity
     // ── IElectricSupplier ─────────────────────────────────────────────────────
 
     @Override
-    public int getEuSupply() {
+    public float getEuSupply() {
         return Math.min(DISCHARGE_RATE, storedEu);
     }
 
@@ -105,74 +109,77 @@ public class ElectricCapacitorBlockEntity extends BaseContainerBlockEntity
             ElectricCapacitorBlockEntity be) {
 
         boolean wasLit = state.getValue(ElectricCapacitorBlock.LIT);
-        boolean isLit  = be.storedEu > MAX_EU / 10;
+        boolean isLit  = be.storedEu > MAX_EU / 10f;
 
         if (wasLit != isLit) {
             level.setBlock(pos, state.setValue(ElectricCapacitorBlock.LIT, isLit), 3);
         }
 
-        // Discharge: propagate stored EU from the front (output) face.
-        // storedEu is only decremented when at least one receiver accepted the EU —
-        // this prevents the capacitor from silently draining into the void when
-        // nothing is connected to its front face.
-        if (be.storedEu > 0) {
+        if (be.storedEu <= 0f) {
+            be.clockCounter = 0;
+            return;
+        }
+
+        // Discharge every CLOCK_INTERVAL ticks, deliver burst amount
+        be.clockCounter++;
+        if (be.clockCounter >= CLOCK_INTERVAL) {
+            be.clockCounter = 0;
             Direction front = state.getValue(ElectricCapacitorBlock.FACING);
-            int dischargeAmount = Math.min(DISCHARGE_RATE, be.storedEu);
+            float burstAmount = Math.min(DISCHARGE_RATE * CLOCK_INTERVAL, be.storedEu);
             boolean delivered = ElectricNetworkUtil.propagateElectricity(
-                    level, pos, dischargeAmount, new Direction[]{ front });
+                    level, pos, burstAmount, new Direction[]{ front });
             if (delivered) {
-                be.storedEu -= dischargeAmount;
+                be.storedEu -= burstAmount;
+                if (be.storedEu < 0f) be.storedEu = 0f;
                 be.setChanged();
             }
         }
     }
 
     public ContainerData getContainerData() { return dataAccess; }
-    public int getStoredEu()               { return storedEu; }
+    public float getStoredEu()              { return storedEu; }
 
     // ── Persistence ───────────────────────────────────────────────────────────
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        storedEu = input.getIntOr("StoredEu", 0);
+        storedEu = input.getFloatOr("StoredEu", 0f);
     }
 
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.putInt("StoredEu", storedEu);
+        output.putFloat("StoredEu", storedEu);
     }
 
     // ── NeoForge EnergyHandler (inner class) ──────────────────────────────────
 
     /**
      * Transaction-aware {@link EnergyHandler} backed by this capacitor's {@link #storedEu}.
-     * Extends {@link SnapshotJournal}{@code <Integer>} so that energy changes made inside
-     * a transaction can be rolled back if the transaction is aborted.
      */
-    public class CapacitorEnergyHandler extends SnapshotJournal<Integer> implements EnergyHandler {
+    public class CapacitorEnergyHandler extends SnapshotJournal<Float> implements EnergyHandler {
 
         @Override
-        protected Integer createSnapshot() { return storedEu; }
+        protected Float createSnapshot() { return storedEu; }
 
         @Override
-        protected void revertToSnapshot(Integer snapshot) { storedEu = snapshot; }
+        protected void revertToSnapshot(Float snapshot) { storedEu = snapshot; }
 
         @Override
-        protected void onRootCommit(Integer originalState) {
+        protected void onRootCommit(Float originalState) {
             setChanged();
         }
 
         @Override
-        public long getAmountAsLong()   { return storedEu; }
+        public long getAmountAsLong()   { return (long) storedEu; }
 
         @Override
         public long getCapacityAsLong() { return MAX_EU; }
 
         @Override
         public int insert(int amount, TransactionContext tx) {
-            int accepted = Math.min(amount, MAX_EU - storedEu);
+            int accepted = (int) Math.min(amount, MAX_EU - storedEu);
             if (accepted > 0) {
                 updateSnapshots(tx);
                 storedEu += accepted;
@@ -182,7 +189,7 @@ public class ElectricCapacitorBlockEntity extends BaseContainerBlockEntity
 
         @Override
         public int extract(int amount, TransactionContext tx) {
-            int extracted = Math.min(amount, storedEu);
+            int extracted = (int) Math.min(amount, storedEu);
             if (extracted > 0) {
                 updateSnapshots(tx);
                 storedEu -= extracted;

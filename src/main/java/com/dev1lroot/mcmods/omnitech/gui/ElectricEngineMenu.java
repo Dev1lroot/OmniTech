@@ -46,10 +46,11 @@ public class ElectricEngineMenu extends AbstractContainerMenu {
         addPlayerHotbar(playerInventory);
     }
 
-    public boolean isPowered()   { return data.get(0) == 1; }
+    public boolean isPowered()    { return data.get(0) == 1; }
     /** KF received (fixed-point, divide by 100 for display). */
-    public int getKfCenti()      { return data.get(1); }
-    public int getEuPerTick()    { return data.get(2); }
+    public int getKfCenti()       { return data.get(1); }
+    /** EU/tick output (decoded from fixed-point ×10). */
+    public float getEuPerTick()   { return data.get(2) / 10f; }
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) { return ItemStack.EMPTY; }

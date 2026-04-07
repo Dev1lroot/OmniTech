@@ -15,19 +15,29 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+/**
+ * Menu for the Electric Furnace.
+ *
+ * <p>ContainerData layout (mirrors {@link ElectricFurnaceBlockEntity}):
+ * <ul>
+ *   <li>0 – energyStored × 10 (fixed-point)</li>
+ *   <li>1 – EU_PER_RECIPE × 10</li>
+ *   <li>2 – cookProgress (0..COOK_TIME)</li>
+ *   <li>3 – COOK_TIME</li>
+ * </ul>
+ */
 public class ElectricFurnaceMenu extends AbstractContainerMenu {
     private final ContainerData data;
     private final BlockEntity blockEntity;
 
-    // Slot positions
-    private static final int INPUT_X = 56, INPUT_Y = 35;
+    private static final int INPUT_X  = 56,  INPUT_Y  = 35;
     private static final int OUTPUT_X = 116, OUTPUT_Y = 35;
 
     /** Client-side constructor. */
     public ElectricFurnaceMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
         this(containerId, playerInventory,
                 playerInventory.player.level().getBlockEntity(extraData.readBlockPos()),
-                new SimpleContainerData(3));
+                new SimpleContainerData(5));
     }
 
     /** Server-side constructor. */
@@ -47,17 +57,31 @@ public class ElectricFurnaceMenu extends AbstractContainerMenu {
         addPlayerHotbar(playerInventory);
     }
 
-    /** Cook progress (0..cookTotalTime). */
-    public int getCookProgress()   { return data.get(0); }
+    /** EU currently stored (decoded from fixed-point). */
+    public float getEnergyStored() { return data.get(0) / 10f; }
+    /** Maximum EU the buffer can hold (decoded from fixed-point). */
+    public float getMaxEu()        { return data.get(1) / 10f; }
+    /** Cook timer (0..getCookTime()). */
+    public int getCookProgress()   { return data.get(2); }
     /** Total cook time in ticks. */
-    public int getCookTotalTime()  { return data.get(1); }
-    /** 1 if powered by EU, 0 otherwise. */
-    public boolean isPowered()     { return data.get(2) == 1; }
+    public int getCookTime()       { return data.get(3); }
+    /** EU consumed per recipe (decoded from fixed-point). */
+    public float getEuPerRecipe()  { return data.get(4) / 10f; }
 
-    /** Progress arrow width (0..24 px), matches vanilla furnace arrow width. */
-    public int getProgressArrowWidth() {
-        int total = getCookTotalTime();
-        return total != 0 ? getCookProgress() * 24 / total : 0;
+    /**
+     * Energy bar fill width (0..24 px), maps 0→MAX_EU onto 0→24 pixels.
+     */
+    public int getEnergyBarWidth() {
+        float max = getMaxEu();
+        return max > 0f ? (int)(getEnergyStored() * 24f / max) : 0;
+    }
+
+    /**
+     * Cook progress arrow width (0..24 px), maps 0→COOK_TIME onto 0→24 pixels.
+     */
+    public int getCookProgressWidth() {
+        int max = getCookTime();
+        return max > 0 ? getCookProgress() * 24 / max : 0;
     }
 
     @Override

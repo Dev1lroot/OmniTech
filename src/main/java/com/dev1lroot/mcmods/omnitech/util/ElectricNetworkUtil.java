@@ -17,11 +17,9 @@ import java.util.Set;
 /**
  * BFS propagation utility for the Electric network.
  *
- * <p>Unlike kinetic force (which has mechanical torque constraints), electricity
- * always flows to every reachable consumer — the engine's EU output is
- * delivered to all {@link IElectricReceiver} nodes found in the BFS regardless
- * of their demand. This avoids supply/demand stalls when a low-output engine
- * is connected to a high-capacity capacitor.
+ * <p>Electricity always flows to every reachable consumer — the EU output is
+ * divided equally among all {@link IElectricReceiver} nodes found in the BFS.
+ * Float division prevents energy loss when there are many receivers.
  *
  * <p>The BFS seed is restricted to {@code outputDirections}, so an engine can
  * limit propagation to its 5 non-front faces and a capacitor can restrict
@@ -32,20 +30,19 @@ public final class ElectricNetworkUtil {
 
     /**
      * Propagate EU from {@code source} through the electric wire network,
-     * delivering {@code euPerTick} to every reachable {@link IElectricReceiver}.
+     * delivering an equal share of {@code euAmount} to every reachable
+     * {@link IElectricReceiver}.
      *
      * @param level            server-side level
      * @param source           position of the EU source (engine / capacitor)
-     * @param euPerTick        EU delivered to each receiver this tick
+     * @param euAmount         total EU to distribute this network clock
      * @param outputDirections faces from which the source may output EU
-     * @return {@code true} if at least one receiver accepted the energy,
-     *         {@code false} if no receivers were found (so callers like the
-     *         capacitor can skip draining their stored EU)
+     * @return {@code true} if at least one receiver accepted the energy
      */
     public static boolean propagateElectricity(Level level, BlockPos source,
-            int euPerTick, Direction[] outputDirections) {
+            float euAmount, Direction[] outputDirections) {
 
-        if (euPerTick <= 0) return false;
+        if (euAmount <= 0f) return false;
 
         Set<BlockPos>           visited   = new HashSet<>();
         ArrayDeque<BlockPos>    queue     = new ArrayDeque<>();
@@ -86,10 +83,13 @@ public final class ElectricNetworkUtil {
 
         if (receivers.isEmpty()) return false;
 
-        // ── Phase 2: deliver EU to every receiver unconditionally ─────────────
+        // ── Phase 2: divide EU equally among all receivers (float precision) ──
+        float share = euAmount / receivers.size();
+
+        boolean anyAccepted = false;
         for (IElectricReceiver receiver : receivers) {
-            receiver.addElectricity(euPerTick);
+            if (receiver.addElectricity(share)) anyAccepted = true;
         }
-        return true;
+        return anyAccepted;
     }
 }

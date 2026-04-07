@@ -68,7 +68,7 @@ public class ElectricEngineScreen extends AbstractContainerScreen<ElectricEngine
         // EU output row
         String euLabel;
         if (powered) {
-            euLabel = "EU Output: " + menu.getEuPerTick() + " EU/t";
+            euLabel = String.format("EU Output: %.1f EU/t", menu.getEuPerTick());
         } else {
             euLabel = "EU Output: 0 EU/t";
         }

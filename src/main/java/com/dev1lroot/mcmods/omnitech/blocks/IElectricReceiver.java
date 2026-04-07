@@ -13,8 +13,8 @@ public interface IElectricReceiver {
      * Called by {@link com.dev1lroot.mcmods.omnitech.util.ElectricNetworkUtil}
      * during BFS dispatch to deliver EU to this machine.
      *
-     * @param amount EU being offered this tick
-     * @return true if the receiver accepted the energy
+     * @param amount EU being offered this network clock
+     * @return true if the receiver accepted any energy
      */
-    boolean addElectricity(int amount);
+    boolean addElectricity(float amount);
 }

@@ -12,15 +12,15 @@ public class ElectricFurnaceScreen extends AbstractContainerScreen<ElectricFurna
     private static final Identifier TEXTURE =
             Identifier.fromNamespaceAndPath(OmniTech.MODID, "textures/gui/electric_furnace.png");
 
-    // Progress arrow sprite coordinates
-    private static final int ARROW_U = 176, ARROW_V = 0;
-    private static final int ARROW_X = 79,  ARROW_Y = 34;
-    private static final int ARROW_H = 16;
+    // Energy bar sprite (left side of GUI)
+    private static final int BAR_U = 176, BAR_V = 0;
+    private static final int BAR_X = 56,  BAR_Y = 17;
+    private static final int BAR_H = 14;
 
-    // Power indicator (small lightning bolt icon)
-    private static final int POWER_U = 176, POWER_V = 16;
-    private static final int POWER_X = 56,  POWER_Y = 55;
-    private static final int POWER_W = 10,  POWER_H = 10;
+    // Cook progress arrow sprite (right side)
+    private static final int ARROW_U = 176, ARROW_V = 14;
+    private static final int ARROW_X = 79,  ARROW_Y = 34;
+    private static final int ARROW_H = 17;
 
     public ElectricFurnaceScreen(ElectricFurnaceMenu menu, Inventory playerInventory,
             Component title) {
@@ -43,29 +43,38 @@ public class ElectricFurnaceScreen extends AbstractContainerScreen<ElectricFurna
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,
                 x, y, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
 
-        // Progress arrow (grows left→right while smelting)
-        int arrowWidth = menu.getProgressArrowWidth();
+        // Energy-fill bar (grows left→right)
+        int barWidth = menu.getEnergyBarWidth();
+        if (barWidth > 0) {
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,
+                    x + BAR_X, y + BAR_Y,
+                    (float) BAR_U, (float) BAR_V,
+                    barWidth, BAR_H, 256, 256);
+        }
+
+        // Cook progress arrow (grows left→right while cooking)
+        int arrowWidth = menu.getCookProgressWidth();
         if (arrowWidth > 0) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,
                     x + ARROW_X, y + ARROW_Y,
                     (float) ARROW_U, (float) ARROW_V,
                     arrowWidth, ARROW_H, 256, 256);
         }
-
-        // Power indicator (shows when EU is being received)
-        if (menu.isPowered()) {
-            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,
-                    x + POWER_X, y + POWER_Y,
-                    (float) POWER_U, (float) POWER_V,
-                    POWER_W, POWER_H, 256, 256);
-        }
     }
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractLabels(graphics, mouseX, mouseY);
-        String status = menu.isPowered() ? "EU: Active" : "EU: Idle";
-        int color = menu.isPowered() ? 0xFF44AAFF : 0xFF888888;
-        graphics.text(this.font, status, 8, 56, color, false);
+
+        // EU buffer readout (stored / max)
+        String euText = String.format("%.0f / %.0f EU", menu.getEnergyStored(), menu.getMaxEu());
+        int euColor = menu.getEnergyStored() > 0 ? 0xFF44AAFF : 0xFF888888;
+        graphics.text(this.font, euText,
+                (this.imageWidth - this.font.width(euText)) / 2, 56, euColor, false);
+
+        // Recipe cost reminder
+        String costText = String.format("%.0f EU/recipe", menu.getEuPerRecipe());
+        graphics.text(this.font, costText,
+                (this.imageWidth - this.font.width(costText)) / 2, 66, 0xFF888888, false);
     }
 }

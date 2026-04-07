@@ -9,5 +9,5 @@ package com.dev1lroot.mcmods.omnitech.blocks;
  */
 public interface IElectricSupplier {
     /** EU produced per network tick. Returns 0 when not producing. */
-    int getEuSupply();
+    float getEuSupply();
 }
