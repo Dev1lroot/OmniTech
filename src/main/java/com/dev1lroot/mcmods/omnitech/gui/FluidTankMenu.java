@@ -10,9 +10,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class FluidTankMenu extends AbstractContainerMenu {
     private final Container container;
@@ -30,18 +30,38 @@ public class FluidTankMenu extends AbstractContainerMenu {
 
     // Server constructor
     public FluidTankMenu(int containerId, Inventory playerInventory,
-            BlockEntity blockEntity, ContainerData data) {
+                         BlockEntity blockEntity, ContainerData data) {
         super(OmniTechMenuTypes.FLUID_TANK.get(), containerId);
         this.container = (Container) blockEntity;
         this.data      = data;
 
         addDataSlots(data);
+
+        // Slots
         addSlot(new BucketInSlot(container, FluidTankBlockEntity.SLOT_BUCKET_IN,
                 BUCKET_IN_X, BUCKET_IN_Y));
         addSlot(new OutputSlot(container, FluidTankBlockEntity.SLOT_BUCKET_OUT,
                 BUCKET_OUT_X, BUCKET_OUT_Y));
-        addPlayerInventory(playerInventory);
-        addPlayerHotbar(playerInventory);
+
+        // Player inventory
+        for (int row = 0; row < 3; row++)
+            for (int col = 0; col < 9; col++)
+                addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+
+        // Player hotbar
+        for (int col = 0; col < 9; col++)
+            addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
+    }
+
+    // ── Fluid Accessor ────────────────────────────────────────────────────────
+    // Этот метод позволит GuiUtil в классе Screen получить объект FluidStack
+    // для извлечения названия, цвета и текстуры.
+
+    public FluidStack getFluidStack() {
+        if (container instanceof FluidTankBlockEntity be) {
+            return be.getFluid();
+        }
+        return FluidStack.EMPTY;
     }
 
     // ── Data accessors ─────────────────────────────────────────────────────────
@@ -52,7 +72,7 @@ public class FluidTankMenu extends AbstractContainerMenu {
     /** Fluid gauge fill height (0–52 px). */
     public int getFluidBarHeight() {
         int max = getMaxFluid();
-        return max != 0 ? getStoredFluid() * 52 / max : 0;
+        return max > 0 ? (int)((long)getStoredFluid() * 52 / max) : 0;
     }
 
     // ── Menu logic ─────────────────────────────────────────────────────────────
@@ -61,40 +81,43 @@ public class FluidTankMenu extends AbstractContainerMenu {
     public ItemStack quickMoveStack(Player player, int index) {
         ItemStack result = ItemStack.EMPTY;
         Slot slot = slots.get(index);
-        if (!slot.hasItem()) return result;
 
-        ItemStack slotStack = slot.getItem();
-        result = slotStack.copy();
+        if (slot != null && slot.hasItem()) {
+            ItemStack slotStack = slot.getItem();
+            result = slotStack.copy();
 
-        // Machine slots (0-1) → player inventory
-        if (index < 2) {
-            if (!moveItemStackTo(slotStack, 2, 38, false)) return ItemStack.EMPTY;
-        }
-        // Player inventory (2-37) → machine input slot if it's a filled bucket
-        else {
-            if (slotStack.getItem() instanceof BucketItem b && b.getContent() != Fluids.EMPTY) {
-                if (!moveItemStackTo(slotStack, 0, 1, false)) {
-                    if (index < 29) {
-                        if (!moveItemStackTo(slotStack, 29, 38, false)) return ItemStack.EMPTY;
-                    } else {
-                        if (!moveItemStackTo(slotStack, 2, 29, false)) return ItemStack.EMPTY;
-                    }
-                }
+            if (index < 2) {
+                // Из слотов бака в инвентарь игрока
+                if (!moveItemStackTo(slotStack, 2, 38, true)) return ItemStack.EMPTY;
+                slot.onQuickCraft(slotStack, result);
             } else {
-                if (index < 29) {
-                    if (!moveItemStackTo(slotStack, 29, 38, false)) return ItemStack.EMPTY;
+                // Из инвентаря игрока в бак (только ведра с жидкостью)
+                if (slotStack.getItem() instanceof BucketItem b && b.getContent() != Fluids.EMPTY) {
+                    if (!moveItemStackTo(slotStack, 0, 1, false)) {
+                        // Если слот входа занят, перемещаем между инв/хотбаром
+                        if (!moveBetweenPlayerInventories(index, slotStack)) return ItemStack.EMPTY;
+                    }
                 } else {
-                    if (!moveItemStackTo(slotStack, 2, 29, false)) return ItemStack.EMPTY;
+                    // Обычные предметы перемещаем между инв/хотбаром
+                    if (!moveBetweenPlayerInventories(index, slotStack)) return ItemStack.EMPTY;
                 }
             }
+
+            if (slotStack.isEmpty()) slot.set(ItemStack.EMPTY);
+            else slot.setChanged();
+
+            if (slotStack.getCount() == result.getCount()) return ItemStack.EMPTY;
+            slot.onTake(player, slotStack);
         }
-
-        if (slotStack.isEmpty()) slot.set(ItemStack.EMPTY);
-        else slot.setChanged();
-
-        if (slotStack.getCount() == result.getCount()) return ItemStack.EMPTY;
-        slot.onTake(player, slotStack);
         return result;
+    }
+
+    private boolean moveBetweenPlayerInventories(int index, ItemStack stack) {
+        if (index < 29) {
+            return moveItemStackTo(stack, 29, 38, false);
+        } else {
+            return moveItemStackTo(stack, 2, 29, false);
+        }
     }
 
     @Override
@@ -106,40 +129,18 @@ public class FluidTankMenu extends AbstractContainerMenu {
                 player, OmniTechBlocks.FLUID_TANK.get());
     }
 
-    // ── Layout helpers ─────────────────────────────────────────────────────────
-
-    private void addPlayerInventory(Inventory inventory) {
-        for (int row = 0; row < 3; row++)
-            for (int col = 0; col < 9; col++)
-                addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
-    }
-
-    private void addPlayerHotbar(Inventory inventory) {
-        for (int col = 0; col < 9; col++)
-            addSlot(new Slot(inventory, col, 8 + col * 18, 142));
-    }
-
     // ── Inner slot types ───────────────────────────────────────────────────────
 
-    /** Accepts any filled fluid bucket. */
     private static class BucketInSlot extends Slot {
-        public BucketInSlot(Container container, int index, int x, int y) {
-            super(container, index, x, y);
-        }
+        public BucketInSlot(Container container, int index, int x, int y) { super(container, index, x, y); }
         @Override
         public boolean mayPlace(ItemStack stack) {
-            if (stack.getItem() instanceof BucketItem b) {
-                return b.getContent() != Fluids.EMPTY;
-            }
-            return false;
+            return stack.getItem() instanceof BucketItem b && b.getContent() != Fluids.EMPTY;
         }
     }
 
-    /** Output-only slot — players cannot manually insert items. */
     private static class OutputSlot extends Slot {
-        public OutputSlot(Container container, int index, int x, int y) {
-            super(container, index, x, y);
-        }
+        public OutputSlot(Container container, int index, int x, int y) { super(container, index, x, y); }
         @Override
         public boolean mayPlace(ItemStack stack) { return false; }
     }
