@@ -118,6 +118,11 @@ public class OmniTechBlockEntities {
                     () -> new BlockEntityType<>(SolarPanelBlockEntity::new,
                             OmniTechBlocks.SOLAR_PANEL.get()));
 
+    public static final Supplier<BlockEntityType<SolvationMachineBlockEntity>> SOLVATION_MACHINE =
+            REGISTRY.register("solvation_machine",
+                    () -> new BlockEntityType<>(SolvationMachineBlockEntity::new,
+                            OmniTechBlocks.SOLVATION_MACHINE.get()));
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }

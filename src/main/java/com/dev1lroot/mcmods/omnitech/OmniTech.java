@@ -32,6 +32,9 @@ import com.dev1lroot.mcmods.omnitech.recipes.FoundryRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualCentrifugeRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualMaceratorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.SmelterRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.SolvationRecipeManager;
+import com.dev1lroot.mcmods.omnitech.blocks.SolvationMachineBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.SolvationMachineBlock;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -105,6 +108,22 @@ public class OmniTech {
                 Capabilities.Fluid.BLOCK,
                 OmniTechBlockEntities.FOUNDRY.get(),
                 (be, side) -> be.fluidHandler
+        );
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.SOLVATION_MACHINE.get(),
+                (be, side) -> {
+                    if (side == null) return null;
+                    // Determine facing from block state
+                    var state = be.getLevel() != null
+                            ? be.getLevel().getBlockState(be.getBlockPos())
+                            : null;
+                    if (state == null) return null;
+                    Direction facing = state.getValue(SolvationMachineBlock.FACING);
+                    if (side == facing) return ((SolvationMachineBlockEntity) be).inputFluidHandler;
+                    if (side == facing.getOpposite()) return ((SolvationMachineBlockEntity) be).outputFluidHandler;
+                    return null;
+                }
         );
 
         // Electric Capacitor exposes the NeoForge EnergyHandler capability for
@@ -186,6 +205,15 @@ public class OmniTech {
                     PreparationBarrier barrier, Executor reloadExecutor) {
                 return CompletableFuture.runAsync(() -> {
                     FoundryRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "solvation_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    SolvationRecipeManager.loadRecipes(sharedState.resourceManager());
                 }, taskExecutor).thenCompose(barrier::wait);
             }
         });

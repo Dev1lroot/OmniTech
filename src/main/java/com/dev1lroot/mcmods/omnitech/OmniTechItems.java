@@ -77,6 +77,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> SOLAR_PANEL_ITEM = REGISTRY.registerSimpleBlockItem(
             "solar_panel", OmniTechBlocks.SOLAR_PANEL);
 
+    public static final DeferredItem<BlockItem> SOLVATION_MACHINE_ITEM = REGISTRY.registerSimpleBlockItem(
+            "solvation_machine", OmniTechBlocks.SOLVATION_MACHINE);
+
     // Real Items
     public static final DeferredItem<Item> STEEL_INGOT = REGISTRY.registerSimpleItem(
             "steel_ingot", p -> p);

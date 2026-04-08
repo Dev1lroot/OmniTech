@@ -13,6 +13,7 @@ import com.dev1lroot.mcmods.omnitech.gui.ManualCentrifugeScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ManualMaceratorScreen;
 import com.dev1lroot.mcmods.omnitech.gui.SmelterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.SolarPanelScreen;
+import com.dev1lroot.mcmods.omnitech.gui.SolvationMachineScreen;
 import com.dev1lroot.mcmods.omnitech.gui.SorterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.StirlingEngineScreen;
 import net.minecraft.core.registries.Registries;
@@ -72,6 +73,7 @@ public class OmniTechGUI {
                         output.accept(OmniTechItems.ELECTRIC_CAPACITOR_ITEM.get());
                         output.accept(OmniTechItems.ELECTRIC_FURNACE_ITEM.get());
                         output.accept(OmniTechItems.SOLAR_PANEL_ITEM.get());
+                        output.accept(OmniTechItems.SOLVATION_MACHINE_ITEM.get());
                     }).build());
 
     public static void register(IEventBus modEventBus) {
@@ -96,6 +98,7 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.ELECTRIC_CAPACITOR.get(), ElectricCapacitorScreen::new);
         event.register(OmniTechMenuTypes.ELECTRIC_FURNACE.get(), ElectricFurnaceScreen::new);
         event.register(OmniTechMenuTypes.SOLAR_PANEL.get(), SolarPanelScreen::new);
+        event.register(OmniTechMenuTypes.SOLVATION_MACHINE.get(), SolvationMachineScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)

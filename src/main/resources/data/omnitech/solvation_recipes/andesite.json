@@ -1,0 +1,15 @@
+{
+  "requiredKineticForce": 20,
+  "inputFluid": {
+    "fluid": "minecraft:water",
+    "amount": 1000
+  },
+  "inputItem": {
+    "item": "omnitech:sodium_chlorine_dust",
+    "amount": 1
+  },
+  "outputFluid": {
+    "fluid": "omnitech:brine",
+    "amount": 1000
+  }
+}

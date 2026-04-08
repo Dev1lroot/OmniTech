@@ -193,5 +193,9 @@
   "item.omnitech.solar_panel": "Solar Panel",
   "container.omnitech.solar_panel": "Solar Panel",
   "gui.omnitech.solar_panel.sun_intensity": "Sun Intensity:",
-  "gui.omnitech.solar_panel.output": "Output:"
+  "gui.omnitech.solar_panel.output": "Output:",
+
+  "block.omnitech.solvation_machine": "Solvation Machine",
+  "item.omnitech.solvation_machine": "Solvation Machine",
+  "container.omnitech.solvation_machine": "Solvation Machine"
 }

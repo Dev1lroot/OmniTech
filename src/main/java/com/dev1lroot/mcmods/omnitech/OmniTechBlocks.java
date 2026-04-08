@@ -64,6 +64,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> ELECTRIC_WIRE;
     public static final DeferredBlock<Block> ELECTRIC_FURNACE;
     public static final DeferredBlock<Block> SOLAR_PANEL;
+    public static final DeferredBlock<Block> SOLVATION_MACHINE;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -161,6 +162,9 @@ public class OmniTechBlocks {
         SOLAR_PANEL = register("solar_panel",
                 p -> new SolarPanelBlock(p.mapColor(MapColor.METAL).strength(2.0F)
                         .sound(SoundType.METAL).noOcclusion()));
+        SOLVATION_MACHINE = register("solvation_machine",
+                p -> new SolvationMachineBlock(p.mapColor(MapColor.METAL).strength(3.5F)
+                        .sound(SoundType.METAL)));
     }
 
     // ── Registration helpers ───────────────────────────────────────────────
