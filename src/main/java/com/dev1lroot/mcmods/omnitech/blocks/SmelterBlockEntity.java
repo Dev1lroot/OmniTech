@@ -45,7 +45,8 @@ public class SmelterBlockEntity extends BaseContainerBlockEntity implements IHea
 
     private static final int DEFAULT_PROCESS_TIME = 200;
     private static final int MAX_HEAT = 3000;
-    private static final int HEAT_LOSS_INTERVAL = 20; // ticks between natural −1°C drops
+    private static final int AMBIENT_TEMPERATURE = 15;
+    private static final int HEAT_LOSS_INTERVAL = 20; // ticks between ambient-drift steps
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
     private SmelterRecipe currentRecipe = null;

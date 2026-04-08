@@ -79,8 +79,11 @@ public class BoilerScreen extends AbstractContainerScreen<BoilerMenu> {
         int curColor = getTempColor(currentTemp, requiredTemp);
         writer.setColor(curColor).write(currentTemp + "°C");
 
-        if (requiredTemp > 0) {
-            int reqColor = currentTemp >= requiredTemp ? 0xFF00AA00 : 0xFFAA0000;
+        if (requiredTemp != 0) {
+            boolean conditionMet = requiredTemp >= 0
+                    ? currentTemp >= requiredTemp   // hot: need enough heat
+                    : currentTemp <= requiredTemp;  // cold: need cold enough
+            int reqColor = conditionMet ? 0xFF00AA00 : 0xFFAA0000;
             writer.setColor(0xFF404040).write(" / ")
                   .setColor(reqColor).write(requiredTemp + "°C");
         }
@@ -94,6 +97,13 @@ public class BoilerScreen extends AbstractContainerScreen<BoilerMenu> {
     }
 
     private int getTempColor(int current, int required) {
+        // Cold recipe colours
+        if (required < 0) {
+            if (current <= required) return 0xFF00AAFF;  // cold enough – blue
+            if (current < 0)        return 0xFF88CCFF;  // getting there – light blue
+            return 0xFFAAAAAA;                           // still warm – grey
+        }
+        // Hot recipe colours
         if (required > 0 && current >= required) return 0xFFFF6600;
         if (current > 200) return 0xFFFFAA00;
         if (current > 100) return 0xFFFFFF00;

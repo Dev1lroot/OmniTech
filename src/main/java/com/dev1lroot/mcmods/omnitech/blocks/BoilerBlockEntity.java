@@ -44,7 +44,9 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
     public static final int MAX_FLUID     = 8000;
     public static final int TRANSFER_RATE = 100;
     public static final int MIN_BOIL_HEAT = 100;
-    public static final int MAX_HEAT      = 500;
+    public static final int MAX_HEAT      =  500;
+    /** Minimum temperature (cold floor) — mirrors MAX_HEAT in the negative direction. */
+    public static final int MIN_HEAT      = -500;
 
     /** One output slot for recipe result items. */
     public static final int SLOT_COUNT  = 1;
@@ -131,8 +133,8 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
 
     @Override
     public int addCold(int celsius) {
-        if (storedHeat <= 0) return 0;
-        int absorbed = Math.min(celsius, storedHeat);
+        if (storedHeat <= MIN_HEAT) return 0;
+        int absorbed = Math.min(celsius, storedHeat - MIN_HEAT);
         storedHeat -= absorbed;
         return absorbed;
     }
@@ -202,10 +204,16 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
             }
         }
 
-        // 3. Process recipe cycle — consume heat every tick while running
+        // 3. Process recipe cycle — consume thermal energy every tick while running.
+        //    Hot recipes consume heat (storedHeat falls toward 0).
+        //    Cold recipes consume cold (storedHeat rises back toward 0).
         if (be.currentRecipe != null && be.canProcess()) {
-            // Deduct heat cost this tick before advancing progress
-            be.storedHeat = Math.max(0, be.storedHeat - be.currentRecipe.getHeatConsumptionPerTick());
+            int consumption = be.currentRecipe.getHeatConsumptionPerTick();
+            if (be.currentRecipe.getRequiredMinimalTemperature() >= 0) {
+                be.storedHeat = Math.max(0, be.storedHeat - consumption);
+            } else {
+                be.storedHeat = Math.min(0, be.storedHeat + consumption);
+            }
             be.processProgress++;
             dirty = true;
 
@@ -227,8 +235,8 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
                 dirty |= tryPushFluid(be.steamHandler, output);
         }
 
-        // 5. Update LIT blockstate
-        boolean isLit = be.storedHeat >= MIN_BOIL_HEAT && be.currentRecipe != null;
+        // 5. Update LIT blockstate — active for both hot and cold recipes
+        boolean isLit = be.currentRecipe != null && be.canProcess();
         if (state.getValue(BoilerBlock.LIT) != isLit) {
             level.setBlock(pos, state.setValue(BoilerBlock.LIT, isLit), 3);
             dirty = true;
@@ -265,7 +273,14 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
 
     private boolean canProcess() {
         if (currentRecipe == null) return false;
-        if (storedHeat < currentRecipe.getRequiredMinimalTemperature()) return false;
+        int required = currentRecipe.getRequiredMinimalTemperature();
+        if (required >= 0) {
+            // hot recipe: need enough heat
+            if (storedHeat < required) return false;
+        } else {
+            // cold recipe: need to be cold enough
+            if (storedHeat > required) return false;
+        }
 
         // Check input water
         if (waterTank.getAmount() < currentRecipe.getInputAmount()) return false;
