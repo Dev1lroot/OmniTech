@@ -32,7 +32,10 @@ import com.dev1lroot.mcmods.omnitech.recipes.FoundryRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualCentrifugeRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualMaceratorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.SmelterRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.ElectrolysisRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.SolvationRecipeManager;
+import com.dev1lroot.mcmods.omnitech.blocks.ElectrolysisMachineBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.ElectrolysisMachineBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.SolvationMachineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.SolvationMachineBlock;
 import java.util.concurrent.CompletableFuture;
@@ -125,6 +128,23 @@ public class OmniTech {
                     return null;
                 }
         );
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.ELECTROLYSIS_MACHINE.get(),
+                (be, side) -> {
+                    if (side == null) return null;
+                    var state = be.getLevel() != null
+                            ? be.getLevel().getBlockState(be.getBlockPos())
+                            : null;
+                    if (state == null) return null;
+                    Direction facing = state.getValue(ElectrolysisMachineBlock.FACING);
+                    if (side == facing)                      return ((ElectrolysisMachineBlockEntity) be).inputFluidHandler;
+                    if (side == facing.getCounterClockWise()) return ((ElectrolysisMachineBlockEntity) be).anodeFluidHandler;
+                    if (side == facing.getClockWise())        return ((ElectrolysisMachineBlockEntity) be).cathodeFluidHandler;
+                    if (side == facing.getOpposite())         return ((ElectrolysisMachineBlockEntity) be).solutionFluidHandler;
+                    return null;
+                }
+        );
 
         // Electric Capacitor exposes the NeoForge EnergyHandler capability for
         // interoperability with other mods using NeoForge's energy system.
@@ -214,6 +234,15 @@ public class OmniTech {
                     PreparationBarrier barrier, Executor reloadExecutor) {
                 return CompletableFuture.runAsync(() -> {
                     SolvationRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "electrolysis_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    ElectrolysisRecipeManager.loadRecipes(sharedState.resourceManager());
                 }, taskExecutor).thenCompose(barrier::wait);
             }
         });

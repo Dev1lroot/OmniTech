@@ -13,6 +13,7 @@ import com.dev1lroot.mcmods.omnitech.gui.ManualCentrifugeMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ManualMaceratorMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SmelterMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SolarPanelMenu;
+import com.dev1lroot.mcmods.omnitech.gui.ElectrolysisMachineMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SolvationMachineMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SorterMenu;
 import com.dev1lroot.mcmods.omnitech.gui.StirlingEngineMenu;
@@ -91,6 +92,10 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<SolvationMachineMenu>> SOLVATION_MACHINE =
             REGISTRY.register("solvation_machine",
                     () -> IMenuTypeExtension.create(SolvationMachineMenu::new));
+
+    public static final Supplier<MenuType<ElectrolysisMachineMenu>> ELECTROLYSIS_MACHINE =
+            REGISTRY.register("electrolysis_machine",
+                    () -> IMenuTypeExtension.create(ElectrolysisMachineMenu::new));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

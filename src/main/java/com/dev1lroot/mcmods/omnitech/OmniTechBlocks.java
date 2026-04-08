@@ -65,6 +65,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> ELECTRIC_FURNACE;
     public static final DeferredBlock<Block> SOLAR_PANEL;
     public static final DeferredBlock<Block> SOLVATION_MACHINE;
+    public static final DeferredBlock<Block> ELECTROLYSIS_MACHINE;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -164,6 +165,9 @@ public class OmniTechBlocks {
                         .sound(SoundType.METAL).noOcclusion()));
         SOLVATION_MACHINE = register("solvation_machine",
                 p -> new SolvationMachineBlock(p.mapColor(MapColor.METAL).strength(3.5F)
+                        .sound(SoundType.METAL)));
+        ELECTROLYSIS_MACHINE = register("electrolysis_machine",
+                p -> new ElectrolysisMachineBlock(p.mapColor(MapColor.METAL).strength(3.5F)
                         .sound(SoundType.METAL)));
     }
 

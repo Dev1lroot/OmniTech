@@ -80,6 +80,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> SOLVATION_MACHINE_ITEM = REGISTRY.registerSimpleBlockItem(
             "solvation_machine", OmniTechBlocks.SOLVATION_MACHINE);
 
+    public static final DeferredItem<BlockItem> ELECTROLYSIS_MACHINE_ITEM = REGISTRY.registerSimpleBlockItem(
+            "electrolysis_machine", OmniTechBlocks.ELECTROLYSIS_MACHINE);
+
     // Real Items
     public static final DeferredItem<Item> STEEL_INGOT = REGISTRY.registerSimpleItem(
             "steel_ingot", p -> p);

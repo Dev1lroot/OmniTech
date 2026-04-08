@@ -123,6 +123,11 @@ public class OmniTechBlockEntities {
                     () -> new BlockEntityType<>(SolvationMachineBlockEntity::new,
                             OmniTechBlocks.SOLVATION_MACHINE.get()));
 
+    public static final Supplier<BlockEntityType<ElectrolysisMachineBlockEntity>> ELECTROLYSIS_MACHINE =
+            REGISTRY.register("electrolysis_machine",
+                    () -> new BlockEntityType<>(ElectrolysisMachineBlockEntity::new,
+                            OmniTechBlocks.ELECTROLYSIS_MACHINE.get()));
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }
