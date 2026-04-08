@@ -14,6 +14,8 @@ import com.dev1lroot.mcmods.omnitech.gui.ManualMaceratorScreen;
 import com.dev1lroot.mcmods.omnitech.gui.SmelterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.SolarPanelScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectrolysisMachineScreen;
+import com.dev1lroot.mcmods.omnitech.gui.DecompressorScreen;
+import com.dev1lroot.mcmods.omnitech.gui.HeatExchangerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.RotaryCompressorScreen;
 import com.dev1lroot.mcmods.omnitech.gui.SolvationMachineScreen;
 import com.dev1lroot.mcmods.omnitech.gui.SorterScreen;
@@ -79,6 +81,8 @@ public class OmniTechGUI {
                         output.accept(OmniTechItems.ELECTROLYSIS_MACHINE_ITEM.get());
                         output.accept(OmniTechItems.ROTARY_COMPRESSOR_ITEM.get());
                         output.accept(OmniTechItems.FLUID_COLLECTOR_ITEM.get());
+                        output.accept(OmniTechItems.HEAT_EXCHANGER_ITEM.get());
+                        output.accept(OmniTechItems.DECOMPRESSOR_ITEM.get());
                     }).build());
 
     public static void register(IEventBus modEventBus) {
@@ -106,6 +110,8 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.SOLVATION_MACHINE.get(), SolvationMachineScreen::new);
         event.register(OmniTechMenuTypes.ELECTROLYSIS_MACHINE.get(), ElectrolysisMachineScreen::new);
         event.register(OmniTechMenuTypes.ROTARY_COMPRESSOR.get(), RotaryCompressorScreen::new);
+        event.register(OmniTechMenuTypes.HEAT_EXCHANGER.get(), HeatExchangerScreen::new);
+        event.register(OmniTechMenuTypes.DECOMPRESSOR.get(), DecompressorScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)

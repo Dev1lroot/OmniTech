@@ -1,7 +1,8 @@
 {
   "requiredMinimalTemperature": 100,
   "productionTime": 20,
+  "heatConsumptionPerTick": 2,
   "input":  { "fluid": "omnitech:distilled_water", "amount": 1000 },
-  "output": { "fluid": "omnitech:steam",  "amount": 1000 },
+  "output": { "fluid": "omnitech:steam",            "amount": 1000 },
   "result": { "item": "omnitech:sodium_chlorine_mote", "amount": 0, "chance": 0.0 }
 }

@@ -44,6 +44,12 @@ import com.dev1lroot.mcmods.omnitech.blocks.RotaryCompressorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.FluidCollectorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.FluidCollectorBlock;
 import com.dev1lroot.mcmods.omnitech.recipes.FluidCollectorRecipeManager;
+import com.dev1lroot.mcmods.omnitech.blocks.HeatExchangerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.HeatExchangerBlock;
+import com.dev1lroot.mcmods.omnitech.recipes.HeatExchangerRecipeManager;
+import com.dev1lroot.mcmods.omnitech.blocks.DecompressorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.DecompressorBlock;
+import com.dev1lroot.mcmods.omnitech.recipes.DecompressorRecipeManager;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -181,6 +187,37 @@ public class OmniTech {
                 }
         );
 
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.HEAT_EXCHANGER.get(),
+                (be, side) -> {
+                    if (side == null) return null;
+                    var state = be.getLevel() != null
+                            ? be.getLevel().getBlockState(be.getBlockPos())
+                            : null;
+                    if (state == null) return null;
+                    Direction facing = state.getValue(HeatExchangerBlock.FACING);
+                    if (side == facing) return ((HeatExchangerBlockEntity) be).inputFluidHandler;
+                    if (side == facing.getOpposite()) return ((HeatExchangerBlockEntity) be).outputFluidHandler;
+                    return null;
+                }
+        );
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.DECOMPRESSOR.get(),
+                (be, side) -> {
+                    if (side == null) return null;
+                    var state = be.getLevel() != null
+                            ? be.getLevel().getBlockState(be.getBlockPos())
+                            : null;
+                    if (state == null) return null;
+                    Direction facing = state.getValue(DecompressorBlock.FACING);
+                    if (side == facing) return ((DecompressorBlockEntity) be).inputFluidHandler;
+                    if (side == facing.getOpposite()) return ((DecompressorBlockEntity) be).outputFluidHandler;
+                    return null;
+                }
+        );
+
         // Electric Capacitor exposes the NeoForge EnergyHandler capability for
         // interoperability with other mods using NeoForge's energy system.
         event.registerBlockEntity(
@@ -296,6 +333,24 @@ public class OmniTech {
                     PreparationBarrier barrier, Executor reloadExecutor) {
                 return CompletableFuture.runAsync(() -> {
                     ElectrolysisRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "heat_exchanger_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    HeatExchangerRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "decompressor_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    DecompressorRecipeManager.loadRecipes(sharedState.resourceManager());
                 }, taskExecutor).thenCompose(barrier::wait);
             }
         });

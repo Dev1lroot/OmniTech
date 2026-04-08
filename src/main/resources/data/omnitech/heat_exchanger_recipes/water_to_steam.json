@@ -1,0 +1,6 @@
+{
+  "maxHeat": 200,
+  "productionHeat": 50,
+  "inputFluid":  { "fluid": "omnitech:compressed_heated_air", "amount": 1000 },
+  "outputFluid": { "fluid": "omnitech:compressed_air",        "amount": 1000 }
+}

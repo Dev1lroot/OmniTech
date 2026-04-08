@@ -14,6 +14,8 @@ import com.dev1lroot.mcmods.omnitech.gui.ManualMaceratorMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SmelterMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SolarPanelMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectrolysisMachineMenu;
+import com.dev1lroot.mcmods.omnitech.gui.DecompressorMenu;
+import com.dev1lroot.mcmods.omnitech.gui.HeatExchangerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.RotaryCompressorMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SolvationMachineMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SorterMenu;
@@ -101,6 +103,14 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<RotaryCompressorMenu>> ROTARY_COMPRESSOR =
             REGISTRY.register("rotary_compressor",
                     () -> IMenuTypeExtension.create(RotaryCompressorMenu::new));
+
+    public static final Supplier<MenuType<HeatExchangerMenu>> HEAT_EXCHANGER =
+            REGISTRY.register("heat_exchanger",
+                    () -> IMenuTypeExtension.create(HeatExchangerMenu::new));
+
+    public static final Supplier<MenuType<DecompressorMenu>> DECOMPRESSOR =
+            REGISTRY.register("decompressor",
+                    () -> IMenuTypeExtension.create(DecompressorMenu::new));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

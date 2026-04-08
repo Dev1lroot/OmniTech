@@ -138,6 +138,16 @@ public class OmniTechBlockEntities {
                     () -> new BlockEntityType<>(FluidCollectorBlockEntity::new,
                             OmniTechBlocks.FLUID_COLLECTOR.get()));
 
+    public static final Supplier<BlockEntityType<HeatExchangerBlockEntity>> HEAT_EXCHANGER =
+            REGISTRY.register("heat_exchanger",
+                    () -> new BlockEntityType<>(HeatExchangerBlockEntity::new,
+                            OmniTechBlocks.HEAT_EXCHANGER.get()));
+
+    public static final Supplier<BlockEntityType<DecompressorBlockEntity>> DECOMPRESSOR =
+            REGISTRY.register("decompressor",
+                    () -> new BlockEntityType<>(DecompressorBlockEntity::new,
+                            OmniTechBlocks.DECOMPRESSOR.get()));
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }

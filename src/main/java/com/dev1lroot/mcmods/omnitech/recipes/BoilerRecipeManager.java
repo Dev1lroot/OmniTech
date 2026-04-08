@@ -38,8 +38,10 @@ public class BoilerRecipeManager {
 
                     JsonObject json = GSON.fromJson(reader, JsonObject.class);
 
-                    int minTemp = json.get("requiredMinimalTemperature").getAsInt();
-                    int time    = json.get("productionTime").getAsInt();
+                    int minTemp  = json.get("requiredMinimalTemperature").getAsInt();
+                    int time     = json.get("productionTime").getAsInt();
+                    int heatCost = json.has("heatConsumptionPerTick")
+                            ? json.get("heatConsumptionPerTick").getAsInt() : 3;
 
                     JsonObject inputObj  = json.getAsJsonObject("input");
                     String inputFluid    = inputObj.get("fluid").getAsString();
@@ -60,13 +62,13 @@ public class BoilerRecipeManager {
                     }
 
                     String recipeId = id.getPath().replace(path + "/", "").replace(".json", "");
-                    BoilerRecipe recipe = new BoilerRecipe(recipeId, minTemp, time,
+                    BoilerRecipe recipe = new BoilerRecipe(recipeId, minTemp, time, heatCost,
                             inputFluid, inputAmount, outputFluid, outputAmount,
                             resultItem, resultCount, resultChance);
                     RECIPES.put(recipeId, recipe);
 
-                    OmniTech.LOGGER.info("Loaded boiler recipe: {} ({}°C, {}t, {} -> {})",
-                            recipeId, minTemp, time, inputFluid, outputFluid);
+                    OmniTech.LOGGER.info("Loaded boiler recipe: {} ({}°C, {}t, -{}/tick, {} -> {})",
+                            recipeId, minTemp, time, heatCost, inputFluid, outputFluid);
 
                 } catch (Exception e) {
                     OmniTech.LOGGER.error("Failed to load boiler recipe: {}", id, e);

@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top":      "omnitech:block/solar_panel_top",
+    "front":    "omnitech:block/solar_panel_side",
+    "side":     "omnitech:block/solar_panel_side",
+    "particle": "omnitech:block/solar_panel_top"
+  }
+}

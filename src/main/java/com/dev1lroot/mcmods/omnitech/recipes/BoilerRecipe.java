@@ -13,6 +13,7 @@ public class BoilerRecipe {
     private final String id;
     private final int requiredMinimalTemperature;
     private final int productionTime;
+    private final int heatConsumptionPerTick;
 
     private final Identifier inputFluidId;
     private final int inputAmount;
@@ -31,12 +32,14 @@ public class BoilerRecipe {
     private Item  cachedResultItem  = null;
 
     public BoilerRecipe(String id, int requiredMinimalTemperature, int productionTime,
+                        int heatConsumptionPerTick,
                         String inputFluid, int inputAmount,
                         String outputFluid, int outputAmount,
                         String resultItem, int resultCount, float resultChance) {
         this.id = id;
         this.requiredMinimalTemperature = requiredMinimalTemperature;
         this.productionTime = productionTime;
+        this.heatConsumptionPerTick = heatConsumptionPerTick;
         this.inputFluidId  = resolveId(inputFluid,  "minecraft");
         this.inputAmount   = inputAmount;
         this.outputFluidId = resolveId(outputFluid, "omnitech");
@@ -105,6 +108,8 @@ public class BoilerRecipe {
     public String getId()                       { return id; }
     public int getRequiredMinimalTemperature()  { return requiredMinimalTemperature; }
     public int getProductionTime()             { return productionTime; }
+    /** Degrees Celsius deducted from the boiler's stored heat every processing tick. */
+    public int getHeatConsumptionPerTick()     { return heatConsumptionPerTick; }
     public int getInputAmount()                { return inputAmount; }
     public int getOutputAmount()               { return outputAmount; }
     public float getResultChance()             { return resultChance; }

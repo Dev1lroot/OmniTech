@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 
 import java.util.Optional;
 
-public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHeatReceiver {
+public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHeatReceiver, IColdReceiver {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -132,10 +132,19 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
     // ── IHeatReceiver ─────────────────────────────────────────────────────────
 
     @Override
-    public boolean addHeat(int celsius) {
-        if (temperature >= MAX_HEAT) return false;
-        temperature = Math.min(MAX_HEAT, temperature + celsius);
-        return true;
+    public int addHeat(int celsius) {
+        if (temperature >= MAX_HEAT) return 0;
+        int absorbed = Math.min(celsius, MAX_HEAT - temperature);
+        temperature += absorbed;
+        return absorbed;
+    }
+
+    @Override
+    public int addCold(int celsius) {
+        if (temperature <= 0) return 0;
+        int absorbed = Math.min(celsius, temperature);
+        temperature -= absorbed;
+        return absorbed;
     }
 
     // ── Server tick ───────────────────────────────────────────────────────────

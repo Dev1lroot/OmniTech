@@ -131,13 +131,16 @@ public class HeaterBlockEntity extends BaseContainerBlockEntity {
         }
 
         // ── Radiate heat to adjacent IHeatReceiver blocks ─────────────────────
+        // Heat that a neighbor actually absorbs is deducted from this heater's
+        // stored heat — so energy genuinely flows rather than being duplicated.
         if (be.storedHeat > 0) {
             int transfer = be.storedHeat / 60; // 0–5 °C per tick
             if (transfer > 0) {
                 for (Direction dir : Direction.values()) {
                     BlockEntity neighbor = level.getBlockEntity(pos.relative(dir));
                     if (neighbor instanceof IHeatReceiver receiver) {
-                        receiver.addHeat(transfer);
+                        int absorbed = receiver.addHeat(transfer);
+                        be.storedHeat = Math.max(0, be.storedHeat - absorbed);
                     }
                 }
             }

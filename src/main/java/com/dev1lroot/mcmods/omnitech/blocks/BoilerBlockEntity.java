@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeatReceiver {
+public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeatReceiver, IColdReceiver {
 
     // ── Constants ─────────────────────────────────────────────────────────────
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -122,10 +122,19 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
     // ── IHeatReceiver ─────────────────────────────────────────────────────────
 
     @Override
-    public boolean addHeat(int celsius) {
-        if (storedHeat >= MAX_HEAT) return false;
-        storedHeat = Math.min(MAX_HEAT, storedHeat + celsius);
-        return true;
+    public int addHeat(int celsius) {
+        if (storedHeat >= MAX_HEAT) return 0;
+        int absorbed = Math.min(celsius, MAX_HEAT - storedHeat);
+        storedHeat += absorbed;
+        return absorbed;
+    }
+
+    @Override
+    public int addCold(int celsius) {
+        if (storedHeat <= 0) return 0;
+        int absorbed = Math.min(celsius, storedHeat);
+        storedHeat -= absorbed;
+        return absorbed;
     }
 
     // ── BaseContainerBlockEntity ──────────────────────────────────────────────
@@ -193,8 +202,10 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
             }
         }
 
-        // 3. Process recipe cycle
+        // 3. Process recipe cycle — consume heat every tick while running
         if (be.currentRecipe != null && be.canProcess()) {
+            // Deduct heat cost this tick before advancing progress
+            be.storedHeat = Math.max(0, be.storedHeat - be.currentRecipe.getHeatConsumptionPerTick());
             be.processProgress++;
             dirty = true;
 
@@ -304,8 +315,6 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
             // If slot is full and item was rolled, it is lost (blocked by canProcess for chance=1.0)
         }
 
-        // Natural heat loss per cycle
-        if (storedHeat > 0) storedHeat = Math.max(0, storedHeat - 1);
     }
 
     // ── Fluid transfer helpers ────────────────────────────────────────────────

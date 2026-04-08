@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "lit=false": { "model": "omnitech:block/solar_panel" },
+    "lit=true": { "model": "omnitech:block/solar_panel" }
+  }
+}
