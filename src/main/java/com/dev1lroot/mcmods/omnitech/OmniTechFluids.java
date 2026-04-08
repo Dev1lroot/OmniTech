@@ -32,11 +32,10 @@ public class OmniTechFluids
     public static final FluidObject MOLTEN_BRASS = new FluidObject("molten_brass",
             FluidType.Properties.create().density(8900).viscosity(3000).temperature(1200));
 
-    public static final FluidObject AIR = new FluidObject("air",
-            FluidType.Properties.create().density(-1000).viscosity(10).temperature(10));
-    public static final FluidObject COMPRESSED_HEATED_AIR = new FluidObject("compressed_heated_air",
-            FluidType.Properties.create().density(10).viscosity(10).temperature(300));
-    public static final FluidObject COMPRESSED_AIR = new FluidObject("compressed_air",
+    public static final FluidObject AIR = new FluidObject("air", gasProps());
+    public static final FluidObject COMPRESSED_HEATED_AIR = new FluidObject("compressed_heated_air", gasProps());
+    public static final FluidObject COMPRESSED_AIR = new FluidObject("compressed_air", gasProps());
+    public static final FluidObject LIQUEFIED_AIR = new FluidObject("liquefied_air",
             FluidType.Properties.create().density(10).viscosity(10).temperature(0));
 
     // Вспомогательный метод для свойств газа
