@@ -178,6 +178,8 @@
   "block.omnitech.electric_engine": "Electric Engine",
   "item.omnitech.electric_engine": "Electric Engine",
   "container.omnitech.electric_engine": "Electric Engine",
+  "gui.omnitech.electric_engine.mode_forward": "Mode: KF \u2192 EU",
+  "gui.omnitech.electric_engine.mode_reverse": "Mode: EU \u2192 KF",
   "block.omnitech.electric_capacitor": "Electric Capacitor",
   "item.omnitech.electric_capacitor": "Electric Capacitor",
   "container.omnitech.electric_capacitor": "Electric Capacitor",

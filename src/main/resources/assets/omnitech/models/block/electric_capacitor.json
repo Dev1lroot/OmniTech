@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "omnitech:block/machine_side",
-    "top":    "omnitech:block/machine_side",
-    "front":  "omnitech:block/heater_front_off",
-    "side":   "omnitech:block/machine_side",
-    "bottom": "omnitech:block/machine_side"
+    "particle": "omnitech:block/electric_machine_side",
+    "top":    "omnitech:block/electric_machine_side",
+    "front":  "omnitech:block/electric_machine_output_side",
+    "side":   "omnitech:block/electric_machine_side",
+    "bottom": "omnitech:block/electric_machine_side"
   },
   "elements": [
     {
