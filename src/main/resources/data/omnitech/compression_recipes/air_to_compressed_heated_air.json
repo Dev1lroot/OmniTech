@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 5.0,
+  "inputFluid": {
+    "fluid": "omnitech:air",
+    "amount": 1000
+  },
+  "outputFluid": {
+    "fluid": "omnitech:compressed_heated_air",
+    "amount": 1000
+  }
+}

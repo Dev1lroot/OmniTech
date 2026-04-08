@@ -83,6 +83,12 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> ELECTROLYSIS_MACHINE_ITEM = REGISTRY.registerSimpleBlockItem(
             "electrolysis_machine", OmniTechBlocks.ELECTROLYSIS_MACHINE);
 
+    public static final DeferredItem<BlockItem> ROTARY_COMPRESSOR_ITEM = REGISTRY.registerSimpleBlockItem(
+            "rotary_compressor", OmniTechBlocks.ROTARY_COMPRESSOR);
+
+    public static final DeferredItem<BlockItem> FLUID_COLLECTOR_ITEM = REGISTRY.registerSimpleBlockItem(
+            "fluid_collector", OmniTechBlocks.FLUID_COLLECTOR);
+
     // Vanilla Material Additions
     public static final DeferredItem<Item> GRANITE_DUST = REGISTRY.registerSimpleItem(
             "granite_dust", p -> p);

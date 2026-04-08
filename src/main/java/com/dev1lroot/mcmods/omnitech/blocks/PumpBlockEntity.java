@@ -71,22 +71,41 @@ public class PumpBlockEntity extends BlockEntity implements IKineticReceiver {
 
         // Query the input side via the NeoForge capability system.
         // The context direction is the face of the neighbour that faces this pump.
+        BlockPos inputPos = pos.relative(inputDir);
         ResourceHandler<FluidResource> inputHandler = level.getCapability(
-                Capabilities.Fluid.BLOCK, pos.relative(inputDir), outputDir);
-        if (inputHandler == null) return;
+                Capabilities.Fluid.BLOCK, inputPos, outputDir);
 
-        // Determine what fluid is available on the input side
+        // Determine what fluid is available on the direct input side
         FluidResource available = FluidResource.EMPTY;
         int availableAmount = 0;
-        for (int i = 0; i < inputHandler.size(); i++) {
-            FluidResource res = inputHandler.getResource(i);
-            if (!res.isEmpty()) {
-                available = res;
-                availableAmount = Math.min(TRANSFER_RATE, inputHandler.getAmountAsInt(i));
-                break;
+        if (inputHandler != null) {
+            for (int i = 0; i < inputHandler.size(); i++) {
+                FluidResource res = inputHandler.getResource(i);
+                if (!res.isEmpty()) {
+                    available = res;
+                    availableAmount = Math.min(TRANSFER_RATE, inputHandler.getAmountAsInt(i));
+                    break;
+                }
             }
         }
-        if (available.isEmpty() || availableAmount <= 0) return;
+
+        // If the direct neighbour is empty, BFS through the entire input-side
+        // fluid network to find the closest non-empty container.
+        if (available.isEmpty() || availableAmount <= 0) {
+            inputHandler = FluidNetworkUtil.findInputSource(level, inputPos, inputDir);
+            if (inputHandler == null) return;
+            available = FluidResource.EMPTY;
+            availableAmount = 0;
+            for (int i = 0; i < inputHandler.size(); i++) {
+                FluidResource res = inputHandler.getResource(i);
+                if (!res.isEmpty()) {
+                    available = res;
+                    availableAmount = Math.min(TRANSFER_RATE, inputHandler.getAmountAsInt(i));
+                    break;
+                }
+            }
+            if (available.isEmpty() || availableAmount <= 0) return;
+        }
 
         // ── Find the output target via BFS ─────────────────────────────────────
         // Walk the output network (pipes + tanks, stopping at other pumps) and

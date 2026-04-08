@@ -117,6 +117,81 @@ public final class FluidNetworkUtil {
         return null;
     }
 
+    /**
+     * BFS through the fluid network on the input side of a pump to find the
+     * closest non-empty fluid source.
+     *
+     * <p>Traversal follows the same connectivity rules as the output BFS: pipe
+     * connection properties gate pipe-to-pipe edges; tanks connect to all
+     * neighbours; non-pipe/tank blocks are treated as terminal sources and are
+     * NOT traversed further (they are machines or other mod containers).
+     *
+     * <p>The approach direction is tracked per-node so that directional machine
+     * capabilities (e.g. the Solvation Machine that only exposes its output on
+     * its back face) are queried from the correct face.
+     *
+     * @param level      the server level
+     * @param startPos   the block directly behind the pump (its input-side neighbour)
+     * @param inputDir   direction FROM the pump TOWARD {@code startPos}
+     * @return the {@link ResourceHandler} of the closest non-empty source, or
+     *         {@code null} if the whole input network is empty
+     */
+    public static @Nullable ResourceHandler<FluidResource> findInputSource(
+            Level level, BlockPos startPos, Direction inputDir) {
+
+        record Entry(BlockPos pos, Direction fromDir) {}
+
+        Set<BlockPos> visited = new HashSet<>();
+        ArrayDeque<Entry> queue = new ArrayDeque<>();
+        visited.add(startPos);
+        queue.add(new Entry(startPos, inputDir));
+
+        while (!queue.isEmpty()) {
+            Entry entry = queue.poll();
+            BlockPos pos = entry.pos();
+            // fromDir: the direction we travelled to arrive at this node, i.e.
+            // pos == prevPos.relative(fromDir). Therefore the face of this block
+            // that looks back toward the network is fromDir.getOpposite().
+            Direction fromDir = entry.fromDir();
+
+            BlockEntity be = level.getBlockEntity(pos);
+
+            if (be instanceof FluidPipeBlockEntity pipe) {
+                if (!pipe.getFluid().isEmpty()) return pipe.fluidHandler;
+                BlockState state = level.getBlockState(pos);
+                for (Direction d : Direction.values()) {
+                    if (state.hasProperty(FluidPipeBlock.propertyFor(d))
+                            && state.getValue(FluidPipeBlock.propertyFor(d))) {
+                        BlockPos next = pos.relative(d);
+                        if (visited.add(next)) queue.add(new Entry(next, d));
+                    }
+                }
+            } else if (be instanceof FluidTankBlockEntity tank) {
+                if (!tank.getFluid().isEmpty()) return tank.fluidHandler;
+                for (Direction d : Direction.values()) {
+                    BlockPos next = pos.relative(d);
+                    if (visited.add(next)) queue.add(new Entry(next, d));
+                }
+            } else {
+                // External block (machine output tank, vanilla block, another mod's
+                // container). Query its capability from the face that connects back
+                // toward the network so directional machines are handled correctly.
+                Direction faceBack = fromDir.getOpposite();
+                ResourceHandler<FluidResource> cap =
+                        level.getCapability(Capabilities.Fluid.BLOCK, pos, faceBack);
+                if (cap != null) {
+                    for (int i = 0; i < cap.size(); i++) {
+                        if (!cap.getResource(i).isEmpty() && cap.getAmountAsInt(i) > 0) {
+                            return cap;
+                        }
+                    }
+                }
+                // Do not BFS further through external blocks.
+            }
+        }
+        return null;
+    }
+
     // ── Network collection ────────────────────────────────────────────────────
 
     private record NetworkData(List<BlockEntity> nodes, long totalAmount, FluidStack reference) {}

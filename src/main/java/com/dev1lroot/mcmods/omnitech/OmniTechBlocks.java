@@ -66,6 +66,8 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> SOLAR_PANEL;
     public static final DeferredBlock<Block> SOLVATION_MACHINE;
     public static final DeferredBlock<Block> ELECTROLYSIS_MACHINE;
+    public static final DeferredBlock<Block> ROTARY_COMPRESSOR;
+    public static final DeferredBlock<Block> FLUID_COLLECTOR;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -169,6 +171,12 @@ public class OmniTechBlocks {
         ELECTROLYSIS_MACHINE = register("electrolysis_machine",
                 p -> new ElectrolysisMachineBlock(p.mapColor(MapColor.METAL).strength(3.5F)
                         .sound(SoundType.METAL)));
+        ROTARY_COMPRESSOR = register("rotary_compressor",
+                p -> new RotaryCompressorBlock(p.mapColor(MapColor.METAL).strength(3.5F)
+                        .sound(SoundType.METAL)));
+        FLUID_COLLECTOR = register("fluid_collector",
+                p -> new FluidCollectorBlock(p.mapColor(MapColor.METAL).strength(3.0F)
+                        .sound(SoundType.METAL).noOcclusion()));
     }
 
     // ── Registration helpers ───────────────────────────────────────────────

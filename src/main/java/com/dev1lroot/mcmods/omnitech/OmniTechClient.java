@@ -77,6 +77,27 @@ public class OmniTechClient
                 null,
                 null
         ), OmniTechFluids.DISTILLED_WATER.source.get(), OmniTechFluids.DISTILLED_WATER.flowing.get());
+        // Для латуни
+        event.register(new FluidModel.Unbaked(
+                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/distilled_water_still")),
+                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/distilled_water_flow")),
+                null,
+                null
+        ), OmniTechFluids.AIR.source.get(), OmniTechFluids.AIR.flowing.get());
+        // Для латуни
+        event.register(new FluidModel.Unbaked(
+                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/distilled_water_still")),
+                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/distilled_water_flow")),
+                null,
+                null
+        ), OmniTechFluids.COMPRESSED_HEATED_AIR.source.get(), OmniTechFluids.COMPRESSED_HEATED_AIR.flowing.get());
+        // Для латуни
+        event.register(new FluidModel.Unbaked(
+                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/distilled_water_still")),
+                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/distilled_water_flow")),
+                null,
+                null
+        ), OmniTechFluids.COMPRESSED_AIR.source.get(), OmniTechFluids.COMPRESSED_AIR.flowing.get());
 
         // Для латуни
         event.register(new FluidModel.Unbaked(

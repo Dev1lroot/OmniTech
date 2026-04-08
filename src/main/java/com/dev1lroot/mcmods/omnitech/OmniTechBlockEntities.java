@@ -128,6 +128,16 @@ public class OmniTechBlockEntities {
                     () -> new BlockEntityType<>(ElectrolysisMachineBlockEntity::new,
                             OmniTechBlocks.ELECTROLYSIS_MACHINE.get()));
 
+    public static final Supplier<BlockEntityType<RotaryCompressorBlockEntity>> ROTARY_COMPRESSOR =
+            REGISTRY.register("rotary_compressor",
+                    () -> new BlockEntityType<>(RotaryCompressorBlockEntity::new,
+                            OmniTechBlocks.ROTARY_COMPRESSOR.get()));
+
+    public static final Supplier<BlockEntityType<FluidCollectorBlockEntity>> FLUID_COLLECTOR =
+            REGISTRY.register("fluid_collector",
+                    () -> new BlockEntityType<>(FluidCollectorBlockEntity::new,
+                            OmniTechBlocks.FLUID_COLLECTOR.get()));
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }

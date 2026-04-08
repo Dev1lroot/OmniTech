@@ -34,10 +34,16 @@ import com.dev1lroot.mcmods.omnitech.recipes.ManualMaceratorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.SmelterRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ElectrolysisRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.SolvationRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.RotaryCompressionRecipeManager;
 import com.dev1lroot.mcmods.omnitech.blocks.ElectrolysisMachineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.ElectrolysisMachineBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.SolvationMachineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.SolvationMachineBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.RotaryCompressorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.RotaryCompressorBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.FluidCollectorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.FluidCollectorBlock;
+import com.dev1lroot.mcmods.omnitech.recipes.FluidCollectorRecipeManager;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -125,6 +131,35 @@ public class OmniTech {
                     Direction facing = state.getValue(SolvationMachineBlock.FACING);
                     if (side == facing) return ((SolvationMachineBlockEntity) be).inputFluidHandler;
                     if (side == facing.getOpposite()) return ((SolvationMachineBlockEntity) be).outputFluidHandler;
+                    return null;
+                }
+        );
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.FLUID_COLLECTOR.get(),
+                (be, side) -> {
+                    if (side == null) return null;
+                    var state = be.getLevel() != null
+                            ? be.getLevel().getBlockState(be.getBlockPos()) : null;
+                    if (state == null) return null;
+                    // Only the output (FACING) face exposes the handler
+                    if (side == state.getValue(FluidCollectorBlock.FACING))
+                        return ((FluidCollectorBlockEntity) be).outputFluidHandler;
+                    return null;
+                }
+        );
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.ROTARY_COMPRESSOR.get(),
+                (be, side) -> {
+                    if (side == null) return null;
+                    var state = be.getLevel() != null
+                            ? be.getLevel().getBlockState(be.getBlockPos())
+                            : null;
+                    if (state == null) return null;
+                    Direction facing = state.getValue(RotaryCompressorBlock.FACING);
+                    if (side == facing) return ((RotaryCompressorBlockEntity) be).inputFluidHandler;
+                    if (side == facing.getOpposite()) return ((RotaryCompressorBlockEntity) be).outputFluidHandler;
                     return null;
                 }
         );
@@ -234,6 +269,24 @@ public class OmniTech {
                     PreparationBarrier barrier, Executor reloadExecutor) {
                 return CompletableFuture.runAsync(() -> {
                     SolvationRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "fluid_collector_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    FluidCollectorRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "compression_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    RotaryCompressionRecipeManager.loadRecipes(sharedState.resourceManager());
                 }, taskExecutor).thenCompose(barrier::wait);
             }
         });

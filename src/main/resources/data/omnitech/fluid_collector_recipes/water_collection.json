@@ -1,0 +1,4 @@
+{
+  "inputBlock": "minecraft:water",
+  "outputFluid": { "fluid": "minecraft:water", "amount": 100 }
+}

@@ -1,0 +1,4 @@
+{
+  "inputBlock": "minecraft:air",
+  "outputFluid": { "fluid": "omnitech:air", "amount": 100 }
+}
