@@ -109,6 +109,38 @@ public class OmniTechMaterials {
             new String[]{ "%_block" } // sphalerite is the mineral for zinc
     );
 
+    public static final MaterialSet LEAD = MaterialSet.create(
+            "lead",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%_block" } // sphalerite is the mineral for zinc
+    );
+
+    public static final MaterialSet URANIUM = MaterialSet.create(
+            "uranium",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%_block" } // sphalerite is the mineral for zinc
+    );
+
+    public static final MaterialSet TITANIUM = MaterialSet.create(
+            "titanium",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%_block" } // sphalerite is the mineral for zinc
+    );
+
+    public static final MaterialSet STEEL = MaterialSet.create(
+            "steel",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%_block" } // sphalerite is the mineral for zinc
+    );
+
     public static final MaterialSet BRASS = MaterialSet.create(
             "brass",
             OmniTechItems.REGISTRY,

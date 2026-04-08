@@ -115,8 +115,5 @@ public class OmniTechGUI {
         if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
             event.accept(OmniTechMaterials.TIN.blockItem("%_ore"));
         }
-        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
-            event.accept(OmniTechItems.STEEL_INGOT);
-        }
     }
 }

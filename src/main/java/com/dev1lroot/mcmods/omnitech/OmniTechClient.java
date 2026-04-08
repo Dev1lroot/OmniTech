@@ -69,5 +69,21 @@ public class OmniTechClient
                 null,
                 null
         ), OmniTechFluids.MOLTEN_BRASS.source.get(), OmniTechFluids.MOLTEN_BRASS.flowing.get());
+
+        // Для латуни
+        event.register(new FluidModel.Unbaked(
+                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/distilled_water_still")),
+                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/distilled_water_flow")),
+                null,
+                null
+        ), OmniTechFluids.DISTILLED_WATER.source.get(), OmniTechFluids.DISTILLED_WATER.flowing.get());
+
+        // Для латуни
+        event.register(new FluidModel.Unbaked(
+                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/brine_still")),
+                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/brine_flow")),
+                null,
+                null
+        ), OmniTechFluids.BRINE.source.get(), OmniTechFluids.BRINE.flowing.get());
     }
 }
