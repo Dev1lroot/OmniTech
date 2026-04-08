@@ -1,5 +1,5 @@
 {
-  "feature": "omnitech:tin_ore",
+  "feature": "omnitech:tin_ore_biome_0",
   "placement": [
     {
       "type": "minecraft:count",
@@ -17,7 +17,7 @@
       "height": {
         "type": "minecraft:uniform",
         "max_inclusive": {
-          "absolute": 32
+          "absolute": 100
         },
         "min_inclusive": {
           "absolute": 12

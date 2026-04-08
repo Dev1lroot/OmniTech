@@ -34,7 +34,7 @@ public class OmniTechMaterials {
     public static final MaterialSet TUNGSTEN = MaterialSet.create(
             "tungsten",
             OmniTechItems.REGISTRY,
-            new String[]{ "raw_%", "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil" },
+            new String[]{ "raw_%", "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod" },
             OmniTechBlocks.REGISTRY,
             new String[]{ "%_ore", "%_block", "raw_%_block" }
     );
@@ -42,7 +42,7 @@ public class OmniTechMaterials {
     public static final MaterialSet CHROMIUM = MaterialSet.create(
             "chromium",
             OmniTechItems.REGISTRY,
-            new String[]{ "raw_%", "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil" },
+            new String[]{ "raw_%", "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod" },
             OmniTechBlocks.REGISTRY,
             new String[]{ "%_ore", "%_block", "raw_%_block" }
     );
@@ -50,7 +50,7 @@ public class OmniTechMaterials {
     public static final MaterialSet TIN = MaterialSet.create(
             "tin",
             OmniTechItems.REGISTRY,
-            new String[]{ "raw_%", "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil" },
+            new String[]{ "raw_%", "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod" },
             OmniTechBlocks.REGISTRY,
             new String[]{ "%_ore", "%_block", "raw_%_block" },
             Map.of("%_ore", new OreSpawnConfig(
@@ -80,7 +80,7 @@ public class OmniTechMaterials {
     public static final MaterialSet ALUMINIUM = MaterialSet.create(
             "aluminium",
             OmniTechItems.REGISTRY,
-            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil" },
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod" },
             OmniTechBlocks.REGISTRY,
             new String[]{ "%_block" } // there is no mineral aluminium in real life
     );
@@ -88,7 +88,7 @@ public class OmniTechMaterials {
     public static final MaterialSet COBALT = MaterialSet.create(
             "cobalt",
             OmniTechItems.REGISTRY,
-            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil" },
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod" },
             OmniTechBlocks.REGISTRY,
             new String[]{ "%_block" } // there is no mineral aluminium in real life
     );
@@ -96,7 +96,7 @@ public class OmniTechMaterials {
     public static final MaterialSet NICKEL = MaterialSet.create(
             "nickel",
             OmniTechItems.REGISTRY,
-            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil" },
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod" },
             OmniTechBlocks.REGISTRY,
             new String[]{ "%_block" } // there is no mineral aluminium in real life
     );
@@ -104,7 +104,7 @@ public class OmniTechMaterials {
     public static final MaterialSet ZINC = MaterialSet.create(
             "zinc",
             OmniTechItems.REGISTRY,
-            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil" },
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod" },
             OmniTechBlocks.REGISTRY,
             new String[]{ "%_block" } // sphalerite is the mineral for zinc
     );
@@ -112,7 +112,7 @@ public class OmniTechMaterials {
     public static final MaterialSet BRASS = MaterialSet.create(
             "brass",
             OmniTechItems.REGISTRY,
-            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil" },
+            new String[]{ "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod" },
             OmniTechBlocks.REGISTRY,
             new String[]{ "%_block" } // produced in smelter and foundry
     );
@@ -120,7 +120,7 @@ public class OmniTechMaterials {
     public static final MaterialSet IRON = MaterialSet.create(
             "iron",
             OmniTechItems.REGISTRY,
-            new String[]{ "%_dust", "%_plate", "%_mote", "%_reductor", "%_wire", "%_coil" },
+            new String[]{ "%_dust", "%_plate", "%_mote", "%_reductor", "%_wire", "%_coil", "%_rod" },
             OmniTechBlocks.REGISTRY,
             new String[]{ } // the ore exists in vanilla game therefore only missing variations
     );
@@ -128,7 +128,7 @@ public class OmniTechMaterials {
     public static final MaterialSet COPPER = MaterialSet.create(
             "copper",
             OmniTechItems.REGISTRY,
-            new String[]{ "%_dust", "%_plate", "%_mote", "%_reductor", "%_wire", "%_coil" },
+            new String[]{ "%_dust", "%_plate", "%_mote", "%_reductor", "%_wire", "%_coil", "%_rod" },
             OmniTechBlocks.REGISTRY,
             new String[]{ } // the ore exists in vanilla game therefore only missing variations
     );
@@ -137,6 +137,14 @@ public class OmniTechMaterials {
             "sodium_chlorine",
             OmniTechItems.REGISTRY,
             new String[]{ "%_dust", "%_mote"},
+            OmniTechBlocks.REGISTRY,
+            new String[]{ }
+    );
+
+    public static final MaterialSet GRAPHITE = MaterialSet.create(
+            "graphite",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_dust", "%_mote", "%_rod"},
             OmniTechBlocks.REGISTRY,
             new String[]{ }
     );

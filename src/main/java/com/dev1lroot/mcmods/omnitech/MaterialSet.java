@@ -140,7 +140,15 @@ public class MaterialSet {
         for (String pattern : itemPatterns) {
             if (blockPatternSet.contains(pattern)) continue;
             String name = pattern.replace("%", material);
-            set.items.put(pattern, itemRegistry.registerSimpleItem(name, p -> p));
+
+            if(pattern.endsWith("_rod"))
+            {
+                set.items.put(pattern, itemRegistry.registerSimpleItem(name, p -> p.durability(100).stacksTo(1)));
+            }
+            else
+            {
+                set.items.put(pattern, itemRegistry.registerSimpleItem(name, p -> p));
+            }
 
             if (resourcesDir != null) generateItemResources(resourcesDir, name);
         }

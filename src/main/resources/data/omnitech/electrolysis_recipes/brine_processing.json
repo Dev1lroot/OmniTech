@@ -1,0 +1,26 @@
+{
+  "inputFluid": {
+    "fluid": "omnitech:brine",
+    "amount": 1000
+  },
+  "outputAnode": {
+    "fluid": "omnitech:chlorine",
+    "amount": 1000
+  },
+  "outputCathode": {
+    "fluid": "omnitech:hydrogen",
+    "amount": 1000
+  },
+  "outputSolution": {
+    "fluid": "omnitech:sodium_hydroxide",
+    "amount": 1000
+  },
+  "cathode": {
+    "item": "omnitech:graphite_rod",
+    "damage": 1
+  },
+  "anode": {
+    "item": "omnitech:nickel_rod",
+    "damage": 1
+  }
+}

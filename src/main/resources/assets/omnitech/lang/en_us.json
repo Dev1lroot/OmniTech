@@ -174,12 +174,11 @@
   "block.omnitech.sorter": "Sorter",
   "item.omnitech.sorter": "Sorter",
   "container.omnitech.sorter": "Sorter",
-
   "block.omnitech.electric_engine": "Electric Engine",
   "item.omnitech.electric_engine": "Electric Engine",
   "container.omnitech.electric_engine": "Electric Engine",
-  "gui.omnitech.electric_engine.mode_forward": "Mode: KF \u2192 EU",
-  "gui.omnitech.electric_engine.mode_reverse": "Mode: EU \u2192 KF",
+  "gui.omnitech.electric_engine.mode_forward": "Mode: KF → EU",
+  "gui.omnitech.electric_engine.mode_reverse": "Mode: EU → KF",
   "block.omnitech.electric_capacitor": "Electric Capacitor",
   "item.omnitech.electric_capacitor": "Electric Capacitor",
   "container.omnitech.electric_capacitor": "Electric Capacitor",
@@ -188,14 +187,25 @@
   "block.omnitech.electric_furnace": "Electric Furnace",
   "item.omnitech.electric_furnace": "Electric Furnace",
   "container.omnitech.electric_furnace": "Electric Furnace",
-
   "block.omnitech.solar_panel": "Solar Panel",
   "item.omnitech.solar_panel": "Solar Panel",
   "container.omnitech.solar_panel": "Solar Panel",
   "gui.omnitech.solar_panel.sun_intensity": "Sun Intensity:",
   "gui.omnitech.solar_panel.output": "Output:",
-
   "block.omnitech.solvation_machine": "Solvation Machine",
   "item.omnitech.solvation_machine": "Solvation Machine",
-  "container.omnitech.solvation_machine": "Solvation Machine"
+  "container.omnitech.solvation_machine": "Solvation Machine",
+  "item.omnitech.tungsten_rod": "Tungsten Rod",
+  "item.omnitech.chromium_rod": "Chromium Rod",
+  "item.omnitech.tin_rod": "Tin Rod",
+  "item.omnitech.aluminium_rod": "Aluminium Rod",
+  "item.omnitech.cobalt_rod": "Cobalt Rod",
+  "item.omnitech.nickel_rod": "Nickel Rod",
+  "item.omnitech.zinc_rod": "Zinc Rod",
+  "item.omnitech.brass_rod": "Brass Rod",
+  "item.omnitech.iron_rod": "Iron Rod",
+  "item.omnitech.copper_rod": "Copper Rod",
+  "item.omnitech.graphite_dust": "Graphite Dust",
+  "item.omnitech.graphite_mote": "Graphite Mote",
+  "item.omnitech.graphite_rod": "Graphite Rod"
 }
