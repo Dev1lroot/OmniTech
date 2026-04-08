@@ -27,67 +27,31 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 
-/**
- * Block entity for the Solvation Machine.
- *
- * <h3>Processing model</h3>
- * <ol>
- *   <li>Find a recipe that matches the item in slot 0 and the input fluid tank.</li>
- *   <li>Accept KF via {@link IKineticReceiver}; accumulate until
- *       {@code requiredKineticForce} is reached.</li>
- *   <li>On completion: consume one item + required input fluid, produce output
- *       fluid into the output tank.</li>
- * </ol>
- *
- * <h3>Fluid connections</h3>
- * <ul>
- *   <li>Front face ({@code FACING}): fluid input (insert-capable).</li>
- *   <li>Back face ({@code FACING.getOpposite()}): fluid output (extract-capable).</li>
- * </ul>
- *
- * <h3>ContainerData layout (6 slots)</h3>
- * <ul>
- *   <li>0 – kineticForce × 100 (fixed-point)</li>
- *   <li>1 – requiredKineticForce × 100</li>
- *   <li>2 – inputFluid amount (mB)</li>
- *   <li>3 – INPUT_TANK_CAPACITY (constant)</li>
- *   <li>4 – outputFluid amount (mB)</li>
- *   <li>5 – OUTPUT_TANK_CAPACITY (constant)</li>
- * </ul>
- */
 public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
         implements IKineticReceiver, WorldlyContainer {
 
-    public static final int SLOT_INPUT    = 0;
-    public static final int SLOT_COUNT    = 1;
-
-    public static final int INPUT_TANK_CAPACITY  = 8_000;
+    public static final int SLOT_INPUT = 0;
+    public static final int SLOT_COUNT = 1;
+    public static final int INPUT_TANK_CAPACITY = 8_000;
     public static final int OUTPUT_TANK_CAPACITY = 8_000;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
-
-    private FluidStack inputFluid  = FluidStack.EMPTY;
+    private FluidStack inputFluid = FluidStack.EMPTY;
     private FluidStack outputFluid = FluidStack.EMPTY;
 
-    private float kineticForce         = 0f;
+    private float kineticForce = 0f;
     private float requiredKineticForce = 0f;
-    private SolvationRecipe currentRecipe    = null;
-    private String          currentRecipeId  = null;
+    private SolvationRecipe currentRecipe = null;
+    private String currentRecipeId = null;
 
-    // ── Capability-exposed fluid handlers ─────────────────────────────────────
-
-    /** Front face: insert-only handler for the input fluid tank. */
-    public final ResourceHandler<FluidResource> inputFluidHandler  = new InputTankHandler();
-
-    /** Back face: extract-only handler for the output fluid tank. */
+    public final ResourceHandler<FluidResource> inputFluidHandler = new InputTankHandler();
     public final ResourceHandler<FluidResource> outputFluidHandler = new OutputTankHandler();
-
-    // ── ContainerData ─────────────────────────────────────────────────────────
 
     protected final ContainerData dataAccess = new ContainerData() {
         @Override public int get(int index) {
@@ -105,14 +69,10 @@ public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
             switch (index) {
                 case 0 -> kineticForce = value / 100f;
                 case 1 -> requiredKineticForce = value / 100f;
-                case 2 -> {} // fluid amount managed server-side only
-                case 4 -> {}
             }
         }
         @Override public int getCount() { return 6; }
     };
-
-    // ── Construction ──────────────────────────────────────────────────────────
 
     public SolvationMachineBlockEntity(BlockPos pos, BlockState state) {
         super(OmniTechBlockEntities.SOLVATION_MACHINE.get(), pos, state);
@@ -123,16 +83,14 @@ public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
         return Component.translatable("container.omnitech.solvation_machine");
     }
 
-    @Override protected NonNullList<ItemStack> getItems()                { return items; }
-    @Override protected void setItems(NonNullList<ItemStack> items)      { this.items = items; }
-    @Override public    int  getContainerSize()                          { return SLOT_COUNT; }
+    @Override protected NonNullList<ItemStack> getItems() { return items; }
+    @Override protected void setItems(NonNullList<ItemStack> items) { this.items = items; }
+    @Override public int getContainerSize() { return SLOT_COUNT; }
 
     @Override
     protected AbstractContainerMenu createMenu(int containerId, Inventory inv) {
         return new SolvationMachineMenu(containerId, inv, this, dataAccess);
     }
-
-    // ── Network sync (for fluid rendering on client) ──────────────────────────
 
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
@@ -140,20 +98,14 @@ public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
     }
 
     @Override
-    public net.minecraft.nbt.CompoundTag getUpdateTag(
-            net.minecraft.core.HolderLookup.Provider registries) {
-        var reporter = new net.minecraft.util.ProblemReporter.ScopedCollector(
-                this.problemPath(),
-                com.mojang.logging.LogUtils.getLogger());
+    public net.minecraft.nbt.CompoundTag getUpdateTag(net.minecraft.core.HolderLookup.Provider registries) {
+        var reporter = new net.minecraft.util.ProblemReporter.ScopedCollector(this.problemPath(), com.mojang.logging.LogUtils.getLogger());
         try (reporter) {
-            var out = net.minecraft.world.level.storage.TagValueOutput
-                    .createWithContext(reporter, registries);
+            var out = net.minecraft.world.level.storage.TagValueOutput.createWithContext(reporter, registries);
             saveAdditional(out);
             return out.buildResult();
         }
     }
-
-    // ── IKineticReceiver ──────────────────────────────────────────────────────
 
     @Override
     public float getKfDemand() {
@@ -163,58 +115,58 @@ public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
     @Override
     public boolean addKineticForce(float amount) {
         if (currentRecipe == null || !canProcess()) return false;
-
         kineticForce += amount;
         setChanged();
-
         if (kineticForce >= requiredKineticForce) {
             process();
         }
         return true;
     }
 
-    // ── Server tick ───────────────────────────────────────────────────────────
-
-    public static void serverTick(Level level, BlockPos pos, BlockState state,
-            SolvationMachineBlockEntity be) {
-
+    public static void serverTick(Level level, BlockPos pos, BlockState state, SolvationMachineBlockEntity be) {
         boolean changed = false;
+        Direction facing = state.getValue(SolvationMachineBlock.FACING);
 
-        // ── 1. Find / update recipe ───────────────────────────────────────────
-        Optional<SolvationRecipe> found =
-                SolvationRecipeManager.findRecipe(be.items.get(SLOT_INPUT), be.inputFluid);
+        // 1. Втягивание жидкости (активное)
+        if (be.inputFluid.getAmount() < INPUT_TANK_CAPACITY) {
+            var inputSource = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(facing), facing.getOpposite());
+            if (inputSource != null) {
+                changed |= tryPullFluid(inputSource, be.inputFluidHandler);
+            }
+        }
 
+        // 2. Рецепты
+        Optional<SolvationRecipe> found = SolvationRecipeManager.findRecipe(be.items.get(SLOT_INPUT), be.inputFluid);
         if (found.isPresent()) {
             SolvationRecipe recipe = found.get();
             if (!recipe.getId().equals(be.currentRecipeId)) {
-                be.currentRecipe       = recipe;
-                be.currentRecipeId     = recipe.getId();
-                be.kineticForce        = 0f;
+                be.currentRecipe = recipe;
+                be.currentRecipeId = recipe.getId();
+                be.kineticForce = 0f;
                 be.requiredKineticForce = recipe.getRequiredKineticForce();
                 changed = true;
             }
         } else {
             if (be.currentRecipe != null) {
-                be.currentRecipe       = null;
-                be.currentRecipeId     = null;
-                be.kineticForce        = 0f;
+                be.currentRecipe = null;
+                be.currentRecipeId = null;
+                be.kineticForce = 0f;
                 be.requiredKineticForce = 0f;
                 changed = true;
             }
         }
 
-        // ── 2. LIT blockstate ─────────────────────────────────────────────────
+        // 3. Состояние LIT
         boolean shouldBeLit = be.currentRecipe != null && be.canProcess();
         if (state.getValue(SolvationMachineBlock.LIT) != shouldBeLit) {
             level.setBlock(pos, state.setValue(SolvationMachineBlock.LIT, shouldBeLit), 3);
             changed = true;
         }
 
-        // ── 3. Auto-push output fluid to the back neighbor ────────────────────
+        // 4. Выталкивание жидкости (активное)
         if (!be.outputFluid.isEmpty()) {
-            Direction back = state.getValue(SolvationMachineBlock.FACING).getOpposite();
-            var neighbor = level.getCapability(
-                    Capabilities.Fluid.BLOCK, pos.relative(back), back.getOpposite());
+            Direction back = facing.getOpposite();
+            var neighbor = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(back), back.getOpposite());
             if (neighbor != null) {
                 changed |= tryPushFluid(be.outputFluidHandler, neighbor);
             }
@@ -228,17 +180,14 @@ public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
         }
     }
 
-    // ── Processing ────────────────────────────────────────────────────────────
-
     private boolean canProcess() {
         if (currentRecipe == null) return false;
-        if (inputFluid.isEmpty()) return false;
-        if (!inputFluid.is(currentRecipe.getInputFluid().getFluid())) return false;
+        if (inputFluid.isEmpty() || !inputFluid.is(currentRecipe.getInputFluid().getFluid())) return false;
         if (inputFluid.getAmount() < currentRecipe.getInputFluidAmount()) return false;
         ItemStack slot = items.get(SLOT_INPUT);
         if (slot.isEmpty() || !slot.is(currentRecipe.getInputItem())) return false;
         if (slot.getCount() < currentRecipe.getInputItemAmount()) return false;
-        // Check output tank has space
+
         FluidStack out = currentRecipe.getOutputFluid();
         if (outputFluid.isEmpty()) return true;
         if (!outputFluid.is(out.getFluid())) return false;
@@ -247,19 +196,11 @@ public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
 
     private void process() {
         if (currentRecipe == null) return;
-
-        // Consume item
         items.get(SLOT_INPUT).shrink(currentRecipe.getInputItemAmount());
-
-        // Consume input fluid
         int toConsume = currentRecipe.getInputFluidAmount();
-        if (inputFluid.getAmount() <= toConsume) {
-            inputFluid = FluidStack.EMPTY;
-        } else {
-            inputFluid.shrink(toConsume);
-        }
+        inputFluid.shrink(toConsume);
+        if (inputFluid.getAmount() <= 0) inputFluid = FluidStack.EMPTY;
 
-        // Add output fluid
         FluidStack out = currentRecipe.getOutputFluid();
         if (!out.isEmpty()) {
             if (outputFluid.isEmpty()) {
@@ -270,21 +211,33 @@ public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
         }
 
         kineticForce = 0f;
-        currentRecipe      = null;
-        currentRecipeId    = null;
-        requiredKineticForce = 0f;
         setChanged();
     }
 
-    // ── Fluid push helper (mirrors SmelterBlockEntity) ────────────────────────
+    private static boolean tryPullFluid(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to) {
+        try (var tx = Transaction.openRoot()) {
+            for (int i = 0; i < from.size(); i++) {
+                FluidResource res = from.getResource(i);
+                if (!res.isEmpty()) {
+                    int available = Math.min(1000, (int) from.getAmountAsLong(i));
+                    int accepted = to.insert(res, available, tx);
+                    if (accepted > 0) {
+                        from.extract(res, accepted, tx);
+                        tx.commit();
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
-    private static boolean tryPushFluid(ResourceHandler<FluidResource> from,
-                                        ResourceHandler<FluidResource> to) {
-        try (var tx = net.neoforged.neoforge.transfer.transaction.Transaction.openRoot()) {
+    private static boolean tryPushFluid(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to) {
+        try (var tx = Transaction.openRoot()) {
             FluidResource res = from.getResource(0);
             if (res.isEmpty()) return false;
             int available = Math.min(1000, (int) from.getAmountAsLong(0));
-            int accepted  = to.insert(res, available, tx);
+            int accepted = to.insert(res, available, tx);
             if (accepted > 0) {
                 from.extract(res, accepted, tx);
                 tx.commit();
@@ -294,31 +247,69 @@ public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
         return false;
     }
 
-    // ── Accessors ─────────────────────────────────────────────────────────────
+    // ВАЖНО: Убедитесь, что вы зарегистрировали Capabilities в главном классе мода!
+    // Без регистрации через NeoForge Capabilities система не увидит ваши Handler-ы.
 
-    public FluidStack getInputFluid()   { return inputFluid; }
-    public FluidStack getOutputFluid()  { return outputFluid; }
-    public ContainerData getContainerData() { return dataAccess; }
+    private class InputTankHandler extends SnapshotJournal<FluidStack> implements ResourceHandler<FluidResource> {
+        @Override protected FluidStack createSnapshot() { return inputFluid.copy(); }
+        @Override protected void revertToSnapshot(FluidStack s) { inputFluid = s; }
+        @Override public int size() { return 1; }
+        @Override public FluidResource getResource(int index) { return inputFluid.isEmpty() ? FluidResource.EMPTY : FluidResource.of(inputFluid); }
+        @Override public long getAmountAsLong(int index) { return inputFluid.getAmount(); }
+        @Override public long getCapacityAsLong(int index, FluidResource res) { return INPUT_TANK_CAPACITY; }
+        @Override public boolean isValid(int index, FluidResource resource) { return true; }
+        @Override public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
+            if (resource.isEmpty() || (!inputFluid.isEmpty() && !resource.matches(inputFluid))) return 0;
+            int toFill = Math.min(amount, INPUT_TANK_CAPACITY - inputFluid.getAmount());
+            if (toFill <= 0) return 0;
+            updateSnapshots(tx);
+            inputFluid = inputFluid.isEmpty() ? resource.toStack(toFill) : inputFluid.copyWithAmount(inputFluid.getAmount() + toFill);
+            return toFill;
+        }
+        @Override public int extract(int index, FluidResource resource, int amount, TransactionContext tx) { return 0; }
+    }
 
-    // ── WorldlyContainer — items accepted from any side ───────────────────────
+    private class OutputTankHandler extends SnapshotJournal<FluidStack> implements ResourceHandler<FluidResource> {
+        @Override protected FluidStack createSnapshot() { return outputFluid.copy(); }
+        @Override protected void revertToSnapshot(FluidStack s) { outputFluid = s; }
+        @Override public int size() { return 1; }
+        @Override public FluidResource getResource(int index) { return outputFluid.isEmpty() ? FluidResource.EMPTY : FluidResource.of(outputFluid); }
+        @Override public long getAmountAsLong(int index) { return outputFluid.getAmount(); }
+        @Override public long getCapacityAsLong(int index, FluidResource res) { return OUTPUT_TANK_CAPACITY; }
+        @Override public boolean isValid(int index, FluidResource resource) { return false; }
+        @Override public int insert(int index, FluidResource resource, int amount, TransactionContext tx) { return 0; }
+        @Override public int extract(int index, FluidResource resource, int amount, TransactionContext tx) {
+            if (outputFluid.isEmpty() || !resource.matches(outputFluid)) return 0;
+            int toExt = Math.min(amount, outputFluid.getAmount());
+            updateSnapshots(tx);
+            outputFluid = outputFluid.copyWithAmount(outputFluid.getAmount() - toExt);
+            if (outputFluid.getAmount() <= 0) outputFluid = FluidStack.EMPTY;
+            return toExt;
+        }
+    }
+
+    public FluidStack getInputFluid() {
+        return this.inputFluid;
+    }
+
+    public FluidStack getOutputFluid() {
+        return this.outputFluid;
+    }
 
     private static final int[] ALL_SLOTS = { SLOT_INPUT };
-
-    @Override public int[] getSlotsForFace(Direction side)                              { return ALL_SLOTS; }
-    @Override public boolean canPlaceItem(int index, ItemStack stack)                   { return index == SLOT_INPUT; }
+    @Override public int[] getSlotsForFace(Direction side) { return ALL_SLOTS; }
+    @Override public boolean canPlaceItem(int index, ItemStack stack) { return index == SLOT_INPUT; }
     @Override public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction dir) { return index == SLOT_INPUT; }
-    @Override public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction dir)            { return false; }
-
-    // ── Persistence ───────────────────────────────────────────────────────────
+    @Override public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction dir) { return false; }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(input, items);
-        inputFluid  = input.read("InputFluid",  FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
+        inputFluid = input.read("InputFluid", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
         outputFluid = input.read("OutputFluid", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
-        kineticForce         = input.getFloatOr("KineticForce", 0f);
+        kineticForce = input.getFloatOr("KineticForce", 0f);
         requiredKineticForce = input.getFloatOr("RequiredKineticForce", 0f);
     }
 
@@ -326,100 +317,9 @@ public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         ContainerHelper.saveAllItems(output, items);
-        output.store("InputFluid",  FluidStack.OPTIONAL_CODEC, inputFluid);
+        output.store("InputFluid", FluidStack.OPTIONAL_CODEC, inputFluid);
         output.store("OutputFluid", FluidStack.OPTIONAL_CODEC, outputFluid);
-        output.putFloat("KineticForce",         kineticForce);
+        output.putFloat("KineticForce", kineticForce);
         output.putFloat("RequiredKineticForce", requiredKineticForce);
-    }
-
-    // ── Inner fluid handlers ──────────────────────────────────────────────────
-
-    /** Front face: pipes push fluid IN. Machine never pulls from it. */
-    private class InputTankHandler extends SnapshotJournal<FluidStack>
-            implements ResourceHandler<FluidResource> {
-
-        @Override protected FluidStack createSnapshot()          { return inputFluid; }
-        @Override protected void revertToSnapshot(FluidStack s)  { inputFluid = s; }
-
-        @Override public int size() { return 1; }
-
-        @Override
-        public FluidResource getResource(int index) {
-            return (index == 0 && !inputFluid.isEmpty())
-                    ? FluidResource.of(inputFluid) : FluidResource.EMPTY;
-        }
-
-        @Override public long getAmountAsLong(int index) { return index == 0 ? inputFluid.getAmount() : 0L; }
-
-        @Override
-        public long getCapacityAsLong(int index, FluidResource res) {
-            return index == 0 ? INPUT_TANK_CAPACITY : 0L;
-        }
-
-        @Override
-        public boolean isValid(int index, FluidResource resource) { return index == 0; }
-
-        @Override
-        public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
-            if (index != 0 || resource.isEmpty()) return 0;
-            // Only accept if tank is empty or holds the same fluid
-            if (!inputFluid.isEmpty() && !resource.matches(inputFluid)) return 0;
-            int space = INPUT_TANK_CAPACITY - inputFluid.getAmount();
-            if (space <= 0) return 0;
-            int toFill = Math.min(amount, space);
-            updateSnapshots(tx);
-            if (inputFluid.isEmpty()) {
-                inputFluid = resource.toStack(toFill);
-            } else {
-                inputFluid.grow(toFill);
-            }
-            return toFill;
-        }
-
-        @Override
-        public int extract(int index, FluidResource resource, int amount, TransactionContext tx) {
-            return 0; // Input-only: machine consumes internally
-        }
-    }
-
-    /** Back face: pipes pull fluid OUT. Machine fills it internally. */
-    private class OutputTankHandler extends SnapshotJournal<FluidStack>
-            implements ResourceHandler<FluidResource> {
-
-        @Override protected FluidStack createSnapshot()          { return outputFluid; }
-        @Override protected void revertToSnapshot(FluidStack s)  { outputFluid = s; }
-
-        @Override public int size() { return 1; }
-
-        @Override
-        public FluidResource getResource(int index) {
-            return (index == 0 && !outputFluid.isEmpty())
-                    ? FluidResource.of(outputFluid) : FluidResource.EMPTY;
-        }
-
-        @Override public long getAmountAsLong(int index) { return index == 0 ? outputFluid.getAmount() : 0L; }
-
-        @Override
-        public long getCapacityAsLong(int index, FluidResource res) {
-            return index == 0 ? OUTPUT_TANK_CAPACITY : 0L;
-        }
-
-        @Override public boolean isValid(int index, FluidResource resource) { return false; }
-
-        @Override
-        public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
-            return 0; // Output-only: machine fills internally
-        }
-
-        @Override
-        public int extract(int index, FluidResource resource, int amount, TransactionContext tx) {
-            if (index != 0 || outputFluid.isEmpty() || !resource.matches(outputFluid)) return 0;
-            int toExtract = Math.min(amount, outputFluid.getAmount());
-            if (toExtract <= 0) return 0;
-            updateSnapshots(tx);
-            outputFluid = outputFluid.copyWithAmount(outputFluid.getAmount() - toExtract);
-            if (outputFluid.getAmount() <= 0) outputFluid = FluidStack.EMPTY;
-            return toExtract;
-        }
     }
 }

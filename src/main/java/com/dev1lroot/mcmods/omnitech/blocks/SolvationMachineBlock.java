@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>{@code LIT} is true while the machine is actively processing.
  */
-public class SolvationMachineBlock extends BaseEntityBlock {
+public class SolvationMachineBlock extends BaseEntityBlock implements IFluidContainer {
 
     public static final MapCodec<SolvationMachineBlock> CODEC = simpleCodec(SolvationMachineBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -43,6 +43,15 @@ public class SolvationMachineBlock extends BaseEntityBlock {
         registerDefaultState(stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(LIT, false));
+    }
+
+    @Override
+    public boolean isConnectable(BlockState state, Direction face)
+    {
+        Direction facing = state.getValue(FACING);
+
+        // только перед и зад
+        return face == facing || face == facing.getOpposite();
     }
 
     @Override
