@@ -5,13 +5,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.InterpolationHandler;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -19,8 +22,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -28,14 +29,16 @@ import net.minecraft.world.phys.Vec3;
 
 public class RocketEntity extends Entity implements MenuProvider {
 
-    public static final int MAX_FUEL = 16000;
-    /** Fuel consumed per tick when thrusting (in mB). */
-    public static final int FUEL_PER_TICK = 10;
+    public static final int MAX_FUEL  = 16000;
+    public static final int FUEL_PER_TICK = 10; // mB consumed per tick while thrusting
 
     private static final EntityDataAccessor<Integer> FUEL =
             SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
 
     private final SimpleContainer inventory = new SimpleContainer(2);
+
+    /** Client-side position interpolation — mirrors how AbstractBoat smooths movement. */
+    private final InterpolationHandler interpolation = new InterpolationHandler(this, 3);
 
     public RocketEntity(EntityType<?> type, Level level) {
         super(type, level);
@@ -53,14 +56,22 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
-        return false; // Rocket is indestructible
+        return false;
+    }
+
+    @Override
+    public InterpolationHandler getInterpolation() {
+        return interpolation;
     }
 
     @Override
     public void tick() {
         super.tick();
 
-        if (!level().isClientSide()) {
+        if (level().isClientSide()) {
+            // Smooth out server position corrections
+            interpolation.interpolate();
+        } else {
             processBucketSlot();
 
             boolean thrusting = false;
@@ -75,13 +86,15 @@ public class RocketEntity extends Entity implements MenuProvider {
             Vec3 motion = getDeltaMovement();
 
             if (thrusting && fuel > 0) {
-                double newY = Math.min(motion.y + 0.18, 0.8);
-                setDeltaMovement(motion.x * 0.9, newY, motion.z * 0.9);
+                // Thrust upward, counteract gravity within the same step
+                double newY = Math.min(motion.y - 0.04 + 0.15, 0.8);
+                setDeltaMovement(motion.x, newY, motion.z);
                 fuel = Math.max(0, fuel - FUEL_PER_TICK);
                 getEntityData().set(FUEL, fuel);
             } else {
-                double newY = Math.max(motion.y - 0.08, -3.0);
-                setDeltaMovement(motion.x * 0.9, newY, motion.z * 0.9);
+                // Gravity only
+                double newY = Math.max(motion.y - 0.04, -2.0);
+                setDeltaMovement(motion.x, newY, motion.z);
             }
 
             move(MoverType.SELF, getDeltaMovement());
@@ -113,13 +126,11 @@ public class RocketEntity extends Entity implements MenuProvider {
     @Override
     public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
         if (player.getVehicle() == this) {
-            // Already riding — right-click opens GUI
             if (!level().isClientSide() && player instanceof ServerPlayer sp) {
                 sp.openMenu(this, buf -> buf.writeInt(getId()));
             }
             return InteractionResult.SUCCESS_SERVER;
         } else {
-            // Not riding — right-click mounts
             if (!level().isClientSide() && !hasPassenger(player)) {
                 player.startRiding(this);
             }
@@ -155,8 +166,6 @@ public class RocketEntity extends Entity implements MenuProvider {
     public SimpleContainer getInventory() {
         return inventory;
     }
-
-    // ── MenuProvider ─────────────────────────────────────────────────────────
 
     @Override
     public Component getDisplayName() {

@@ -20,6 +20,8 @@ public class OmniTechEntities {
                     () -> EntityType.Builder.<RocketEntity>of(RocketEntity::new, MobCategory.MISC)
                             .sized(3.0f, 3.0f)
                             .passengerAttachments(3.1f)
+                            .clientTrackingRange(10)
+                            .updateInterval(1)
                             .build(ResourceKey.create(Registries.ENTITY_TYPE,
                                     Identifier.fromNamespaceAndPath(OmniTech.MODID, "rocket"))));
 
