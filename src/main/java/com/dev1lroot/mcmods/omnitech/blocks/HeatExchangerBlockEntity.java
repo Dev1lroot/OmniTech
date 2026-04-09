@@ -63,11 +63,15 @@ public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvide
     private FluidStack inputFluid  = FluidStack.EMPTY;
     private FluidStack outputFluid = FluidStack.EMPTY;
 
+    private static final int AMBIENT_TEMPERATURE = 15;
+    private static final int DECAY_INTERVAL      = 20;
+
     /** Accumulated heat produced by this machine. */
     private int storedHeat   = 0;
     /** Recipe's maxHeat, cached here so the GUI can display it without a recipe lookup. */
     private int maxHeat      = 0;
     private int processTimer = 0;
+    private int decayTimer   = 0;
 
     private HeatExchangerRecipe currentRecipe   = null;
     private String              currentRecipeId = null;
@@ -194,7 +198,20 @@ public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvide
             changed = true;
         }
 
-        // 5. Update LIT state
+        // 5. Ambient decay — storedHeat drifts 1°C toward 15 every 20 ticks
+        if (be.storedHeat != AMBIENT_TEMPERATURE) {
+            be.decayTimer++;
+            if (be.decayTimer >= DECAY_INTERVAL) {
+                be.decayTimer = 0;
+                if (be.storedHeat > AMBIENT_TEMPERATURE) be.storedHeat--;
+                else be.storedHeat++;
+                changed = true;
+            }
+        } else {
+            be.decayTimer = 0;
+        }
+
+        // 6. Update LIT state
         boolean shouldBeLit = be.currentRecipe != null
                 && be.storedHeat > 0 && be.storedHeat < be.maxHeat;
         if (state.getValue(HeatExchangerBlock.LIT) != shouldBeLit) {
@@ -202,7 +219,7 @@ public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvide
             changed = true;
         }
 
-        // 6. Push output fluid to back-face network
+        // 7. Push output fluid to back-face network
         if (!be.outputFluid.isEmpty()) {
             Direction back = facing.getOpposite();
             var neighbor = level.getCapability(Capabilities.Fluid.BLOCK,
@@ -391,6 +408,7 @@ public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvide
         storedHeat   = input.getIntOr("StoredHeat",   0);
         maxHeat      = input.getIntOr("MaxHeat",       0);
         processTimer = input.getIntOr("ProcessTimer",  0);
+        decayTimer   = input.getIntOr("DecayTimer",    0);
     }
 
     @Override
@@ -401,5 +419,6 @@ public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvide
         output.putInt("StoredHeat",   storedHeat);
         output.putInt("MaxHeat",      maxHeat);
         output.putInt("ProcessTimer", processTimer);
+        output.putInt("DecayTimer",   decayTimer);
     }
 }

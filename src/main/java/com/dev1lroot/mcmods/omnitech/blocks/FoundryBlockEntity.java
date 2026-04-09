@@ -49,6 +49,7 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
     public static final int INPUT_TANK_CAPACITY = 16_000;
     private static final int DEFAULT_PROCESS_TIME = 200;
     private static final int MAX_HEAT             = 3000;
+    private static final int AMBIENT_TEMPERATURE  = 15;
     private static final int HEAT_LOSS_INTERVAL   = 20;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
@@ -152,12 +153,13 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
     public static void serverTick(Level level, BlockPos pos, BlockState state, FoundryBlockEntity be) {
         boolean changed = false;
 
-        // Natural heat dissipation
-        if (be.temperature > 0) {
+        // Natural ambient drift — temperature moves 1°C toward 15 every 20 ticks
+        if (be.temperature != AMBIENT_TEMPERATURE) {
             be.heatLossTimer++;
             if (be.heatLossTimer >= HEAT_LOSS_INTERVAL) {
                 be.heatLossTimer = 0;
-                be.temperature--;
+                if (be.temperature > AMBIENT_TEMPERATURE) be.temperature--;
+                else be.temperature++;
                 changed = true;
             }
         } else {

@@ -176,12 +176,13 @@ public class SmelterBlockEntity extends BaseContainerBlockEntity implements IHea
     public static void serverTick(Level level, BlockPos pos, BlockState state, SmelterBlockEntity be) {
         boolean changed = false;
 
-        // Natural heat dissipation
-        if (be.temperature > 0) {
+        // Natural ambient drift — temperature moves 1°C toward 15 every 20 ticks
+        if (be.temperature != AMBIENT_TEMPERATURE) {
             be.heatLossTimer++;
             if (be.heatLossTimer >= HEAT_LOSS_INTERVAL) {
                 be.heatLossTimer = 0;
-                be.temperature--;
+                if (be.temperature > AMBIENT_TEMPERATURE) be.temperature--;
+                else be.temperature++;
                 changed = true;
             }
         } else {

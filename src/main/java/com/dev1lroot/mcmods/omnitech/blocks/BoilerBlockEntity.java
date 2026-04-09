@@ -56,7 +56,11 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
 
+    private static final int AMBIENT_TEMPERATURE = 15;
+    private static final int DECAY_INTERVAL      = 20;
+
     private int storedHeat    = 0;
+    private int decayTimer    = 0;
     private int processProgress = 0;
     private int processTotalTime = 20;
 
@@ -227,7 +231,20 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
             dirty = true;
         }
 
-        // 4. Push steam upward only
+        // 4. Ambient decay — storedHeat drifts 1°C toward 15 every 20 ticks
+        if (be.storedHeat != AMBIENT_TEMPERATURE) {
+            be.decayTimer++;
+            if (be.decayTimer >= DECAY_INTERVAL) {
+                be.decayTimer = 0;
+                if (be.storedHeat > AMBIENT_TEMPERATURE) be.storedHeat--;
+                else be.storedHeat++;
+                dirty = true;
+            }
+        } else {
+            be.decayTimer = 0;
+        }
+
+        // 6. Push steam upward only
         if (!be.steamTank.isEmpty()) {
             ResourceHandler<FluidResource> output = level.getCapability(
                     Capabilities.Fluid.BLOCK, pos.above(), Direction.DOWN);
@@ -235,10 +252,14 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
                 dirty |= tryPushFluid(be.steamHandler, output);
         }
 
-        // 5. Update LIT blockstate — active for both hot and cold recipes
+        // 7. Update LIT and THERMAL blockstates
         boolean isLit = be.currentRecipe != null && be.canProcess();
-        if (state.getValue(BoilerBlock.LIT) != isLit) {
-            level.setBlock(pos, state.setValue(BoilerBlock.LIT, isLit), 3);
+        ThermalState thermal = ThermalState.of(be.storedHeat);
+        if (state.getValue(BoilerBlock.LIT) != isLit
+                || state.getValue(BoilerBlock.THERMAL) != thermal) {
+            level.setBlock(pos, state
+                    .setValue(BoilerBlock.LIT, isLit)
+                    .setValue(BoilerBlock.THERMAL, thermal), 3);
             dirty = true;
         }
 
@@ -378,7 +399,8 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
         super.loadAdditional(input);
         items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(input, items);
-        storedHeat     = input.getIntOr("StoredHeat", 0);
+        storedHeat      = input.getIntOr("StoredHeat", 0);
+        decayTimer      = input.getIntOr("DecayTimer", 0);
         processProgress = input.getIntOr("ProcessProgress", 0);
         processTotalTime = input.getIntOr("ProcessTotalTime", 20);
         waterTank = input.read("WaterTank", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
@@ -390,6 +412,7 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
         super.saveAdditional(output);
         ContainerHelper.saveAllItems(output, items);
         output.putInt("StoredHeat",      storedHeat);
+        output.putInt("DecayTimer",      decayTimer);
         output.putInt("ProcessProgress", processProgress);
         output.putInt("ProcessTotalTime", processTotalTime);
         output.store("WaterTank", FluidStack.OPTIONAL_CODEC, waterTank);

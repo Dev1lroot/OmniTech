@@ -1,6 +1,10 @@
 {
   "variants": {
-    "lit=false": { "model": "omnitech:block/boiler" },
-    "lit=true": { "model": "omnitech:block/boiler_on" }
+    "lit=false,thermal_state=cool": { "model": "omnitech:block/boiler_cool" },
+    "lit=false,thermal_state=idle": { "model": "omnitech:block/boiler" },
+    "lit=false,thermal_state=hot":  { "model": "omnitech:block/boiler_on" },
+    "lit=true,thermal_state=cool":  { "model": "omnitech:block/boiler_cool" },
+    "lit=true,thermal_state=idle":  { "model": "omnitech:block/boiler" },
+    "lit=true,thermal_state=hot":   { "model": "omnitech:block/boiler_on" }
   }
 }

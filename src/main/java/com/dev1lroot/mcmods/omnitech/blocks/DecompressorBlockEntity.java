@@ -56,9 +56,12 @@ public class DecompressorBlockEntity extends BlockEntity implements MenuProvider
     private FluidStack inputFluid  = FluidStack.EMPTY;
     private FluidStack outputFluid = FluidStack.EMPTY;
 
+    private static final int DECAY_INTERVAL = 20;
+
     private int storedCold   = 0;
     private int maxCold      = 0;
     private int processTimer = 0;
+    private int decayTimer   = 0;
 
     private DecompressorRecipe currentRecipe   = null;
     private String             currentRecipeId = null;
@@ -173,7 +176,19 @@ public class DecompressorBlockEntity extends BlockEntity implements MenuProvider
             changed = true;
         }
 
-        // 5. Update LIT state
+        // 5. Ambient decay — storedCold drifts toward 0 (cold dissipates) every 20 ticks
+        if (be.storedCold > 0) {
+            be.decayTimer++;
+            if (be.decayTimer >= DECAY_INTERVAL) {
+                be.decayTimer = 0;
+                be.storedCold--;
+                changed = true;
+            }
+        } else {
+            be.decayTimer = 0;
+        }
+
+        // 6. Update LIT state
         boolean shouldBeLit = be.currentRecipe != null
                 && be.storedCold > 0 && be.storedCold < be.maxCold;
         if (state.getValue(DecompressorBlock.LIT) != shouldBeLit) {
@@ -181,7 +196,7 @@ public class DecompressorBlockEntity extends BlockEntity implements MenuProvider
             changed = true;
         }
 
-        // 6. Push output fluid to back-face network
+        // 7. Push output fluid to back-face network
         if (!be.outputFluid.isEmpty()) {
             Direction back = facing.getOpposite();
             var neighbor = level.getCapability(Capabilities.Fluid.BLOCK,
@@ -366,6 +381,7 @@ public class DecompressorBlockEntity extends BlockEntity implements MenuProvider
         storedCold   = input.getIntOr("StoredCold",   0);
         maxCold      = input.getIntOr("MaxCold",       0);
         processTimer = input.getIntOr("ProcessTimer",  0);
+        decayTimer   = input.getIntOr("DecayTimer",    0);
     }
 
     @Override
@@ -376,5 +392,6 @@ public class DecompressorBlockEntity extends BlockEntity implements MenuProvider
         output.putInt("StoredCold",   storedCold);
         output.putInt("MaxCold",      maxCold);
         output.putInt("ProcessTimer", processTimer);
+        output.putInt("DecayTimer",   decayTimer);
     }
 }

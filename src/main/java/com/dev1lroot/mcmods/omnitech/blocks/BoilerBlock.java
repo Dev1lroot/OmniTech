@@ -21,16 +21,21 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 public class BoilerBlock extends BaseEntityBlock implements IFluidContainer {
     public static final MapCodec<BoilerBlock> CODEC = simpleCodec(BoilerBlock::new);
-    public static final BooleanProperty LIT = BlockStateProperties.LIT;
+    public static final BooleanProperty LIT    = BlockStateProperties.LIT;
+    public static final EnumProperty<ThermalState> THERMAL =
+            EnumProperty.create("thermal_state", ThermalState.class);
 
     public BoilerBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(LIT, false));
+        registerDefaultState(stateDefinition.any()
+                .setValue(LIT, false)
+                .setValue(THERMAL, ThermalState.IDLE));
     }
 
     @Override
@@ -57,7 +62,7 @@ public class BoilerBlock extends BaseEntityBlock implements IFluidContainer {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
-        builder.add(LIT);
+        builder.add(LIT, THERMAL);
     }
 
     @Override
