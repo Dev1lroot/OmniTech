@@ -70,6 +70,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> FLUID_COLLECTOR;
     public static final DeferredBlock<Block> HEAT_EXCHANGER;
     public static final DeferredBlock<Block> DECOMPRESSOR;
+    public static final DeferredBlock<Block> FRACTIONAL_DISTILLER;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -184,6 +185,9 @@ public class OmniTechBlocks {
                         .sound(SoundType.METAL)));
         DECOMPRESSOR = register("decompressor",
                 p -> new DecompressorBlock(p.mapColor(MapColor.METAL).strength(3.5F)
+                        .sound(SoundType.METAL)));
+        FRACTIONAL_DISTILLER = register("fractional_distiller",
+                p -> new FractionalDistillerBlock(p.mapColor(MapColor.METAL).strength(3.5F)
                         .sound(SoundType.METAL)));
     }
 

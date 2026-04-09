@@ -15,6 +15,7 @@ import com.dev1lroot.mcmods.omnitech.gui.SmelterMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SolarPanelMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectrolysisMachineMenu;
 import com.dev1lroot.mcmods.omnitech.gui.DecompressorMenu;
+import com.dev1lroot.mcmods.omnitech.gui.FractionalDistillerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.HeatExchangerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.RotaryCompressorMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SolvationMachineMenu;
@@ -111,6 +112,10 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<DecompressorMenu>> DECOMPRESSOR =
             REGISTRY.register("decompressor",
                     () -> IMenuTypeExtension.create(DecompressorMenu::new));
+
+    public static final Supplier<MenuType<FractionalDistillerMenu>> FRACTIONAL_DISTILLER =
+            REGISTRY.register("fractional_distiller",
+                    () -> IMenuTypeExtension.create(FractionalDistillerMenu::new));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

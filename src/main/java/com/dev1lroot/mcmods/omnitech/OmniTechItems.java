@@ -95,6 +95,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> DECOMPRESSOR_ITEM = REGISTRY.registerSimpleBlockItem(
             "decompressor", OmniTechBlocks.DECOMPRESSOR);
 
+    public static final DeferredItem<BlockItem> FRACTIONAL_DISTILLER_ITEM = REGISTRY.registerSimpleBlockItem(
+            "fractional_distiller", OmniTechBlocks.FRACTIONAL_DISTILLER);
+
     // Vanilla Material Additions
     public static final DeferredItem<Item> GRANITE_DUST = REGISTRY.registerSimpleItem(
             "granite_dust", p -> p);

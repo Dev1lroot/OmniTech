@@ -15,6 +15,7 @@ import com.dev1lroot.mcmods.omnitech.gui.SmelterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.SolarPanelScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectrolysisMachineScreen;
 import com.dev1lroot.mcmods.omnitech.gui.DecompressorScreen;
+import com.dev1lroot.mcmods.omnitech.gui.FractionalDistillerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.HeatExchangerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.RotaryCompressorScreen;
 import com.dev1lroot.mcmods.omnitech.gui.SolvationMachineScreen;
@@ -83,6 +84,7 @@ public class OmniTechGUI {
                         output.accept(OmniTechItems.FLUID_COLLECTOR_ITEM.get());
                         output.accept(OmniTechItems.HEAT_EXCHANGER_ITEM.get());
                         output.accept(OmniTechItems.DECOMPRESSOR_ITEM.get());
+                        output.accept(OmniTechItems.FRACTIONAL_DISTILLER_ITEM.get());
                     }).build());
 
     public static void register(IEventBus modEventBus) {
@@ -112,6 +114,7 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.ROTARY_COMPRESSOR.get(), RotaryCompressorScreen::new);
         event.register(OmniTechMenuTypes.HEAT_EXCHANGER.get(), HeatExchangerScreen::new);
         event.register(OmniTechMenuTypes.DECOMPRESSOR.get(), DecompressorScreen::new);
+        event.register(OmniTechMenuTypes.FRACTIONAL_DISTILLER.get(), FractionalDistillerScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)

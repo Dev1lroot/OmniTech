@@ -1,0 +1,10 @@
+{
+  "requiredTemperature": -195,
+  "productionTime": 100,
+  "input":   { "fluid": "omnitech:liquefied_air", "amount": 1000 },
+  "outputs": [
+    { "fluid": "omnitech:nitrogen", "amount": 700 },
+    { "fluid": "omnitech:oxygen",   "amount": 200 },
+    { "fluid": "omnitech:argon",    "amount": 100 }
+  ]
+}

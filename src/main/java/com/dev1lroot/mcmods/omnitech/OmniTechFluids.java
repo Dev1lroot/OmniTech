@@ -31,6 +31,7 @@ public class OmniTechFluids
     public static final FluidObject SODIUM_HYDROXIDE = new FluidObject("sodium_hydroxide", gasProps());
     public static final FluidObject MOLTEN_BRASS = new FluidObject("molten_brass",
             FluidType.Properties.create().density(8900).viscosity(3000).temperature(1200));
+    public static final FluidObject ARGON = new FluidObject("argon", gasProps());
 
     public static final FluidObject AIR = new FluidObject("air", gasProps());
     public static final FluidObject COMPRESSED_HEATED_AIR = new FluidObject("compressed_heated_air", gasProps());

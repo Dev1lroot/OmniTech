@@ -50,6 +50,9 @@ import com.dev1lroot.mcmods.omnitech.recipes.HeatExchangerRecipeManager;
 import com.dev1lroot.mcmods.omnitech.blocks.DecompressorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.DecompressorBlock;
 import com.dev1lroot.mcmods.omnitech.recipes.DecompressorRecipeManager;
+import com.dev1lroot.mcmods.omnitech.blocks.FractionalDistillerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.FractionalDistillerBlock;
+import com.dev1lroot.mcmods.omnitech.recipes.FractionalDistillationRecipeManager;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -218,6 +221,25 @@ public class OmniTech {
                 }
         );
 
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.FRACTIONAL_DISTILLER.get(),
+                (be, side) -> {
+                    if (side == null) return null;
+                    var state = be.getLevel() != null
+                            ? be.getLevel().getBlockState(be.getBlockPos())
+                            : null;
+                    if (state == null) return null;
+                    FractionalDistillerBlockEntity fbe = (FractionalDistillerBlockEntity) be;
+                    Direction facing = state.getValue(FractionalDistillerBlock.FACING);
+                    // Front face: input, only on the bottom (master) block
+                    if (side == facing && fbe.isBottomBlock()) return fbe.inputFluidHandler;
+                    // Back face: output on every segment
+                    if (side == facing.getOpposite()) return fbe.outputFluidHandler;
+                    return null;
+                }
+        );
+
         // Electric Capacitor exposes the NeoForge EnergyHandler capability for
         // interoperability with other mods using NeoForge's energy system.
         event.registerBlockEntity(
@@ -351,6 +373,15 @@ public class OmniTech {
                     PreparationBarrier barrier, Executor reloadExecutor) {
                 return CompletableFuture.runAsync(() -> {
                     DecompressorRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "fractional_distiller_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    FractionalDistillationRecipeManager.loadRecipes(sharedState.resourceManager());
                 }, taskExecutor).thenCompose(barrier::wait);
             }
         });

@@ -148,6 +148,11 @@ public class OmniTechBlockEntities {
                     () -> new BlockEntityType<>(DecompressorBlockEntity::new,
                             OmniTechBlocks.DECOMPRESSOR.get()));
 
+    public static final Supplier<BlockEntityType<FractionalDistillerBlockEntity>> FRACTIONAL_DISTILLER =
+            REGISTRY.register("fractional_distiller",
+                    () -> new BlockEntityType<>(FractionalDistillerBlockEntity::new,
+                            OmniTechBlocks.FRACTIONAL_DISTILLER.get()));
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }
