@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "omnitech:item/kf_pipe"
+    "model": "omnitech:block/solvation_machine"
   }
 }

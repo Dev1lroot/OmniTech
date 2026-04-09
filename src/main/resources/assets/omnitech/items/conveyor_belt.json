@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "omnitech:block/conveyor_belt"
+    "model": "omnitech:item/conveyor_belt"
   }
 }

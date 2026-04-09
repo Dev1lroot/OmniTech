@@ -265,5 +265,20 @@
   "item.omnitech.steel_cog": "Steel Cog",
   "item.omnitech.steel_wire": "Steel Wire",
   "item.omnitech.steel_coil": "Steel Coil",
-  "item.omnitech.steel_rod": "Steel Rod"
+  "item.omnitech.steel_rod": "Steel Rod",
+  "block.omnitech.electrolysis_machine": "Electrolyser",
+  "fluid.omnitech.brine": "Brine",
+  "fluid.omnitech.hydrogen": "Hydrogen",
+  "fluid.omnitech.hydrazine": "Hydrazine",
+  "fluid.omnitech.chlorine": "Chlorine",
+  "fluid.omnitech.chloramine": "Chloramine",
+  "fluid.omnitech.sodium_hydroxide": "Sodium Hydroxide",
+  "fluid.omnitech.air": "Air",
+  "fluid.omnitech.compressed_air": "Compressed Air",
+  "fluid.omnitech.compressed_heated_air": "Compressed Heated Air",
+  "fluid.omnitech.oxygen": "Oxygen",
+  "fluid.omnitech.steam": "Steam",
+  "fluid.omnitech.distilled_water": "Distilled Water",
+  "fluid.omnitech.nitrogen": "Nitrogen",
+  "fluid.omnitech.liquefied_air": "Liquefied Air"
 }
