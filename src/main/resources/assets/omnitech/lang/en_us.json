@@ -280,5 +280,5 @@
   "fluid.omnitech.steam": "Steam",
   "fluid.omnitech.distilled_water": "Distilled Water",
   "fluid.omnitech.nitrogen": "Nitrogen",
-  "fluid.omnitech.liquefied_air": "Liquefied Air"
+  "fluid.omnitech.liquefied_air": "Liquefied Air",\n  "key.omnitech.open_rocket_gui": "Open Rocket GUI",\n  "key.categories.omnitech": "OmniTech",\n  "entity.omnitech.rocket": "Rocket",\n  "container.omnitech.rocket": "Rocket"
 }

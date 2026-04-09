@@ -19,6 +19,7 @@ import com.dev1lroot.mcmods.omnitech.gui.FractionalDistillerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.HeatExchangerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.RotaryCompressorMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SolvationMachineMenu;
+import com.dev1lroot.mcmods.omnitech.gui.RocketMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SorterMenu;
 import com.dev1lroot.mcmods.omnitech.gui.StirlingEngineMenu;
 import net.minecraft.core.registries.Registries;
@@ -116,6 +117,10 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<FractionalDistillerMenu>> FRACTIONAL_DISTILLER =
             REGISTRY.register("fractional_distiller",
                     () -> IMenuTypeExtension.create(FractionalDistillerMenu::new));
+
+    public static final Supplier<MenuType<RocketMenu>> ROCKET =
+            REGISTRY.register("rocket",
+                    () -> IMenuTypeExtension.create(RocketMenu::new));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

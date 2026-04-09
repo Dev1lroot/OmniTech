@@ -19,6 +19,7 @@ import com.dev1lroot.mcmods.omnitech.gui.FractionalDistillerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.HeatExchangerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.RotaryCompressorScreen;
 import com.dev1lroot.mcmods.omnitech.gui.SolvationMachineScreen;
+import com.dev1lroot.mcmods.omnitech.gui.RocketScreen;
 import com.dev1lroot.mcmods.omnitech.gui.SorterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.StirlingEngineScreen;
 import net.minecraft.core.registries.Registries;
@@ -115,6 +116,7 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.HEAT_EXCHANGER.get(), HeatExchangerScreen::new);
         event.register(OmniTechMenuTypes.DECOMPRESSOR.get(), DecompressorScreen::new);
         event.register(OmniTechMenuTypes.FRACTIONAL_DISTILLER.get(), FractionalDistillerScreen::new);
+        event.register(OmniTechMenuTypes.ROCKET.get(), RocketScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)

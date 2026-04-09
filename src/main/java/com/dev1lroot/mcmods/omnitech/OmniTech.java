@@ -53,6 +53,8 @@ import com.dev1lroot.mcmods.omnitech.recipes.DecompressorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.blocks.FractionalDistillerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.FractionalDistillerBlock;
 import com.dev1lroot.mcmods.omnitech.recipes.FractionalDistillationRecipeManager;
+import com.dev1lroot.mcmods.omnitech.network.OpenRocketGuiPacket;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -64,12 +66,14 @@ public class OmniTech {
     public OmniTech(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::registerCapabilities);
+        modEventBus.addListener(this::registerPayloads);
         modEventBus.addListener(OmniTechDatagen::gatherData);
 
         // Load material sets before registries fire so deferred entries are queued
         OmniTechMaterials.init();
 
         OmniTechFluids.register(modEventBus); // Добавьте это
+        OmniTechEntities.register(modEventBus);
         OmniTechBlocks.REGISTRY.register(modEventBus);
         OmniTechBlockEntities.REGISTRY.register(modEventBus);
         OmniTechItems.REGISTRY.register(modEventBus);
@@ -247,6 +251,13 @@ public class OmniTech {
                 OmniTechBlockEntities.ELECTRIC_CAPACITOR.get(),
                 (be, side) -> be.energyHandler
         );
+    }
+
+    private void registerPayloads(RegisterPayloadHandlersEvent event) {
+        event.registrar("1").playToServer(
+                OpenRocketGuiPacket.TYPE,
+                OpenRocketGuiPacket.CODEC,
+                OpenRocketGuiPacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

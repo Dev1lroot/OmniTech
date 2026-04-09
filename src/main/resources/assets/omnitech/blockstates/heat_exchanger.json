@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "omnitech:block/heat_exchanger" }
+  }
+}
