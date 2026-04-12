@@ -65,9 +65,8 @@ import java.util.Optional;
  *   <li>12 – OUTPUT_TANK_CAPACITY</li>
  * </ul>
  */
-public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity
-        implements IElectricReceiver, WorldlyContainer {
-
+public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity implements IElectricReceiver, WorldlyContainer
+{
     public static final int SLOT_ANODE   = 0;
     public static final int SLOT_CATHODE = 1;
     public static final int SLOT_COUNT   = 2;

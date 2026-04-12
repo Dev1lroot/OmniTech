@@ -38,8 +38,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ElectrolysisMachineBlock extends BaseEntityBlock implements IFluidContainer {
 
-    public static final MapCodec<ElectrolysisMachineBlock> CODEC =
-            simpleCodec(ElectrolysisMachineBlock::new);
+    public static final MapCodec<ElectrolysisMachineBlock> CODEC = simpleCodec(ElectrolysisMachineBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 

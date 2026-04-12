@@ -1,5 +1,10 @@
 {
   "variants": {
-    "": { "model": "omnitech:block/fluid_collector" }
+    "facing=north": { "model": "omnitech:block/fluid_collector" },
+    "facing=up": { "model": "omnitech:block/fluid_collector", "x": 90 },
+    "facing=down": { "model": "omnitech:block/fluid_collector", "x": 270 },
+    "facing=south": { "model": "omnitech:block/fluid_collector", "y": 180 },
+    "facing=west": { "model": "omnitech:block/fluid_collector", "y": 270 },
+    "facing=east": { "model": "omnitech:block/fluid_collector", "y": 90 }
   }
 }
