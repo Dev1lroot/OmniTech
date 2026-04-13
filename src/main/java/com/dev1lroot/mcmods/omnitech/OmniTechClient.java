@@ -11,6 +11,7 @@ import com.dev1lroot.mcmods.omnitech.client.MoonSkyboxRenderer;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntity;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntityRenderer;
 import com.dev1lroot.mcmods.omnitech.models.RocketModel;
+import com.dev1lroot.mcmods.omnitech.gui.SpaceNavigationScreen;
 import com.dev1lroot.mcmods.omnitech.network.OpenRocketGuiPacket;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -40,6 +41,13 @@ import org.lwjgl.glfw.GLFW;
 public class OmniTechClient
 {
     public static KeyMapping OPEN_ROCKET_GUI;
+
+    /**
+     * Prevents the space navigation screen from reopening every tick once
+     * the player has climbed to Y >= 400.  Resets when they drop below 400
+     * or dismount.
+     */
+    private static boolean spaceNavTriggered = false;
 
     public OmniTechClient(ModContainer container, IEventBus modEventBus) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
@@ -101,11 +109,31 @@ public class OmniTechClient
 
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.screen != null) return;
-        if (!(mc.player.getVehicle() instanceof RocketEntity)) return;
+        if (mc.player == null) return;
 
-        while (OPEN_ROCKET_GUI != null && OPEN_ROCKET_GUI.consumeClick()) {
-            ClientPacketDistributor.sendToServer(new OpenRocketGuiPacket());
+        boolean ridingRocket = mc.player.getVehicle() instanceof RocketEntity;
+
+        if (!ridingRocket) {
+            spaceNavTriggered = false;
+            return;
+        }
+
+        // ── Space-navigation threshold ──────────────────────────────────────
+        if (mc.player.getY() >= 400.0) {
+            if (!spaceNavTriggered && mc.screen == null) {
+                spaceNavTriggered = true;
+                mc.setScreen(new SpaceNavigationScreen());
+            }
+        } else {
+            // Below 400 – reset the trigger so it fires again next ascent
+            spaceNavTriggered = false;
+
+            // Rocket inventory key (only below space altitude)
+            if (mc.screen == null) {
+                while (OPEN_ROCKET_GUI != null && OPEN_ROCKET_GUI.consumeClick()) {
+                    ClientPacketDistributor.sendToServer(new OpenRocketGuiPacket());
+                }
+            }
         }
     }
 
