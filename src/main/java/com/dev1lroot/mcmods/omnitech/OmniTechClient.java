@@ -7,6 +7,7 @@ import com.dev1lroot.mcmods.omnitech.client.FluidPipeRenderer;
 import com.dev1lroot.mcmods.omnitech.client.FluidTankRenderer;
 import com.dev1lroot.mcmods.omnitech.client.KineticPipeRenderer;
 import com.dev1lroot.mcmods.omnitech.client.ValveRenderer;
+import com.dev1lroot.mcmods.omnitech.client.MoonSkyboxRenderer;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntity;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntityRenderer;
 import com.dev1lroot.mcmods.omnitech.models.RocketModel;
@@ -25,6 +26,8 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent;
+import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
@@ -44,6 +47,8 @@ public class OmniTechClient
         modEventBus.addListener(this::registerScreens);
         modEventBus.addListener(this::registerBlockEntityRenderers);
         modEventBus.addListener(this::registerLayerDefinitions);
+        modEventBus.addListener(this::registerCustomEnvironmentRenderers);
+        modEventBus.addListener(this::registerRenderPipelines);
         modEventBus.addListener(this::registerKeys);
         modEventBus.register(OmniTechClient.class);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onClientTick);
@@ -70,6 +75,17 @@ public class OmniTechClient
 
     void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(RocketModel.LAYER_LOCATION, RocketModel::createBodyLayer);
+    }
+
+    void registerCustomEnvironmentRenderers(RegisterCustomEnvironmentEffectRendererEvent event) {
+        event.registerSkyboxRenderer(
+                Identifier.fromNamespaceAndPath(OmniTech.MODID, "moon_sky"),
+                new MoonSkyboxRenderer()
+        );
+    }
+
+    void registerRenderPipelines(RegisterRenderPipelinesEvent event) {
+        event.registerPipeline(MoonSkyboxRenderer.EARTH_PIPELINE);
     }
 
     void registerKeys(RegisterKeyMappingsEvent event) {

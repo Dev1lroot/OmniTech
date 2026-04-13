@@ -181,6 +181,14 @@ public class OmniTechMaterials {
             new String[]{ }
     );
 
+    public static final MaterialSet REGOLITH = MaterialSet.create(
+            "regolith",
+            OmniTechItems.REGISTRY,
+            new String[]{ "%_dust", "%_mote" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "surface_%", "stratified_%", "paleo%", "mega%" }
+    );
+
     public static final MaterialSet SKUTTERUDITE = MaterialSet.create(
             "skutterudite",
             OmniTechItems.REGISTRY,

@@ -54,6 +54,8 @@ import com.dev1lroot.mcmods.omnitech.blocks.FractionalDistillerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.FractionalDistillerBlock;
 import com.dev1lroot.mcmods.omnitech.recipes.FractionalDistillationRecipeManager;
 import com.dev1lroot.mcmods.omnitech.network.OpenRocketGuiPacket;
+import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechCarvers;
+import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechFeatures;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -74,6 +76,8 @@ public class OmniTech {
 
         OmniTechFluids.register(modEventBus); // Добавьте это
         OmniTechEntities.register(modEventBus);
+        OmniTechFeatures.register(modEventBus);
+        OmniTechCarvers.register(modEventBus);
         OmniTechBlocks.REGISTRY.register(modEventBus);
         OmniTechBlockEntities.REGISTRY.register(modEventBus);
         OmniTechItems.REGISTRY.register(modEventBus);
