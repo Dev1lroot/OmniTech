@@ -15,6 +15,9 @@ public class CelestialBody {
     public int fuel_cost;
     /** Orbit radius in scene units at zoom=1.0 (pixels). Default 120 if omitted. */
     public int orbital_radius = 120;
+    /** Optional background texture shown when this planet's moons are listed. */
+    public String background;
+
     /** Child moons (empty list for moons themselves). */
     public List<CelestialBody> moons = List.of();
 

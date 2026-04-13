@@ -12,6 +12,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.util.ArrayList;
@@ -27,6 +28,10 @@ import java.util.List;
  * body selects it as the travel destination; if that body has children
  * (e.g. a planet with moons) an "Explore moons" button appears so the
  * player can optionally drill deeper without losing the planet selection.
+ *
+ * Bodies and the central body render using their texture field from space_map.json
+ * (falling back to a colored disc if the texture is null).  Background textures
+ * per level are also drawn from the background field.  All body sizes scale with zoom.
  */
 public class SpaceNavigationScreen extends Screen {
 
@@ -53,19 +58,19 @@ public class SpaceNavigationScreen extends Screen {
     private final List<BodyPos> bodyPositions = new ArrayList<>();
 
     // ── Layout ───────────────────────────────────────────────────────────────
-    private static final int TOP_H        = 50;   // header area height
-    private static final int BOTTOM_H     = 64;   // bottom bar height
-    private static final int CENTER_R     = 40;   // central body radius
-    private static final int ORBIT_R      = 18;   // orbiting body radius
-    private static final int HIT_R        = 24;   // click detection radius
+    private static final int TOP_H    = 50;  // header area height
+    private static final int BOTTOM_H = 64;  // bottom bar height
+    private static final int CENTER_R = 40;  // central body base radius
+    private static final int ORBIT_R  = 18;  // orbiting body base radius
+    private static final int HIT_R    = 24;  // minimum click detection radius
 
     /** Base orbital speed for a body whose orbital_radius == SPEED_REF_R. */
-    private static final double ORBIT_SPEED   = (2 * Math.PI) / 30_000.0; // rad/ms
+    private static final double ORBIT_SPEED = (2 * Math.PI) / 30_000.0; // rad/ms
     /** Reference radius for speed normalisation (Kepler-like: inner = faster). */
-    private static final int    SPEED_REF_R   = 200;
-    private static final double ZOOM_MIN      = 0.15;
-    private static final double ZOOM_MAX      = 4.0;
-    private static final double ZOOM_STEP     = 0.12; // fraction per scroll tick
+    private static final int    SPEED_REF_R = 200;
+    private static final double ZOOM_MIN    = 0.15;
+    private static final double ZOOM_MAX    = 4.0;
+    private static final double ZOOM_STEP   = 0.12; // fraction per scroll tick
 
     // ── Zoom ─────────────────────────────────────────────────────────────────
     private double zoom = 1.0;
@@ -212,8 +217,16 @@ public class SpaceNavigationScreen extends Screen {
 
     @Override
     public void extractBackground(GuiGraphicsExtractor g, int mx, int my, float a) {
-        g.fill(0, 0, width, height, C_BG);
-        drawStarfield(g);
+        Identifier bgTex = getBackgroundTexture();
+        if (bgTex != null) {
+            // Stretch background texture across the full screen
+            g.blit(bgTex, 0, 0, width, height, 0f, 1f, 0f, 1f);
+            // Overlay a subtle darkening so text stays readable
+            g.fill(0, 0, width, height, 0x88010108);
+        } else {
+            g.fill(0, 0, width, height, C_BG);
+            drawStarfield(g);
+        }
     }
 
     @Override
@@ -230,55 +243,63 @@ public class SpaceNavigationScreen extends Screen {
         int cx = width  / 2;
         int cy = TOP_H  + (height - TOP_H - BOTTOM_H) / 2;
 
-        // Central body (no orbit ring for it)
+        // Central body (no orbit ring)
         drawCentralBody(g, cx, cy);
 
-        // Orbiting bodies — each on its own ring, animated with Kepler-like speed
+        // Orbiting bodies
         long now = System.currentTimeMillis();
         int n = items.size();
 
         for (int i = 0; i < n; i++) {
             BodyItem item  = items.get(i);
-            int baseRadius = orbitalRadius(item);                        // JSON value
-            int pixRadius  = (int)(baseRadius * zoom);                  // scaled by zoom
+            int baseRadius = orbitalRadius(item);
+            int pixRadius  = (int)(baseRadius * zoom);
 
-            // Per-body orbit ring
+            // Orbit ring
             drawCircleOutline(g, cx, cy, pixRadius, C_RING);
 
-            // Angular speed: inner bodies orbit faster (Kepler proportional to r^-1.5)
+            // Kepler angular speed: inner bodies orbit faster
             double speed = ORBIT_SPEED * Math.pow((double) SPEED_REF_R / Math.max(baseRadius, 1), 1.5);
-            // Distribute starting angles so bodies don't start on top of each other
             double angle = -Math.PI / 2.0 + now * speed + i * (2 * Math.PI / Math.max(n, 1));
 
             int bx = cx + (int)(pixRadius * Math.cos(angle));
             int by = cy + (int)(pixRadius * Math.sin(angle));
 
-            bodyPositions.add(new BodyPos(item, bx, by));
+            // Body draw radius scales with zoom (capped so it can't get enormous)
+            int bodyR  = Math.max(4, (int)(ORBIT_R * Math.min(zoom, 2.5)));
+            int hitRad = Math.max(HIT_R, bodyR + 4);
+            bodyPositions.add(new BodyPos(item, bx, by, hitRad));
 
-            boolean isHov = distSq(mx, my, bx, by) <= (double) HIT_R * HIT_R;
+            boolean isHov = distSq(mx, my, bx, by) <= (double) hitRad * hitRad;
             boolean isSel = item.data == destination;
             boolean isCur = isCurrentLocation(item);
 
             // Glow behind selected/hovered body
             if (isSel) {
-                fillCircle(g, bx, by, ORBIT_R + 7, 0x4040EE88);
-                fillCircle(g, bx, by, ORBIT_R + 4, 0x6040EE88);
+                fillCircle(g, bx, by, bodyR + 7, 0x4040EE88);
+                fillCircle(g, bx, by, bodyR + 4, 0x6040EE88);
             } else if (isHov) {
-                fillCircle(g, bx, by, ORBIT_R + 5, 0x303A6090);
-                fillCircle(g, bx, by, ORBIT_R + 3, 0x503A6090);
+                fillCircle(g, bx, by, bodyR + 5, 0x303A6090);
+                fillCircle(g, bx, by, bodyR + 3, 0x503A6090);
             }
 
-            // Body disc
-            fillCircle(g, bx, by, ORBIT_R, bodyColor(item));
+            // Body — texture if available, else colored disc
+            String texStr = getBodyTexture(item);
+            if (texStr != null) {
+                Identifier texId = parseTexture(texStr);
+                g.blit(texId, bx - bodyR, by - bodyR, bx + bodyR, by + bodyR, 0f, 1f, 0f, 1f);
+            } else {
+                fillCircle(g, bx, by, bodyR, bodyColor(item));
+            }
 
-            // Current-location halo
-            if (isCur) fillCircle(g, bx, by, ORBIT_R + 2, 0x5040EE88);
+            // Current-location halo (drawn over the texture)
+            if (isCur) fillCircle(g, bx, by, bodyR + 2, 0x5040EE88);
 
             // Name label
             String label   = item.name;
             String sub     = orbitalSubtitle(item);
             int    labelX  = bx - font.width(label) / 2;
-            int    labelY  = by + ORBIT_R + 4;
+            int    labelY  = by + bodyR + 4;
             int    textCol = isSel ? C_TEXT_SEL : isCur ? C_TEXT_CUR
                            : item.data instanceof CelestialBody cb && !cb.isAvailable()
                              ? C_TEXT_NA : C_TEXT_BODY;
@@ -289,7 +310,7 @@ public class SpaceNavigationScreen extends Screen {
             }
             if (isCur) {
                 String here = "[ HERE ]";
-                g.text(font, here, bx - font.width(here) / 2, by - ORBIT_R - 12, C_TEXT_CUR);
+                g.text(font, here, bx - font.width(here) / 2, by - bodyR - 12, C_TEXT_CUR);
             }
         }
 
@@ -326,19 +347,71 @@ public class SpaceNavigationScreen extends Screen {
     }
 
     private void drawCentralBody(GuiGraphicsExtractor g, int cx, int cy) {
-        int color = centralBodyColor();
-        int r     = CENTER_R;
+        // Central body scales with zoom but has a floor at CENTER_R
+        int r = Math.max(CENTER_R, (int)(CENTER_R * Math.min(zoom, 2.0)));
 
-        // Outer glow
-        fillCircle(g, cx, cy, r + 12, (color & 0x00FFFFFF) | 0x18000000);
-        fillCircle(g, cx, cy, r + 7,  (color & 0x00FFFFFF) | 0x30000000);
-        fillCircle(g, cx, cy, r + 3,  (color & 0x00FFFFFF) | 0x55000000);
-        fillCircle(g, cx, cy, r,       color);
+        String texStr = getCentralBodyTexture();
+        if (texStr != null) {
+            Identifier texId = parseTexture(texStr);
+            // Subtle glow ring behind the texture
+            int glowColor = (centralBodyColor() & 0x00FFFFFF) | 0x30000000;
+            fillCircle(g, cx, cy, r + 8, glowColor);
+            g.blit(texId, cx - r, cy - r, cx + r, cy + r, 0f, 1f, 0f, 1f);
+        } else {
+            int color = centralBodyColor();
+            fillCircle(g, cx, cy, r + 12, (color & 0x00FFFFFF) | 0x18000000);
+            fillCircle(g, cx, cy, r + 7,  (color & 0x00FFFFFF) | 0x30000000);
+            fillCircle(g, cx, cy, r + 3,  (color & 0x00FFFFFF) | 0x55000000);
+            fillCircle(g, cx, cy, r,       color);
+        }
 
-        // Label below center body
+        // Label below central body
         String label = centralBodyName();
         if (!label.isEmpty())
             g.text(font, label, cx - font.width(label) / 2, cy + r + 5, C_TEXT_SUB);
+    }
+
+    // ── Texture helpers ───────────────────────────────────────────────────────
+
+    /**
+     * Parses a texture string like "omnitech:textures/space/planet/earth.png"
+     * into an Identifier.  Returns null if the input is null or empty.
+     */
+    private static Identifier parseTexture(String tex) {
+        if (tex == null || tex.isEmpty()) return null;
+        return Identifier.parse(tex);
+    }
+
+    /** Returns the texture string for the body represented by this BodyItem, or null. */
+    private static String getBodyTexture(BodyItem item) {
+        if (item.data instanceof CelestialBody b) return b.texture;
+        if (item.data instanceof StarSystem s)    return s.texture;
+        if (item.data instanceof Galaxy g)        return g.texture;
+        return null;
+    }
+
+    /** Returns the texture string for the central (parent) body at the current nav level. */
+    private String getCentralBodyTexture() {
+        return switch (navLevel) {
+            case GALAXY -> null; // no single central body at the outermost level
+            case SYSTEM -> selectedGalaxy != null ? selectedGalaxy.texture : null;
+            case BODY   -> selectedSystem != null ? selectedSystem.texture : null;
+            case MOON   -> selectedPlanet != null ? selectedPlanet.texture : null;
+        };
+    }
+
+    /**
+     * Returns the background texture Identifier for the current nav level,
+     * or null to fall back to the starfield.
+     */
+    private Identifier getBackgroundTexture() {
+        String tex = switch (navLevel) {
+            case GALAXY -> null; // galaxy list uses default starfield
+            case SYSTEM -> selectedGalaxy != null ? selectedGalaxy.background : null;
+            case BODY   -> selectedSystem  != null ? selectedSystem.background  : null;
+            case MOON   -> selectedPlanet  != null ? selectedPlanet.background  : null;
+        };
+        return parseTexture(tex);
     }
 
     // ── Starfield background ──────────────────────────────────────────────────
@@ -362,7 +435,7 @@ public class SpaceNavigationScreen extends Screen {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         if (event.button() == 0) {
             for (BodyPos bp : bodyPositions) {
-                if (distSq((int) event.x(), (int) event.y(), bp.x, bp.y) <= (double) HIT_R * HIT_R) {
+                if (distSq((int) event.x(), (int) event.y(), bp.x, bp.y) <= (double) bp.hitR * bp.hitR) {
                     onBodyClicked(bp.item);
                     return true;
                 }
@@ -504,5 +577,6 @@ public class SpaceNavigationScreen extends Screen {
     // ── Inner types ───────────────────────────────────────────────────────────
 
     private record BodyItem(String name, Object data) {}
-    private record BodyPos(BodyItem item, int x, int y) {}
+    /** Stores the screen position and hit radius for each orbiting body this frame. */
+    private record BodyPos(BodyItem item, int x, int y, int hitR) {}
 }

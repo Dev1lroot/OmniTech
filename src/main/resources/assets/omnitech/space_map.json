@@ -4,12 +4,14 @@
       "id": "milky_way",
       "name": "Milky Way",
       "texture": "omnitech:textures/space/galaxy/milky_way.png",
+      "background": "omnitech:textures/space/background/milky_way.png",
       "orbital_radius": 220,
       "star_systems": [
         {
           "id": "sol",
           "name": "Sol System",
           "texture": "omnitech:textures/space/star/sun.png",
+          "background": "omnitech:textures/space/background/sol.png",
           "orbital_radius": 140,
           "bodies": [
             {
@@ -38,6 +40,7 @@
               "type": "planet",
               "dimension": "minecraft:overworld",
               "texture": "omnitech:textures/space/planet/earth.png",
+              "background": "omnitech:textures/space/background/earth.png",
               "fuel_cost": 500,
               "orbital_radius": 155,
               "moons": [
@@ -69,6 +72,7 @@
               "type": "planet",
               "dimension": null,
               "texture": "omnitech:textures/space/planet/jupiter.png",
+              "background": "omnitech:textures/space/background/jupiter.png",
               "fuel_cost": 2000,
               "orbital_radius": 290,
               "moons": [
@@ -110,6 +114,7 @@
               "type": "planet",
               "dimension": null,
               "texture": "omnitech:textures/space/planet/saturn.png",
+              "background": "omnitech:textures/space/background/saturn.png",
               "fuel_cost": 3000,
               "orbital_radius": 365,
               "moons": [
@@ -151,6 +156,7 @@
           "id": "tau_ceti",
           "name": "Tau Ceti",
           "texture": "omnitech:textures/space/star/tau_ceti.png",
+          "background": "omnitech:textures/space/background/tau_ceti.png",
           "orbital_radius": 240,
           "bodies": [
             {
@@ -179,6 +185,7 @@
           "id": "alpha_centauri",
           "name": "Alpha Centauri",
           "texture": "omnitech:textures/space/star/alpha_centauri.png",
+          "background": "omnitech:textures/space/background/alpha_centauri.png",
           "orbital_radius": 320,
           "bodies": [
             {

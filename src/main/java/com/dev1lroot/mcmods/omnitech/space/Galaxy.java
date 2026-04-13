@@ -11,6 +11,9 @@ public class Galaxy {
     public int orbital_radius = 220;
     public List<StarSystem> star_systems = List.of();
 
+    /** Optional background texture shown when navigating inside this galaxy's system list. */
+    public String background;
+
     /** Returns the star system containing the given dimension, or null. */
     public StarSystem findSystemForDimension(String dimensionId) {
         if (star_systems == null) return null;

@@ -11,6 +11,9 @@ public class StarSystem {
     public int orbital_radius = 180;
     public List<CelestialBody> bodies = List.of();
 
+    /** Optional background texture shown when browsing this system's planets. */
+    public String background;
+
     /** True if any body (planet or its moons) in this system matches dimensionId. */
     public boolean containsDimension(String dimensionId) {
         if (bodies == null) return false;
