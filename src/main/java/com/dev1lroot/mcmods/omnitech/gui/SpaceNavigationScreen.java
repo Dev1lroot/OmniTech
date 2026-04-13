@@ -347,8 +347,8 @@ public class SpaceNavigationScreen extends Screen {
     }
 
     private void drawCentralBody(GuiGraphicsExtractor g, int cx, int cy) {
-        // Central body scales with zoom but has a floor at CENTER_R
-        int r = Math.max(CENTER_R, (int)(CENTER_R * Math.min(zoom, 2.0)));
+        // Central body scales with zoom exactly like orbiting bodies (same cap, floor of 4)
+        int r = Math.max(4, (int)(CENTER_R * Math.min(zoom, 2.5)));
 
         String texStr = getCentralBodyTexture();
         if (texStr != null) {
