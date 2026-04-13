@@ -7,6 +7,8 @@ public class StarSystem {
     public String id;
     public String name;
     public String texture;
+    /** Orbit radius in scene units at zoom=1.0 when shown inside a galaxy view. */
+    public int orbital_radius = 180;
     public List<CelestialBody> bodies = List.of();
 
     /** True if any body (planet or its moons) in this system matches dimensionId. */

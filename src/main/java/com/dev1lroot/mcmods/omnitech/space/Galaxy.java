@@ -7,6 +7,8 @@ public class Galaxy {
     public String id;
     public String name;
     public String texture;
+    /** Orbit radius in scene units at zoom=1.0 when shown in the galaxy selection view. */
+    public int orbital_radius = 220;
     public List<StarSystem> star_systems = List.of();
 
     /** Returns the star system containing the given dimension, or null. */

@@ -4,11 +4,13 @@
       "id": "milky_way",
       "name": "Milky Way",
       "texture": "omnitech:textures/space/galaxy/milky_way.png",
+      "orbital_radius": 220,
       "star_systems": [
         {
           "id": "sol",
           "name": "Sol System",
           "texture": "omnitech:textures/space/star/sun.png",
+          "orbital_radius": 140,
           "bodies": [
             {
               "id": "mercury",
@@ -17,6 +19,7 @@
               "dimension": null,
               "texture": "omnitech:textures/space/planet/mercury.png",
               "fuel_cost": 800,
+              "orbital_radius": 80,
               "moons": []
             },
             {
@@ -26,6 +29,7 @@
               "dimension": null,
               "texture": "omnitech:textures/space/planet/venus.png",
               "fuel_cost": 600,
+              "orbital_radius": 115,
               "moons": []
             },
             {
@@ -35,6 +39,7 @@
               "dimension": "minecraft:overworld",
               "texture": "omnitech:textures/space/planet/earth.png",
               "fuel_cost": 500,
+              "orbital_radius": 155,
               "moons": [
                 {
                   "id": "moon",
@@ -43,6 +48,7 @@
                   "dimension": "omnitech:moon",
                   "texture": "omnitech:textures/space/moon/moon.png",
                   "fuel_cost": 600,
+                  "orbital_radius": 90,
                   "moons": []
                 }
               ]
@@ -54,6 +60,7 @@
               "dimension": null,
               "texture": "omnitech:textures/space/planet/mars.png",
               "fuel_cost": 900,
+              "orbital_radius": 200,
               "moons": []
             },
             {
@@ -63,6 +70,7 @@
               "dimension": null,
               "texture": "omnitech:textures/space/planet/jupiter.png",
               "fuel_cost": 2000,
+              "orbital_radius": 290,
               "moons": [
                 {
                   "id": "io",
@@ -71,6 +79,7 @@
                   "dimension": null,
                   "texture": "omnitech:textures/space/moon/io.png",
                   "fuel_cost": 2100,
+                  "orbital_radius": 70,
                   "moons": []
                 },
                 {
@@ -80,6 +89,7 @@
                   "dimension": null,
                   "texture": "omnitech:textures/space/moon/europa.png",
                   "fuel_cost": 2150,
+                  "orbital_radius": 100,
                   "moons": []
                 },
                 {
@@ -89,6 +99,7 @@
                   "dimension": null,
                   "texture": "omnitech:textures/space/moon/ganymede.png",
                   "fuel_cost": 2200,
+                  "orbital_radius": 135,
                   "moons": []
                 }
               ]
@@ -100,6 +111,7 @@
               "dimension": null,
               "texture": "omnitech:textures/space/planet/saturn.png",
               "fuel_cost": 3000,
+              "orbital_radius": 365,
               "moons": [
                 {
                   "id": "titan",
@@ -108,6 +120,7 @@
                   "dimension": null,
                   "texture": "omnitech:textures/space/moon/titan.png",
                   "fuel_cost": 3100,
+                  "orbital_radius": 110,
                   "moons": []
                 }
               ]
@@ -119,6 +132,7 @@
               "dimension": null,
               "texture": "omnitech:textures/space/planet/uranus.png",
               "fuel_cost": 4500,
+              "orbital_radius": 430,
               "moons": []
             },
             {
@@ -128,6 +142,7 @@
               "dimension": null,
               "texture": "omnitech:textures/space/planet/neptune.png",
               "fuel_cost": 6000,
+              "orbital_radius": 490,
               "moons": []
             }
           ]
@@ -136,6 +151,7 @@
           "id": "tau_ceti",
           "name": "Tau Ceti",
           "texture": "omnitech:textures/space/star/tau_ceti.png",
+          "orbital_radius": 240,
           "bodies": [
             {
               "id": "tau_ceti_e",
@@ -144,6 +160,7 @@
               "dimension": null,
               "texture": "omnitech:textures/space/planet/tau_ceti_e.png",
               "fuel_cost": 50000,
+              "orbital_radius": 140,
               "moons": []
             },
             {
@@ -153,6 +170,7 @@
               "dimension": null,
               "texture": "omnitech:textures/space/planet/tau_ceti_f.png",
               "fuel_cost": 52000,
+              "orbital_radius": 200,
               "moons": []
             }
           ]
@@ -161,6 +179,7 @@
           "id": "alpha_centauri",
           "name": "Alpha Centauri",
           "texture": "omnitech:textures/space/star/alpha_centauri.png",
+          "orbital_radius": 320,
           "bodies": [
             {
               "id": "proxima_b",
@@ -169,6 +188,7 @@
               "dimension": null,
               "texture": "omnitech:textures/space/planet/proxima_b.png",
               "fuel_cost": 80000,
+              "orbital_radius": 120,
               "moons": []
             }
           ]

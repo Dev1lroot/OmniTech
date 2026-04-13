@@ -59,8 +59,16 @@ public class SpaceNavigationScreen extends Screen {
     private static final int ORBIT_R      = 18;   // orbiting body radius
     private static final int HIT_R        = 24;   // click detection radius
 
-    /** Slow clockwise orbit — full rotation every ~30 s. */
-    private static final double ORBIT_SPEED = (2 * Math.PI) / 30_000.0; // rad/ms
+    /** Base orbital speed for a body whose orbital_radius == SPEED_REF_R. */
+    private static final double ORBIT_SPEED   = (2 * Math.PI) / 30_000.0; // rad/ms
+    /** Reference radius for speed normalisation (Kepler-like: inner = faster). */
+    private static final int    SPEED_REF_R   = 200;
+    private static final double ZOOM_MIN      = 0.15;
+    private static final double ZOOM_MAX      = 4.0;
+    private static final double ZOOM_STEP     = 0.12; // fraction per scroll tick
+
+    // ── Zoom ─────────────────────────────────────────────────────────────────
+    private double zoom = 1.0;
 
     // ── Widgets ──────────────────────────────────────────────────────────────
     private Button launchBtn;
@@ -128,6 +136,12 @@ public class SpaceNavigationScreen extends Screen {
         // Close
         addRenderableWidget(Button.builder(Component.literal("X"), btn -> onClose())
                 .bounds(width - 24, 8, 16, 16).build());
+
+        // Zoom buttons (top-right, below close)
+        addRenderableWidget(Button.builder(Component.literal("+"), btn -> adjustZoom(+1))
+                .bounds(width - 24, 30, 16, 16).build());
+        addRenderableWidget(Button.builder(Component.literal("-"), btn -> adjustZoom(-1))
+                .bounds(width - 24, 48, 16, 16).build());
 
         // Launch — only when a valid destination is selected
         if (canLaunch()) {
@@ -207,6 +221,8 @@ public class SpaceNavigationScreen extends Screen {
         // ── Header ──────────────────────────────────────────────────────────
         g.text(font, "SPACE NAVIGATION", 70, 10, C_TEXT_TITLE);
         g.text(font, breadcrumb(), 70, 24, C_TEXT_SUB);
+        String zoomStr = String.format("Zoom: %.0f%%  [scroll or +/-]", zoom * 100);
+        g.text(font, zoomStr, width - font.width(zoomStr) - 46, 36, C_TEXT_SUB);
 
         // ── Orbital scene ────────────────────────────────────────────────────
         bodyPositions.clear();
@@ -214,28 +230,28 @@ public class SpaceNavigationScreen extends Screen {
         int cx = width  / 2;
         int cy = TOP_H  + (height - TOP_H - BOTTOM_H) / 2;
 
-        int maxR = Math.min(
-                (width  - CENTER_R - ORBIT_R - 60) / 2,
-                (height - TOP_H - BOTTOM_H - CENTER_R - ORBIT_R - 40) / 2
-        );
-        int orbitRadius = Math.min(maxR, 280);
-
-        // Orbit ring
-        drawCircleOutline(g, cx, cy, orbitRadius, C_RING);
-
-        // Central body
+        // Central body (no orbit ring for it)
         drawCentralBody(g, cx, cy);
 
-        // Orbiting bodies (animated)
+        // Orbiting bodies — each on its own ring, animated with Kepler-like speed
         long now = System.currentTimeMillis();
-        double baseAngle = -Math.PI / 2 + now * ORBIT_SPEED;
         int n = items.size();
 
         for (int i = 0; i < n; i++) {
-            BodyItem item = items.get(i);
-            double angle = baseAngle + i * (2 * Math.PI / Math.max(n, 1));
-            int bx = cx + (int)(orbitRadius * Math.cos(angle));
-            int by = cy + (int)(orbitRadius * Math.sin(angle));
+            BodyItem item  = items.get(i);
+            int baseRadius = orbitalRadius(item);                        // JSON value
+            int pixRadius  = (int)(baseRadius * zoom);                  // scaled by zoom
+
+            // Per-body orbit ring
+            drawCircleOutline(g, cx, cy, pixRadius, C_RING);
+
+            // Angular speed: inner bodies orbit faster (Kepler proportional to r^-1.5)
+            double speed = ORBIT_SPEED * Math.pow((double) SPEED_REF_R / Math.max(baseRadius, 1), 1.5);
+            // Distribute starting angles so bodies don't start on top of each other
+            double angle = -Math.PI / 2.0 + now * speed + i * (2 * Math.PI / Math.max(n, 1));
+
+            int bx = cx + (int)(pixRadius * Math.cos(angle));
+            int by = cy + (int)(pixRadius * Math.sin(angle));
 
             bodyPositions.add(new BodyPos(item, bx, by));
 
@@ -356,6 +372,16 @@ public class SpaceNavigationScreen extends Screen {
     }
 
     @Override
+    public boolean mouseScrolled(double mx, double my, double dx, double dy) {
+        adjustZoom(dy > 0 ? +1 : -1);
+        return true;
+    }
+
+    private void adjustZoom(int direction) {
+        zoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom * (1.0 + direction * ZOOM_STEP)));
+    }
+
+    @Override
     public boolean isPauseScreen() { return false; }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
@@ -384,6 +410,13 @@ public class SpaceNavigationScreen extends Screen {
         if (item.data instanceof StarSystem s)  return s.bodies != null ? s.bodies.size() + " planet(s)" : "";
         if (item.data instanceof Galaxy g2)     return g2.star_systems != null ? g2.star_systems.size() + " system(s)" : "";
         return "";
+    }
+
+    private int orbitalRadius(BodyItem item) {
+        if (item.data instanceof CelestialBody b) return Math.max(b.orbital_radius, 20);
+        if (item.data instanceof StarSystem s)    return Math.max(s.orbital_radius, 20);
+        if (item.data instanceof Galaxy g2)       return Math.max(g2.orbital_radius, 20);
+        return 150;
     }
 
     private String centralBodyName() {
