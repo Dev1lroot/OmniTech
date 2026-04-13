@@ -18,84 +18,81 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Space navigation GUI — opens when the player is riding a rocket at Y >= 400.
+ * Full-screen space navigation GUI.
  *
- * Navigation hierarchy:  GALAXY → SYSTEM → BODY (planet) → MOON
+ * Navigation: GALAXY → SYSTEM → BODY (planets) → MOON
  *
- * The screen auto-navigates to the planet list of the player's current star
- * system on open.  Clicking a body with moons drills into its moon list;
- * clicking a body without moons selects it as the travel destination.
- * The LAUNCH button sends SpaceTravelPacket to the server.
+ * Each level renders the "parent" body large at screen center with its
+ * children on animated circular orbits around it.  Clicking an orbiting
+ * body selects it as the travel destination; if that body has children
+ * (e.g. a planet with moons) an "Explore moons" button appears so the
+ * player can optionally drill deeper without losing the planet selection.
  */
 public class SpaceNavigationScreen extends Screen {
 
-    // ── Navigation state ────────────────────────────────────────────────────
+    // ── Navigation state ─────────────────────────────────────────────────────
     private enum NavLevel { GALAXY, SYSTEM, BODY, MOON }
 
-    private NavLevel navLevel = NavLevel.GALAXY;
-    private Galaxy       selectedGalaxy;
-    private StarSystem   selectedSystem;
-    private CelestialBody selectedPlanet;   // planet whose moons we're currently viewing
-    private CelestialBody destination;      // final selection for launch
+    private NavLevel      navLevel = NavLevel.GALAXY;
+    private Galaxy        selectedGalaxy;
+    private StarSystem    selectedSystem;
+    private CelestialBody selectedPlanet;
+    private CelestialBody destination;
 
-    // ── Data ────────────────────────────────────────────────────────────────
+    // ── Data ─────────────────────────────────────────────────────────────────
     private SpaceMap spaceMap;
-    private String currentDimensionId = "";
+    private String   currentDimensionId = "";
 
-    // ── Grid items for the current view ─────────────────────────────────────
+    // ── Items for the current orbital view ───────────────────────────────────
     private final List<BodyItem> items = new ArrayList<>();
-    private BodyItem hovered;
 
-    // ── Layout constants ─────────────────────────────────────────────────────
-    private static final int CELL_W   = 130;
-    private static final int CELL_H   = 110;
-    private static final int CELL_GAP = 12;
-    private static final int COLS     = 4;
+    /**
+     * Body positions computed each frame so click detection stays in sync
+     * with the animation even without re-rendering.
+     */
+    private final List<BodyPos> bodyPositions = new ArrayList<>();
 
-    // ── Panel bounds (computed in init) ─────────────────────────────────────
-    private int px, py, pw, ph;
-    private int gridTop;
-    private int gridH;
-    private int scrollY = 0;
+    // ── Layout ───────────────────────────────────────────────────────────────
+    private static final int TOP_H        = 50;   // header area height
+    private static final int BOTTOM_H     = 64;   // bottom bar height
+    private static final int CENTER_R     = 40;   // central body radius
+    private static final int ORBIT_R      = 18;   // orbiting body radius
+    private static final int HIT_R        = 24;   // click detection radius
 
-    // ── Widgets ─────────────────────────────────────────────────────────────
+    /** Slow clockwise orbit — full rotation every ~30 s. */
+    private static final double ORBIT_SPEED = (2 * Math.PI) / 30_000.0; // rad/ms
+
+    // ── Widgets ──────────────────────────────────────────────────────────────
     private Button launchBtn;
+    private Button exploreMoonsBtn;
 
-    // ── Colors ──────────────────────────────────────────────────────────────
-    private static final int COL_PANEL_BG   = 0xEE050510;
-    private static final int COL_PANEL_EDGE = 0xFF2A4060;
-    private static final int COL_SEP        = 0xFF1A2840;
-    private static final int COL_CELL_DEF   = 0xFF0D1526;
-    private static final int COL_CELL_HOV   = 0xFF162035;
-    private static final int COL_CELL_SEL   = 0xFF0D2820;
-    private static final int COL_CELL_CUR   = 0xFF0A1E14;
-    private static final int COL_EDGE_DEF   = 0xFF1E3050;
-    private static final int COL_EDGE_HOV   = 0xFF3A6090;
-    private static final int COL_EDGE_SEL   = 0xFF30C070;
-    private static final int COL_EDGE_CUR   = 0xFF20884A;
-    private static final int COL_TEXT_MAIN  = 0xFFDDEEFF;
-    private static final int COL_TEXT_SUB   = 0xFF7799BB;
-    private static final int COL_TEXT_NA    = 0xFF445566;
-    private static final int COL_TEXT_CUR   = 0xFF40EE88;
-    private static final int COL_TEXT_TITLE = 0xFF88DDFF;
-    private static final int COL_FUEL_OK    = 0xFF40EE70;
-    private static final int COL_FUEL_BAD   = 0xFFEE4040;
+    // ── Colors ───────────────────────────────────────────────────────────────
+    private static final int C_BG         = 0xFF020208;
+    private static final int C_RING       = 0x33405060;
+    private static final int C_TEXT_TITLE = 0xFF88DDFF;
+    private static final int C_TEXT_SUB   = 0xFF556677;
+    private static final int C_TEXT_BODY  = 0xFFCCDDEE;
+    private static final int C_TEXT_CUR   = 0xFF40EE88;
+    private static final int C_TEXT_SEL   = 0xFF80FFCC;
+    private static final int C_TEXT_NA    = 0xFF334455;
+    private static final int C_FUEL_OK    = 0xFF40EE70;
+    private static final int C_FUEL_BAD   = 0xFFEE4040;
+    private static final int C_BAR_BG     = 0xCC030310;
+    private static final int C_BAR_LINE   = 0xFF1A2840;
 
     public SpaceNavigationScreen() {
         super(Component.literal("Space Navigation"));
     }
 
-    // ── Lifecycle ────────────────────────────────────────────────────────────
+    // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     @Override
     protected void init() {
-        if (minecraft.player != null) {
+        if (minecraft.player != null)
             currentDimensionId = minecraft.player.level().dimension().identifier().toString();
-        }
 
         spaceMap = SpaceMapLoader.load(minecraft.getResourceManager());
 
-        // Auto-navigate to the player's current star system
         if (navLevel == NavLevel.GALAXY) {
             SpaceMap.Location loc = spaceMap.findLocation(currentDimensionId);
             if (loc != null) {
@@ -105,65 +102,61 @@ public class SpaceNavigationScreen extends Screen {
             }
         }
 
-        // Panel: 85 % of screen, capped at 860 × 530
-        pw = Math.min((int)(width  * 0.85), 860);
-        ph = Math.min((int)(height * 0.85), 530);
-        px = (width  - pw) / 2;
-        py = (height - ph) / 2;
-
-        gridTop = py + 68;
-        gridH   = ph - 68 - 52;
-
         rebuildItems();
-        rebuildWidgets();
+        refreshWidgets();
     }
 
     private void rebuildItems() {
         items.clear();
         switch (navLevel) {
-            case GALAXY -> {
-                if (spaceMap.galaxies != null)
-                    spaceMap.galaxies.forEach(g -> items.add(new BodyItem(g.name, g)));
-            }
-            case SYSTEM -> {
-                if (selectedGalaxy != null && selectedGalaxy.star_systems != null)
-                    selectedGalaxy.star_systems.forEach(s -> items.add(new BodyItem(s.name, s)));
-            }
-            case BODY -> {
-                if (selectedSystem != null && selectedSystem.bodies != null)
-                    selectedSystem.bodies.forEach(b -> items.add(new BodyItem(b.name, b)));
-            }
-            case MOON -> {
-                if (selectedPlanet != null && selectedPlanet.moons != null)
-                    selectedPlanet.moons.forEach(m -> items.add(new BodyItem(m.name, m)));
-            }
+            case GALAXY -> { if (spaceMap.galaxies != null) spaceMap.galaxies.forEach(g -> items.add(new BodyItem(g.name, g))); }
+            case SYSTEM -> { if (selectedGalaxy != null && selectedGalaxy.star_systems != null) selectedGalaxy.star_systems.forEach(s -> items.add(new BodyItem(s.name, s))); }
+            case BODY   -> { if (selectedSystem != null && selectedSystem.bodies != null) selectedSystem.bodies.forEach(b -> items.add(new BodyItem(b.name, b))); }
+            case MOON   -> { if (selectedPlanet != null && selectedPlanet.moons != null) selectedPlanet.moons.forEach(m -> items.add(new BodyItem(m.name, m))); }
         }
     }
 
-    protected void rebuildWidgets() {
+    private void refreshWidgets() {
         clearWidgets();
 
+        // Back
         if (navLevel != NavLevel.GALAXY) {
-            addRenderableWidget(Button.builder(
-                    Component.literal("< Back"), btn -> navigateBack())
-                    .bounds(px + 6, py + 6, 55, 18).build());
+            addRenderableWidget(Button.builder(Component.literal("< Back"), btn -> navigateBack())
+                    .bounds(8, 8, 55, 18).build());
         }
 
-        addRenderableWidget(Button.builder(
-                Component.literal("X"), btn -> onClose())
-                .bounds(px + pw - 22, py + 6, 16, 16).build());
+        // Close
+        addRenderableWidget(Button.builder(Component.literal("X"), btn -> onClose())
+                .bounds(width - 24, 8, 16, 16).build());
 
-        launchBtn = Button.builder(
-                Component.literal("LAUNCH"), btn -> onLaunch())
-                .bounds(px + pw - 90, py + ph - 38, 84, 22).build();
-        launchBtn.active = canLaunch();
-        addRenderableWidget(launchBtn);
+        // Launch — only when a valid destination is selected
+        if (canLaunch()) {
+            launchBtn = Button.builder(Component.literal("LAUNCH"), btn -> onLaunch())
+                    .bounds(width - 106, height - BOTTOM_H + 20, 98, 22).build();
+            addRenderableWidget(launchBtn);
+        } else {
+            launchBtn = null;
+        }
+
+        // "Explore moons" — shown when selected destination has moons and we're at BODY level
+        exploreMoonsBtn = null;
+        if (destination != null && destination.hasMoons() && navLevel == NavLevel.BODY) {
+            String label = "Explore " + destination.moons.size() + " moon(s) >";
+            int bw = font.width(label) + 16;
+            exploreMoonsBtn = Button.builder(Component.literal(label), btn -> {
+                selectedPlanet = destination;
+                destination    = null;
+                navLevel       = NavLevel.MOON;
+                rebuildItems();
+                refreshWidgets();
+            }).bounds(width - 106 - bw - 8, height - BOTTOM_H + 20, bw, 22).build();
+            addRenderableWidget(exploreMoonsBtn);
+        }
     }
 
-    // ── Navigation ───────────────────────────────────────────────────────────
+    // ── Navigation ────────────────────────────────────────────────────────────
 
     private void navigateBack() {
-        scrollY     = 0;
         destination = null;
         switch (navLevel) {
             case SYSTEM -> { navLevel = NavLevel.GALAXY; selectedGalaxy = null; }
@@ -172,32 +165,22 @@ public class SpaceNavigationScreen extends Screen {
             default     -> {}
         }
         rebuildItems();
-        rebuildWidgets();
+        refreshWidgets();
     }
 
-    private void onItemClicked(BodyItem item) {
+    private void onBodyClicked(BodyItem item) {
         if (item.data instanceof Galaxy g) {
-            selectedGalaxy = g;
-            navLevel = NavLevel.SYSTEM;
-            scrollY = 0; destination = null;
-            rebuildItems(); rebuildWidgets();
+            selectedGalaxy = g; navLevel = NavLevel.SYSTEM; destination = null;
+            rebuildItems(); refreshWidgets();
 
         } else if (item.data instanceof StarSystem s) {
-            selectedSystem = s;
-            navLevel = NavLevel.BODY;
-            scrollY = 0; destination = null;
-            rebuildItems(); rebuildWidgets();
+            selectedSystem = s; navLevel = NavLevel.BODY; destination = null;
+            rebuildItems(); refreshWidgets();
 
         } else if (item.data instanceof CelestialBody body) {
-            if (navLevel == NavLevel.BODY && body.hasMoons()) {
-                selectedPlanet = body;
-                navLevel = NavLevel.MOON;
-                scrollY = 0; destination = null;
-                rebuildItems(); rebuildWidgets();
-            } else {
-                destination = body;
-                if (launchBtn != null) launchBtn.active = canLaunch();
-            }
+            // Always select as destination first — player can explore moons via separate button
+            destination = body;
+            refreshWidgets(); // refreshes launch + exploreMoons buttons
         }
     }
 
@@ -211,145 +194,171 @@ public class SpaceNavigationScreen extends Screen {
         return destination != null && destination.dimension != null;
     }
 
-    // ── Rendering ────────────────────────────────────────────────────────────
+    // ── Rendering ─────────────────────────────────────────────────────────────
 
     @Override
     public void extractBackground(GuiGraphicsExtractor g, int mx, int my, float a) {
-        // Dark overlay over the game world instead of the default panorama
-        g.fill(0, 0, width, height, 0xCC000008);
+        g.fill(0, 0, width, height, C_BG);
+        drawStarfield(g);
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float a) {
-        // Panel background + border
-        g.fill(px, py, px + pw, py + ph, COL_PANEL_BG);
-        drawBorder(g, px, py, pw, ph, COL_PANEL_EDGE);
+        // ── Header ──────────────────────────────────────────────────────────
+        g.text(font, "SPACE NAVIGATION", 70, 10, C_TEXT_TITLE);
+        g.text(font, breadcrumb(), 70, 24, C_TEXT_SUB);
 
-        // ── Header ──
-        String title = "SPACE NAVIGATION";
-        int titleX = px + (pw - font.width(title)) / 2;
-        g.text(font, title, titleX, py + 10, COL_TEXT_TITLE);
+        // ── Orbital scene ────────────────────────────────────────────────────
+        bodyPositions.clear();
 
-        String crumb = breadcrumb();
-        g.text(font, crumb, px + 10, py + 26, COL_TEXT_SUB);
+        int cx = width  / 2;
+        int cy = TOP_H  + (height - TOP_H - BOTTOM_H) / 2;
 
-        g.fill(px + 5, py + 42, px + pw - 5, py + 43, COL_SEP);
+        int maxR = Math.min(
+                (width  - CENTER_R - ORBIT_R - 60) / 2,
+                (height - TOP_H - BOTTOM_H - CENTER_R - ORBIT_R - 40) / 2
+        );
+        int orbitRadius = Math.min(maxR, 280);
 
-        String levelLabel = switch (navLevel) {
-            case GALAXY -> "Select a Galaxy";
-            case SYSTEM -> "Select a Star System";
-            case BODY   -> "Select a Planet";
-            case MOON   -> "Select a Moon";
-        };
-        g.text(font, levelLabel, px + 10, py + 50, COL_TEXT_SUB);
+        // Orbit ring
+        drawCircleOutline(g, cx, cy, orbitRadius, C_RING);
 
-        // ── Grid ──
-        hovered = null;
-        int cols = Math.max(1, Math.min(COLS, (pw - CELL_GAP) / (CELL_W + CELL_GAP)));
-        int totalW = cols * (CELL_W + CELL_GAP) - CELL_GAP;
-        int startX = px + (pw - totalW) / 2;
+        // Central body
+        drawCentralBody(g, cx, cy);
 
-        for (int i = 0; i < items.size(); i++) {
+        // Orbiting bodies (animated)
+        long now = System.currentTimeMillis();
+        double baseAngle = -Math.PI / 2 + now * ORBIT_SPEED;
+        int n = items.size();
+
+        for (int i = 0; i < n; i++) {
             BodyItem item = items.get(i);
-            int row = i / cols;
-            int col = i % cols;
-            int cx = startX + col * (CELL_W + CELL_GAP);
-            int cy = gridTop + row * (CELL_H + CELL_GAP) - scrollY;
+            double angle = baseAngle + i * (2 * Math.PI / Math.max(n, 1));
+            int bx = cx + (int)(orbitRadius * Math.cos(angle));
+            int by = cy + (int)(orbitRadius * Math.sin(angle));
 
-            if (cy + CELL_H < gridTop || cy > gridTop + gridH) continue;
+            bodyPositions.add(new BodyPos(item, bx, by));
 
-            boolean isHov = mx >= cx && mx < cx + CELL_W && my >= cy && my < cy + CELL_H;
+            boolean isHov = distSq(mx, my, bx, by) <= (double) HIT_R * HIT_R;
             boolean isSel = item.data == destination;
             boolean isCur = isCurrentLocation(item);
 
-            if (isHov) hovered = item;
-
-            int bg   = isSel ? COL_CELL_SEL : isCur ? COL_CELL_CUR : isHov ? COL_CELL_HOV : COL_CELL_DEF;
-            int edge = isSel ? COL_EDGE_SEL : isCur ? COL_EDGE_CUR : isHov ? COL_EDGE_HOV : COL_EDGE_DEF;
-
-            g.fill(cx, cy, cx + CELL_W, cy + CELL_H, bg);
-            drawBorder(g, cx, cy, CELL_W, CELL_H, edge);
-
-            // Circular texture placeholder (filled disc)
-            int circX = cx + CELL_W / 2;
-            int circY = cy + 36;
-            int radius = 22;
-            fillCircle(g, circX, circY, radius, bodyColor(item));
-            // Rim highlight
-            fillCircle(g, circX - radius / 4, circY - radius / 4, radius / 3, 0x33FFFFFF);
-
-            if (isCur) {
-                String here = "YOU ARE HERE";
-                g.text(font, here, cx + (CELL_W - font.width(here)) / 2, cy + 4, COL_TEXT_CUR);
+            // Glow behind selected/hovered body
+            if (isSel) {
+                fillCircle(g, bx, by, ORBIT_R + 7, 0x4040EE88);
+                fillCircle(g, bx, by, ORBIT_R + 4, 0x6040EE88);
+            } else if (isHov) {
+                fillCircle(g, bx, by, ORBIT_R + 5, 0x303A6090);
+                fillCircle(g, bx, by, ORBIT_R + 3, 0x503A6090);
             }
 
-            // Name
-            g.text(font, item.name, cx + (CELL_W - font.width(item.name)) / 2, cy + CELL_H - 28, COL_TEXT_MAIN);
+            // Body disc
+            fillCircle(g, bx, by, ORBIT_R, bodyColor(item));
 
-            // Sub-label
-            String sub = subtitle(item);
-            int subColor = item.data instanceof CelestialBody cb && cb.dimension == null
-                    ? COL_TEXT_NA : COL_TEXT_SUB;
-            g.text(font, sub, cx + (CELL_W - font.width(sub)) / 2, cy + CELL_H - 16, subColor);
+            // Current-location halo
+            if (isCur) fillCircle(g, bx, by, ORBIT_R + 2, 0x5040EE88);
+
+            // Name label
+            String label   = item.name;
+            String sub     = orbitalSubtitle(item);
+            int    labelX  = bx - font.width(label) / 2;
+            int    labelY  = by + ORBIT_R + 4;
+            int    textCol = isSel ? C_TEXT_SEL : isCur ? C_TEXT_CUR
+                           : item.data instanceof CelestialBody cb && !cb.isAvailable()
+                             ? C_TEXT_NA : C_TEXT_BODY;
+
+            g.text(font, label, labelX, labelY, textCol);
+            if (!sub.isEmpty()) {
+                g.text(font, sub, bx - font.width(sub) / 2, labelY + 10, C_TEXT_SUB);
+            }
+            if (isCur) {
+                String here = "[ HERE ]";
+                g.text(font, here, bx - font.width(here) / 2, by - ORBIT_R - 12, C_TEXT_CUR);
+            }
         }
 
-        // ── Bottom bar ──
-        g.fill(px + 5, py + ph - 48, px + pw - 5, py + ph - 47, COL_SEP);
+        // ── Bottom bar ───────────────────────────────────────────────────────
+        g.fill(0, height - BOTTOM_H, width, height, C_BAR_BG);
+        g.fill(0, height - BOTTOM_H, width, height - BOTTOM_H + 1, C_BAR_LINE);
         renderBottomBar(g);
 
-        // Widgets (buttons) on top
+        // Widgets on top
         super.extractRenderState(g, mx, my, a);
     }
 
     private void renderBottomBar(GuiGraphicsExtractor g) {
-        int by = py + ph - 44;
+        int y = height - BOTTOM_H + 8;
 
         if (destination == null) {
-            g.text(font, "Click a destination to select it.", px + 10, by + 6, COL_TEXT_SUB);
+            g.text(font, "Click a body to select it as your destination.", 12, y + 8, C_TEXT_SUB);
             return;
         }
 
-        g.text(font, "Destination:  " + destination.name, px + 10, by + 2, COL_TEXT_TITLE);
+        g.text(font, "Destination:  " + destination.name, 12, y, C_TEXT_TITLE);
 
         int playerFuel = 0;
-        if (minecraft.player != null && minecraft.player.getVehicle() instanceof RocketEntity rocket) {
-            playerFuel = rocket.getFuelAmount();
-        }
-        int required = destination.fuel_cost;
-        boolean enough = playerFuel >= required;
-        String fuelText = String.format("Fuel: %,d / %,d mB required", playerFuel, required);
-        g.text(font, fuelText, px + 10, by + 14, enough ? COL_FUEL_OK : COL_FUEL_BAD);
+        if (minecraft.player != null && minecraft.player.getVehicle() instanceof RocketEntity r)
+            playerFuel = r.getFuelAmount();
 
-        if (destination.dimension == null) {
-            g.text(font, "This destination has no dimension yet.", px + 10, by + 26, 0xFFEE7733);
-        }
+        boolean enough = playerFuel >= destination.fuel_cost;
+        g.text(font,
+                String.format("Fuel: %,d / %,d mB required", playerFuel, destination.fuel_cost),
+                12, y + 12, enough ? C_FUEL_OK : C_FUEL_BAD);
 
-        if (launchBtn != null) launchBtn.active = canLaunch();
+        if (destination.dimension == null)
+            g.text(font, "No dimension exists for this body yet.", 12, y + 24, 0xFFDD7733);
     }
 
-    // ── Input ────────────────────────────────────────────────────────────────
+    private void drawCentralBody(GuiGraphicsExtractor g, int cx, int cy) {
+        int color = centralBodyColor();
+        int r     = CENTER_R;
+
+        // Outer glow
+        fillCircle(g, cx, cy, r + 12, (color & 0x00FFFFFF) | 0x18000000);
+        fillCircle(g, cx, cy, r + 7,  (color & 0x00FFFFFF) | 0x30000000);
+        fillCircle(g, cx, cy, r + 3,  (color & 0x00FFFFFF) | 0x55000000);
+        fillCircle(g, cx, cy, r,       color);
+
+        // Label below center body
+        String label = centralBodyName();
+        if (!label.isEmpty())
+            g.text(font, label, cx - font.width(label) / 2, cy + r + 5, C_TEXT_SUB);
+    }
+
+    // ── Starfield background ──────────────────────────────────────────────────
+
+    private void drawStarfield(GuiGraphicsExtractor g) {
+        // Deterministic pseudo-random stars using a cheap LCG
+        long seed = 0x9E3779B97F4A7C15L;
+        for (int i = 0; i < 200; i++) {
+            seed ^= seed << 13; seed ^= seed >> 7; seed ^= seed << 17;
+            int sx = (int)(((seed >>> 1) & 0xFFFFL) * width  >> 16);
+            int sy = (int)(((seed >>> 17) & 0xFFFFL) * height >> 16);
+            int br = (int)((seed >>> 33) & 0x7F) + 80; // brightness 80–207
+            int col = 0xFF000000 | (br << 16) | (br << 8) | br;
+            g.fill(sx, sy, sx + 1, sy + 1, col);
+        }
+    }
+
+    // ── Input ─────────────────────────────────────────────────────────────────
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == 0 && hovered != null) {
-            onItemClicked(hovered);
-            return true;
+        if (event.button() == 0) {
+            for (BodyPos bp : bodyPositions) {
+                if (distSq((int) event.x(), (int) event.y(), bp.x, bp.y) <= (double) HIT_R * HIT_R) {
+                    onBodyClicked(bp.item);
+                    return true;
+                }
+            }
         }
         return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double dx, double dy) {
-        scrollY = Math.max(0, scrollY - (int)(dy * 18));
-        return true;
-    }
+    public boolean isPauseScreen() { return false; }
 
-    @Override
-    public boolean isPauseScreen() {
-        return false;
-    }
-
-    // ── Helpers ──────────────────────────────────────────────────────────────
+    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private String breadcrumb() {
         StringBuilder sb = new StringBuilder();
@@ -361,29 +370,50 @@ public class SpaceNavigationScreen extends Screen {
 
     private boolean isCurrentLocation(BodyItem item) {
         if (item.data instanceof CelestialBody b) return currentDimensionId.equals(b.dimension);
-        if (item.data instanceof StarSystem s) return s.containsDimension(currentDimensionId);
-        if (item.data instanceof Galaxy g2) return g2.findSystemForDimension(currentDimensionId) != null;
+        if (item.data instanceof StarSystem s)    return s.containsDimension(currentDimensionId);
+        if (item.data instanceof Galaxy g2)       return g2.findSystemForDimension(currentDimensionId) != null;
         return false;
     }
 
-    private String subtitle(BodyItem item) {
+    private String orbitalSubtitle(BodyItem item) {
         if (item.data instanceof CelestialBody b) {
-            if (b.dimension != null) {
-                String[] parts = b.dimension.split(":", 2);
-                return parts.length == 2 ? parts[1] : b.dimension;
-            }
-            if (b.hasMoons()) return b.moons.size() + " moon(s)  >";
-            return "Not available";
+            if (b.dimension != null) { String[] p = b.dimension.split(":", 2); return p.length == 2 ? p[1] : b.dimension; }
+            if (b.hasMoons()) return b.moons.size() + " moon(s)";
+            return "";
         }
-        if (item.data instanceof StarSystem s)
-            return s.bodies != null ? s.bodies.size() + " planet(s)" : "0 planets";
-        if (item.data instanceof Galaxy g2)
-            return g2.star_systems != null ? g2.star_systems.size() + " system(s)" : "0 systems";
+        if (item.data instanceof StarSystem s)  return s.bodies != null ? s.bodies.size() + " planet(s)" : "";
+        if (item.data instanceof Galaxy g2)     return g2.star_systems != null ? g2.star_systems.size() + " system(s)" : "";
         return "";
     }
 
+    private String centralBodyName() {
+        return switch (navLevel) {
+            case GALAXY -> "";
+            case SYSTEM -> selectedGalaxy != null ? selectedGalaxy.name : "";
+            case BODY   -> selectedSystem != null ? selectedSystem.name : "";
+            case MOON   -> selectedPlanet != null ? selectedPlanet.name : "";
+        };
+    }
+
+    private int centralBodyColor() {
+        return switch (navLevel) {
+            case GALAXY -> 0xFF9955EE;
+            case SYSTEM -> 0xFF8866CC;
+            case BODY   -> {
+                if (selectedSystem == null) yield 0xFFFFDD44;
+                yield switch (selectedSystem.id) {
+                    case "sol"            -> 0xFFFFDD44;
+                    case "tau_ceti"       -> 0xFFFFEE88;
+                    case "alpha_centauri" -> 0xFFFFCC66;
+                    default               -> 0xFFFFBB44;
+                };
+            }
+            case MOON   -> selectedPlanet != null ? bodyColor(new BodyItem(selectedPlanet.name, selectedPlanet)) : 0xFF4477CC;
+        };
+    }
+
     private int bodyColor(BodyItem item) {
-        if (item.data instanceof Galaxy)      return 0xFF9966FF;
+        if (item.data instanceof Galaxy)       return 0xFF9966FF;
         if (item.data instanceof StarSystem s) {
             return switch (s.id) {
                 case "sol"            -> 0xFFFFDD44;
@@ -414,12 +444,7 @@ public class SpaceNavigationScreen extends Screen {
         return 0xFF4466AA;
     }
 
-    private void drawBorder(GuiGraphicsExtractor g, int x, int y, int w, int h, int color) {
-        g.fill(x,         y,         x + w,     y + 1,     color);
-        g.fill(x,         y + h - 1, x + w,     y + h,     color);
-        g.fill(x,         y + 1,     x + 1,     y + h - 1, color);
-        g.fill(x + w - 1, y + 1,     x + w,     y + h - 1, color);
-    }
+    // ── Drawing primitives ────────────────────────────────────────────────────
 
     private void fillCircle(GuiGraphicsExtractor g, int cx, int cy, int r, int color) {
         for (int dy = -r; dy <= r; dy++) {
@@ -428,5 +453,23 @@ public class SpaceNavigationScreen extends Screen {
         }
     }
 
+    private void drawCircleOutline(GuiGraphicsExtractor g, int cx, int cy, int r, int color) {
+        int steps = Math.max(64, r * 2);
+        for (int i = 0; i < steps; i++) {
+            double angle = 2 * Math.PI * i / steps;
+            int x = cx + (int)(r * Math.cos(angle));
+            int y = cy + (int)(r * Math.sin(angle));
+            g.fill(x, y, x + 1, y + 1, color);
+        }
+    }
+
+    private static double distSq(int ax, int ay, int bx, int by) {
+        double dx = ax - bx, dy = ay - by;
+        return dx * dx + dy * dy;
+    }
+
+    // ── Inner types ───────────────────────────────────────────────────────────
+
     private record BodyItem(String name, Object data) {}
+    private record BodyPos(BodyItem item, int x, int y) {}
 }
