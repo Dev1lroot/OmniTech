@@ -9,6 +9,7 @@ import com.dev1lroot.mcmods.omnitech.client.KineticPipeRenderer;
 import com.dev1lroot.mcmods.omnitech.client.ValveRenderer;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntity;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntityRenderer;
+import com.dev1lroot.mcmods.omnitech.models.RocketModel;
 import com.dev1lroot.mcmods.omnitech.network.OpenRocketGuiPacket;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -42,6 +43,7 @@ public class OmniTechClient
         modEventBus.addListener(this::onClientSetup);
         modEventBus.addListener(this::registerScreens);
         modEventBus.addListener(this::registerBlockEntityRenderers);
+        modEventBus.addListener(this::registerLayerDefinitions);
         modEventBus.addListener(this::registerKeys);
         modEventBus.register(OmniTechClient.class);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onClientTick);
@@ -64,6 +66,10 @@ public class OmniTechClient
         event.registerBlockEntityRenderer(OmniTechBlockEntities.FLUID_PIPE.get(), FluidPipeRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.VALVE.get(), ValveRenderer::new);
         event.registerEntityRenderer(OmniTechEntities.ROCKET.get(), RocketEntityRenderer::new);
+    }
+
+    void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(RocketModel.LAYER_LOCATION, RocketModel::createBodyLayer);
     }
 
     void registerKeys(RegisterKeyMappingsEvent event) {

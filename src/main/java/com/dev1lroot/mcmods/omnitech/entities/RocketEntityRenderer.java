@@ -1,27 +1,27 @@
 package com.dev1lroot.mcmods.omnitech.entities;
 
+import com.dev1lroot.mcmods.omnitech.OmniTech;
+import com.dev1lroot.mcmods.omnitech.models.RocketModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public class RocketEntityRenderer extends EntityRenderer<RocketEntity, RocketRenderState> {
 
-    // Half-extent in X and Z; entity is 3×3×3 blocks
-    private static final float W = 1.5f;
-    // Full height of the rocket body
-    private static final float H = 3.0f;
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(OmniTech.MODID, "textures/entity/rocket.png");
 
-    // Steel-gray color, slightly transparent
-    private static final int CR = 80, CG = 80, CB = 100, CA = 230;
+    private final RocketModel model;
 
     public RocketEntityRenderer(EntityRendererProvider.Context context) {
         super(context);
         this.shadowRadius = 1.5f;
+        this.model = new RocketModel(context.bakeLayer(RocketModel.LAYER_LOCATION));
     }
 
     @Override
@@ -39,45 +39,12 @@ public class RocketEntityRenderer extends EntityRenderer<RocketEntity, RocketRen
     public void submit(RocketRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         super.submit(state, poseStack, submitNodeCollector, camera);
 
-        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.debugFilledBox(), (pose, buffer) -> {
-            float x1 = -W, y1 = 0f, z1 = -W;
-            float x2 =  W, y2 =  H, z2 =  W;
-
-            // Bottom face (y-)
-            buffer.addVertex(pose, x1, y1, z2).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x2, y1, z2).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x2, y1, z1).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x1, y1, z1).setColor(CR, CG, CB, CA);
-
-            // Top face (y+)
-            buffer.addVertex(pose, x1, y2, z1).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x2, y2, z1).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x2, y2, z2).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x1, y2, z2).setColor(CR, CG, CB, CA);
-
-            // North face (z-)
-            buffer.addVertex(pose, x2, y1, z1).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x2, y2, z1).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x1, y2, z1).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x1, y1, z1).setColor(CR, CG, CB, CA);
-
-            // South face (z+)
-            buffer.addVertex(pose, x1, y1, z2).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x1, y2, z2).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x2, y2, z2).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x2, y1, z2).setColor(CR, CG, CB, CA);
-
-            // West face (x-)
-            buffer.addVertex(pose, x1, y1, z1).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x1, y2, z1).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x1, y2, z2).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x1, y1, z2).setColor(CR, CG, CB, CA);
-
-            // East face (x+)
-            buffer.addVertex(pose, x2, y1, z2).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x2, y2, z2).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x2, y2, z1).setColor(CR, CG, CB, CA);
-            buffer.addVertex(pose, x2, y1, z1).setColor(CR, CG, CB, CA);
-        });
+        poseStack.pushPose();
+        // Align the nozzle bottom (model Y=24 after offset) to entity feet,
+        // then flip axes to match Minecraft's model coordinate convention.
+        poseStack.translate(0.0f, 1.5f, 0.0f);
+        poseStack.scale(-1.0f, -1.0f, 1.0f);
+        submitNodeCollector.submitModel(model, state, poseStack, TEXTURE, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
+        poseStack.popPose();
     }
 }
