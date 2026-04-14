@@ -15,6 +15,13 @@ public class OmniTechFeatures {
     public static final java.util.function.Supplier<IceSpikeFeature> ICE_SPIKE =
             REGISTRY.register("ice_spike", IceSpikeFeature::new);
 
+    /**
+     * Rare hydrothermal trench cut into Europa's ocean floor, filled with water
+     * and decorated with magma blocks at the bottom.
+     */
+    public static final java.util.function.Supplier<EuropaTrenchFeature> EUROPA_TRENCH =
+            REGISTRY.register("europa_trench", EuropaTrenchFeature::new);
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }
