@@ -6,6 +6,7 @@ import com.dev1lroot.mcmods.omnitech.space.Galaxy;
 import com.dev1lroot.mcmods.omnitech.space.SpaceMap;
 import com.dev1lroot.mcmods.omnitech.space.SpaceMapLoader;
 import com.dev1lroot.mcmods.omnitech.space.StarSystem;
+import com.dev1lroot.mcmods.omnitech.space.TravelDistanceCalculator;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.BlendFunction;
@@ -78,27 +79,28 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
             .build();
 
     // ---- Scale constants -------------------------------------------------------
-    /** Earth's orbital_radius in space_map.json — reference distance for scale math. */
-    private static final float EARTH_ORBIT_R     = 155f;
+    /** Sol's size in Earth-diameter units (Earth = 1.0). */
+    private static final float SOL_SIZE           = 109f;
     /**
-     * Sol's size in Earth-diameter units.  All star sizes in space_map.json use the
-     * same unit (Earth = 1.0), so Sol = 109.0.
+     * Vanilla sun renders at scale 30f when viewed from 1 AU (149,597,871 km).
+     * We replicate this exactly, then adjust for other distances and star sizes.
      */
-    private static final float SOL_SIZE          = 109f;
+    private static final float VANILLA_SUN_SCALE  = 30f;
     /**
-     * Vanilla sun renders at this scale when viewed from {@link #EARTH_ORBIT_R}.
-     * Our custom star disc uses the same baseline, then adjusts for distance + star size.
+     * Base scale for a body with Earth's diameter seen from Earth-Moon distance
+     * (384,400 km). Tuned so Earth looks good from the Moon (≈40f in game units).
      */
-    private static final float VANILLA_SUN_SCALE = 30f;
+    private static final float BASE_PARENT_SCALE  = 40f;
     /**
-     * Reference orbital radius for moons (Earth's Moon at 90 px in the UI).
-     * Moons closer to their parent see a proportionally larger planet.
+     * Base scale for distant planets (other bodies in the system).
+     * Combined with size^0.7 and distance^−0.4 to produce visible but modest discs.
      */
-    private static final float MOON_REF_ORBIT    = 90f;
-    /** Base scale for a size-1.0 parent planet seen from {@link #MOON_REF_ORBIT}. */
-    private static final float BASE_PARENT_SCALE = 40f;
-    /** Base scale for a size-1.0 distant body one {@link #EARTH_ORBIT_R} unit away. */
     private static final float BASE_DISTANT_SCALE = 3f;
+    /**
+     * Reference distance for distant-body scale normalization (100 million km).
+     * A size-1.0 body exactly this far away gets BASE_DISTANT_SCALE scale.
+     */
+    private static final long DISTANT_REF_KM      = 100_000_000L;
 
     // --- Mixin suppression flags (read by SkyRendererMixin) ---
     private static boolean suppressVanillaMoon = false;
@@ -264,24 +266,23 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
 
         BodyLocation loc = findCurrentLocation();
 
-        // --- Resolve current solar distance ---
-        // For moons, we share the parent planet's orbital radius (same solar distance).
-        float currentOrbitalRadius = EARTH_ORBIT_R;
+        // --- Viewer's real km distance from the star ---
+        // Moons inherit their parent planet's orbital distance.
+        long viewerStarDistKm = TravelDistanceCalculator.SOL_EARTH_DIST_KM; // default = 1 AU
         if (loc != null) {
-            currentOrbitalRadius = loc.parentPlanet() != null
-                    ? loc.parentPlanet().orbital_radius
-                    : loc.body().orbital_radius;
-            if (currentOrbitalRadius <= 0) currentOrbitalRadius = EARTH_ORBIT_R;
+            CelestialBody home = loc.parentPlanet() != null ? loc.parentPlanet() : loc.body();
+            if (home.orbital_distance_km > 0) viewerStarDistKm = home.orbital_distance_km;
         }
 
-        // --- Star (sun) apparent scale ---
-        // Scales with star physical size and inversely with distance.
-        // Baseline: Sol (size=109) from Earth (R=155) → vanilla scale 30f.
+        // --- Star apparent scale ---
+        // Baseline: Sol (size=109) at 1 AU → vanilla sun scale 30f.
+        // Scales linearly with star size, inversely with distance.
         float starSize = (loc != null && loc.starSystem() != null && loc.starSystem().size > 0)
                 ? loc.starSystem().size : SOL_SIZE;
         float sunScale = clamp(
-                VANILLA_SUN_SCALE * (starSize / SOL_SIZE) * EARTH_ORBIT_R / currentOrbitalRadius,
-                6f, 70f);
+                VANILLA_SUN_SCALE * (starSize / SOL_SIZE)
+                        * (float) TravelDistanceCalculator.SOL_EARTH_DIST_KM / viewerStarDistKm,
+                4f, 70f);
 
         setupFog.run();
         skyRenderer.renderSkyDisc(0xFF000000);
@@ -322,14 +323,25 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
             CelestialBody moon   = loc.body();
             CelestialBody parent = loc.parentPlanet();
 
-            float parentSize  = parent.size > 0f ? parent.size : 1.0f;
-            float moonOrbit   = moon.orbital_radius > 0 ? moon.orbital_radius : MOON_REF_ORBIT;
+            float parentSize = parent.size > 0f ? parent.size : 1.0f;
 
-            // Apparent scale = base × sqrt(physicalSize) × (referenceOrbit / moonOrbit).
-            // sqrt dampens extreme gas-giant sizes to keep Jupiter dramatic but not absurd.
-            float parentScale = clamp(
-                    BASE_PARENT_SCALE * (float) Math.sqrt(parentSize) * (MOON_REF_ORBIT / moonOrbit),
-                    18f, 120f);
+            // Use real km distance if available; fall back to UI orbital_radius ratio.
+            float parentScale;
+            if (moon.parent_distance_km > 0) {
+                // apparent_scale = BASE * parentDiameter / viewerDistance
+                //                = BASE * parentSize * (EARTH_MOON reference) / moonParentDist
+                parentScale = clamp(
+                        BASE_PARENT_SCALE * parentSize
+                                * (float) TravelDistanceCalculator.EARTH_MOON_DIST_KM
+                                / moon.parent_distance_km,
+                        18f, 120f);
+            } else {
+                // Fallback: sqrt(size) × UI-radius ratio
+                float moonOrbit = moon.orbital_radius > 0 ? moon.orbital_radius : 90f;
+                parentScale = clamp(
+                        BASE_PARENT_SCALE * (float) Math.sqrt(parentSize) * (90f / moonOrbit),
+                        18f, 120f);
+            }
 
             float orbitalSpeed = moon.orbital_speed > 0f ? moon.orbital_speed : 2.0f;
             float parentAngle  = skyRenderState.sunAngle * orbitalSpeed * 0.4f
@@ -349,12 +361,28 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
                 if (planet.id.equals(homePlanetId)) continue;
 
                 float bodySize = planet.size > 0f ? planet.size : 1.0f;
-                // Distance proxy: difference of orbital radii in the UI space.
-                // Planets close in orbital radius appear larger.
-                float dist = Math.max(20f, Math.abs(planet.orbital_radius - currentOrbitalRadius));
-                float distantScale = clamp(
-                        BASE_DISTANT_SCALE * bodySize * (EARTH_ORBIT_R / dist),
-                        1.5f, 15f);
+
+                float distantScale;
+                if (planet.orbital_distance_km > 0 && viewerStarDistKm > 0) {
+                    // Real km distance between the viewer's orbit and the body's orbit.
+                    long distKm = Math.max(1_000_000L,
+                            Math.abs(planet.orbital_distance_km - viewerStarDistKm));
+                    // Scale = BASE × size^0.7 × (REF_DIST / actualDist)^0.4
+                    // The exponents make gas giants prominent without overwhelming the screen,
+                    // and give diminishing returns for very close bodies.
+                    distantScale = clamp(
+                            BASE_DISTANT_SCALE
+                                    * (float) Math.pow(bodySize, 0.7)
+                                    * (float) Math.pow((double) DISTANT_REF_KM / distKm, 0.4),
+                            1.0f, 15f);
+                } else {
+                    // Fallback: UI orbital_radius difference
+                    float uiDist = Math.max(20f,
+                            Math.abs(planet.orbital_radius - (loc.parentPlanet() != null
+                                    ? loc.parentPlanet().orbital_radius
+                                    : loc.body().orbital_radius)));
+                    distantScale = clamp(BASE_DISTANT_SCALE * bodySize * (155f / uiDist), 1f, 15f);
+                }
 
                 float phaseOffset  = (Math.abs(planet.id.hashCode()) % 628) / 100f;
                 float speed        = planet.orbital_speed > 0f ? planet.orbital_speed : 1.0f;

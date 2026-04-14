@@ -36,10 +36,10 @@
               "type": "planet",
               "dimension": null,
               "texture": "omnitech:textures/space/planet/mercury.png",
-              "fuel_cost": 800,
               "orbital_radius": 80,
               "orbital_speed": 3.95,
               "size": 0.38,
+              "orbital_distance_km": 57909000,
               "moons": []
             },
             {
@@ -47,10 +47,10 @@
               "type": "planet",
               "dimension": null,
               "texture": "omnitech:textures/space/planet/venus.png",
-              "fuel_cost": 600,
               "orbital_radius": 115,
               "orbital_speed": 2.29,
               "size": 0.95,
+              "orbital_distance_km": 108209000,
               "moons": []
             },
             {
@@ -59,20 +59,20 @@
               "dimension": "minecraft:overworld",
               "texture": "omnitech:textures/space/planet/earth.png",
               "background": "omnitech:textures/space/background/earth.png",
-              "fuel_cost": 500,
               "orbital_radius": 155,
               "orbital_speed": 1.47,
               "size": 1.0,
+              "orbital_distance_km": 149598000,
               "moons": [
                 {
                   "id": "moon",
                   "type": "moon",
                   "dimension": "omnitech:moon",
                   "texture": "omnitech:textures/space/moon/moon.png",
-                  "fuel_cost": 600,
                   "orbital_radius": 90,
                   "orbital_speed": 3.31,
                   "size": 0.27,
+                  "parent_distance_km": 384400,
                   "moons": []
                 }
               ]
@@ -82,10 +82,10 @@
               "type": "planet",
               "dimension": null,
               "texture": "omnitech:textures/space/planet/mars.png",
-              "fuel_cost": 900,
               "orbital_radius": 200,
               "orbital_speed": 1.0,
               "size": 0.53,
+              "orbital_distance_km": 227939000,
               "moons": []
             },
             {
@@ -94,20 +94,20 @@
               "dimension": null,
               "texture": "omnitech:textures/space/planet/jupiter.png",
               "background": "omnitech:textures/space/background/jupiter.png",
-              "fuel_cost": 2000,
               "orbital_radius": 290,
               "orbital_speed": 0.57,
               "size": 11.2,
+              "orbital_distance_km": 778299000,
               "moons": [
                 {
                   "id": "io",
                   "type": "moon",
                   "dimension": null,
                   "texture": "omnitech:textures/space/moon/io.png",
-                  "fuel_cost": 2100,
                   "orbital_radius": 70,
                   "orbital_speed": 4.83,
                   "size": 0.29,
+                  "parent_distance_km": 421700,
                   "moons": []
                 },
                 {
@@ -115,10 +115,10 @@
                   "type": "moon",
                   "dimension": "omnitech:europa",
                   "texture": "omnitech:textures/space/moon/europa.png",
-                  "fuel_cost": 2150,
                   "orbital_radius": 100,
                   "orbital_speed": 2.83,
                   "size": 0.25,
+                  "parent_distance_km": 671100,
                   "moons": []
                 },
                 {
@@ -126,10 +126,10 @@
                   "type": "moon",
                   "dimension": null,
                   "texture": "omnitech:textures/space/moon/ganymede.png",
-                  "fuel_cost": 2200,
                   "orbital_radius": 135,
                   "orbital_speed": 1.80,
                   "size": 0.41,
+                  "parent_distance_km": 1070400,
                   "moons": []
                 }
               ]
@@ -140,20 +140,20 @@
               "dimension": null,
               "texture": "omnitech:textures/space/planet/saturn.png",
               "background": "omnitech:textures/space/background/saturn.png",
-              "fuel_cost": 3000,
               "orbital_radius": 365,
               "orbital_speed": 0.41,
               "size": 9.45,
+              "orbital_distance_km": 1429394000,
               "moons": [
                 {
                   "id": "titan",
                   "type": "moon",
                   "dimension": null,
                   "texture": "omnitech:textures/space/moon/titan.png",
-                  "fuel_cost": 3100,
                   "orbital_radius": 110,
                   "orbital_speed": 2.45,
                   "size": 0.40,
+                  "parent_distance_km": 1221870,
                   "moons": []
                 }
               ]
@@ -163,10 +163,10 @@
               "type": "planet",
               "dimension": null,
               "texture": "omnitech:textures/space/planet/uranus.png",
-              "fuel_cost": 4500,
               "orbital_radius": 430,
               "orbital_speed": 0.32,
               "size": 4.0,
+              "orbital_distance_km": 2870990000,
               "moons": []
             },
             {
@@ -174,10 +174,10 @@
               "type": "planet",
               "dimension": null,
               "texture": "omnitech:textures/space/planet/neptune.png",
-              "fuel_cost": 6000,
               "orbital_radius": 490,
               "orbital_speed": 0.26,
               "size": 3.9,
+              "orbital_distance_km": 4498252000,
               "moons": []
             }
           ]
@@ -195,10 +195,10 @@
               "type": "planet",
               "dimension": null,
               "texture": "omnitech:textures/space/planet/tau_ceti_e.png",
-              "fuel_cost": 50000,
               "orbital_radius": 140,
               "orbital_speed": 1.71,
               "size": 4.3,
+              "orbital_distance_km": 82541000,
               "moons": []
             },
             {
@@ -206,10 +206,10 @@
               "type": "planet",
               "dimension": null,
               "texture": "omnitech:textures/space/planet/tau_ceti_f.png",
-              "fuel_cost": 52000,
               "orbital_radius": 200,
               "orbital_speed": 1.0,
               "size": 6.6,
+              "orbital_distance_km": 201957000,
               "moons": []
             }
           ]
@@ -227,10 +227,10 @@
               "type": "planet",
               "dimension": null,
               "texture": "omnitech:textures/space/planet/proxima_b.png",
-              "fuel_cost": 80000,
               "orbital_radius": 120,
               "orbital_speed": 2.15,
               "size": 1.3,
+              "orbital_distance_km": 7254000,
               "moons": []
             }
           ]

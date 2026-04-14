@@ -7,6 +7,7 @@ import com.dev1lroot.mcmods.omnitech.space.Galaxy;
 import com.dev1lroot.mcmods.omnitech.space.SpaceMap;
 import com.dev1lroot.mcmods.omnitech.space.SpaceMapLoader;
 import com.dev1lroot.mcmods.omnitech.space.StarSystem;
+import com.dev1lroot.mcmods.omnitech.space.TravelDistanceCalculator;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -330,9 +331,11 @@ public class SpaceNavigationScreen extends Screen {
         if (minecraft.player != null && minecraft.player.getVehicle() instanceof RocketEntity r)
             playerFuel = r.getFuelAmount();
 
-        boolean enough = playerFuel >= destination.fuel_cost;
+        int requiredFuel = TravelDistanceCalculator.fuelCostMb(currentDimensionId, destination, spaceMap);
+        if (requiredFuel < 0) requiredFuel = destination.fuel_cost;
+        boolean enough = playerFuel >= requiredFuel;
         g.text(font,
-                String.format("Fuel: %,d / %,d mB required", playerFuel, destination.fuel_cost),
+                String.format("Fuel: %,d / %,d mB required", playerFuel, requiredFuel),
                 12, y + 12, enough ? C_FUEL_OK : C_FUEL_BAD);
 
         if (destination.dimension == null)

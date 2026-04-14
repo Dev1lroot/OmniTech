@@ -10,10 +10,26 @@ public class CelestialBody {
     /** Nullable — null means the dimension has not been implemented yet. */
     public String dimension;
     public String texture;
-    /** Fuel cost in mB to travel here from the current location. */
+    /**
+     * Fuel cost in mB.
+     * @deprecated Fuel is now calculated dynamically from {@link #orbital_distance_km}
+     *             and {@link #parent_distance_km} via {@code TravelDistanceCalculator}.
+     *             This field is ignored at runtime but kept for JSON backwards-compatibility.
+     */
+    @Deprecated
     public int fuel_cost;
     /** Orbit radius in scene units at zoom=1.0 (pixels). Default 120 if omitted. */
     public int orbital_radius = 120;
+    /**
+     * Distance from the star in kilometres (planets only).
+     * Moons set this to 0 and use {@link #parent_distance_km} instead.
+     */
+    public long orbital_distance_km = 0L;
+    /**
+     * Distance from the parent planet in kilometres (moons only).
+     * Planets leave this as 0.
+     */
+    public long parent_distance_km = 0L;
     /**
      * Angular-speed multiplier relative to {@code ORBIT_SPEED} in the GUI.
      * 0 (default) means the screen falls back to the Kepler formula.
