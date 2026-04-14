@@ -5,19 +5,6 @@ hand-cranked stone-age machinery to interplanetary space exploration.
 
 ---
 
-## Documentation
-
-| Document | Contents |
-|----------|----------|
-| [Installation & Build](Documentation/index.md) | Requirements, setup, project structure |
-| [Machines](Documentation/machines.md) | Every machine: I/O, energy, mechanics |
-| [Power Networks](Documentation/power_networks.md) | Energy carriers, cross-tier conversion, fluids |
-| [Materials](Documentation/materials.md) | 12 metals, item forms, processing chain |
-| [Planets & Space](Documentation/planets.md) | Dimensions, rocket, navigation GUI, sky renderer |
-| [Space Map API](Documentation/space_map_api.md) | `space_map.json` authoring reference |
-
----
-
 ## License
 
 Copyright (c) 2026 – 2126 **David Eichendorf** — All rights reserved.
@@ -56,55 +43,74 @@ retains the right to accept, reject, or modify submissions.
 
 ---
 
-## Features
+## Core Features
 
-### Machine Networks
+### Multi-Stage Energy Ecosystem
+OmniTech moves away from "magic energy" boxes, introducing a sophisticated progression of interconnected power systems. Each stage requires distinct engineering logic to master:
 
-Five-tier energy progression, fully interconnected:
-
-| Tier | Carrier | Key blocks |
-|------|---------|-----------|
-| 1 | Kinetic Force (KF) | Crank, KF Generator, KF Pipe, KF Reductor |
-| 2 | Heat | Heater, Boiler, Stirling Engine, Heat Exchanger |
-| 3 | Fluid Pressure | Pump, Fluid Tank, Fluid Pipe, Valve, Sorter |
-| 4 | Chemical | Smelter, Foundry, Fractional Distiller, Electrolysis, Compressor |
-| 5 | Electrical (EU) | Solar Panel, Capacitor, Electric Wire, Electric Furnace |
-
-### Materials
-
-Twelve metal families — Tungsten, Chromium, Tin, Aluminium, Cobalt, Nickel,
-Zinc, Lead, Uranium, Titanium, Steel, Brass — each with eleven item forms
-(ingot, dust, plate, rod, wire, coil, cog, reductor, mote, nugget) and world
-ore generation.
-
-### Space Exploration
-
-- Rocket entity with mB-based propellant system (Hydrazine)
-- `/spacemap` command — animated four-level orbital navigation GUI
-  (Galaxy → Star System → Planet → Moon)
-- Dynamic fuel costs calculated from real astronomical distances (km)
-- Custom sky renderer: distance-scaled star disc, orbital inclinations,
-  correct z-depth ordering between bodies
-- Active dimensions: **Moon** (`omnitech:moon`), **Europa** (`omnitech:europa`)
-- Modelled but unplayable: Mars, Io, Ganymede, Titan, Tau Ceti system,
-  Alpha Centauri / Proxima b
+* **Kinetic Force (KF)** — The mechanical foundation. Utilize torque and rotation through shafts and reductors to power early-game machinery.
+* **Thermal Energy** — Heat management and steam power. Harness boilers and exchangers to drive heavy-duty industrial processes.
+* **Fluid Pressure** — Hydraulic logistics. A system focused on pressure differentials, utilizing valves and industrial piping for complex automation.
+* **Chemical Processing** — The heart of refinement. Advanced electrolysis, distillation, and compression systems for high-tier material synthesis.
+* **Electrical Power (EU)** — The modern pinnacle. High-voltage grids, sustainable energy harvesting, and dense storage solutions for end-game infrastructure.
 
 ---
 
-## Planned Features
+### Advanced Metallurgy & Materials
+The mod significantly expands the periodic table, introducing a wide array of industrial metals and alloys into world generation. Every material features a comprehensive set of processing forms—ranging from plates and wires to complex mechanical components—integrated into a deep, multi-stage manufacturing pipeline.
 
-- **More dimensions** — Mars, Io, Ganymede, Titan; procedural exoplanet surfaces
-- **Server-side fuel validation** — fuel is currently consumed client-side
-  during thrust only; proper server deduction at launch is planned
-- **Dynamo** — EU generation from KF (closing the electrical feedback loop)
-- **Electronics tier** — printed circuit boards, logic gates, programmable
-  controllers; precursor to the EUV microchip end-game
-- **EUV Lithography** — end-game machine for producing nanometre-scale chips
-- **Nuclear reactor** — Uranium-fuelled EU generation with heat management
-- **Automation improvements** — programmable Sorter, item pipes with priority
-- **More rocket propellants** — staged rockets, multi-stage orbital insertion
-- **Interstellar travel** — Tau Ceti and Alpha Centauri playable systems
-- **Localisation** — full translation support beyond `en_us`
+---
+
+### Scientific Space Exploration
+Space travel in OmniTech is a mathematically grounded experience, driven by astronomical logic rather than simple teleportation:
+
+* **Chemical Propulsion** — Pilotable rocket systems utilizing realistic propellant mechanics.
+* **Orbital Navigation** — A custom, hierarchical navigation interface (`/spacemap`) providing seamless transitions between moons, planets, star systems, and galaxies.
+* **Astro-Physics Rendering** — A dedicated sky engine that handles orbital inclinations, relative celestial scale, and proper z-depth for total immersion.
+* **The Frontier** — Explore active celestial bodies across the Sol system and beyond. The universe is built on a data-driven architecture, allowing for near-infinite expansion of star systems and reachable dimensions.
+
+---
+
+## Planned Features (The Roadmap)
+
+Development is an ongoing battle against technical debt. The following systems are currently in the crosshairs:
+
+### Space Exploration & Intergalactic Reach
+* **Deep Space Expansion** — Deployment of Mars, Io, Ganymede, and Titan with unique gravitational profiles.
+* **Interstellar Travel** — Relativistic propulsion to reach the Tau Ceti and Alpha Centauri systems.
+* **Intergalactic Jumps** — Massive-scale expeditions to the **Andromeda** and **Pegasus** galaxies.
+* **Universal Extensibility** — A fully data-driven system. The architecture is being built so anyone can add their own planets, star systems, or entire galaxies via simple configuration files and addons.
+* **Server-side Fuel Validation** — Migration from client-side thrust consumption to a robust server-side validation and launch deduction system.
+
+### ⚡ Industrial Power & Resource Processing
+* **The Oil Empire** — Full petroleum industry: from crude oil extraction to fractional distillation, cracking, and polymer production.
+* **Nuclear Infrastructure** — Uranium-fuelled reactors with complex heat management, cooling cycles, and radioactive waste disposal.
+* **Advanced Rocketry** — Staged rockets and multi-stage orbital insertion mechanics for heavy payload delivery.
+
+### Electronics & High-Tech Manufacturing
+* **Silicon Tier** — Production of Printed Circuit Boards (PCBs), logic gates, and programmable logic controllers (PLCs).
+* **EUV Lithography** — The ultimate end-game: Extreme Ultraviolet Lithography for nanometre-scale microchip fabrication.
+* **Next-Gen Automation** — Smart Sorters and priority-based item pipes for high-throughput logistics.
+
+### Global Support & Logistics
+* **UN-Grade Localization** — Full translation support for 5 official UN languages, ensuring the mod speaks more than just `en_us`.
+
+---
+
+> **Note:** If a feature isn't here, it's either a secret or we're still arguing about the math.
+
+---
+
+## Documentation
+
+| Document | Contents |
+|----------|----------|
+| [Installation & Build](Documentation/index.md) | Requirements, setup, project structure |
+| [Machines](Documentation/machines.md) | Every machine: I/O, energy, mechanics |
+| [Power Networks](Documentation/power_networks.md) | Energy carriers, cross-tier conversion, fluids |
+| [Materials](Documentation/materials.md) | 12 metals, item forms, processing chain |
+| [Planets & Space](Documentation/planets.md) | Dimensions, rocket, navigation GUI, sky renderer |
+| [Space Map API](Documentation/space_map_api.md) | `space_map.json` authoring reference |
 
 ---
 
