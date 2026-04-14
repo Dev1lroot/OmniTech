@@ -13,6 +13,12 @@ public class StarSystem {
      * 0 (default) means the screen falls back to the Kepler formula.
      */
     public float orbital_speed = 0f;
+    /**
+     * Physical diameter of the star relative to Earth (Earth = 1.0, Sol ≈ 109).
+     * Used by the sky renderer to scale the star's apparent disc size.
+     * 0 means "use Sol as default".
+     */
+    public float size = 0f;
     public List<CelestialBody> bodies = List.of();
 
     /** Optional background texture shown when browsing this system's planets. */

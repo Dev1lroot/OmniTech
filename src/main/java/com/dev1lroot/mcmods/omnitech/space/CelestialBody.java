@@ -19,6 +19,12 @@ public class CelestialBody {
      * 0 (default) means the screen falls back to the Kepler formula.
      */
     public float orbital_speed = 0f;
+    /**
+     * Physical diameter relative to Earth (Earth = 1.0).
+     * Used by the sky renderer to scale apparent size alongside distance.
+     * 0 means "use a sensible default".
+     */
+    public float size = 0f;
     /** Optional background texture shown when this planet's moons are listed. */
     public String background;
 
