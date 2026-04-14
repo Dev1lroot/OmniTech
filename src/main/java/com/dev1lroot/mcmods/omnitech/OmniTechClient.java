@@ -32,6 +32,7 @@ import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
@@ -60,6 +61,7 @@ public class OmniTechClient
         modEventBus.addListener(this::registerKeys);
         modEventBus.register(OmniTechClient.class);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onClientTick);
+        NeoForge.EVENT_BUS.addListener(OmniTechClient::registerClientCommands);
     }
 
     void onClientSetup(FMLClientSetupEvent event) {
@@ -105,6 +107,17 @@ public class OmniTechClient
                 GLFW.GLFW_KEY_G,
                 category);
         event.register(OPEN_ROCKET_GUI);
+    }
+
+    public static void registerClientCommands(RegisterClientCommandsEvent event) {
+        event.getDispatcher().register(
+            net.minecraft.commands.Commands.literal("spacemap")
+                .requires(net.minecraft.commands.Commands.hasPermission(net.minecraft.commands.Commands.LEVEL_GAMEMASTERS))
+                .executes(ctx -> {
+                    Minecraft.getInstance().setScreen(new SpaceNavigationScreen());
+                    return 1;
+                })
+        );
     }
 
     public static void onClientTick(ClientTickEvent.Post event) {
