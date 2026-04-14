@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DecompressorRecipeManager {
 
     private static final Gson   GSON = new Gson();
-    private static final String PATH = "decompressor_recipes";
+    private static final String PATH = "recipe/decompressor";
     private static final Map<String, DecompressorRecipe> RECIPES = new ConcurrentHashMap<>();
     private static boolean initialized = false;
 

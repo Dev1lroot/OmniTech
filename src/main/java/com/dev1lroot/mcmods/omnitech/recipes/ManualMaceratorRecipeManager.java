@@ -25,7 +25,7 @@ public class ManualMaceratorRecipeManager {
 
     public static void loadRecipes(ResourceManager resourceManager) {
         RECIPES.clear();
-        String path = "manual_macerator_recipes";
+        String path = "recipe/manual_macerator";
 
         try {
             Map<Identifier, Resource> resources = resourceManager.listResources(path,

@@ -25,7 +25,7 @@ public class ManualCentrifugeRecipeManager {
 
     public static void loadRecipes(ResourceManager resourceManager) {
         RECIPES.clear();
-        String path = "manual_centrifuge_recipes";
+        String path = "recipe/manual_centrifuge";
 
         try {
             Map<Identifier, Resource> resources = resourceManager.listResources(path,

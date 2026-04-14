@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class HeatExchangerRecipeManager {
 
     private static final Gson   GSON    = new Gson();
-    private static final String PATH    = "heat_exchanger_recipes";
+    private static final String PATH    = "recipe/heat_exchanger";
     private static final Map<String, HeatExchangerRecipe> RECIPES = new ConcurrentHashMap<>();
     private static boolean initialized = false;
 

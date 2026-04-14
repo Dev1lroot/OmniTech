@@ -23,7 +23,7 @@ public class BoilerRecipeManager {
 
     public static void loadRecipes(ResourceManager resourceManager) {
         RECIPES.clear();
-        String path = "boiler_recipes";
+        String path = "recipe/boiler";
 
         try {
             Map<Identifier, Resource> resources = resourceManager.listResources(

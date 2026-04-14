@@ -24,7 +24,7 @@ public class SmelterRecipeManager {
 
     public static void loadRecipes(ResourceManager resourceManager) {
         RECIPES.clear();
-        String path = "smelter_recipes";
+        String path = "recipe/smelting";
 
         try {
             Map<Identifier, Resource> resources = resourceManager.listResources(path,

@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FluidCollectorRecipeManager {
 
     private static final Gson   GSON    = new Gson();
-    private static final String PATH    = "fluid_collector_recipes";
+    private static final String PATH    = "recipe/fluid_collector";
     private static final Map<String, FluidCollectorRecipe> RECIPES = new ConcurrentHashMap<>();
     private static boolean initialized = false;
 

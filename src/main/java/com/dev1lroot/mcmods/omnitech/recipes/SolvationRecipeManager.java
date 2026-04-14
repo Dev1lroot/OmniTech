@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SolvationRecipeManager {
 
     private static final Gson GSON    = new Gson();
-    private static final String PATH  = "solvation_recipes";
+    private static final String PATH  = "recipe/solvation";
     private static final Map<String, SolvationRecipe> RECIPES = new ConcurrentHashMap<>();
     private static boolean initialized = false;
 
