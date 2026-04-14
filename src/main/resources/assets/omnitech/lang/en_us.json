@@ -310,5 +310,9 @@
   "block.omnitech.paleoregolith": "Paleoregolith",
   "block.omnitech.megaregolith": "Megaregolith",
   "item.omnitech.regolith_dust": "Regolith Dust",
-  "item.omnitech.regolith_mote": "Regolith Mote"
+  "item.omnitech.regolith_mote": "Regolith Mote",
+
+  "block.omnitech.europa_stone": "Europa Stone",
+  "block.omnitech.europa_ice": "Europa Ice",
+  "block.omnitech.cracked_ice": "Cracked Ice"
 }

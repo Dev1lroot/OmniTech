@@ -32,6 +32,17 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> EXAMPLE_BLOCK = REGISTRY.registerSimpleBlock(
             "example_block", p -> p.mapColor(MapColor.STONE));
 
+    // ── Europa blocks ─────────────────────────────────────────────────────────
+    /** Deep rocky basement layer (Y=3–22) beneath the Europa ocean. */
+    public static final DeferredBlock<Block> EUROPA_STONE = REGISTRY.registerSimpleBlock(
+            "europa_stone", p -> p.mapColor(MapColor.STONE).strength(3.0F).sound(SoundType.STONE));
+    /** Main ice body (Y=103–122) forming Europa's frozen crust. */
+    public static final DeferredBlock<Block> EUROPA_ICE = REGISTRY.registerSimpleBlock(
+            "europa_ice", p -> p.mapColor(MapColor.ICE).strength(1.5F).sound(SoundType.GLASS).friction(0.98F));
+    /** Topmost cracked-surface ice layer and the material of downward ice spikes. */
+    public static final DeferredBlock<Block> CRACKED_ICE = REGISTRY.registerSimpleBlock(
+            "cracked_ice", p -> p.mapColor(MapColor.ICE).strength(1.2F).sound(SoundType.GLASS).friction(0.96F));
+
     public static final DeferredBlock<Block> ALLOY_FURNACE;
     public static final DeferredBlock<Block> MANUAL_MACERATOR;
     public static final DeferredBlock<Block> MANUAL_CENTRIFUGE;

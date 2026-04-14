@@ -105,7 +105,7 @@
                 {
                   "id": "europa",
                   "type": "moon",
-                  "dimension": null,
+                  "dimension": "omnitech:europa",
                   "texture": "omnitech:textures/space/moon/europa.png",
                   "fuel_cost": 2150,
                   "orbital_radius": 100,

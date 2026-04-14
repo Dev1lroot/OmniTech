@@ -11,6 +11,10 @@ public class OmniTechFeatures {
     public static final DeferredRegister<Feature<?>> REGISTRY =
             DeferredRegister.create(Registries.FEATURE, OmniTech.MODID);
 
+    /** Downward icicle spikes hanging from the Europa ice crust into the sub-surface ocean. */
+    public static final java.util.function.Supplier<IceSpikeFeature> ICE_SPIKE =
+            REGISTRY.register("ice_spike", IceSpikeFeature::new);
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }

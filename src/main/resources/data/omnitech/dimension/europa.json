@@ -1,0 +1,11 @@
+{
+  "type": "omnitech:europa",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "omnitech:europa"
+    },
+    "settings": "omnitech:europa"
+  }
+}
