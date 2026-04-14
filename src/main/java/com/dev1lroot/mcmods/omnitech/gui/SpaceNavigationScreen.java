@@ -217,15 +217,25 @@ public class SpaceNavigationScreen extends Screen {
 
     @Override
     public void extractBackground(GuiGraphicsExtractor g, int mx, int my, float a) {
+        g.fill(0, 0, width, height, C_BG);
+        drawStarfield(g);
+
         Identifier bgTex = getBackgroundTexture();
         if (bgTex != null) {
-            // Stretch background texture across the full screen
-            g.blit(bgTex, 0, 0, width, height, 0f, 1f, 0f, 1f);
-            // Overlay a subtle darkening so text stays readable
+            // Scale with zoom — use the larger screen dimension as the reference so the
+            // texture "covers" the screen at zoom=1.0.  Scaling is uniform (proportional),
+            // so the image is never distorted; if it grows beyond the screen it is clipped
+            // naturally by the renderer.
+            int ref    = Math.max(width, height);
+            int bgSize = Math.max(4, (int)(ref * zoom));
+            // Use the same centre as the orbital scene so the background tracks it
+            int scx    = width  / 2;
+            int scy    = TOP_H  + (height - TOP_H - BOTTOM_H) / 2;
+            g.blit(bgTex, scx - bgSize / 2, scy - bgSize / 2,
+                          scx + bgSize / 2, scy + bgSize / 2,
+                          0f, 1f, 0f, 1f);
+            // Subtle darkening overlay so text and orbit lines stay readable
             g.fill(0, 0, width, height, 0x88010108);
-        } else {
-            g.fill(0, 0, width, height, C_BG);
-            drawStarfield(g);
         }
     }
 
