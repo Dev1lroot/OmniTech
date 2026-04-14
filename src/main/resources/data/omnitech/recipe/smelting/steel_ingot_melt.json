@@ -1,0 +1,5 @@
+{
+  "requiredMinimalTemperature": 1500,
+  "input": [ "omnitech:steel_ingot" ],
+  "output": { "fluid": "omnitech:molten_steel", "amount": 1000 }
+}

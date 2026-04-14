@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [ "omnitech:tungsten_block" ],
+  "result": { "count": 9, "id": "omnitech:tungsten_ingot" }
+}

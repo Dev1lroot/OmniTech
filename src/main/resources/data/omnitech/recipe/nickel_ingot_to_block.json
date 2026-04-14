@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": { "I": "omnitech:nickel_ingot" },
+  "pattern": [ "III", "III", "III" ],
+  "result": { "count": 1, "id": "omnitech:nickel_block" }
+}

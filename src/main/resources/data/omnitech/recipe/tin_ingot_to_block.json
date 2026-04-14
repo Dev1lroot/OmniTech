@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": { "I": "omnitech:tin_ingot" },
+  "pattern": [ "III", "III", "III" ],
+  "result": { "count": 1, "id": "omnitech:tin_block" }
+}

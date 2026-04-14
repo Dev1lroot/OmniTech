@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [ "omnitech:brass_dust" ],
+  "result": { "count": 9, "id": "omnitech:brass_mote" }
+}

@@ -1,0 +1,5 @@
+{
+  "requiredMinimalTemperature": 1100,
+  "input": [ "minecraft:copper_ingot" ],
+  "output": { "fluid": "omnitech:molten_copper", "amount": 1000 }
+}

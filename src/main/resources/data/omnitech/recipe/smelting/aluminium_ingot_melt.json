@@ -1,0 +1,5 @@
+{
+  "requiredMinimalTemperature": 700,
+  "input": [ "omnitech:aluminium_ingot" ],
+  "output": { "fluid": "omnitech:molten_aluminium", "amount": 1000 }
+}

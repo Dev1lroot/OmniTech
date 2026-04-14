@@ -31,8 +31,21 @@ public class OmniTechFluids
             FluidType.Properties.create().density(10).viscosity(10).temperature(100));
     public static final FluidObject SODIUM_HYDROXIDE = new FluidObject("sodium_hydroxide", gasProps());
     public static final FluidObject SODIUM_HYPOCHLORITE = new FluidObject("sodium_hypochlorite", gasProps());
-    public static final FluidObject MOLTEN_BRASS = new FluidObject("molten_brass",
-            FluidType.Properties.create().density(8900).viscosity(3000).temperature(1200));
+    public static final FluidObject MOLTEN_BRASS     = new FluidObject("molten_brass",     moltProps(8900,  1200));
+    public static final FluidObject MOLTEN_TIN       = new FluidObject("molten_tin",       moltProps(7300,  505));
+    public static final FluidObject MOLTEN_LEAD      = new FluidObject("molten_lead",      moltProps(11340, 600));
+    public static final FluidObject MOLTEN_ZINC      = new FluidObject("molten_zinc",      moltProps(7134,  693));
+    public static final FluidObject MOLTEN_ALUMINIUM = new FluidObject("molten_aluminium", moltProps(2700,  933));
+    public static final FluidObject MOLTEN_COBALT    = new FluidObject("molten_cobalt",    moltProps(8900,  1768));
+    public static final FluidObject MOLTEN_NICKEL    = new FluidObject("molten_nickel",    moltProps(8908,  1728));
+    public static final FluidObject MOLTEN_STEEL     = new FluidObject("molten_steel",     moltProps(7870,  1783));
+    public static final FluidObject MOLTEN_URANIUM   = new FluidObject("molten_uranium",   moltProps(19100, 1405));
+    public static final FluidObject MOLTEN_TITANIUM  = new FluidObject("molten_titanium",  moltProps(4507,  1941));
+    public static final FluidObject MOLTEN_CHROMIUM  = new FluidObject("molten_chromium",  moltProps(7190,  2180));
+    public static final FluidObject MOLTEN_TUNGSTEN  = new FluidObject("molten_tungsten",  moltProps(19300, 3695));
+    public static final FluidObject MOLTEN_IRON      = new FluidObject("molten_iron",      moltProps(7874,  1811));
+    public static final FluidObject MOLTEN_COPPER    = new FluidObject("molten_copper",    moltProps(8960,  1358));
+
     public static final FluidObject ARGON = new FluidObject("argon", gasProps());
 
     public static final FluidObject AIR = new FluidObject("air", gasProps());
@@ -44,6 +57,11 @@ public class OmniTechFluids
     // Вспомогательный метод для свойств газа
     private static FluidType.Properties gasProps() {
         return FluidType.Properties.create().density(-1000).viscosity(10).temperature(373);
+    }
+
+    // Molten metal fluid properties (density kg/m³, temperature K)
+    private static FluidType.Properties moltProps(int density, int tempKelvin) {
+        return FluidType.Properties.create().density(density).viscosity(5000).temperature(tempKelvin);
     }
 
     /**

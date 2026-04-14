@@ -1,0 +1,5 @@
+{
+  "requiredMinimalTemperature": 1600,
+  "input": [ "minecraft:iron_ingot" ],
+  "output": { "fluid": "omnitech:molten_iron", "amount": 1000 }
+}

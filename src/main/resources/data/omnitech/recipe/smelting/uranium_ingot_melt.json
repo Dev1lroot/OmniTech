@@ -1,0 +1,5 @@
+{
+  "requiredMinimalTemperature": 1200,
+  "input": [ "omnitech:uranium_ingot" ],
+  "output": { "fluid": "omnitech:molten_uranium", "amount": 1000 }
+}

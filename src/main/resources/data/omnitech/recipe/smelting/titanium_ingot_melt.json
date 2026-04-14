@@ -1,0 +1,5 @@
+{
+  "requiredMinimalTemperature": 1700,
+  "input": [ "omnitech:titanium_ingot" ],
+  "output": { "fluid": "omnitech:molten_titanium", "amount": 1000 }
+}

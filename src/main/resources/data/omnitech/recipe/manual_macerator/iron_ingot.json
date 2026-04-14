@@ -1,0 +1,8 @@
+{
+  "requiredKineticForce": 30,
+  "input": "minecraft:iron_ingot",
+  "output": [
+    { "item": "omnitech:iron_dust", "count": 1, "chance": 1.0 },
+    { "item": "omnitech:iron_mote", "count": 2, "chance": 0.4 }
+  ]
+}

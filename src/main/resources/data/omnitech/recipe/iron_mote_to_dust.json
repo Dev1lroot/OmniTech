@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:iron_mote",
+    "omnitech:iron_mote",
+    "omnitech:iron_mote",
+    "omnitech:iron_mote",
+    "omnitech:iron_mote",
+    "omnitech:iron_mote",
+    "omnitech:iron_mote",
+    "omnitech:iron_mote",
+    "omnitech:iron_mote"
+  ],
+  "result": { "count": 1, "id": "omnitech:iron_dust" }
+}

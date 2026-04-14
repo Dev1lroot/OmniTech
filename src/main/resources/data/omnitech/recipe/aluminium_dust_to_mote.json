@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [ "omnitech:aluminium_dust" ],
+  "result": { "count": 9, "id": "omnitech:aluminium_mote" }
+}

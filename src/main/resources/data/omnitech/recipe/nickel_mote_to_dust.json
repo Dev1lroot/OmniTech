@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:nickel_mote",
+    "omnitech:nickel_mote",
+    "omnitech:nickel_mote",
+    "omnitech:nickel_mote",
+    "omnitech:nickel_mote",
+    "omnitech:nickel_mote",
+    "omnitech:nickel_mote",
+    "omnitech:nickel_mote",
+    "omnitech:nickel_mote"
+  ],
+  "result": { "count": 1, "id": "omnitech:nickel_dust" }
+}

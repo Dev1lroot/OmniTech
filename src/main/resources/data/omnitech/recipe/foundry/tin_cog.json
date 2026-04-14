@@ -1,0 +1,6 @@
+{
+  "requiredMinimalTemperature": 300,
+  "input": { "fluid": "omnitech:molten_tin", "amount": 200 },
+  "template": "omnitech:cog_template",
+  "output": "omnitech:tin_cog"
+}

@@ -1,0 +1,8 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:nickel_ingot",
+  "output": [
+    { "item": "omnitech:nickel_dust", "count": 1, "chance": 1.0 },
+    { "item": "omnitech:nickel_mote", "count": 2, "chance": 0.4 }
+  ]
+}
