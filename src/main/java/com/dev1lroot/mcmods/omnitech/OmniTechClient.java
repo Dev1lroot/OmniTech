@@ -143,57 +143,34 @@ public class OmniTechClient
 
     @SubscribeEvent
     public static void onRegisterFluidModels(RegisterFluidModelsEvent event) {
-        // Для пара
-        event.register(new FluidModel.Unbaked(
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/steam_still")),
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/steam_flow")),
-                null,
-                null
-        ), OmniTechFluids.STEAM.source.get(), OmniTechFluids.STEAM.flowing.get());
+        registerFluid(event, "steam",                OmniTechFluids.STEAM);
+        registerFluid(event, "molten_brass",         OmniTechFluids.MOLTEN_BRASS);
+        registerFluid(event, "distilled_water",      OmniTechFluids.DISTILLED_WATER);
+        registerFluid(event, "brine",                OmniTechFluids.BRINE);
+        registerFluid(event, "hydrogen",             OmniTechFluids.HYDROGEN);
+        registerFluid(event, "oxygen",               OmniTechFluids.OXYGEN);
+        registerFluid(event, "nitrogen",             OmniTechFluids.NITROGEN);
+        registerFluid(event, "ammonia",              OmniTechFluids.AMMONIA);
+        registerFluid(event, "chlorine",             OmniTechFluids.CHLORINE);
+        registerFluid(event, "chloramine",           OmniTechFluids.CHLORAMINE);
+        registerFluid(event, "argon",                OmniTechFluids.ARGON);
+        registerFluid(event, "sodium",               OmniTechFluids.SODIUM);
+        registerFluid(event, "hydrazine",            OmniTechFluids.HYDRAZINE);
+        registerFluid(event, "sodium_hydroxide",     OmniTechFluids.SODIUM_HYDROXIDE);
+        registerFluid(event, "sodium_hypochlorite",  OmniTechFluids.SODIUM_HYPOCHLORITE);
+        registerFluid(event, "air",                  OmniTechFluids.AIR);
+        registerFluid(event, "compressed_air",       OmniTechFluids.COMPRESSED_AIR);
+        registerFluid(event, "compressed_heated_air",OmniTechFluids.COMPRESSED_HEATED_AIR);
+        registerFluid(event, "liquefied_air",        OmniTechFluids.LIQUEFIED_AIR);
+    }
 
-        // Для латуни
+    private static void registerFluid(RegisterFluidModelsEvent event, String name,
+            OmniTechFluids.FluidObject fluid) {
         event.register(new FluidModel.Unbaked(
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/molten_brass_still")),
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/molten_brass_flow")),
+                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/" + name + "_still")),
+                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/" + name + "_flow")),
                 null,
                 null
-        ), OmniTechFluids.MOLTEN_BRASS.source.get(), OmniTechFluids.MOLTEN_BRASS.flowing.get());
-
-        // Для латуни
-        event.register(new FluidModel.Unbaked(
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/distilled_water_still")),
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/distilled_water_flow")),
-                null,
-                null
-        ), OmniTechFluids.DISTILLED_WATER.source.get(), OmniTechFluids.DISTILLED_WATER.flowing.get());
-        // Для латуни
-        event.register(new FluidModel.Unbaked(
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/distilled_water_still")),
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/distilled_water_flow")),
-                null,
-                null
-        ), OmniTechFluids.AIR.source.get(), OmniTechFluids.AIR.flowing.get());
-        // Для латуни
-        event.register(new FluidModel.Unbaked(
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/distilled_water_still")),
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/distilled_water_flow")),
-                null,
-                null
-        ), OmniTechFluids.COMPRESSED_HEATED_AIR.source.get(), OmniTechFluids.COMPRESSED_HEATED_AIR.flowing.get());
-        // Для латуни
-        event.register(new FluidModel.Unbaked(
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/distilled_water_still")),
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/distilled_water_flow")),
-                null,
-                null
-        ), OmniTechFluids.COMPRESSED_AIR.source.get(), OmniTechFluids.COMPRESSED_AIR.flowing.get());
-
-        // Для латуни
-        event.register(new FluidModel.Unbaked(
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/brine_still")),
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/brine_flow")),
-                null,
-                null
-        ), OmniTechFluids.BRINE.source.get(), OmniTechFluids.BRINE.flowing.get());
+        ), fluid.source.get(), fluid.flowing.get());
     }
 }

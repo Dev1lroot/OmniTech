@@ -23,6 +23,14 @@ public class OmniTechItems
 {
     public static final DeferredRegister.Items REGISTRY = DeferredRegister.createItems(OmniTech.MODID);
 
+    // Europa terrain block items
+    public static final DeferredItem<BlockItem> EUROPA_STONE_ITEM = REGISTRY.registerSimpleBlockItem(
+            "europa_stone", OmniTechBlocks.EUROPA_STONE);
+    public static final DeferredItem<BlockItem> EUROPA_ICE_ITEM = REGISTRY.registerSimpleBlockItem(
+            "europa_ice", OmniTechBlocks.EUROPA_ICE);
+    public static final DeferredItem<BlockItem> CRACKED_ICE_ITEM = REGISTRY.registerSimpleBlockItem(
+            "cracked_ice", OmniTechBlocks.CRACKED_ICE);
+
     // BlockItems of Mechanisms
     public static final DeferredItem<BlockItem> ALLOY_FURNACE_ITEM = REGISTRY.registerSimpleBlockItem(
             "alloy_furnace", OmniTechBlocks.ALLOY_FURNACE);

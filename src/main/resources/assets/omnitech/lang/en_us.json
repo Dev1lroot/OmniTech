@@ -316,8 +316,13 @@
   "block.omnitech.megaregolith": "Megaregolith",
   "item.omnitech.regolith_dust": "Regolith Dust",
   "item.omnitech.regolith_mote": "Regolith Mote",
-
   "block.omnitech.europa_stone": "Europa Stone",
   "block.omnitech.europa_ice": "Europa Ice",
-  "block.omnitech.cracked_ice": "Cracked Ice"
+  "block.omnitech.cracked_ice": "Cracked Ice",
+  "itemGroup.omnitech.equipment": "OmniTech Equipment",
+  "itemGroup.omnitech.world": "OmniTech World",
+  "fluid.omnitech.sodium": "Sodium (Liquid)",
+  "fluid.omnitech.ammonia": "Ammonia",
+  "fluid.omnitech.sodium_hypochlorite": "Sodium Hypochlorite",
+  "item.omnitech.deepslate_dust": "Deepslate Dust"
 }

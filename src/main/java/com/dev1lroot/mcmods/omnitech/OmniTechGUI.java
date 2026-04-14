@@ -43,7 +43,16 @@ public class OmniTechGUI {
                     .title(Component.translatable("itemGroup.omnitech.materials"))
                     .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
                     .icon(() -> OmniTechMaterials.TUNGSTEN.item("%_ingot").get().getDefaultInstance())
-                    .displayItems((parameters, output) -> MaterialSet.addAllToTab(output))
+                    .displayItems((parameters, output) -> {
+                        MaterialSet.addAllToTab(output);
+                        // Vanilla-derived dusts not covered by any MaterialSet
+                        output.accept(OmniTechItems.GRANITE_DUST.get());
+                        output.accept(OmniTechItems.ANDESITE_DUST.get());
+                        output.accept(OmniTechItems.DIORITE_DUST.get());
+                        output.accept(OmniTechItems.STONE_DUST.get());
+                        output.accept(OmniTechItems.HEMATITE_DUST.get());
+                        output.accept(OmniTechItems.DEEPSLATE_DUST.get());
+                    })
                     .build());
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MACHINES_TAB =
@@ -52,45 +61,84 @@ public class OmniTechGUI {
                     .withTabsBefore(MATERIALS_TAB.getKey())
                     .icon(() -> OmniTechItems.BOILER.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
-                        // Генерация и обработка
+                        // Generation & heat
                         output.accept(OmniTechItems.BOILER.get());
                         output.accept(OmniTechItems.STIRLING_ENGINE_ITEM.get());
                         output.accept(OmniTechItems.KF_GENERATOR_ITEM.get());
                         output.accept(OmniTechItems.HEATER_ITEM.get());
 
-                        // Станки
+                        // Processing machines
                         output.accept(OmniTechItems.ALLOY_FURNACE_ITEM.get());
                         output.accept(OmniTechItems.MANUAL_MACERATOR_ITEM.get());
                         output.accept(OmniTechItems.MANUAL_CENTRIFUGE_ITEM.get());
                         output.accept(OmniTechItems.SMELTER_ITEM.get());
                         output.accept(OmniTechItems.FOUNDRY_ITEM.get());
 
-                        // Логистика и трубы
+                        // Kinetics & logistics
                         output.accept(OmniTechItems.CRANK_ITEM.get());
                         output.accept(OmniTechItems.KF_PIPE_ITEM.get());
                         output.accept(OmniTechItems.KF_REDUCTOR_ITEM.get());
                         output.accept(OmniTechItems.CONVEYOR_BELT_ITEM.get());
                         output.accept(OmniTechItems.SORTER_ITEM.get());
+
+                        // Fluid system
                         output.accept(OmniTechItems.FLUID_PIPE_ITEM.get());
                         output.accept(OmniTechItems.PUMP_ITEM.get());
                         output.accept(OmniTechItems.FLUID_TANK_ITEM.get());
+                        output.accept(OmniTechItems.VALVE_ITEM.get());
+                        output.accept(OmniTechItems.FLUID_COLLECTOR_ITEM.get());
+                        output.accept(OmniTechItems.FLUID_FILLER_ITEM.get());
+                        output.accept(OmniTechItems.FLUID_CANISTER.get());
 
-                        // Electricity
+                        // Electric system
                         output.accept(OmniTechItems.ELECTRIC_ENGINE_ITEM.get());
                         output.accept(OmniTechItems.ELECTRIC_WIRE_ITEM.get());
                         output.accept(OmniTechItems.ELECTRIC_CAPACITOR_ITEM.get());
                         output.accept(OmniTechItems.ELECTRIC_FURNACE_ITEM.get());
                         output.accept(OmniTechItems.SOLAR_PANEL_ITEM.get());
+
+                        // Advanced chemical & fluid processing
                         output.accept(OmniTechItems.SOLVATION_MACHINE_ITEM.get());
                         output.accept(OmniTechItems.ELECTROLYSIS_MACHINE_ITEM.get());
                         output.accept(OmniTechItems.ROTARY_COMPRESSOR_ITEM.get());
-                        output.accept(OmniTechItems.FLUID_COLLECTOR_ITEM.get());
                         output.accept(OmniTechItems.HEAT_EXCHANGER_ITEM.get());
                         output.accept(OmniTechItems.DECOMPRESSOR_ITEM.get());
                         output.accept(OmniTechItems.FRACTIONAL_DISTILLER_ITEM.get());
                         output.accept(OmniTechItems.CHEMICAL_REACTOR_ITEM.get());
-                        output.accept(OmniTechItems.FLUID_FILLER_ITEM.get());
-                        output.accept(OmniTechItems.FLUID_CANISTER.get());
+                    }).build());
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EQUIPMENT_TAB =
+            REGISTRY.register("omnitech.equipment", () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.omnitech.equipment"))
+                    .withTabsBefore(MACHINES_TAB.getKey())
+                    .icon(() -> OmniTechItems.SPACE_SUIT_HELMET.get().getDefaultInstance())
+                    .displayItems((parameters, output) -> {
+                        // Space suit
+                        output.accept(OmniTechItems.SPACE_SUIT_HELMET.get());
+                        output.accept(OmniTechItems.SPACE_SUIT_CHESTPLATE.get());
+                        output.accept(OmniTechItems.SPACE_SUIT_LEGGINGS.get());
+                        output.accept(OmniTechItems.SPACE_SUIT_BOOTS.get());
+                        // Kinetic components
+                        output.accept(OmniTechItems.WOODEN_COG.get());
+                        output.accept(OmniTechItems.WOODEN_REDUCTOR.get());
+                        output.accept(OmniTechItems.COG_TEMPLATE.get());
+                    }).build());
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> WORLD_TAB =
+            REGISTRY.register("omnitech.world", () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.omnitech.world"))
+                    .withTabsBefore(EQUIPMENT_TAB.getKey())
+                    .icon(() -> OmniTechItems.EUROPA_ICE_ITEM.get().getDefaultInstance())
+                    .displayItems((parameters, output) -> {
+                        // Europa terrain blocks
+                        output.accept(OmniTechItems.EUROPA_STONE_ITEM.get());
+                        output.accept(OmniTechItems.EUROPA_ICE_ITEM.get());
+                        output.accept(OmniTechItems.CRACKED_ICE_ITEM.get());
+                        // Regolith family (block items from MaterialSet)
+                        output.accept(OmniTechMaterials.REGOLITH.blockItem("surface_%").get());
+                        output.accept(OmniTechMaterials.REGOLITH.blockItem("stratified_%").get());
+                        output.accept(OmniTechMaterials.REGOLITH.blockItem("paleo%").get());
+                        output.accept(OmniTechMaterials.REGOLITH.blockItem("mega%").get());
                     }).build());
 
     public static void register(IEventBus modEventBus) {
@@ -136,6 +184,14 @@ public class OmniTechGUI {
         }
         if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
             event.accept(OmniTechMaterials.TIN.blockItem("%_ore"));
+            event.accept(OmniTechMaterials.TUNGSTEN.blockItem("%_ore"));
+            event.accept(OmniTechMaterials.CHROMIUM.blockItem("%_ore"));
+        }
+        if (event.getTabKey() == CreativeModeTabs.COMBAT) {
+            event.accept(OmniTechItems.SPACE_SUIT_HELMET);
+            event.accept(OmniTechItems.SPACE_SUIT_CHESTPLATE);
+            event.accept(OmniTechItems.SPACE_SUIT_LEGGINGS);
+            event.accept(OmniTechItems.SPACE_SUIT_BOOTS);
         }
     }
 }

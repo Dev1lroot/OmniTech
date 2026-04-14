@@ -86,7 +86,7 @@ public class FluidCanisterItem extends Item {
 
     // ── Tooltip ───────────────────────────────────────────────────────────────
 
-    
+
     public void appendHoverText(ItemStack stack, TooltipContext context,
             List<Component> tooltip, TooltipFlag flag) {
         FluidStack fluid = getFluid(stack);
