@@ -338,8 +338,12 @@ public class SpaceNavigationScreen extends Screen {
                 String.format("Fuel: %,d / %,d mB required", playerFuel, requiredFuel),
                 12, y + 12, enough ? C_FUEL_OK : C_FUEL_BAD);
 
+        long distKm = TravelDistanceCalculator.travelDistanceKm(currentDimensionId, destination, spaceMap);
+        String distStr = distKm > 0 ? formatKm(distKm) : "Unknown";
+        g.text(font, "Distance: " + distStr, 12, y + 24, C_TEXT_SUB);
+
         if (destination.dimension == null)
-            g.text(font, "No dimension exists for this body yet.", 12, y + 24, 0xFFDD7733);
+            g.text(font, "No dimension exists for this body yet.", 12, y + 36, 0xFFDD7733);
     }
 
     private void drawCentralBody(GuiGraphicsExtractor g, int cx, int cy) {
@@ -582,6 +586,13 @@ public class SpaceNavigationScreen extends Screen {
     private static double distSq(int ax, int ay, int bx, int by) {
         double dx = ax - bx, dy = ay - by;
         return dx * dx + dy * dy;
+    }
+
+    /** Format a km distance for display (e.g. 384,400 km / 149.60 M km / 4.498 B km). */
+    private static String formatKm(long km) {
+        if (km < 1_000_000L)         return String.format("%,d km", km);
+        if (km < 1_000_000_000L)     return String.format("%.2f M km", km / 1_000_000.0);
+        return                               String.format("%.3f B km", km / 1_000_000_000.0);
     }
 
     // ── Inner types ───────────────────────────────────────────────────────────

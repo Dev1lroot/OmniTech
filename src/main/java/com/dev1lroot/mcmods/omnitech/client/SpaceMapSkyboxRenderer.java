@@ -41,7 +41,9 @@ import org.joml.Vector4f;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -51,21 +53,21 @@ import java.util.OptionalInt;
  *
  * <p>For each dimension registered in {@code space_map.json}:
  * <ul>
- *   <li>Renders the star (sun) with a scale derived from the body's orbital distance —
- *       further from the star = smaller sun disc.</li>
- *   <li>If the dimension is a moon, renders the parent planet prominently.</li>
- *   <li>Renders all other planets of the same star system as small distant bodies
- *       moving along the ecliptic at their own orbital speeds.</li>
+ *   <li>Renders the star with distance-scaled apparent size.</li>
+ *   <li>If standing on a moon, renders the parent planet prominently.</li>
+ *   <li>Renders all other system planets as distant bodies.</li>
+ *   <li>Bodies are sorted by viewer distance (farthest first — painter's algorithm),
+ *       so closer bodies correctly occlude farther ones (e.g. Jupiter can cover the
+ *       Sun from Europa; Earth covers the Sun from the Moon).</li>
+ *   <li>Every body's orbital plane is tilted by its real orbital inclination (i) and
+ *       ascending node (Ω), matching the known values from our solar system.</li>
  * </ul>
- *
- * <p>Register as {@code omnitech:space_sky} and reference from dimension type JSON via
- * {@code "neoforge:custom_skybox": "omnitech:space_sky"}.
  */
 public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
 
     /**
-     * Pipeline for all sky body quads (parent planet, distant bodies, custom sun).
-     * TRANSLUCENT blend so bodies properly occlude stars instead of additively blending.
+     * Pipeline for all sky body quads.
+     * TRANSLUCENT blend so closer bodies correctly occlude farther ones.
      */
     public static final RenderPipeline SKY_BODY_PIPELINE = RenderPipeline.builder()
             .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
@@ -79,28 +81,17 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
             .build();
 
     // ---- Scale constants -------------------------------------------------------
-    /** Sol's size in Earth-diameter units (Earth = 1.0). */
+
+    /** Sol's size in Earth-diameter units. */
     private static final float SOL_SIZE           = 109f;
-    /**
-     * Vanilla sun renders at scale 30f when viewed from 1 AU (149,597,871 km).
-     * We replicate this exactly, then adjust for other distances and star sizes.
-     */
+    /** Vanilla sun renders at scale 30f when viewed from 1 AU. */
     private static final float VANILLA_SUN_SCALE  = 30f;
-    /**
-     * Base scale for a body with Earth's diameter seen from Earth-Moon distance
-     * (384,400 km). Tuned so Earth looks good from the Moon (≈40f in game units).
-     */
+    /** Base scale for a parent planet with Earth's diameter at Earth-Moon distance (384,400 km). */
     private static final float BASE_PARENT_SCALE  = 40f;
-    /**
-     * Base scale for distant planets (other bodies in the system).
-     * Combined with size^0.7 and distance^−0.4 to produce visible but modest discs.
-     */
+    /** Base scale for distant planets at DISTANT_REF_KM with Earth's diameter. */
     private static final float BASE_DISTANT_SCALE = 3f;
-    /**
-     * Reference distance for distant-body scale normalization (100 million km).
-     * A size-1.0 body exactly this far away gets BASE_DISTANT_SCALE scale.
-     */
-    private static final long DISTANT_REF_KM      = 100_000_000L;
+    /** Reference distance for distant-body scale normalization (100 M km). */
+    private static final long  DISTANT_REF_KM     = 100_000_000L;
 
     // --- Mixin suppression flags (read by SkyRendererMixin) ---
     private static boolean suppressVanillaMoon = false;
@@ -115,13 +106,36 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
     public static boolean isSuppressingVanillaSun()  { return suppressVanillaSun;  }
 
     // -------------------------------------------------------------------------
-    // Space-map lookup
+    // Render task record — one per visible sky body
     // -------------------------------------------------------------------------
 
     /**
-     * Full context for the current dimension: the body itself, its parent planet
-     * (if on a moon, otherwise null), and the star system it belongs to.
+     * Describes a single body to draw in the sky.
+     * Bodies are collected into a list, sorted by {@code viewerDistKm} descending
+     * (farthest first), then rendered in order (painter's algorithm).
+     *
+     * @param spriteId       atlas sprite for this body
+     * @param angle          orbital angle in radians (position in its orbit)
+     * @param scale          half-width of the quad in model units
+     * @param brightness     alpha multiplier (1.0 = fully opaque)
+     * @param inclinationDeg orbital inclination (°) relative to ecliptic
+     * @param ascendingNodeDeg longitude of ascending node (°) — compass direction of the tilt
+     * @param viewerDistKm   viewer's distance from this body in km, used for z-sorting
      */
+    private record SkyBodyRenderTask(
+            Identifier spriteId,
+            float angle,
+            float scale,
+            float brightness,
+            float inclinationDeg,
+            float ascendingNodeDeg,
+            long viewerDistKm
+    ) {}
+
+    // -------------------------------------------------------------------------
+    // Space-map lookup
+    // -------------------------------------------------------------------------
+
     private record BodyLocation(CelestialBody body, CelestialBody parentPlanet, StarSystem starSystem) {}
 
     private BodyLocation findCurrentLocation() {
@@ -158,12 +172,8 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
     // -------------------------------------------------------------------------
 
     /**
-     * Convert a space_map texture path such as {@code "omnitech:textures/space/planet/earth.png"}
-     * to the atlas sprite ID {@code "omnitech:space/planet/earth"}.
-     *
-     * <p>The atlas source in {@code atlases/celestials.json} uses
-     * {@code "source": "space", "prefix": "space/"}, so all files under
-     * {@code textures/space/} are registered with the {@code space/} prefix.
+     * Converts a space_map texture path such as {@code "omnitech:textures/space/planet/earth.png"}
+     * to the celestials-atlas sprite ID {@code "omnitech:space/planet/earth"}.
      */
     static Identifier textureSpriteId(String texturePath) {
         int colon = texturePath.indexOf(':');
@@ -207,23 +217,42 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
     /**
      * Draw a single textured quad in sky-space.
      *
-     * <p>The caller is responsible for orienting the ecliptic plane on {@code poseStack}
-     * (typically a {@code -90° Y} rotation matching vanilla).  This method then applies
-     * the body's orbital angle around the X axis and positions it at the canonical sky
-     * distance (Y = 100 in model-view space).
+     * <p>The ecliptic plane must already be oriented on {@code poseStack} before
+     * this call (caller applies {@code Axis.YP.rotationDegrees(-90°)}).
+     * This method then:
+     * <ol>
+     *   <li>Rotates by the ascending node (Ω) around the ecliptic pole (Y),
+     *       determining the compass direction of the orbital tilt.</li>
+     *   <li>Tilts the orbital plane by the inclination (i) around the Z axis.</li>
+     *   <li>Rotates by the orbital angle around X to place the body in its orbit.</li>
+     *   <li>Translates to the canonical sky distance and scales the quad.</li>
+     * </ol>
      *
-     * @param spriteId  celestials-atlas sprite ID
-     * @param angle     orbital position in radians (X-axis rotation inside the ecliptic plane)
-     * @param scale     half-size of the quad in world units
-     * @param brightness alpha/brightness multiplier (1.0 = fully opaque)
-     * @param poseStack pre-oriented stack (ecliptic plane already set up)
+     * @param spriteId        celestials-atlas sprite ID
+     * @param angle           orbital position in radians
+     * @param scale           half-size of the quad in world units
+     * @param brightness      alpha multiplier (1.0 = fully opaque)
+     * @param inclinationDeg  orbital inclination in degrees
+     * @param ascendingNodeDeg longitude of ascending node in degrees
+     * @param poseStack       pre-oriented stack (ecliptic already set up)
      */
     private void renderBody(Identifier spriteId, float angle, float scale,
-                            float brightness, PoseStack poseStack) {
+                            float brightness, float inclinationDeg, float ascendingNodeDeg,
+                            PoseStack poseStack) {
         TextureAtlas atlas = Minecraft.getInstance()
                 .getAtlasManager().getAtlasOrThrow(AtlasIds.CELESTIALS);
 
         poseStack.pushPose();
+
+        // 1. Ascending node: rotate in the ecliptic plane to the node longitude.
+        if (ascendingNodeDeg != 0f) {
+            poseStack.mulPose(Axis.YP.rotationDegrees(ascendingNodeDeg));
+        }
+        // 2. Inclination: tilt the orbital plane by i degrees.
+        if (inclinationDeg != 0f) {
+            poseStack.mulPose(Axis.ZP.rotationDegrees(inclinationDeg));
+        }
+        // 3. Orbital position.
         poseStack.mulPose(Axis.XP.rotation(angle));
 
         Matrix4fStack mv = RenderSystem.getModelViewStack();
@@ -267,16 +296,13 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
         BodyLocation loc = findCurrentLocation();
 
         // --- Viewer's real km distance from the star ---
-        // Moons inherit their parent planet's orbital distance.
-        long viewerStarDistKm = TravelDistanceCalculator.SOL_EARTH_DIST_KM; // default = 1 AU
+        long viewerStarDistKm = TravelDistanceCalculator.SOL_EARTH_DIST_KM;
         if (loc != null) {
             CelestialBody home = loc.parentPlanet() != null ? loc.parentPlanet() : loc.body();
             if (home.orbital_distance_km > 0) viewerStarDistKm = home.orbital_distance_km;
         }
 
         // --- Star apparent scale ---
-        // Baseline: Sol (size=109) at 1 AU → vanilla sun scale 30f.
-        // Scales linearly with star size, inversely with distance.
         float starSize = (loc != null && loc.starSystem() != null && loc.starSystem().size > 0)
                 ? loc.starSystem().size : SOL_SIZE;
         float sunScale = clamp(
@@ -289,7 +315,7 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
 
         PoseStack poseStack = new PoseStack();
 
-        // Pass through only stars — vanilla sun and moon are suppressed.
+        // Pass through vanilla stars only — sun and moon are suppressed.
         suppressVanillaMoon = true;
         suppressVanillaSun  = true;
         try {
@@ -300,7 +326,7 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
                     skyRenderState.starAngle,
                     skyRenderState.moonPhase,
                     skyRenderState.rainBrightness,
-                    1.0f   // stars always fully bright in space
+                    1.0f
             );
         } finally {
             suppressVanillaMoon = false;
@@ -311,32 +337,38 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
         poseStack.pushPose();
         poseStack.mulPose(Axis.YP.rotationDegrees(-90.0f));
 
-        // --- Star disc (replaces vanilla sun) ---
+        // Collect all render tasks, then sort farthest→closest (painter's algorithm).
+        List<SkyBodyRenderTask> tasks = new ArrayList<>();
+
+        // --- Star disc ---
         Identifier starSprite = (loc != null && loc.starSystem() != null
                 && loc.starSystem().texture != null)
                 ? textureSpriteId(loc.starSystem().texture)
                 : textureSpriteId("omnitech:textures/space/star/sun.png");
-        renderBody(starSprite, skyRenderState.sunAngle, sunScale, 1.0f, poseStack);
+        // The star has no inclination relative to itself; inclination = 0, node = 0.
+        tasks.add(new SkyBodyRenderTask(
+                starSprite,
+                skyRenderState.sunAngle,
+                sunScale,
+                1.0f,
+                0f, 0f,
+                viewerStarDistKm
+        ));
 
-        // --- Parent planet (prominent — we are standing on one of its moons) ---
+        // --- Parent planet (moon viewer only) ---
         if (loc != null && loc.parentPlanet() != null) {
             CelestialBody moon   = loc.body();
             CelestialBody parent = loc.parentPlanet();
 
             float parentSize = parent.size > 0f ? parent.size : 1.0f;
-
-            // Use real km distance if available; fall back to UI orbital_radius ratio.
             float parentScale;
             if (moon.parent_distance_km > 0) {
-                // apparent_scale = BASE * parentDiameter / viewerDistance
-                //                = BASE * parentSize * (EARTH_MOON reference) / moonParentDist
                 parentScale = clamp(
                         BASE_PARENT_SCALE * parentSize
                                 * (float) TravelDistanceCalculator.EARTH_MOON_DIST_KM
                                 / moon.parent_distance_km,
                         18f, 120f);
             } else {
-                // Fallback: sqrt(size) × UI-radius ratio
                 float moonOrbit = moon.orbital_radius > 0 ? moon.orbital_radius : 90f;
                 parentScale = clamp(
                         BASE_PARENT_SCALE * (float) Math.sqrt(parentSize) * (90f / moonOrbit),
@@ -347,8 +379,16 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
             float parentAngle  = skyRenderState.sunAngle * orbitalSpeed * 0.4f
                     + (float) Math.toRadians(130.0);
 
-            renderBody(textureSpriteId(parent.texture),
-                    parentAngle, parentScale, skyRenderState.rainBrightness, poseStack);
+            long parentDistKm = moon.parent_distance_km > 0 ? moon.parent_distance_km : 384_400L;
+            tasks.add(new SkyBodyRenderTask(
+                    textureSpriteId(parent.texture),
+                    parentAngle,
+                    parentScale,
+                    skyRenderState.rainBrightness,
+                    parent.orbital_inclination,
+                    parent.ascending_node,
+                    parentDistKm
+            ));
         }
 
         // --- Distant bodies: all other planets in the same star system ---
@@ -361,36 +401,49 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
                 if (planet.id.equals(homePlanetId)) continue;
 
                 float bodySize = planet.size > 0f ? planet.size : 1.0f;
-
                 float distantScale;
+                long  viewerDistKm;
+
                 if (planet.orbital_distance_km > 0 && viewerStarDistKm > 0) {
-                    // Real km distance between the viewer's orbit and the body's orbit.
-                    long distKm = Math.max(1_000_000L,
+                    long orbitDeltaKm = Math.max(1_000_000L,
                             Math.abs(planet.orbital_distance_km - viewerStarDistKm));
-                    // Scale = BASE × size^0.7 × (REF_DIST / actualDist)^0.4
-                    // The exponents make gas giants prominent without overwhelming the screen,
-                    // and give diminishing returns for very close bodies.
                     distantScale = clamp(
                             BASE_DISTANT_SCALE
                                     * (float) Math.pow(bodySize, 0.7)
-                                    * (float) Math.pow((double) DISTANT_REF_KM / distKm, 0.4),
+                                    * (float) Math.pow((double) DISTANT_REF_KM / orbitDeltaKm, 0.4),
                             1.0f, 15f);
+                    viewerDistKm = orbitDeltaKm;
                 } else {
-                    // Fallback: UI orbital_radius difference
                     float uiDist = Math.max(20f,
                             Math.abs(planet.orbital_radius - (loc.parentPlanet() != null
                                     ? loc.parentPlanet().orbital_radius
                                     : loc.body().orbital_radius)));
                     distantScale = clamp(BASE_DISTANT_SCALE * bodySize * (155f / uiDist), 1f, 15f);
+                    viewerDistKm = (long)(uiDist * 1_000_000L); // UI fallback as relative proxy
                 }
 
                 float phaseOffset  = (Math.abs(planet.id.hashCode()) % 628) / 100f;
                 float speed        = planet.orbital_speed > 0f ? planet.orbital_speed : 1.0f;
                 float distantAngle = skyRenderState.sunAngle * speed * 0.4f + phaseOffset;
 
-                renderBody(textureSpriteId(planet.texture),
-                        distantAngle, distantScale, 1.0f, poseStack);
+                tasks.add(new SkyBodyRenderTask(
+                        textureSpriteId(planet.texture),
+                        distantAngle,
+                        distantScale,
+                        1.0f,
+                        planet.orbital_inclination,
+                        planet.ascending_node,
+                        viewerDistKm
+                ));
             }
+        }
+
+        // Sort farthest first so closer bodies paint over farther ones.
+        tasks.sort((a, b) -> Long.compare(b.viewerDistKm(), a.viewerDistKm()));
+
+        for (SkyBodyRenderTask task : tasks) {
+            renderBody(task.spriteId(), task.angle(), task.scale(), task.brightness(),
+                    task.inclinationDeg(), task.ascendingNodeDeg(), poseStack);
         }
 
         poseStack.popPose();

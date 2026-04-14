@@ -1,1 +1,167 @@
- 
+OmniTech Mod — Source-Available Modpack License
+Copyright (c) 2026 - 2126 David Eichendorf <admin@dev1lroot.com>
+All rights reserved.
+
+================================================================================
+RETROACTIVE APPLICABILITY
+================================================================================
+
+This license applies to the entirety of The Mod's development history,
+including every file, commit, branch, and revision recorded in this
+repository prior to the date this license was first committed.
+
+The repository remained strictly private and was not distributed, published,
+or made accessible to any third party at any point before 2026-04-14 (the
+date of this license's first commit). No version of any file in this
+repository entered the public domain or was released under any other license
+during that period. Accordingly, all prior commits fall within the Author's
+exclusive copyright from the moment of their creation, and this license
+retroactively governs them in full.
+
+Any person who obtained a copy of any file from this repository before this
+license was published — whether through a private channel, a leak, or any
+other means — received no license to use, copy, modify, or distribute that
+material, and is bound by the terms of this document from the date it was
+first committed.
+
+Attempting to use an earlier commit or a snapshot predating this license as
+a basis for circumventing these terms is expressly prohibited and constitutes
+copyright infringement.
+
+================================================================================
+DEFINITIONS
+================================================================================
+
+"The Mod"           means the OmniTech Minecraft modification, including all
+                    Java source code, JSON data files, texture assets, sound
+                    assets, model files, shader files, configuration files, and
+                    any other file distributed as part of this project.
+
+"The Author"        means David Eichendorf, the original creator and sole
+                    copyright holder of The Mod.
+
+"Maintainer"        means any person explicitly listed in CREDITS.md under the
+                    "Maintainers" or "Core Developers" heading.
+
+"Modpack"           means a curated collection of Minecraft modifications
+                    distributed together as a playable game configuration.
+
+"Integration Patch" means a minimal source-level change made solely to enable
+                    compatibility between The Mod and another modification within
+                    a Modpack (e.g. adding a cross-mod recipe, adjusting a
+                    config default, or registering a fluid mapping).
+                    Integration Patches do not include feature additions,
+                    rewrites, or standalone releases of The Mod.
+
+"Binary"            means any compiled form of The Mod (e.g. a .jar file).
+
+"Fork"              means any derivative work distributed independently of The
+                    Mod, whether under the same or a different identity.
+
+================================================================================
+GRANT OF RIGHTS
+================================================================================
+
+Subject to full compliance with all conditions in this license, the Author
+grants you the following non-exclusive, non-transferable, royalty-free rights:
+
+  1. MODPACK INCLUSION
+     You may include unmodified Binaries of The Mod in a Modpack and distribute
+     that Modpack to other players, provided the Modpack is offered free of
+     charge to end-users (see PROHIBITED USES, item 3).
+
+  2. INTEGRATION PATCHES
+     You may apply Integration Patches to The Mod's source code solely for the
+     purpose of making The Mod interoperate with other modifications in your
+     Modpack. Any Binary incorporating an Integration Patch must be accompanied
+     by the patch's complete corresponding source code, made publicly available
+     within 30 days of first distribution under the same terms as this license.
+
+  3. PRIVATE STUDY
+     You may read, compile, and run The Mod locally for personal learning and
+     research, provided no resulting Binaries are distributed.
+
+================================================================================
+CONDITIONS
+================================================================================
+
+Any exercise of the rights granted above is subject to ALL of the following
+conditions. Failure to meet any condition immediately terminates your rights.
+
+  A. ATTRIBUTION
+     All distributions of The Mod or any Modpack containing it must include:
+       — This license file, unmodified and in full.
+       — The CREDITS.md file, unmodified and in full.
+       — The copyright notice at the top of this document.
+
+  B. PRESERVATION OF IDENTITY
+     You must not alter, remove, or obscure:
+       — The mod's registered identifier:  "omnitech"
+       — The mod's display name:           "OmniTech"
+       — The Java package root:            "com.dev1lroot.mcmods.omnitech"
+       — The name, role, or contact of any person listed in CREDITS.md.
+
+  C. SOURCE AVAILABILITY FOR ALTERED BINARIES
+     If you distribute a Binary that incorporates any modification to The Mod's
+     source code, you must simultaneously make the complete corresponding source
+     code of that modified version publicly available at no charge, under the
+     same terms as this license, for as long as you distribute the Binary.
+
+  D. NO CLOSED-SOURCE FORKS
+     You must not distribute a Fork — in source or Binary form — without making
+     the Fork's complete source code publicly available under the same terms as
+     this license. Undistributed private Forks are permitted.
+
+================================================================================
+PROHIBITED USES
+================================================================================
+
+The following uses are expressly prohibited without prior written consent from
+the Author:
+
+  1. ASSET REUSE
+     You must not copy, extract, re-use, or redistribute any texture, model,
+     sound, shader, or other asset from The Mod for use outside of The Mod,
+     even in modified form.
+
+  2. CODE REUSE
+     You must not copy or incorporate any portion of The Mod's source code into
+     a separate project, modification, or tool, even in modified form.
+
+  3. PAID DISTRIBUTION
+     You must not charge money, accept gated donations, or receive any other
+     compensation in exchange for providing access to The Mod or any Modpack
+     containing it. This includes direct sales, paywalled downloads, exclusive
+     patron tiers, and equivalent arrangements.
+
+  4. MISREPRESENTATION OF AUTHORSHIP
+     You must not claim authorship or maintainership of The Mod, remove or alter
+     credits, or represent that The Mod or a derivative work was created by
+     anyone other than the persons listed in CREDITS.md.
+
+  5. REBRANDING
+     You must not distribute The Mod or any derivative work under a different
+     mod ID, mod name, or Java package namespace.
+
+================================================================================
+DISCLAIMER OF WARRANTIES
+================================================================================
+
+THE MOD IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHOR OR
+MAINTAINERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN
+ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION
+WITH THE MOD OR THE USE OR OTHER DEALINGS IN THE MOD.
+
+================================================================================
+CONTACT & PERMISSIONS
+================================================================================
+
+For licensing enquiries, written permissions, or violation reports, contact:
+
+  David Eichendorf
+  admin@dev1lroot.com
+  https://dev1lroot.com
+
+================================================================================

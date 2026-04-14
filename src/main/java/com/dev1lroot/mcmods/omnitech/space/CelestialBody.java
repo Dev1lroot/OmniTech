@@ -36,6 +36,18 @@ public class CelestialBody {
      */
     public float orbital_speed = 0f;
     /**
+     * Orbital inclination in degrees relative to the ecliptic plane (Earth's orbital plane).
+     * Used by the sky renderer to tilt the body's orbit above/below the ecliptic.
+     * 0 means the body lies exactly in the ecliptic.
+     */
+    public float orbital_inclination = 0f;
+    /**
+     * Longitude of the ascending node in degrees (Ω).
+     * Determines the compass direction of the orbital tilt in the ecliptic plane.
+     * Used together with {@link #orbital_inclination} by the sky renderer.
+     */
+    public float ascending_node = 0f;
+    /**
      * Physical diameter relative to Earth (Earth = 1.0).
      * Used by the sky renderer to scale apparent size alongside distance.
      * 0 means "use a sensible default".
