@@ -48,6 +48,14 @@ public class SpaceNavigationScreen extends Screen {
     private SpaceMap spaceMap;
     private String   currentDimensionId = "";
 
+    // ── Cached fuel values — updated every frame in renderBottomBar ───────────
+    /** Fuel the player's rocket currently holds (mB). */
+    private int cachedPlayerFuel   = 0;
+    /** Fuel required to reach the selected destination (mB). -1 = unknown. */
+    private int cachedRequiredFuel = -1;
+    /** Tracks whether the launch button was present last frame; used to avoid spurious refreshWidget calls. */
+    private boolean lastLaunchEligible = false;
+
     // ── Items for the current orbital view ───────────────────────────────────
     private final List<BodyItem> items = new ArrayList<>();
 
@@ -204,12 +212,13 @@ public class SpaceNavigationScreen extends Screen {
 
     private void onLaunch() {
         if (!canLaunch()) return;
-        ClientPacketDistributor.sendToServer(new SpaceTravelPacket(destination.dimension));
+        ClientPacketDistributor.sendToServer(new SpaceTravelPacket(destination.dimension, cachedRequiredFuel));
         onClose();
     }
 
     private boolean canLaunch() {
-        return destination != null && destination.dimension != null;
+        return destination != null && destination.dimension != null
+                && cachedRequiredFuel > 0 && cachedPlayerFuel >= cachedRequiredFuel;
     }
 
     // ── Rendering ─────────────────────────────────────────────────────────────
@@ -321,21 +330,25 @@ public class SpaceNavigationScreen extends Screen {
         int y = height - BOTTOM_H + 8;
 
         if (destination == null) {
+            cachedPlayerFuel   = 0;
+            cachedRequiredFuel = -1;
             g.text(font, "Click a body to select it as your destination.", 12, y + 8, C_TEXT_SUB);
             return;
         }
 
+        // Update cached fuel values every frame so canLaunch() / onLaunch() see fresh data.
+        cachedPlayerFuel = 0;
+        if (minecraft.player != null && minecraft.player.getVehicle() instanceof RocketEntity r)
+            cachedPlayerFuel = r.getFuelAmount();
+
+        cachedRequiredFuel = TravelDistanceCalculator.fuelCostMb(currentDimensionId, destination, spaceMap);
+        if (cachedRequiredFuel < 0) cachedRequiredFuel = destination.fuel_cost;
+
         g.text(font, "Destination:  " + displayName(destination), 12, y, C_TEXT_TITLE);
 
-        int playerFuel = 0;
-        if (minecraft.player != null && minecraft.player.getVehicle() instanceof RocketEntity r)
-            playerFuel = r.getFuelAmount();
-
-        int requiredFuel = TravelDistanceCalculator.fuelCostMb(currentDimensionId, destination, spaceMap);
-        if (requiredFuel < 0) requiredFuel = destination.fuel_cost;
-        boolean enough = playerFuel >= requiredFuel;
+        boolean enough = cachedPlayerFuel >= cachedRequiredFuel && cachedRequiredFuel >= 0;
         g.text(font,
-                String.format("Fuel: %,d / %,d mB required", playerFuel, requiredFuel),
+                String.format("Fuel: %,d / %,d mB required", cachedPlayerFuel, cachedRequiredFuel),
                 12, y + 12, enough ? C_FUEL_OK : C_FUEL_BAD);
 
         long distKm = TravelDistanceCalculator.travelDistanceKm(currentDimensionId, destination, spaceMap);
@@ -344,6 +357,14 @@ public class SpaceNavigationScreen extends Screen {
 
         if (destination.dimension == null)
             g.text(font, "No dimension exists for this body yet.", 12, y + 36, 0xFFDD7733);
+
+        // Rebuild widgets when launch eligibility changes so the LAUNCH button
+        // appears/disappears as fuel is consumed or refueled in real time.
+        boolean nowEligible = canLaunch();
+        if (nowEligible != lastLaunchEligible) {
+            lastLaunchEligible = nowEligible;
+            refreshWidgets();
+        }
     }
 
     private void drawCentralBody(GuiGraphicsExtractor g, int cx, int cy) {

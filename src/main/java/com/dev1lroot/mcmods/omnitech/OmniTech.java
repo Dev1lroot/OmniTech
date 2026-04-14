@@ -54,6 +54,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.FractionalDistillerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.FractionalDistillerBlock;
 import com.dev1lroot.mcmods.omnitech.recipes.FractionalDistillationRecipeManager;
 import com.dev1lroot.mcmods.omnitech.network.OpenRocketGuiPacket;
+import com.dev1lroot.mcmods.omnitech.network.RocketOrbitPacket;
 import com.dev1lroot.mcmods.omnitech.network.SpaceTravelPacket;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechCarvers;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechFeatures;
@@ -267,6 +268,10 @@ public class OmniTech {
                 SpaceTravelPacket.TYPE,
                 SpaceTravelPacket.CODEC,
                 SpaceTravelPacket::handle);
+        event.registrar("1").playToClient(
+                RocketOrbitPacket.TYPE,
+                RocketOrbitPacket.CODEC,
+                RocketOrbitPacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
