@@ -46,9 +46,9 @@ public class EuropaTrenchFeature extends Feature<NoneFeatureConfiguration> {
         if (floorY < 10) return false;   // too close to bedrock — abort
 
         // ── Trench parameters ──────────────────────────────────────────────────
-        int length    = 12 + random.nextInt(12);  // 12–23 blocks long
-        int halfWidth = 1  + random.nextInt(2);   // 1 or 2 — gives total width 3 or 5 at centre
-        int depth     = 14 + random.nextInt(8);   // 14–21 blocks deep
+        int length    = 25 + random.nextInt(25);  // 25–49 blocks long
+        int halfWidth = 3  + random.nextInt(3);   // 3–5 — gives total width 7–11 at centre
+        int depth     = 14 + random.nextInt(8);   // 14–21 blocks deep (unchanged)
 
         // Random rift axis: true = rift runs N↔S (varies along Z), false = E↔W (varies along X)
         boolean alongZ = random.nextBoolean();

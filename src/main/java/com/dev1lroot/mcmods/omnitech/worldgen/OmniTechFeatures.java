@@ -22,6 +22,13 @@ public class OmniTechFeatures {
     public static final java.util.function.Supplier<EuropaTrenchFeature> EUROPA_TRENCH =
             REGISTRY.register("europa_trench", EuropaTrenchFeature::new);
 
+    /**
+     * Upward-pointing europa_stone spires rising from the ocean floor into the
+     * subsurface water column.  Each invocation places a cluster of 4–9 spires.
+     */
+    public static final java.util.function.Supplier<EuropaStoneSpireFeature> EUROPA_STONE_SPIRE =
+            REGISTRY.register("europa_stone_spire", EuropaStoneSpireFeature::new);
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }

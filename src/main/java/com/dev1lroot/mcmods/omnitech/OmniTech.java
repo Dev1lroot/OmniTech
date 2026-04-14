@@ -58,6 +58,13 @@ import com.dev1lroot.mcmods.omnitech.network.RocketOrbitPacket;
 import com.dev1lroot.mcmods.omnitech.network.SpaceTravelPacket;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechCarvers;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechFeatures;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.DimensionArgument;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -87,6 +94,7 @@ public class OmniTech {
         OmniTechGUI.REGISTRY.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.addListener(OmniTech::registerCommands);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -284,6 +292,39 @@ public class OmniTech {
         LOGGER.info("{}{}", Config.MAGIC_NUMBER_INTRODUCTION.get(), Config.MAGIC_NUMBER.getAsInt());
 
         Config.ITEM_STRINGS.get().forEach((item) -> LOGGER.info("ITEM >> {}", item));
+    }
+
+    /**
+     * Registers {@code /warpjump <dimension>} — an operator shorthand for
+     * {@code /execute in <dimension> run tp @s ~ ~ ~}.
+     *
+     * <p>Teleports the executing player to the same XYZ position in the target
+     * dimension. Requires permission level 2 (gamemaster / op).  The dimension
+     * argument is validated by {@link DimensionArgument} and provides tab
+     * completion for all dimensions registered on the server.
+     */
+    public static void registerCommands(RegisterCommandsEvent event) {
+        event.getDispatcher().register(
+            Commands.literal("warpjump")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.argument("dimension", DimensionArgument.dimension())
+                    .executes(ctx -> {
+                        ServerPlayer player = ctx.getSource().getPlayerOrException();
+                        ServerLevel  target = DimensionArgument.getDimension(ctx, "dimension");
+                        Vec3         pos    = player.position();
+
+                        player.teleport(new TeleportTransition(
+                                target,
+                                pos,
+                                Vec3.ZERO,
+                                player.getYRot(),
+                                player.getXRot(),
+                                TeleportTransition.DO_NOTHING
+                        ));
+                        return 1;
+                    })
+                )
+        );
     }
 
     @SubscribeEvent
