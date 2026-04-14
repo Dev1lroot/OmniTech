@@ -5,10 +5,14 @@ import java.util.List;
 /** POJO representing a star system — deserialized directly from space_map.json. */
 public class StarSystem {
     public String id;
-    public String name;
     public String texture;
     /** Orbit radius in scene units at zoom=1.0 when shown inside a galaxy view. */
     public int orbital_radius = 180;
+    /**
+     * Angular-speed multiplier relative to {@code ORBIT_SPEED} in the GUI.
+     * 0 (default) means the screen falls back to the Kepler formula.
+     */
+    public float orbital_speed = 0f;
     public List<CelestialBody> bodies = List.of();
 
     /** Optional background texture shown when browsing this system's planets. */

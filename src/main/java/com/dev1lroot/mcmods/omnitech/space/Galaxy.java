@@ -5,10 +5,14 @@ import java.util.List;
 /** POJO representing a galaxy — deserialized directly from space_map.json. */
 public class Galaxy {
     public String id;
-    public String name;
     public String texture;
     /** Orbit radius in scene units at zoom=1.0 when shown in the galaxy selection view. */
     public int orbital_radius = 220;
+    /**
+     * Angular-speed multiplier relative to {@code ORBIT_SPEED} in the GUI.
+     * 0 (default) means the screen falls back to the Kepler formula.
+     */
+    public float orbital_speed = 0f;
     public List<StarSystem> star_systems = List.of();
 
     /** Optional background texture shown when navigating inside this galaxy's system list. */
