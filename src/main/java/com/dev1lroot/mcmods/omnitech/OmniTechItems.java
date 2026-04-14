@@ -1,8 +1,19 @@
 package com.dev1lroot.mcmods.omnitech;
 
+import com.dev1lroot.mcmods.omnitech.items.SpaceSuitItem;
+import com.google.common.collect.Maps;
+import java.util.Map;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.EquipmentAsset;
+import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -125,6 +136,53 @@ public class OmniTechItems
 
     public static final DeferredItem<Item> COG_TEMPLATE = REGISTRY.registerSimpleItem(
             "cog_template", p -> p);
+
+    // ── Space Suit ─────────────────────────────────────────────────────────────
+
+    private static final ResourceKey<EquipmentAsset> SPACE_SUIT_ASSET =
+            ResourceKey.create(EquipmentAssets.ROOT_ID,
+                    Identifier.fromNamespaceAndPath(OmniTech.MODID, "space_suit"));
+
+    /**
+     * Space Suit armour material — iron-tier protection, designed for use in
+     * vacuum / extreme-temperature environments.  Repaired with iron ingots.
+     */
+    public static final ArmorMaterial SPACE_SUIT_MATERIAL = new ArmorMaterial(
+            30,   // durability multiplier
+            Maps.newEnumMap(Map.of(
+                    ArmorType.BOOTS,      2,
+                    ArmorType.LEGGINGS,   5,
+                    ArmorType.CHESTPLATE, 6,
+                    ArmorType.HELMET,     3,
+                    ArmorType.BODY,       5
+            )),
+            9,    // enchantability (iron-tier)
+            SoundEvents.ARMOR_EQUIP_IRON,
+            0.0f, // toughness
+            0.0f, // knockback resistance
+            ItemTags.REPAIRS_IRON_ARMOR,
+            SPACE_SUIT_ASSET
+    );
+
+    public static final DeferredItem<SpaceSuitItem> SPACE_SUIT_HELMET =
+            REGISTRY.registerItem("space_suit_helmet",
+                    props -> new SpaceSuitItem(ArmorType.HELMET, props),
+                    props -> props.humanoidArmor(SPACE_SUIT_MATERIAL, ArmorType.HELMET));
+
+    public static final DeferredItem<SpaceSuitItem> SPACE_SUIT_CHESTPLATE =
+            REGISTRY.registerItem("space_suit_chestplate",
+                    props -> new SpaceSuitItem(ArmorType.CHESTPLATE, props),
+                    props -> props.humanoidArmor(SPACE_SUIT_MATERIAL, ArmorType.CHESTPLATE));
+
+    public static final DeferredItem<SpaceSuitItem> SPACE_SUIT_LEGGINGS =
+            REGISTRY.registerItem("space_suit_leggings",
+                    props -> new SpaceSuitItem(ArmorType.LEGGINGS, props),
+                    props -> props.humanoidArmor(SPACE_SUIT_MATERIAL, ArmorType.LEGGINGS));
+
+    public static final DeferredItem<SpaceSuitItem> SPACE_SUIT_BOOTS =
+            REGISTRY.registerItem("space_suit_boots",
+                    props -> new SpaceSuitItem(ArmorType.BOOTS, props),
+                    props -> props.humanoidArmor(SPACE_SUIT_MATERIAL, ArmorType.BOOTS));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

@@ -56,6 +56,7 @@ import com.dev1lroot.mcmods.omnitech.recipes.FractionalDistillationRecipeManager
 import com.dev1lroot.mcmods.omnitech.network.OpenRocketGuiPacket;
 import com.dev1lroot.mcmods.omnitech.network.RocketOrbitPacket;
 import com.dev1lroot.mcmods.omnitech.network.SpaceTravelPacket;
+import com.dev1lroot.mcmods.omnitech.entities.AbyssalEelEntity;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechCarvers;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechFeatures;
 import net.minecraft.commands.Commands;
@@ -65,6 +66,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -95,6 +97,8 @@ public class OmniTech {
 
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.addListener(OmniTech::registerCommands);
+        modEventBus.addListener(OmniTech::registerAttributes);
+        modEventBus.addListener(OmniTechEntities::registerSpawnPlacements);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -303,6 +307,10 @@ public class OmniTech {
      * argument is validated by {@link DimensionArgument} and provides tab
      * completion for all dimensions registered on the server.
      */
+    public static void registerAttributes(EntityAttributeCreationEvent event) {
+        event.put(OmniTechEntities.ABYSSAL_EEL.get(), AbyssalEelEntity.createAttributes().build());
+    }
+
     public static void registerCommands(RegisterCommandsEvent event) {
         event.getDispatcher().register(
             Commands.literal("warpjump")

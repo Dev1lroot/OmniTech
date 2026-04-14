@@ -56,6 +56,36 @@ public class CelestialBody {
     /** Optional background texture shown when this planet's moons are listed. */
     public String background;
 
+    // ── Atmospheric environment ────────────────────────────────────────────────
+
+    /**
+     * Surface temperature in °C at noon (day-time peak).
+     * Actual temp = {@code base_temperature + temperature_amplitude * cos(dayPhase)}.
+     */
+    public double base_temperature = 20.0;
+
+    /**
+     * Half-amplitude of the day/night temperature swing in °C.
+     * 0 = no cycle (vacuum, tidally-locked ocean, etc.).
+     */
+    public double temperature_amplitude = 0.0;
+
+    /**
+     * Atmospheric pressure in Pascals at {@link #surface_y}. 0 = vacuum; 101 325 = 1 atm.
+     */
+    public double surface_pressure = 101_325.0;
+
+    /**
+     * Pressure gradient in Pa per block of depth below {@link #surface_y}.
+     * Positive = rises going deeper. 0 = vacuum / no atmosphere.
+     */
+    public double pressure_gradient = 12.0;
+
+    /**
+     * Reference Y level (sea level / surface) for pressure calculations. Default 64.
+     */
+    public int surface_y = 64;
+
     /** Child moons (empty list for moons themselves). */
     public List<CelestialBody> moons = List.of();
 

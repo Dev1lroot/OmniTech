@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "omnitech:space_suit"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "omnitech:space_suit_leggings"
+      }
+    ]
+  }
+}

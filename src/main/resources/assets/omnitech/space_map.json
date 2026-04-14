@@ -40,9 +40,14 @@
               "orbital_speed": 3.95,
               "size": 0.38,
               "orbital_distance_km": 57909000,
-              "orbital_inclination": 7.00,
+              "orbital_inclination": 7.0,
               "ascending_node": 48.33,
-              "moons": []
+              "moons": [],
+              "base_temperature": 167.0,
+              "temperature_amplitude": 300.0,
+              "surface_pressure": 0.0,
+              "pressure_gradient": 0.0,
+              "surface_y": 64
             },
             {
               "id": "venus",
@@ -55,7 +60,12 @@
               "orbital_distance_km": 108209000,
               "orbital_inclination": 3.39,
               "ascending_node": 76.68,
-              "moons": []
+              "moons": [],
+              "base_temperature": 465.0,
+              "temperature_amplitude": 5.0,
+              "surface_pressure": 9200000.0,
+              "pressure_gradient": 50000.0,
+              "surface_y": 64
             },
             {
               "id": "earth",
@@ -67,7 +77,7 @@
               "orbital_speed": 1.47,
               "size": 1.0,
               "orbital_distance_km": 149598000,
-              "orbital_inclination": 0.00,
+              "orbital_inclination": 0.0,
               "ascending_node": 174.87,
               "moons": [
                 {
@@ -81,9 +91,19 @@
                   "parent_distance_km": 384400,
                   "orbital_inclination": 5.14,
                   "ascending_node": 125.08,
-                  "moons": []
+                  "moons": [],
+                  "base_temperature": -23.0,
+                  "temperature_amplitude": 150.0,
+                  "surface_pressure": 0.0,
+                  "pressure_gradient": 0.0,
+                  "surface_y": 64
                 }
-              ]
+              ],
+              "base_temperature": 15.0,
+              "temperature_amplitude": 10.0,
+              "surface_pressure": 101325.0,
+              "pressure_gradient": 12.0,
+              "surface_y": 64
             },
             {
               "id": "mars",
@@ -96,7 +116,12 @@
               "orbital_distance_km": 227939000,
               "orbital_inclination": 1.85,
               "ascending_node": 49.57,
-              "moons": []
+              "moons": [],
+              "base_temperature": -60.0,
+              "temperature_amplitude": 40.0,
+              "surface_pressure": 600.0,
+              "pressure_gradient": 6.0,
+              "surface_y": 64
             },
             {
               "id": "jupiter",
@@ -108,7 +133,7 @@
               "orbital_speed": 0.57,
               "size": 11.2,
               "orbital_distance_km": 778299000,
-              "orbital_inclination": 1.30,
+              "orbital_inclination": 1.3,
               "ascending_node": 100.49,
               "moons": [
                 {
@@ -122,7 +147,12 @@
                   "parent_distance_km": 421700,
                   "orbital_inclination": 0.04,
                   "ascending_node": 43.98,
-                  "moons": []
+                  "moons": [],
+                  "base_temperature": -130.0,
+                  "temperature_amplitude": 5.0,
+                  "surface_pressure": 0.0,
+                  "pressure_gradient": 0.0,
+                  "surface_y": 64
                 },
                 {
                   "id": "europa",
@@ -135,7 +165,12 @@
                   "parent_distance_km": 671100,
                   "orbital_inclination": 0.47,
                   "ascending_node": 219.06,
-                  "moons": []
+                  "moons": [],
+                  "base_temperature": -160.0,
+                  "temperature_amplitude": 5.0,
+                  "surface_pressure": 0.0,
+                  "pressure_gradient": 10132.0,
+                  "surface_y": 103
                 },
                 {
                   "id": "ganymede",
@@ -143,14 +178,24 @@
                   "dimension": null,
                   "texture": "omnitech:textures/space/moon/ganymede.png",
                   "orbital_radius": 135,
-                  "orbital_speed": 1.80,
+                  "orbital_speed": 1.8,
                   "size": 0.41,
                   "parent_distance_km": 1070400,
-                  "orbital_inclination": 0.20,
+                  "orbital_inclination": 0.2,
                   "ascending_node": 63.55,
-                  "moons": []
+                  "moons": [],
+                  "base_temperature": -163.0,
+                  "temperature_amplitude": 5.0,
+                  "surface_pressure": 0.0,
+                  "pressure_gradient": 0.0,
+                  "surface_y": 64
                 }
-              ]
+              ],
+              "base_temperature": -108.0,
+              "temperature_amplitude": 0.0,
+              "surface_pressure": 1000000.0,
+              "pressure_gradient": 100000.0,
+              "surface_y": 64
             },
             {
               "id": "saturn",
@@ -172,13 +217,23 @@
                   "texture": "omnitech:textures/space/moon/titan.png",
                   "orbital_radius": 110,
                   "orbital_speed": 2.45,
-                  "size": 0.40,
+                  "size": 0.4,
                   "parent_distance_km": 1221870,
                   "orbital_inclination": 0.35,
                   "ascending_node": 28.06,
-                  "moons": []
+                  "moons": [],
+                  "base_temperature": -179.0,
+                  "temperature_amplitude": 2.0,
+                  "surface_pressure": 146000.0,
+                  "pressure_gradient": 15.0,
+                  "surface_y": 64
                 }
-              ]
+              ],
+              "base_temperature": -178.0,
+              "temperature_amplitude": 0.0,
+              "surface_pressure": 1000000.0,
+              "pressure_gradient": 50000.0,
+              "surface_y": 64
             },
             {
               "id": "uranus",
@@ -225,7 +280,7 @@
               "orbital_speed": 1.71,
               "size": 4.3,
               "orbital_distance_km": 82541000,
-              "orbital_inclination": 3.50,
+              "orbital_inclination": 3.5,
               "ascending_node": 120.0,
               "moons": []
             },
@@ -238,7 +293,7 @@
               "orbital_speed": 1.0,
               "size": 6.6,
               "orbital_distance_km": 201957000,
-              "orbital_inclination": 2.00,
+              "orbital_inclination": 2.0,
               "ascending_node": 85.0,
               "moons": []
             }
@@ -261,7 +316,7 @@
               "orbital_speed": 2.15,
               "size": 1.3,
               "orbital_distance_km": 7254000,
-              "orbital_inclination": 1.50,
+              "orbital_inclination": 1.5,
               "ascending_node": 200.0,
               "moons": []
             }
