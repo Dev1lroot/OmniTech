@@ -46,8 +46,8 @@ public class EuropaTrenchFeature extends Feature<NoneFeatureConfiguration> {
         if (floorY < 10) return false;   // too close to bedrock — abort
 
         // ── Trench parameters ──────────────────────────────────────────────────
-        int length    = 25 + random.nextInt(25);  // 25–49 blocks long
-        int halfWidth = 3  + random.nextInt(3);   // 3–5 — gives total width 7–11 at centre
+        int length    = 75 + random.nextInt(75);  // 75–149 blocks long
+        int halfWidth = 9  + random.nextInt(9);   // 9–17 — gives total width 19–35 at centre
         int depth     = 14 + random.nextInt(8);   // 14–21 blocks deep (unchanged)
 
         // Random rift axis: true = rift runs N↔S (varies along Z), false = E↔W (varies along X)
@@ -80,6 +80,29 @@ public class EuropaTrenchFeature extends Feature<NoneFeatureConfiguration> {
         }
 
         if (!carved) return false;
+
+        // ── Clear the water column above the trench opening ───────────────────
+        // The trench runs at decoration step 7, after stone spires (step 4), so
+        // any spires that grew above the trench footprint are still solid.
+        // Replace everything solid (but not bedrock) in the 20 blocks above
+        // the floor with water so the trench entrance is unobstructed.
+        for (int l = -(length / 2); l <= length / 2; l++) {
+            float taper = 1.0f - (float) Math.abs(l) / ((length / 2.0f) + 1.0f);
+            int   w     = Math.round(halfWidth * taper);
+
+            for (int side = -w; side <= w; side++) {
+                int dx = alongZ ? side : l;
+                int dz = alongZ ? l    : side;
+
+                for (int dy = 1; dy <= 20; dy++) {
+                    mutable.set(origin.getX() + dx, floorY + dy, origin.getZ() + dz);
+                    BlockState above = level.getBlockState(mutable);
+                    if (isSolid(above) && !above.is(Blocks.BEDROCK)) {
+                        level.setBlock(mutable, waterState, 2);
+                    }
+                }
+            }
+        }
 
         // ── Place magma blocks on the trench floor ─────────────────────────────
         // Scatter 3–7 magma blocks at the very bottom of the trench to represent

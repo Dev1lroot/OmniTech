@@ -11,12 +11,12 @@
   "features": [
     [],
     [],
-    ["omnitech:europa_trench"],
+    [],
     [],
     ["omnitech:ice_spike", "omnitech:europa_stone_spire"],
     [],
     [],
-    [],
+    ["omnitech:europa_trench"],
     [],
     []
   ],
