@@ -1,0 +1,9 @@
+{
+  "requiredTemperature": 0,
+  "productionTime": 100,
+  "inputs": [
+    { "fluid": "omnitech:sodium_hydroxide", "amount": 1000 },
+    { "fluid": "omnitech:chlorine",         "amount": 1000 }
+  ],
+  "output": { "fluid": "omnitech:sodium_hypochlorite", "amount": 1000 }
+}

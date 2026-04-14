@@ -53,6 +53,12 @@ import com.dev1lroot.mcmods.omnitech.recipes.DecompressorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.blocks.FractionalDistillerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.FractionalDistillerBlock;
 import com.dev1lroot.mcmods.omnitech.recipes.FractionalDistillationRecipeManager;
+import com.dev1lroot.mcmods.omnitech.blocks.ChemicalReactorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.ChemicalReactorBlock;
+import com.dev1lroot.mcmods.omnitech.recipes.ChemicalReactorRecipeManager;
+import com.dev1lroot.mcmods.omnitech.blocks.FluidFillerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.FluidFillerBlock;
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.network.OpenRocketGuiPacket;
 import com.dev1lroot.mcmods.omnitech.network.RocketOrbitPacket;
 import com.dev1lroot.mcmods.omnitech.network.SpaceTravelPacket;
@@ -94,6 +100,7 @@ public class OmniTech {
         OmniTechItems.REGISTRY.register(modEventBus);
         OmniTechMenuTypes.REGISTRY.register(modEventBus);
         OmniTechGUI.REGISTRY.register(modEventBus);
+        OmniTechDataComponents.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.addListener(OmniTech::registerCommands);
@@ -239,6 +246,42 @@ public class OmniTech {
                     Direction facing = state.getValue(DecompressorBlock.FACING);
                     if (side == facing) return ((DecompressorBlockEntity) be).inputFluidHandler;
                     if (side == facing.getOpposite()) return ((DecompressorBlockEntity) be).outputFluidHandler;
+                    return null;
+                }
+        );
+
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.CHEMICAL_REACTOR.get(),
+                (be, side) -> {
+                    if (side == null) return null;
+                    var state = be.getLevel() != null
+                            ? be.getLevel().getBlockState(be.getBlockPos()) : null;
+                    if (state == null) return null;
+                    ChemicalReactorBlockEntity reactor = (ChemicalReactorBlockEntity) be;
+                    Direction facing = state.getValue(ChemicalReactorBlock.FACING);
+                    // Back face: output
+                    if (side == facing.getOpposite()) return reactor.outputFluidHandler;
+                    // Front, left, right: input (combined handler)
+                    if (side == facing
+                            || side == facing.getCounterClockWise()
+                            || side == facing.getClockWise()) return reactor.anyInputHandler;
+                    return null;
+                }
+        );
+
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.FLUID_FILLER.get(),
+                (be, side) -> {
+                    if (side == null) return null;
+                    var state = be.getLevel() != null
+                            ? be.getLevel().getBlockState(be.getBlockPos()) : null;
+                    if (state == null) return null;
+                    FluidFillerBlockEntity filler = (FluidFillerBlockEntity) be;
+                    Direction facing = state.getValue(FluidFillerBlock.FACING);
+                    if (side == facing)              return filler.inputFluidHandler;
+                    if (side == facing.getOpposite()) return filler.outputFluidHandler;
                     return null;
                 }
         );
@@ -456,6 +499,15 @@ public class OmniTech {
                     PreparationBarrier barrier, Executor reloadExecutor) {
                 return CompletableFuture.runAsync(() -> {
                     FractionalDistillationRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "chemical_reactor_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    ChemicalReactorRecipeManager.loadRecipes(sharedState.resourceManager());
                 }, taskExecutor).thenCompose(barrier::wait);
             }
         });

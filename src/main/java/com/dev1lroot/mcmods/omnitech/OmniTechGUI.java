@@ -19,6 +19,8 @@ import com.dev1lroot.mcmods.omnitech.gui.FractionalDistillerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.HeatExchangerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.RotaryCompressorScreen;
 import com.dev1lroot.mcmods.omnitech.gui.SolvationMachineScreen;
+import com.dev1lroot.mcmods.omnitech.gui.ChemicalReactorScreen;
+import com.dev1lroot.mcmods.omnitech.gui.FluidFillerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.RocketScreen;
 import com.dev1lroot.mcmods.omnitech.gui.SorterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.StirlingEngineScreen;
@@ -86,6 +88,9 @@ public class OmniTechGUI {
                         output.accept(OmniTechItems.HEAT_EXCHANGER_ITEM.get());
                         output.accept(OmniTechItems.DECOMPRESSOR_ITEM.get());
                         output.accept(OmniTechItems.FRACTIONAL_DISTILLER_ITEM.get());
+                        output.accept(OmniTechItems.CHEMICAL_REACTOR_ITEM.get());
+                        output.accept(OmniTechItems.FLUID_FILLER_ITEM.get());
+                        output.accept(OmniTechItems.FLUID_CANISTER.get());
                     }).build());
 
     public static void register(IEventBus modEventBus) {
@@ -116,6 +121,8 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.HEAT_EXCHANGER.get(), HeatExchangerScreen::new);
         event.register(OmniTechMenuTypes.DECOMPRESSOR.get(), DecompressorScreen::new);
         event.register(OmniTechMenuTypes.FRACTIONAL_DISTILLER.get(), FractionalDistillerScreen::new);
+        event.register(OmniTechMenuTypes.CHEMICAL_REACTOR.get(), ChemicalReactorScreen::new);
+        event.register(OmniTechMenuTypes.FLUID_FILLER.get(), FluidFillerScreen::new);
         event.register(OmniTechMenuTypes.ROCKET.get(), RocketScreen::new);
     }
 

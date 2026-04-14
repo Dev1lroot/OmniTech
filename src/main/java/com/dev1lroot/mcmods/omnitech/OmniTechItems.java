@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech;
 
+import com.dev1lroot.mcmods.omnitech.items.FluidCanisterItem;
 import com.dev1lroot.mcmods.omnitech.items.SpaceSuitItem;
 import com.google.common.collect.Maps;
 import java.util.Map;
@@ -108,6 +109,15 @@ public class OmniTechItems
 
     public static final DeferredItem<BlockItem> FRACTIONAL_DISTILLER_ITEM = REGISTRY.registerSimpleBlockItem(
             "fractional_distiller", OmniTechBlocks.FRACTIONAL_DISTILLER);
+
+    public static final DeferredItem<BlockItem> CHEMICAL_REACTOR_ITEM = REGISTRY.registerSimpleBlockItem(
+            "chemical_reactor", OmniTechBlocks.CHEMICAL_REACTOR);
+
+    public static final DeferredItem<BlockItem> FLUID_FILLER_ITEM = REGISTRY.registerSimpleBlockItem(
+            "fluid_filler", OmniTechBlocks.FLUID_FILLER);
+
+    public static final DeferredItem<FluidCanisterItem> FLUID_CANISTER =
+            REGISTRY.registerItem("fluid_canister", FluidCanisterItem::new);
 
     // Vanilla Material Additions
     public static final DeferredItem<Item> GRANITE_DUST = REGISTRY.registerSimpleItem(

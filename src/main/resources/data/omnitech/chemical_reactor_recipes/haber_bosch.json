@@ -1,0 +1,10 @@
+{
+  "requiredTemperature": 400,
+  "productionTime": 100,
+  "inputs": [
+    { "fluid": "omnitech:nitrogen", "amount": 1000 },
+    { "fluid": "omnitech:hydrogen", "amount": 1000 }
+  ],
+  "output": { "fluid": "omnitech:ammonia", "amount": 1000 },
+  "catalyst": { "item": "omnitech:iron_rod", "damage": 1 }
+}

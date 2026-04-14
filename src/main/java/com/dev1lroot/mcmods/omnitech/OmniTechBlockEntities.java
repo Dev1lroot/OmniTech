@@ -153,6 +153,16 @@ public class OmniTechBlockEntities {
                     () -> new BlockEntityType<>(FractionalDistillerBlockEntity::new,
                             OmniTechBlocks.FRACTIONAL_DISTILLER.get()));
 
+    public static final Supplier<BlockEntityType<ChemicalReactorBlockEntity>> CHEMICAL_REACTOR =
+            REGISTRY.register("chemical_reactor",
+                    () -> new BlockEntityType<>(ChemicalReactorBlockEntity::new,
+                            OmniTechBlocks.CHEMICAL_REACTOR.get()));
+
+    public static final Supplier<BlockEntityType<FluidFillerBlockEntity>> FLUID_FILLER =
+            REGISTRY.register("fluid_filler",
+                    () -> new BlockEntityType<>(FluidFillerBlockEntity::new,
+                            OmniTechBlocks.FLUID_FILLER.get()));
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }

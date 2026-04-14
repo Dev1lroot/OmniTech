@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "omnitech:item/fluid_canister_fluid",
+    "layer1": "omnitech:item/fluid_canister"
+  }
+}

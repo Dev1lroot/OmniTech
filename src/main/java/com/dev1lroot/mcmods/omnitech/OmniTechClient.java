@@ -1,6 +1,8 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.blocks.FluidPipeBlock;
+import com.dev1lroot.mcmods.omnitech.OmniTechItems;
+import com.dev1lroot.mcmods.omnitech.client.FluidCanisterTintSource;
 import com.dev1lroot.mcmods.omnitech.client.ConveyorBeltRenderer;
 import com.dev1lroot.mcmods.omnitech.client.CrankBlockEntityRenderer;
 import com.dev1lroot.mcmods.omnitech.client.FluidPipeRenderer;
@@ -54,6 +56,7 @@ public class OmniTechClient
         modEventBus.addListener(this::registerCustomEnvironmentRenderers);
         modEventBus.addListener(this::registerRenderPipelines);
         modEventBus.addListener(this::registerKeys);
+        modEventBus.addListener(this::registerItemColors);
         modEventBus.register(OmniTechClient.class);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onClientTick);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::registerClientCommands);
@@ -89,6 +92,12 @@ public class OmniTechClient
                 Identifier.fromNamespaceAndPath(OmniTech.MODID, "space_sky"),
                 new SpaceMapSkyboxRenderer()
         );
+    }
+
+    void registerItemColors(RegisterColorHandlersEvent.ItemTintSources event) {
+        event.register(
+                net.minecraft.resources.Identifier.fromNamespaceAndPath(OmniTech.MODID, "fluid_canister_tint"),
+                FluidCanisterTintSource.MAP_CODEC);
     }
 
     void registerRenderPipelines(RegisterRenderPipelinesEvent event) {

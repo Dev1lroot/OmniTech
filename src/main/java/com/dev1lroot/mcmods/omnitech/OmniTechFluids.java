@@ -24,11 +24,13 @@ public class OmniTechFluids
     public static final FluidObject NITROGEN = new FluidObject("nitrogen", gasProps());
     public static final FluidObject AMMONIA = new FluidObject("ammonia", gasProps());
     public static final FluidObject CHLORINE = new FluidObject("chlorine", gasProps());
+    public static final FluidObject CHLORAMINE = new FluidObject("chloramine", gasProps());
     public static final FluidObject SODIUM = new FluidObject("sodium", gasProps());
     public static final FluidObject BRINE = new FluidObject("brine", gasProps());
     public static final FluidObject DISTILLED_WATER = new FluidObject("distilled_water",
             FluidType.Properties.create().density(10).viscosity(10).temperature(100));
     public static final FluidObject SODIUM_HYDROXIDE = new FluidObject("sodium_hydroxide", gasProps());
+    public static final FluidObject SODIUM_HYPOCHLORITE = new FluidObject("sodium_hypochlorite", gasProps());
     public static final FluidObject MOLTEN_BRASS = new FluidObject("molten_brass",
             FluidType.Properties.create().density(8900).viscosity(3000).temperature(1200));
     public static final FluidObject ARGON = new FluidObject("argon", gasProps());

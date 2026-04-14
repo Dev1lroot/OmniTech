@@ -19,6 +19,8 @@ import com.dev1lroot.mcmods.omnitech.gui.FractionalDistillerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.HeatExchangerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.RotaryCompressorMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SolvationMachineMenu;
+import com.dev1lroot.mcmods.omnitech.gui.ChemicalReactorMenu;
+import com.dev1lroot.mcmods.omnitech.gui.FluidFillerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.RocketMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SorterMenu;
 import com.dev1lroot.mcmods.omnitech.gui.StirlingEngineMenu;
@@ -117,6 +119,14 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<FractionalDistillerMenu>> FRACTIONAL_DISTILLER =
             REGISTRY.register("fractional_distiller",
                     () -> IMenuTypeExtension.create(FractionalDistillerMenu::new));
+
+    public static final Supplier<MenuType<ChemicalReactorMenu>> CHEMICAL_REACTOR =
+            REGISTRY.register("chemical_reactor",
+                    () -> IMenuTypeExtension.create(ChemicalReactorMenu::new));
+
+    public static final Supplier<MenuType<FluidFillerMenu>> FLUID_FILLER =
+            REGISTRY.register("fluid_filler",
+                    () -> IMenuTypeExtension.create(FluidFillerMenu::new));
 
     public static final Supplier<MenuType<RocketMenu>> ROCKET =
             REGISTRY.register("rocket",
