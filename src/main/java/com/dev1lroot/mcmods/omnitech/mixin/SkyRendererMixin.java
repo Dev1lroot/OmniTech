@@ -1,6 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.mixin;
 
-import com.dev1lroot.mcmods.omnitech.client.MoonSkyboxRenderer;
+import com.dev1lroot.mcmods.omnitech.client.SpaceMapSkyboxRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.SkyRenderer;
 import net.minecraft.world.level.MoonPhase;
@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class SkyRendererMixin {
 
     /**
-     * When {@link MoonSkyboxRenderer#isSkippingMoon()} is true (i.e. we are rendering
-     * the moon dimension sky), redirect the {@code renderMoon} call inside
-     * {@code renderSunMoonAndStars} to a no-op so the vanilla moon disc is not drawn.
+     * When {@link SpaceMapSkyboxRenderer#isSuppressingVanillaMoon()} is true,
+     * redirect the {@code renderMoon} call inside {@code renderSunMoonAndStars}
+     * to a no-op so the vanilla moon disc is not drawn in OmniTech space dimensions.
      */
     @Redirect(
             method = "renderSunMoonAndStars",
@@ -25,10 +25,9 @@ public class SkyRendererMixin {
     )
     private void redirectRenderMoon(SkyRenderer instance, MoonPhase moonPhase,
                                     float rainBrightness, PoseStack poseStack) {
-        if (!MoonSkyboxRenderer.isSkippingMoon()) {
-            // Not in moon-sky mode — invoke the original private method via the helper
-            MoonSkyboxRenderer.invokeMoonRender(instance, moonPhase, rainBrightness, poseStack);
+        if (!SpaceMapSkyboxRenderer.isSuppressingVanillaMoon()) {
+            SpaceMapSkyboxRenderer.invokeMoonRender(instance, moonPhase, rainBrightness, poseStack);
         }
-        // else: moon rendering is suppressed for the moon dimension
+        // else: vanilla moon suppressed while OmniTech space sky is rendering
     }
 }

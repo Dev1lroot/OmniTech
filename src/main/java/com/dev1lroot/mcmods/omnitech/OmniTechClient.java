@@ -7,7 +7,7 @@ import com.dev1lroot.mcmods.omnitech.client.FluidPipeRenderer;
 import com.dev1lroot.mcmods.omnitech.client.FluidTankRenderer;
 import com.dev1lroot.mcmods.omnitech.client.KineticPipeRenderer;
 import com.dev1lroot.mcmods.omnitech.client.ValveRenderer;
-import com.dev1lroot.mcmods.omnitech.client.MoonSkyboxRenderer;
+import com.dev1lroot.mcmods.omnitech.client.SpaceMapSkyboxRenderer;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntity;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntityRenderer;
 import com.dev1lroot.mcmods.omnitech.models.RocketModel;
@@ -87,13 +87,13 @@ public class OmniTechClient
 
     void registerCustomEnvironmentRenderers(RegisterCustomEnvironmentEffectRendererEvent event) {
         event.registerSkyboxRenderer(
-                Identifier.fromNamespaceAndPath(OmniTech.MODID, "moon_sky"),
-                new MoonSkyboxRenderer()
+                Identifier.fromNamespaceAndPath(OmniTech.MODID, "space_sky"),
+                new SpaceMapSkyboxRenderer()
         );
     }
 
     void registerRenderPipelines(RegisterRenderPipelinesEvent event) {
-        event.registerPipeline(MoonSkyboxRenderer.EARTH_PIPELINE);
+        event.registerPipeline(SpaceMapSkyboxRenderer.SKY_BODY_PIPELINE);
     }
 
     void registerKeys(RegisterKeyMappingsEvent event) {

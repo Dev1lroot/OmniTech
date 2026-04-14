@@ -10,7 +10,7 @@
     "minecraft:visual/sky_color": "#000000",
     "minecraft:visual/fog_color": "#000000",
     "minecraft:visual/cloud_height": -9999.0,
-    "neoforge:custom_skybox": "omnitech:moon_sky"
+    "neoforge:custom_skybox": "omnitech:space_sky"
   },
   "coordinate_scale": 1.0,
   "default_clock": "minecraft:overworld",

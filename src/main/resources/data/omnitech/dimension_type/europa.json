@@ -9,7 +9,8 @@
     "minecraft:gameplay/water_evaporates": false,
     "minecraft:visual/sky_color": "#1a3a8f",
     "minecraft:visual/fog_color": "#0d1f66",
-    "minecraft:visual/cloud_height": -9999.0
+    "minecraft:visual/cloud_height": -9999.0,
+    "neoforge:custom_skybox": "omnitech:space_sky"
   },
   "coordinate_scale": 1.0,
   "default_clock": "minecraft:overworld",
