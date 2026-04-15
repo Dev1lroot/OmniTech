@@ -64,6 +64,10 @@ public class OmniTechFluids
             FluidType.Properties.create().density(0).viscosity(10).temperature(0));
     public static final FluidObject LIQUEFIED_AIR = new FluidObject("liquefied_air",
             FluidType.Properties.create().density(10).viscosity(10).temperature(0));
+    public static final FluidObject CRUDE_HYDRAZINE_SOLUTION = new FluidObject("crude_hydrazine_solution",
+            FluidType.Properties.create().density(10).viscosity(10).temperature(0));
+    public static final FluidObject HYDRAZINE_HYDRATE = new FluidObject("hydrazine_hydrate",
+            FluidType.Properties.create().density(10).viscosity(10).temperature(0));
 
     // Steam: density < 0 → lighter than air → fills network from top downward.
     private static FluidType.Properties gasProps() {

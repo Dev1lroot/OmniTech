@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "omnitech:block/fractional_distiller"
+    "model": "omnitech:block/fractional_distiller_single_cool"
   }
 }

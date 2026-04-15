@@ -1,0 +1,10 @@
+{
+  "requiredTemperature": 120,
+  "productionTime": 100,
+  "input":   { "fluid": "omnitech:crude_hydrazine_solution", "amount": 1000 },
+  "outputs": [
+    { "fluid": "omnitech:hydrazine_hydrate", "amount": 100 },
+    { "fluid": "minecraft:water",            "amount": 700 },
+    { "fluid": "omnitech:ammonia",           "amount": 200 }
+  ]
+}

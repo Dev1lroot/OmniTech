@@ -1,0 +1,25 @@
+{
+	"parent": "minecraft:block/block",
+	"textures": {
+		"particle":  "omnitech:block/fractional_distiller_single",
+		"port":     "omnitech:block/fractional_distiller_bottom_port",
+		"connect":   "omnitech:block/fractional_distiller_connect",
+		"side":      "omnitech:block/fractional_distiller_bottom",
+		"glow":      "omnitech:block/glow"
+	},
+	"elements": [
+		{
+			"name": "body",
+			"from": [0, 0, 0],
+			"to":   [16, 16, 16],
+			"faces": {
+				"down":  {"uv": [0, 0, 16, 16], "texture": "#connect",  "cullface": "down"},
+				"up":    {"uv": [0, 0, 16, 16], "texture": "#connect", "cullface": "up"},
+				"north": {"uv": [0, 0, 16, 16], "texture": "#port",    "cullface": "north"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#port",    "cullface": "south"},
+				"west":  {"uv": [0, 0, 16, 16], "texture": "#side",    "cullface": "west"},
+				"east":  {"uv": [0, 0, 16, 16], "texture": "#side",    "cullface": "east"}
+			}
+		}
+	]
+}

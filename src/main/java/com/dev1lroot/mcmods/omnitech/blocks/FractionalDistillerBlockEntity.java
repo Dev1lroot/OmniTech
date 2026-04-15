@@ -308,13 +308,14 @@ public class FractionalDistillerBlockEntity extends BlockEntity
             be.decayTimer = 0;
         }
 
-        // 6. Update LIT blockstate for every segment in the structure
+        // 6. Update THERMAL_STATE blockstate for every segment in the structure
+        ThermalState targetThermal = ThermalState.of(be.storedHeat);
         for (FractionalDistillerBlockEntity seg : structure) {
             BlockState segState = level.getBlockState(seg.worldPosition);
             if (segState.getBlock() instanceof FractionalDistillerBlock
-                    && segState.getValue(FractionalDistillerBlock.LIT) != canRun) {
+                    && segState.getValue(FractionalDistillerBlock.THERMAL_STATE) != targetThermal) {
                 level.setBlock(seg.worldPosition,
-                        segState.setValue(FractionalDistillerBlock.LIT, canRun), 3);
+                        segState.setValue(FractionalDistillerBlock.THERMAL_STATE, targetThermal), 3);
                 dirty = true;
             }
         }
