@@ -118,6 +118,10 @@ public class OmniTechGUI {
                         output.accept(OmniTechItems.SPACE_SUIT_CHESTPLATE.get());
                         output.accept(OmniTechItems.SPACE_SUIT_LEGGINGS.get());
                         output.accept(OmniTechItems.SPACE_SUIT_BOOTS.get());
+                        // All material armor sets (helmet → chestplate → leggings → boots per material)
+                        ArmorSet.addAllToTab(output);
+                        // All material tool sets (pickaxe → shovel → sword → axe → hoe per material)
+                        ToolSet.addAllToTab(output);
                         // Kinetic components
                         output.accept(OmniTechItems.WOODEN_COG.get());
                         output.accept(OmniTechItems.WOODEN_REDUCTOR.get());
@@ -192,6 +196,21 @@ public class OmniTechGUI {
             event.accept(OmniTechItems.SPACE_SUIT_CHESTPLATE);
             event.accept(OmniTechItems.SPACE_SUIT_LEGGINGS);
             event.accept(OmniTechItems.SPACE_SUIT_BOOTS);
+            for (ArmorSet set : ArmorSet.ALL_SETS) {
+                for (var piece : set.allPieces()) event.accept(piece);
+            }
+            for (ToolSet set : ToolSet.ALL_SETS) {
+                event.accept(set.tool("%_sword"));
+                event.accept(set.tool("%_axe"));
+            }
+        }
+        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+            for (ToolSet set : ToolSet.ALL_SETS) {
+                event.accept(set.tool("%_pickaxe"));
+                event.accept(set.tool("%_shovel"));
+                event.accept(set.tool("%_axe"));
+                event.accept(set.tool("%_hoe"));
+            }
         }
     }
 }

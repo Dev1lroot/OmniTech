@@ -1,0 +1,10 @@
+{
+  "layers": {
+    "humanoid": [
+      { "texture": "omnitech:cobalt_armor" }
+    ],
+    "humanoid_leggings": [
+      { "texture": "omnitech:cobalt_armor_leggings" }
+    ]
+  }
+}
