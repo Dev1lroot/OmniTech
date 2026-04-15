@@ -93,7 +93,8 @@ public class OmniTech {
         OmniTechTools.init();
         OmniTechArmors.init();
 
-        OmniTechFluids.register(modEventBus); // Добавьте это
+        FluidLoader.loadAll();           // reads data/omnitech/fluid/*.json
+        OmniTechFluids.register(modEventBus);
         OmniTechEntities.register(modEventBus);
         OmniTechFeatures.register(modEventBus);
         OmniTechCarvers.register(modEventBus);

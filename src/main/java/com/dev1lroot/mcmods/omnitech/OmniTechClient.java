@@ -143,34 +143,13 @@ public class OmniTechClient
 
     @SubscribeEvent
     public static void onRegisterFluidModels(RegisterFluidModelsEvent event) {
-        registerFluid(event, "steam",                OmniTechFluids.STEAM);
-        registerFluid(event, "molten_brass",         OmniTechFluids.MOLTEN_BRASS);
-        registerFluid(event, "distilled_water",      OmniTechFluids.DISTILLED_WATER);
-        registerFluid(event, "brine",                OmniTechFluids.BRINE);
-        registerFluid(event, "hydrogen",             OmniTechFluids.HYDROGEN);
-        registerFluid(event, "oxygen",               OmniTechFluids.OXYGEN);
-        registerFluid(event, "nitrogen",             OmniTechFluids.NITROGEN);
-        registerFluid(event, "ammonia",              OmniTechFluids.AMMONIA);
-        registerFluid(event, "chlorine",             OmniTechFluids.CHLORINE);
-        registerFluid(event, "chloramine",           OmniTechFluids.CHLORAMINE);
-        registerFluid(event, "argon",                OmniTechFluids.ARGON);
-        registerFluid(event, "sodium",               OmniTechFluids.SODIUM);
-        registerFluid(event, "hydrazine",            OmniTechFluids.HYDRAZINE);
-        registerFluid(event, "sodium_hydroxide",     OmniTechFluids.SODIUM_HYDROXIDE);
-        registerFluid(event, "sodium_hypochlorite",  OmniTechFluids.SODIUM_HYPOCHLORITE);
-        registerFluid(event, "air",                  OmniTechFluids.AIR);
-        registerFluid(event, "compressed_air",       OmniTechFluids.COMPRESSED_AIR);
-        registerFluid(event, "compressed_heated_air",OmniTechFluids.COMPRESSED_HEATED_AIR);
-        registerFluid(event, "liquefied_air",        OmniTechFluids.LIQUEFIED_AIR);
-    }
-
-    private static void registerFluid(RegisterFluidModelsEvent event, String name,
-            OmniTechFluids.FluidObject fluid) {
-        event.register(new FluidModel.Unbaked(
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/" + name + "_still")),
-                new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/" + name + "_flow")),
-                null,
-                null
-        ), fluid.source.get(), fluid.flowing.get());
+        OmniTechFluids.all().forEach((name, fluid) ->
+            event.register(new FluidModel.Unbaked(
+                    new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/" + name + "_still")),
+                    new Material(Identifier.fromNamespaceAndPath("omnitech", "block/fluid/" + name + "_flow")),
+                    null,
+                    null
+            ), fluid.source.get(), fluid.flowing.get())
+        );
     }
 }
