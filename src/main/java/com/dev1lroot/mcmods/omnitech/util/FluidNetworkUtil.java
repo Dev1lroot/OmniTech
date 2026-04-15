@@ -34,9 +34,13 @@ public final class FluidNetworkUtil {
 
     /**
      * Collects the fluid network reachable from {@code startPos} and
-     * re-distributes its total fluid according to gravity:
-     * liquids fill from the lowest Y upward; gases (density ≤ 0) fill from
-     * the highest Y downward.
+     * re-distributes its total fluid according to density:
+     * <ul>
+     *   <li>density &lt; 0 (steam): fills from highest Y downward — rises.</li>
+     *   <li>density = 0 (pressurized gases): fills all nodes proportionally
+     *       to their capacity regardless of height — equal pressure spread.</li>
+     *   <li>density &gt; 0 (liquids, molten metals): fills from lowest Y upward — sinks.</li>
+     * </ul>
      */
     public static void syncNetwork(Level level, BlockPos startPos) {
         NetworkData data = collectNetwork(level, startPos);
@@ -250,16 +254,64 @@ public final class FluidNetworkUtil {
             long totalAmount, FluidStack ref) {
         if (ref.isEmpty()) return;
 
-        long remaining = totalAmount;
+        int density = ref.getFluid().getFluidType().getDensity();
 
-        // Gas = lighter than air (density ≤ 0); fills from the top downward.
-        boolean isGas = ref.getFluid().getFluidType().isLighterThanAir();
+        if (density == 0) {
+            // Pressurized gas: spreads equally to all containers regardless of height.
+            distributeEqually(level, levels, totalAmount, ref);
+        } else {
+            // Gravity-driven: steam (density < 0) rises; liquids/molten (density > 0) sink.
+            distributeByGravity(level, levels, totalAmount, ref, density < 0);
+        }
+    }
+
+    /**
+     * Distributes fluid proportionally by node capacity across the entire network,
+     * ignoring height. Used for pressurized gases (density == 0) that behave like
+     * a pressure vessel — every connected container gets an equal share relative
+     * to its volume.
+     */
+    private static void distributeEqually(Level level, Map<Integer, List<BlockEntity>> levels,
+            long totalAmount, FluidStack ref) {
+        long totalCapacity = 0;
+        for (List<BlockEntity> nodes : levels.values()) {
+            totalCapacity += calculateTotalCapacity(nodes);
+        }
+        if (totalCapacity <= 0) return;
+
+        List<BlockEntity> allNodes = new ArrayList<>();
+        for (List<BlockEntity> nodes : levels.values()) allNodes.addAll(nodes);
+
+        if (totalAmount >= totalCapacity) {
+            // Network is completely full — fill every node to its capacity.
+            for (BlockEntity be : allNodes) {
+                updateBlockFluid(be, getCapacity(be), ref, level);
+            }
+            return;
+        }
+
+        // Proportional share: each node receives (itsCapacity / totalCapacity) * totalAmount.
+        // Integer rounding may cause a discrepancy of ±1 mb per node, which is acceptable.
+        for (BlockEntity be : allNodes) {
+            int share = (int) Math.round(getCapacity(be) * (double) totalAmount / totalCapacity);
+            updateBlockFluid(be, share, ref, level);
+        }
+    }
+
+    /**
+     * Distributes fluid level-by-level according to gravity. Gases (density &lt; 0)
+     * accumulate at the top; liquids and molten metals (density &gt; 0) sink to the
+     * bottom. Within a single Y-level nodes share the available fluid proportionally.
+     */
+    private static void distributeByGravity(Level level, Map<Integer, List<BlockEntity>> levels,
+            long totalAmount, FluidStack ref, boolean isGas) {
+        long remaining = totalAmount;
 
         List<Integer> keys = new ArrayList<>(levels.keySet());
         if (isGas) {
-            keys.sort(Comparator.reverseOrder()); // gas rises — highest Y fills first
+            keys.sort(Comparator.reverseOrder()); // rises — highest Y fills first
         } else {
-            keys.sort(Comparator.naturalOrder());  // liquid falls — lowest Y fills first
+            keys.sort(Comparator.naturalOrder());  // sinks — lowest Y fills first
         }
 
         for (int y : keys) {

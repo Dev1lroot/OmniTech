@@ -1,0 +1,6 @@
+{
+  "maxCold": 200,
+  "productionCold": 100,
+  "inputFluid":  { "fluid": "omnitech:liquefied_air", "amount": 1000 },
+  "outputFluid": { "fluid": "omnitech:air",             "amount": 1000 }
+}
