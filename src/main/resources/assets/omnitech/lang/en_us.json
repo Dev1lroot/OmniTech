@@ -324,5 +324,19 @@
   "fluid.omnitech.sodium": "Sodium (Liquid)",
   "fluid.omnitech.ammonia": "Ammonia",
   "fluid.omnitech.sodium_hypochlorite": "Sodium Hypochlorite",
-  "item.omnitech.deepslate_dust": "Deepslate Dust",\n\n  "jei.omnitech.alloy_furnace": "Alloy Furnace",\n  "jei.omnitech.manual_macerator": "Manual Macerator",\n  "jei.omnitech.manual_centrifuge": "Manual Centrifuge",\n  "jei.omnitech.smelting": "Smelter",\n  "jei.omnitech.boiler": "Boiler",\n  "jei.omnitech.foundry": "Foundry",\n  "jei.omnitech.chemical_reactor": "Chemical Reactor",\n  "jei.omnitech.heat_exchanger": "Heat Exchanger",\n  "jei.omnitech.decompressor": "Decompressor",\n  "jei.omnitech.electrolysis": "Electrolysis",\n  "jei.omnitech.fractional_distillation": "Fractional Distillation",\n  "jei.omnitech.compression": "Rotary Compressor",\n  "jei.omnitech.solvation": "Solvation Machine",\n  "jei.omnitech.fluid_collector": "Fluid Collector"
+  "item.omnitech.deepslate_dust": "Deepslate Dust",
+  "jei.omnitech.alloy_furnace": "Alloy Furnace",
+  "jei.omnitech.manual_macerator": "Manual Macerator",
+  "jei.omnitech.manual_centrifuge": "Manual Centrifuge",
+  "jei.omnitech.smelting": "Smelter",
+  "jei.omnitech.boiler": "Boiler",
+  "jei.omnitech.foundry": "Foundry",
+  "jei.omnitech.chemical_reactor": "Chemical Reactor",
+  "jei.omnitech.heat_exchanger": "Heat Exchanger",
+  "jei.omnitech.decompressor": "Decompressor",
+  "jei.omnitech.electrolysis": "Electrolysis",
+  "jei.omnitech.fractional_distillation": "Fractional Distillation",
+  "jei.omnitech.compression": "Rotary Compressor",
+  "jei.omnitech.solvation": "Solvation Machine",
+  "jei.omnitech.fluid_collector": "Fluid Collector"
 }

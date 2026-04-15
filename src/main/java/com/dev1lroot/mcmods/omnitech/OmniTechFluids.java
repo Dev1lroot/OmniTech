@@ -25,12 +25,18 @@ public class OmniTechFluids
     public static final FluidObject AMMONIA = new FluidObject("ammonia", gasProps());
     public static final FluidObject CHLORINE = new FluidObject("chlorine", gasProps());
     public static final FluidObject CHLORAMINE = new FluidObject("chloramine", gasProps());
-    public static final FluidObject SODIUM = new FluidObject("sodium", gasProps());
-    public static final FluidObject BRINE = new FluidObject("brine", gasProps());
+
+    public static final FluidObject SODIUM = new FluidObject("sodium",
+            FluidType.Properties.create().density(10).viscosity(10).temperature(20));
+    public static final FluidObject BRINE = new FluidObject("brine",
+            FluidType.Properties.create().density(10).viscosity(10).temperature(20));
     public static final FluidObject DISTILLED_WATER = new FluidObject("distilled_water",
-            FluidType.Properties.create().density(10).viscosity(10).temperature(100));
-    public static final FluidObject SODIUM_HYDROXIDE = new FluidObject("sodium_hydroxide", gasProps());
-    public static final FluidObject SODIUM_HYPOCHLORITE = new FluidObject("sodium_hypochlorite", gasProps());
+            FluidType.Properties.create().density(10).viscosity(10).temperature(20));
+    public static final FluidObject SODIUM_HYDROXIDE = new FluidObject("sodium_hydroxide",
+            FluidType.Properties.create().density(10).viscosity(10).temperature(20));
+    public static final FluidObject SODIUM_HYPOCHLORITE = new FluidObject("sodium_hypochlorite",
+            FluidType.Properties.create().density(10).viscosity(10).temperature(20));
+
     public static final FluidObject MOLTEN_BRASS     = new FluidObject("molten_brass",     moltProps(8900,  1200));
     public static final FluidObject MOLTEN_TIN       = new FluidObject("molten_tin",       moltProps(7300,  505));
     public static final FluidObject MOLTEN_LEAD      = new FluidObject("molten_lead",      moltProps(11340, 600));
@@ -49,8 +55,10 @@ public class OmniTechFluids
     public static final FluidObject ARGON = new FluidObject("argon", gasProps());
 
     public static final FluidObject AIR = new FluidObject("air", gasProps());
-    public static final FluidObject COMPRESSED_HEATED_AIR = new FluidObject("compressed_heated_air", gasProps());
-    public static final FluidObject COMPRESSED_AIR = new FluidObject("compressed_air", gasProps());
+    public static final FluidObject COMPRESSED_HEATED_AIR = new FluidObject("compressed_heated_air",
+            FluidType.Properties.create().density(0).viscosity(10).temperature(0));
+    public static final FluidObject COMPRESSED_AIR = new FluidObject("compressed_air",
+            FluidType.Properties.create().density(0).viscosity(10).temperature(0));
     public static final FluidObject LIQUEFIED_AIR = new FluidObject("liquefied_air",
             FluidType.Properties.create().density(10).viscosity(10).temperature(0));
 
