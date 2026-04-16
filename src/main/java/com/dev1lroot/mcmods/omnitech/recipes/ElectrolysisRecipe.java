@@ -50,7 +50,9 @@ public class ElectrolysisRecipe {
     private FluidStack cachedOutputCathode = null;
     private FluidStack cachedOutputSolution= null;
     private Item       cachedAnodeItem     = null;
+    private boolean    anodeResolved       = false;
     private Item       cachedCathodeItem   = null;
+    private boolean    cathodeResolved     = false;
 
     public ElectrolysisRecipe(String id, float energyRequired,
                               String inputFluidId,    int inputFluidAmount,
@@ -124,14 +126,18 @@ public class ElectrolysisRecipe {
     }
 
     public Item getAnodeItem() {
-        if (cachedAnodeItem == null)
-            cachedAnodeItem = BuiltInRegistries.ITEM.getValue(anodeItemId);
+        if (!anodeResolved) {
+            anodeResolved = true;
+            cachedAnodeItem = BuiltInRegistries.ITEM.getOptional(anodeItemId).orElse(null);
+        }
         return cachedAnodeItem;
     }
 
     public Item getCathodeItem() {
-        if (cachedCathodeItem == null)
-            cachedCathodeItem = BuiltInRegistries.ITEM.getValue(cathodeItemId);
+        if (!cathodeResolved) {
+            cathodeResolved = true;
+            cachedCathodeItem = BuiltInRegistries.ITEM.getOptional(cathodeItemId).orElse(null);
+        }
         return cachedCathodeItem;
     }
 

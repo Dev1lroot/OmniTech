@@ -28,10 +28,8 @@ public class SmelterRecipe {
         this.ingredients = new ArrayList<>();
 
         for (String ingredientId : ingredientIds) {
-            Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(ingredientId));
-            if (item != null) {
-                ingredients.add(item);
-            }
+            BuiltInRegistries.ITEM.getOptional(Identifier.parse(ingredientId))
+                    .ifPresent(ingredients::add);
         }
 
         // Resolve fluid ID — support both "omnitech:melted_brass" and "melted_brass"

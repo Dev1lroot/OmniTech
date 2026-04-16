@@ -21,7 +21,7 @@ public class ManualMaceratorRecipe {
     public ManualMaceratorRecipe(String id, int requiredKineticForce, String inputId, List<Output> outputs) {
         this.id = id;
         this.requiredKineticForce = requiredKineticForce;
-        this.input = BuiltInRegistries.ITEM.getValue(Identifier.parse(inputId));
+        this.input = BuiltInRegistries.ITEM.getOptional(Identifier.parse(inputId)).orElse(null);
         this.outputs = outputs;
     }
 

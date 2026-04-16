@@ -21,17 +21,13 @@ public class AlloyFurnaceRecipe {
         this.outputs = new ArrayList<>();
 
         for (String ingredientId : ingredientIds) {
-            Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(ingredientId));
-            if (item != null) {
-                ingredients.add(item);
-            }
+            BuiltInRegistries.ITEM.getOptional(Identifier.parse(ingredientId))
+                    .ifPresent(ingredients::add);
         }
 
         for (String outputId : outputIds) {
-            Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(outputId));
-            if (item != null) {
-                outputs.add(item);
-            }
+            BuiltInRegistries.ITEM.getOptional(Identifier.parse(outputId))
+                    .ifPresent(outputs::add);
         }
     }
 

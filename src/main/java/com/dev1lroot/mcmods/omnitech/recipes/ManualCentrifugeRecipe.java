@@ -19,7 +19,7 @@ public class ManualCentrifugeRecipe {
     public ManualCentrifugeRecipe(String id, int requiredKineticForce, String inputId, List<Output> outputs) {
         this.id = id;
         this.requiredKineticForce = requiredKineticForce;
-        this.input = BuiltInRegistries.ITEM.getValue(Identifier.parse(inputId));
+        this.input = BuiltInRegistries.ITEM.getOptional(Identifier.parse(inputId)).orElse(null);
         this.outputs = outputs;
     }
 

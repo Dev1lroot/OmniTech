@@ -121,7 +121,7 @@ public class ChemicalReactorRecipe {
         if (!catalystResolved) {
             catalystResolved = true;
             cachedCatalyst = (catalystItemId != null)
-                    ? BuiltInRegistries.ITEM.getValue(catalystItemId)
+                    ? BuiltInRegistries.ITEM.getOptional(catalystItemId).orElse(null)
                     : null;
         }
         return cachedCatalyst;

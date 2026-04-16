@@ -49,10 +49,8 @@ public class ManualCentrifugeRecipeManager {
                         String itemId = outObj.get("item").getAsString();
                         int count = outObj.has("count") ? outObj.get("count").getAsInt() : 1;
                         float chance = outObj.has("chance") ? outObj.get("chance").getAsFloat() : 1.0f;
-                        Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(itemId));
-                        if (item != null) {
-                            outputs.add(new ManualCentrifugeRecipe.Output(item, count, chance));
-                        }
+                        BuiltInRegistries.ITEM.getOptional(Identifier.parse(itemId))
+                                .ifPresent(item -> outputs.add(new ManualCentrifugeRecipe.Output(item, count, chance)));
                     }
 
                     String recipeId = id.getPath().replace(path + "/", "").replace(".json", "");

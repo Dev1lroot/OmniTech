@@ -27,8 +27,8 @@ public class FoundryRecipe {
                 ? Identifier.parse(inputFluidStr)
                 : Identifier.fromNamespaceAndPath("omnitech", inputFluidStr);
         this.inputAmount = inputAmount;
-        this.templateItem = BuiltInRegistries.ITEM.getValue(Identifier.parse(templateItemId));
-        this.outputItem   = BuiltInRegistries.ITEM.getValue(Identifier.parse(outputItemId));
+        this.templateItem = BuiltInRegistries.ITEM.getOptional(Identifier.parse(templateItemId)).orElse(null);
+        this.outputItem   = BuiltInRegistries.ITEM.getOptional(Identifier.parse(outputItemId)).orElse(null);
     }
 
     public String getId()                        { return id; }

@@ -36,6 +36,7 @@ public class SolvationRecipe {
 
     // Lazy-resolved caches (deferred so registries are fully bound before use)
     private Item       cachedInputItem   = null;
+    private boolean    inputItemResolved = false;
     private FluidStack cachedInputFluid  = null;
     private FluidStack cachedOutputFluid = null;
 
@@ -67,8 +68,10 @@ public class SolvationRecipe {
 
     /** The required ingredient item (resolved lazily). */
     public Item getInputItem() {
-        if (cachedInputItem == null)
-            cachedInputItem = BuiltInRegistries.ITEM.getValue(inputItemId);
+        if (!inputItemResolved) {
+            inputItemResolved = true;
+            cachedInputItem = BuiltInRegistries.ITEM.getOptional(inputItemId).orElse(null);
+        }
         return cachedInputItem;
     }
 
