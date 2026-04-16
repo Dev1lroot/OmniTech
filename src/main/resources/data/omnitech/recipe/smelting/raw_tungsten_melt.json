@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 3500,
+  "input": [
+    "omnitech:raw_tungsten"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_tungsten",
+    "amount": 1000
+  }
+}

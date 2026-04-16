@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1600,
+  "input": [
+    "omnitech:iron_coil"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_iron",
+    "amount": 1500
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1700,
+  "input": [
+    "omnitech:titanium_rod"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_titanium",
+    "amount": 500
+  }
+}

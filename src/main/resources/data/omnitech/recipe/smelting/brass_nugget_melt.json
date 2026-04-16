@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1000,
+  "input": [
+    "omnitech:brass_nugget"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_brass",
+    "amount": 100
+  }
+}

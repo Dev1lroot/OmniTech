@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1100,
+  "input": [
+    "omnitech:copper_dust"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_copper",
+    "amount": 500
+  }
+}

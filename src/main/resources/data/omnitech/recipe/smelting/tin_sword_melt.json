@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 300,
+  "input": [
+    "omnitech:tin_sword"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_tin",
+    "amount": 1000
+  }
+}

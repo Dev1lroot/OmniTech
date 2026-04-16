@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1500,
+  "input": [
+    "omnitech:cobalt_leggings"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_cobalt",
+    "amount": 3500
+  }
+}

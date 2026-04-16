@@ -104,7 +104,7 @@ public class OmniTech {
         OmniTechItems.REGISTRY.register(modEventBus);
         OmniTechMenuTypes.REGISTRY.register(modEventBus);
         CreativeTabLoader.loadAll();     // reads data/omnitech/creative_tab/*.json
-        OmniTechGUI.REGISTRY.register(modEventBus);
+        OmniTechGUI.register(modEventBus);
         OmniTechDataComponents.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);

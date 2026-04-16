@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1600,
+  "input": [
+    "omnitech:iron_wire"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_iron",
+    "amount": 500
+  }
+}

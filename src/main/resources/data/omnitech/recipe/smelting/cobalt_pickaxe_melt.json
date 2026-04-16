@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1500,
+  "input": [
+    "omnitech:cobalt_pickaxe"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_cobalt",
+    "amount": 1500
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 400,
+  "input": [
+    "omnitech:lead_boots"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_lead",
+    "amount": 2000
+  }
+}

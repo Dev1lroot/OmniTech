@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1500,
+  "input": [
+    "omnitech:nickel_leggings"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_nickel",
+    "amount": 3500
+  }
+}

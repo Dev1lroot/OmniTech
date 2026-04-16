@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1500,
+  "input": [
+    "omnitech:cobalt_block"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_cobalt",
+    "amount": 4500
+  }
+}

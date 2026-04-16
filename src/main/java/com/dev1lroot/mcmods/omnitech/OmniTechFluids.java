@@ -27,7 +27,8 @@ import java.util.Map;
  *   <li>{@code OmniTechFluids.register(modEventBus)} — attaches registers to the event bus</li>
  * </ol>
  */
-public class OmniTechFluids {
+public class OmniTechFluids
+{
     public static final DeferredRegister<Fluid> REGISTRY =
             DeferredRegister.create(Registries.FLUID, OmniTech.MODID);
     public static final DeferredRegister<FluidType> TYPE_REGISTRY =

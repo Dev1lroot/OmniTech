@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 400,
+  "input": [
+    "omnitech:lead_chestplate"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_lead",
+    "amount": 4000
+  }
+}

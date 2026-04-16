@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1200,
+  "input": [
+    "omnitech:uranium_pickaxe"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_uranium",
+    "amount": 1500
+  }
+}

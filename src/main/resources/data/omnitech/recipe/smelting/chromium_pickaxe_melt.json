@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 2000,
+  "input": [
+    "omnitech:chromium_pickaxe"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_chromium",
+    "amount": 1500
+  }
+}
