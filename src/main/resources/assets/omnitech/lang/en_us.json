@@ -446,5 +446,8 @@
   "item.omnitech.tungsten_helmet": "Tungsten Helmet",
   "item.omnitech.tungsten_chestplate": "Tungsten Chestplate",
   "item.omnitech.tungsten_leggings": "Tungsten Leggings",
-  "item.omnitech.tungsten_boots": "Tungsten Boots"
+  "item.omnitech.tungsten_boots": "Tungsten Boots",
+  "item.omnitech.rod_template": "Rod Template",
+  "item.omnitech.cog_template": "Cog Template",
+  "item.omnitech.ingot_template": "Ingot Template"
 }

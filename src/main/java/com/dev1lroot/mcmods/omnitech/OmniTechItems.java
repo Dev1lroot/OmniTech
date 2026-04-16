@@ -10,7 +10,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.EquipmentAsset;
@@ -127,39 +126,8 @@ public class OmniTechItems
     public static final DeferredItem<FluidCanisterItem> FLUID_CANISTER =
             REGISTRY.registerItem("fluid_canister", FluidCanisterItem::new);
 
-    // Vanilla Material Additions
-    public static final DeferredItem<Item> GRANITE_DUST = REGISTRY.registerSimpleItem(
-            "granite_dust", p -> p);
-
-    public static final DeferredItem<Item> ANDESITE_DUST = REGISTRY.registerSimpleItem(
-            "andesite_dust", p -> p);
-
-    public static final DeferredItem<Item> DIORITE_DUST = REGISTRY.registerSimpleItem(
-            "diorite_dust", p -> p);
-
-    public static final DeferredItem<Item> STONE_DUST = REGISTRY.registerSimpleItem(
-            "stone_dust", p -> p);
-
-    public static final DeferredItem<Item> HEMATITE_DUST = REGISTRY.registerSimpleItem(
-            "hematite_dust", p -> p);
-
-    public static final DeferredItem<Item> DEEPSLATE_DUST = REGISTRY.registerSimpleItem(
-            "deepslate_dust", p -> p);
-
-    public static final DeferredItem<Item> WOODEN_COG = REGISTRY.registerSimpleItem(
-            "wooden_cog", p -> p);
-
-    public static final DeferredItem<Item> WOODEN_REDUCTOR = REGISTRY.registerSimpleItem(
-            "wooden_reductor", p -> p);
-
-    public static final DeferredItem<Item> COG_TEMPLATE = REGISTRY.registerSimpleItem(
-            "cog_template", p -> p);
-
-    public static final DeferredItem<Item> ROD_TEMPLATE = REGISTRY.registerSimpleItem(
-            "rod_template", p -> p);
-
-    public static final DeferredItem<Item> INGOT_TEMPLATE = REGISTRY.registerSimpleItem(
-            "ingot_template", p -> p);
+    // Vanilla Material Additions and templates are registered via ItemLoader
+    // from data/omnitech/item/*.json — see ItemLoader.loadAll()
 
     // ── Space Suit ─────────────────────────────────────────────────────────────
 
