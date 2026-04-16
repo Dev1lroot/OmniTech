@@ -52,6 +52,10 @@ public class OmniTechGUI {
                         output.accept(OmniTechItems.STONE_DUST.get());
                         output.accept(OmniTechItems.HEMATITE_DUST.get());
                         output.accept(OmniTechItems.DEEPSLATE_DUST.get());
+
+                        // Vanilla wooden materials
+                        output.accept(OmniTechItems.WOODEN_COG.get());
+                        output.accept(OmniTechItems.WOODEN_REDUCTOR.get());
                     })
                     .build());
 
@@ -122,16 +126,23 @@ public class OmniTechGUI {
                         ArmorSet.addAllToTab(output);
                         // All material tool sets (pickaxe → shovel → sword → axe → hoe per material)
                         ToolSet.addAllToTab(output);
-                        // Kinetic components
-                        output.accept(OmniTechItems.WOODEN_COG.get());
-                        output.accept(OmniTechItems.WOODEN_REDUCTOR.get());
+                    }).build());
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> UTILITY_TAB =
+            REGISTRY.register("omnitech.utility", () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.omnitech.utility"))
+                    .withTabsBefore(EQUIPMENT_TAB.getKey())
+                    .icon(() -> OmniTechItems.COG_TEMPLATE.get().getDefaultInstance())
+                    .displayItems((parameters, output) -> {
                         output.accept(OmniTechItems.COG_TEMPLATE.get());
+                        output.accept(OmniTechItems.ROD_TEMPLATE.get());
+                        output.accept(OmniTechItems.INGOT_TEMPLATE.get());
                     }).build());
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> WORLD_TAB =
             REGISTRY.register("omnitech.world", () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.omnitech.world"))
-                    .withTabsBefore(EQUIPMENT_TAB.getKey())
+                    .withTabsBefore(UTILITY_TAB.getKey())
                     .icon(() -> OmniTechItems.EUROPA_ICE_ITEM.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
                         // Europa terrain blocks

@@ -155,6 +155,12 @@ public class OmniTechItems
     public static final DeferredItem<Item> COG_TEMPLATE = REGISTRY.registerSimpleItem(
             "cog_template", p -> p);
 
+    public static final DeferredItem<Item> ROD_TEMPLATE = REGISTRY.registerSimpleItem(
+            "rod_template", p -> p);
+
+    public static final DeferredItem<Item> INGOT_TEMPLATE = REGISTRY.registerSimpleItem(
+            "ingot_template", p -> p);
+
     // ── Space Suit ─────────────────────────────────────────────────────────────
 
     private static final ResourceKey<EquipmentAsset> SPACE_SUIT_ASSET =
