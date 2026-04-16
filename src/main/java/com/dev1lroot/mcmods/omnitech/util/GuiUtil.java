@@ -66,23 +66,19 @@ public class GuiUtil
         int a = 0xFF;
         int packedColor = ARGB.color(a, r, g, b);
 
-        // Смещение, чтобы жидкость начиналась снизу (y + общая высота - высота заполнения)
+        // Bottom-aligned: fluid rises from the bottom of the tank
         int startY = y + (height - filledHeight);
 
-        // Замощение (Tiling) по 16 пикселей
+        // One scissor over the filled region handles all partial-tile clipping at edges.
+        // Each tile is drawn full 16×16; the scissor clips anything outside the fill area.
+        graphics.enableScissor(x, startY, x + width, startY + filledHeight);
         for (int drawX = 0; drawX < width; drawX += 16) {
-            int currentWidth = Math.min(16, width - drawX);
-
             for (int drawY = 0; drawY < filledHeight; drawY += 16) {
-                int currentHeight = Math.min(16, filledHeight - drawY);
-
-                // Используем твой рабочий blitSprite
                 graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite,
-                        x + drawX, startY + drawY,
-                        currentWidth, currentHeight,
-                        packedColor);
+                        x + drawX, startY + drawY, 16, 16, packedColor);
             }
         }
+        graphics.disableScissor();
     }
 
     /**
