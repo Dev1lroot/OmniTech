@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "X": "omnitech:cobalt_ingot"
+  },
+  "pattern": [
+    "   ",
+    "X X",
+    "X X"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:cobalt_boots"
+  }
+}

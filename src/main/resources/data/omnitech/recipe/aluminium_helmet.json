@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "X": "omnitech:aluminium_ingot"
+  },
+  "pattern": [
+    "XXX",
+    "X X",
+    "   "
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:aluminium_helmet"
+  }
+}

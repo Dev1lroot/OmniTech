@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "X": "omnitech:tungsten_ingot",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    "XXX",
+    " S ",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:tungsten_pickaxe"
+  }
+}

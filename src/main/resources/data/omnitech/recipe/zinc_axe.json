@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "X": "omnitech:zinc_ingot",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    "XX ",
+    "XS ",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:zinc_axe"
+  }
+}
