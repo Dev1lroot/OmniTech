@@ -449,5 +449,7 @@
   "item.omnitech.tungsten_boots": "Tungsten Boots",
   "item.omnitech.rod_template": "Rod Template",
   "item.omnitech.cog_template": "Cog Template",
-  "item.omnitech.ingot_template": "Ingot Template"
+  "item.omnitech.ingot_template": "Ingot Template",
+  "item.omnitech.coal_dust": "Coal Dust",
+  "item.omnitech.coal_mote": "Coal Mote"
 }

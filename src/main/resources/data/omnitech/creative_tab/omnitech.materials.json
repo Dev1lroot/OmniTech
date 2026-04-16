@@ -10,6 +10,8 @@
     "omnitech:hematite_dust",
     "omnitech:deepslate_dust",
     "omnitech:wooden_cog",
-    "omnitech:wooden_reductor"
+    "omnitech:wooden_reductor",
+    "omnitech:coal_dust",
+    "omnitech:coal_mote"
   ]
 }

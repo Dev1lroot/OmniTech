@@ -1,8 +1,8 @@
 {
   "minTemperature": 1500,
   "ingredients": [
-    "minecraft:iron_ingot",
-    "minecraft:coal"
+    "minecraft:iron_dust",
+    "minecraft:coal_dust"
   ],
   "output": [
     "omnitech:steel_ingot"
