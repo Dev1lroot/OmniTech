@@ -3,6 +3,9 @@ package com.dev1lroot.mcmods.omnitech.gui;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.ElectrolysisMachineBlockEntity;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -12,17 +15,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+import java.util.Comparator;
+import java.util.List;
+
 public class ElectrolysisMachineMenu extends AbstractContainerMenu {
 
-    private final Container  container;
+    private final Container    container;
     private final ContainerData data;
-
-    /** Anode item slot (nickel rod etc.) */
-    public static final int ANODE_SLOT_X   = 44;
-    public static final int ANODE_SLOT_Y   = 26;
-    /** Cathode item slot (graphite rod etc.) */
-    public static final int CATHODE_SLOT_X = 108;
-    public static final int CATHODE_SLOT_Y = 26;
+    /** Number of machine (non-player) slots — derived from the JSON layout. */
+    private final int          machineSlotCount;
 
     // Client constructor
     public ElectrolysisMachineMenu(int containerId, Inventory playerInventory,
@@ -41,19 +42,23 @@ public class ElectrolysisMachineMenu extends AbstractContainerMenu {
 
         addDataSlots(data);
 
-        addSlot(new Slot(container, ElectrolysisMachineBlockEntity.SLOT_ANODE,
-                ANODE_SLOT_X, ANODE_SLOT_Y));
-        addSlot(new Slot(container, ElectrolysisMachineBlockEntity.SLOT_CATHODE,
-                CATHODE_SLOT_X, CATHODE_SLOT_Y));
+        GuiLayout layout = GuiLayoutLoader.load("electrolysis_machine");
 
-        // Player inventory (slots 2..28)
-        for (int row = 0; row < 3; row++)
-            for (int col = 0; col < 9; col++)
-                addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+        // ── Machine slots ────────────────────────────────────────────────────
+        // Collect slot elements, order by slot_index so menu slot 0 = container
+        // slot 0, menu slot 1 = container slot 1, etc.
+        List<GuiElementDef> machineSlots = layout.getElementsByType("slot").stream()
+                .filter(e -> e.slot_index >= 0)
+                .sorted(Comparator.comparingInt(e -> e.slot_index))
+                .toList();
 
-        // Player hotbar (slots 29..37)
-        for (int col = 0; col < 9; col++)
-            addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
+        for (GuiElementDef el : machineSlots) {
+            addSlot(new Slot(container, el.slot_index, el.x, el.y));
+        }
+        this.machineSlotCount = machineSlots.size();
+
+        // ── Player inventory + hotbar ─────────────────────────────────────────
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     // ── Fluid accessors ───────────────────────────────────────────────────────
@@ -77,37 +82,34 @@ public class ElectrolysisMachineMenu extends AbstractContainerMenu {
 
     // ── ContainerData accessors ───────────────────────────────────────────────
 
-    public float getEnergyStored()      { return data.get(0) / 10f; }
-    public float getMaxEu()             { return data.get(1) / 10f; }
-    public int   getCookProgress()      { return data.get(2); }
-    public int   getCookTime()          { return data.get(3); }
-    public float getEuPerRecipe()       { return data.get(4) / 10f; }
+    public float getEnergyStored()       { return data.get(0) / 10f; }
+    public float getMaxEu()              { return data.get(1) / 10f; }
+    public int   getCookProgress()       { return data.get(2); }
+    public int   getCookTime()           { return data.get(3); }
+    public float getEuPerRecipe()        { return data.get(4) / 10f; }
 
-    public int getInputFluidAmount()    { return data.get(5); }
-    public int getInputFluidCapacity()  { return data.get(6); }
-    public int getAnodeFluidAmount()    { return data.get(7); }
-    public int getAnodeFluidCapacity()  { return data.get(8); }
-    public int getCathodeFluidAmount()  { return data.get(9); }
-    public int getCathodeFluidCapacity(){ return data.get(10); }
-    public int getSolutionFluidAmount() { return data.get(11); }
+    public int getInputFluidAmount()     { return data.get(5); }
+    public int getInputFluidCapacity()   { return data.get(6); }
+    public int getAnodeFluidAmount()     { return data.get(7); }
+    public int getAnodeFluidCapacity()   { return data.get(8); }
+    public int getCathodeFluidAmount()   { return data.get(9); }
+    public int getCathodeFluidCapacity() { return data.get(10); }
+    public int getSolutionFluidAmount()  { return data.get(11); }
     public int getSolutionFluidCapacity(){ return data.get(12); }
 
-    /** Cook progress scaled to [0, 100] for the progress bar. */
     public float getCookProgressScaled() {
         int max = getCookTime();
         return max > 0 ? getCookProgress() * 100f / max : 0f;
-    }
-
-    /** Energy bar fill width (0..24 px). */
-    public int getEnergyBarWidth() {
-        float max = getMaxEu();
-        return max > 0f ? (int)(getEnergyStored() * 24f / max) : 0;
     }
 
     // ── Shift-click ───────────────────────────────────────────────────────────
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
+        int playerStart = machineSlotCount;
+        int playerEnd   = playerStart + 27;   // 3 rows × 9 = 27
+        int hotbarEnd   = playerEnd + 9;
+
         ItemStack result = ItemStack.EMPTY;
         Slot slot = slots.get(index);
         if (!slot.hasItem()) return result;
@@ -115,18 +117,18 @@ public class ElectrolysisMachineMenu extends AbstractContainerMenu {
         ItemStack slotStack = slot.getItem();
         result = slotStack.copy();
 
-        if (index == 0 || index == 1) {
-            // From machine slot → player
-            if (!moveItemStackTo(slotStack, 2, 38, true)) return ItemStack.EMPTY;
+        if (index < machineSlotCount) {
+            // Machine slot → player inventory
+            if (!moveItemStackTo(slotStack, playerStart, hotbarEnd, true)) return ItemStack.EMPTY;
             slot.onQuickCraft(slotStack, result);
-        } else if (index < 29) {
-            // From player inventory → try machine slots
-            if (!moveItemStackTo(slotStack, 0, 2, false))
-                if (!moveItemStackTo(slotStack, 29, 38, false)) return ItemStack.EMPTY;
+        } else if (index < playerEnd) {
+            // Player inventory → machine slots, or hotbar
+            if (!moveItemStackTo(slotStack, 0, machineSlotCount, false))
+                if (!moveItemStackTo(slotStack, playerEnd, hotbarEnd, false)) return ItemStack.EMPTY;
         } else {
-            // From hotbar → try machine slots, then player inv
-            if (!moveItemStackTo(slotStack, 0, 2, false))
-                if (!moveItemStackTo(slotStack, 2, 29, false)) return ItemStack.EMPTY;
+            // Hotbar → machine slots, or player inventory
+            if (!moveItemStackTo(slotStack, 0, machineSlotCount, false))
+                if (!moveItemStackTo(slotStack, playerStart, playerEnd, false)) return ItemStack.EMPTY;
         }
 
         if (slotStack.isEmpty()) slot.set(ItemStack.EMPTY);

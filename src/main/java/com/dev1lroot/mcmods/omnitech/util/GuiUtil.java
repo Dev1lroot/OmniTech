@@ -90,38 +90,39 @@ public class GuiUtil
      * Полезно для подложек под шкалы или кастомные окна.
      */
     public static void renderFrame(GuiGraphicsExtractor graphics, int ix, int iy, int iw, int ih) {
-        // Углы и рамки берем из slot.png (предполагаем размер 18x18)
-        // Толщина рамки обычно 1 пиксель
+        // slot.png is 18×18: 1px border on every side, 16×16 interior.
+        // s   = border thickness (1px)
+        // mid = interior width/height in the texture (16px)
+        int x   = ix - 1;
+        int y   = iy - 1;
+        int w   = iw + 2;
+        int h   = ih + 2;
+        int s   = 1;
+        int mid = 16;
 
-        int x = ix - 1;
-        int y = iy - 1;
-        int w = iw + 2;
-        int h = ih + 2;
+        // ── Corners: 1×1 source → 1×1 dest, no stretch needed ────────────────
+        graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x,         y,         0f,  0f,  s, s, s,   s,   18, 18); // TL
+        graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x + w - s, y,         17f, 0f,  s, s, s,   s,   18, 18); // TR
+        graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x,         y + h - s, 0f,  17f, s, s, s,   s,   18, 18); // BL
+        graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x + w - s, y + h - s, 17f, 17f, s, s, s,   s,   18, 18); // BR
 
-        int s = 1;
-        int mid = 16; // Внутренняя часть (18 - 1 - 1)
-
-        // 1. Углы (не тянутся)
-        graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x, y, 0, 0, s, s, 18, 18); // Top-Left
-        graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x + w - s, y, 17, 0, s, s, 18, 18); // Top-Right
-        graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x, y + h - s, 0, 17, s, s, 18, 18); // Bottom-Left
-        graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x + w - s, y + h - s, 17, 17, s, s, 18, 18); // Bottom-Right
-
-        // 2. Горизонтальные грани (тянутся по ширине)
+        // ── Horizontal edges: 16×1 source stretched to (w-2)×1 ───────────────
+        // Using 12-param blit(pipeline, tex, dx, dy, u, v, dw, dh, sw, sh, tw, th)
+        // so srcW/srcH stay within the 18×18 texture regardless of frame size.
         if (w > s * 2) {
-            graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x + s, y, s, 0, w - s * 2, s, 18, 18); // Top
-            graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x + s, y + h - s, s, 17, w - s * 2, s, 18, 18); // Bottom
+            graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x + s, y,         1f, 0f,  w - s*2, s, mid, s,   18, 18); // Top
+            graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x + s, y + h - s, 1f, 17f, w - s*2, s, mid, s,   18, 18); // Bottom
         }
 
-        // 3. Вертикальные грани (тянутся по высоте)
+        // ── Vertical edges: 1×16 source stretched to 1×(h-2) ─────────────────
         if (h > s * 2) {
-            graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x, y + s, 0, s, s, h - s * 2, 18, 18); // Left
-            graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x + w - s, y + s, 17, s, s, h - s * 2, 18, 18); // Right
+            graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x,         y + s, 0f,  1f, s, h - s*2, s,   mid, 18, 18); // Left
+            graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x + w - s, y + s, 17f, 1f, s, h - s*2, s,   mid, 18, 18); // Right
         }
 
-        // 4. Центр (заполнение)
+        // ── Center fill: 16×16 source stretched to (w-2)×(h-2) ──────────────
         if (w > s * 2 && h > s * 2) {
-            graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x + s, y + s, s, s, w - s * 2, h - s * 2, 18, 18);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x + s, y + s, 1f, 1f, w - s*2, h - s*2, mid, mid, 18, 18);
         }
     }
 

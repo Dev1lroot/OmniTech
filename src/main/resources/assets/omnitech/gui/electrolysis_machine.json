@@ -1,0 +1,89 @@
+{
+  "background": "textures/gui/big-empty.png",
+  "draw_inventory": true,
+  "width": 176,
+  "height": 200,
+  "inventory": {
+    "x": 8,
+    "y": 118,
+    "label_y": 100,
+    "hotbar_y": 176
+  },
+  "elements": [
+    {
+      "id": "input_tank",
+      "type": "fluid_tank",
+      "x": 8,
+      "y": 17,
+      "w": 16,
+      "h": 55,
+      "source": "input"
+    },
+    {
+      "id": "anode_slot",
+      "type": "slot",
+      "x": 133,
+      "y": 17,
+      "slot_index": 0
+    },
+    {
+      "id": "cathode_slot",
+      "type": "slot",
+      "x": 61,
+      "y": 17,
+      "slot_index": 1
+    },
+    {
+      "id": "progress_arrow",
+      "type": "progressbar",
+      "x": 26,
+      "y": 36,
+      "w": 33,
+      "source": "cook_progress"
+    },
+    {
+      "id": "anode_output_tank",
+      "type": "fluid_tank",
+      "x": 133,
+      "y": 36,
+      "w": 16,
+      "h": 36,
+      "source": "anode_output"
+    },
+    {
+      "id": "cathode_output_tank",
+      "type": "fluid_tank",
+      "x": 61,
+      "y": 36,
+      "w": 16,
+      "h": 36,
+      "source": "cathode_output"
+    },
+    {
+      "id": "solution_output_tank",
+      "type": "fluid_tank",
+      "x": 97,
+      "y": 36,
+      "w": 16,
+      "h": 36,
+      "source": "solution_output"
+    },
+    {
+      "id": "energy_readout",
+      "type": "energy_label",
+      "x": 0,
+      "y": 95,
+      "centered": true,
+      "color_active": "FF44AAFF",
+      "color_inactive": "FF888888"
+    },
+    {
+      "id": "eu_cost",
+      "type": "eu_cost_label",
+      "x": 0,
+      "y": 85,
+      "centered": true,
+      "color": "FF888888"
+    }
+  ]
+}
