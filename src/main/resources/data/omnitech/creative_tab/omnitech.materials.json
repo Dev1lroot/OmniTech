@@ -1,0 +1,15 @@
+{
+  "icon": "omnitech:tungsten_ingot",
+  "after": "minecraft:spawn_eggs",
+  "data": [
+    "$material_sets",
+    "omnitech:granite_dust",
+    "omnitech:andesite_dust",
+    "omnitech:diorite_dust",
+    "omnitech:stone_dust",
+    "omnitech:hematite_dust",
+    "omnitech:deepslate_dust",
+    "omnitech:wooden_cog",
+    "omnitech:wooden_reductor"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "icon": "omnitech:cog_template",
+  "after": "omnitech:omnitech.equipment",
+  "data": [
+    "omnitech:cog_template",
+    "omnitech:rod_template",
+    "omnitech:ingot_template"
+  ]
+}

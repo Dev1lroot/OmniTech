@@ -102,6 +102,7 @@ public class OmniTech {
         OmniTechBlockEntities.REGISTRY.register(modEventBus);
         OmniTechItems.REGISTRY.register(modEventBus);
         OmniTechMenuTypes.REGISTRY.register(modEventBus);
+        CreativeTabLoader.loadAll();     // reads data/omnitech/creative_tab/*.json
         OmniTechGUI.REGISTRY.register(modEventBus);
         OmniTechDataComponents.register(modEventBus);
 

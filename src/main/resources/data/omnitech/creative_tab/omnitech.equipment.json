@@ -1,0 +1,12 @@
+{
+  "icon": "omnitech:space_suit_helmet",
+  "after": "omnitech:omnitech.machines",
+  "data": [
+    "omnitech:space_suit_helmet",
+    "omnitech:space_suit_chestplate",
+    "omnitech:space_suit_leggings",
+    "omnitech:space_suit_boots",
+    "$armor_sets",
+    "$tool_sets"
+  ]
+}
