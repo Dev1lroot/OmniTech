@@ -3,6 +3,8 @@ package com.dev1lroot.mcmods.omnitech.gui;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.HeatExchangerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -33,18 +35,8 @@ public class HeatExchangerMenu extends AbstractContainerMenu {
 
         addDataSlots(data);
 
-        // Player inventory (rows 0–2)
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) {
-                addSlot(new Slot(playerInventory, col + row * 9 + 9,
-                        8 + col * 18, 84 + row * 18));
-            }
-        }
-
-        // Player hotbar
-        for (int col = 0; col < 9; col++) {
-            addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
-        }
+        GuiLayout layout = GuiLayoutLoader.load("heat_exchanger");
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     // ── Fluid accessors ───────────────────────────────────────────────────────
@@ -64,19 +56,12 @@ public class HeatExchangerMenu extends AbstractContainerMenu {
     public int getOutputFluidAmount()  { return data.get(5); }
     public int getOutputFluidCapacity(){ return data.get(6); }
 
-    /**
-     * Stored heat as a value in [0, 100] relative to recipe's maxHeat.
-     * Returns 0 when no recipe is active.
-     */
     public float getHeatScaled() {
         int max = getMaxHeat();
         if (max <= 0) return 0f;
         return Math.min(100f, getStoredHeat() / (float) max * 100f);
     }
 
-    /**
-     * Processing progress as a value in [0, 100].
-     */
     public float getProcessProgressScaled() {
         return Math.min(100f, getProcessTimer() / (float) HeatExchangerBlockEntity.PROCESS_TIME * 100f);
     }
@@ -92,7 +77,6 @@ public class HeatExchangerMenu extends AbstractContainerMenu {
         ItemStack slotStack = slot.getItem();
         result = slotStack.copy();
 
-        // Slots 0–26 = inventory, 27–35 = hotbar
         if (index < 27) {
             if (!this.moveItemStackTo(slotStack, 27, 36, false)) return ItemStack.EMPTY;
         } else {

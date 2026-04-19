@@ -3,6 +3,9 @@ package com.dev1lroot.mcmods.omnitech.gui;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.BoilerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -10,26 +13,25 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.fluids.FluidStack;
+
+import java.util.Comparator;
+import java.util.List;
 
 public class BoilerMenu extends AbstractContainerMenu {
 
     private final Container container;
     private final ContainerData data;
+    private final int machineSlotCount;
 
-    /** Output slot position in GUI (screen-relative). */
-    public static final int OUTPUT_SLOT_X = 110;
-    public static final int OUTPUT_SLOT_Y = 50;
-
-    // ── Client constructor ────────────────────────────────────────────────────
-
+    // Client constructor
     public BoilerMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
         this(containerId, playerInventory,
                 playerInventory.player.level().getBlockEntity(extraData.readBlockPos()),
                 new SimpleContainerData(6));
     }
 
-    // ── Server constructor ────────────────────────────────────────────────────
-
+    // Server constructor
     public BoilerMenu(int containerId, Inventory playerInventory,
                       BlockEntity blockEntity, ContainerData data) {
         super(OmniTechMenuTypes.BOILER.get(), containerId);
@@ -38,20 +40,19 @@ public class BoilerMenu extends AbstractContainerMenu {
 
         addDataSlots(data);
 
-        // Output slot — players cannot insert items manually
-        addSlot(new OutputSlot(container, BoilerBlockEntity.SLOT_OUTPUT, OUTPUT_SLOT_X, OUTPUT_SLOT_Y));
+        GuiLayout layout = GuiLayoutLoader.load("boiler");
 
-        // Player inventory (slots 9–35)
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) {
-                addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
-            }
-        }
+        List<GuiElementDef> machineSlots = layout.getElementsByType("slot").stream()
+                .filter(e -> e.slot_index >= 0)
+                .sorted(Comparator.comparingInt(e -> e.slot_index))
+                .toList();
 
-        // Player hotbar (slots 36–44)
-        for (int col = 0; col < 9; col++) {
-            addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
+        for (GuiElementDef el : machineSlots) {
+            addSlot(new OutputSlot(container, el.slot_index, el.x, el.y));
         }
+        this.machineSlotCount = machineSlots.size();
+
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     // ── Data accessors ────────────────────────────────────────────────────────
@@ -72,18 +73,22 @@ public class BoilerMenu extends AbstractContainerMenu {
 
     public net.neoforged.neoforge.fluids.FluidStack getWaterFluid() {
         if (container instanceof BoilerBlockEntity be) return be.getWaterTank();
-        return net.neoforged.neoforge.fluids.FluidStack.EMPTY;
+        return FluidStack.EMPTY;
     }
 
     public net.neoforged.neoforge.fluids.FluidStack getSteamFluid() {
         if (container instanceof BoilerBlockEntity be) return be.getSteamTank();
-        return net.neoforged.neoforge.fluids.FluidStack.EMPTY;
+        return FluidStack.EMPTY;
     }
 
     // ── Shift-click ───────────────────────────────────────────────────────────
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
+        int playerStart = machineSlotCount;
+        int playerEnd   = playerStart + 27;
+        int hotbarEnd   = playerEnd + 9;
+
         ItemStack result = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
         if (!slot.hasItem()) return result;
@@ -91,16 +96,13 @@ public class BoilerMenu extends AbstractContainerMenu {
         ItemStack slotStack = slot.getItem();
         result = slotStack.copy();
 
-        // Slot 0 is the machine output — move to player inventory
-        if (index == BoilerBlockEntity.SLOT_OUTPUT) {
-            if (!this.moveItemStackTo(slotStack, 1, 37, true)) return ItemStack.EMPTY;
+        if (index < machineSlotCount) {
+            if (!this.moveItemStackTo(slotStack, playerStart, hotbarEnd, true)) return ItemStack.EMPTY;
             slot.onQuickCraft(slotStack, result);
-        }
-        // Player inventory/hotbar — nowhere to go (no input slots for items)
-        else if (index >= 1 && index < 10) {
-            if (!this.moveItemStackTo(slotStack, 10, 37, false)) return ItemStack.EMPTY;
-        } else if (index >= 10) {
-            if (!this.moveItemStackTo(slotStack, 1, 10, false)) return ItemStack.EMPTY;
+        } else if (index < playerEnd) {
+            if (!this.moveItemStackTo(slotStack, playerEnd, hotbarEnd, false)) return ItemStack.EMPTY;
+        } else {
+            if (!this.moveItemStackTo(slotStack, playerStart, playerEnd, false)) return ItemStack.EMPTY;
         }
 
         if (slotStack.isEmpty()) slot.set(ItemStack.EMPTY);
@@ -119,8 +121,6 @@ public class BoilerMenu extends AbstractContainerMenu {
                         container instanceof BlockEntity be ? be.getBlockPos() : null),
                 player, OmniTechBlocks.BOILER.get());
     }
-
-    // ── Inner: output-only slot ───────────────────────────────────────────────
 
     private static class OutputSlot extends Slot {
         OutputSlot(Container container, int index, int x, int y) {

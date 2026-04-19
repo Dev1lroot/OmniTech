@@ -3,6 +3,8 @@ package com.dev1lroot.mcmods.omnitech.gui;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.DecompressorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -33,15 +35,8 @@ public class DecompressorMenu extends AbstractContainerMenu {
 
         addDataSlots(data);
 
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) {
-                addSlot(new Slot(playerInventory, col + row * 9 + 9,
-                        8 + col * 18, 84 + row * 18));
-            }
-        }
-        for (int col = 0; col < 9; col++) {
-            addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
-        }
+        GuiLayout layout = GuiLayoutLoader.load("decompressor");
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     // ── Fluid accessors ───────────────────────────────────────────────────────

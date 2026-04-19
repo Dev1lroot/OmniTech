@@ -1,0 +1,40 @@
+{
+  "background": "textures/gui/empty.png",
+  "draw_inventory": true,
+  "width": 176,
+  "height": 166,
+  "inventory": {
+    "x": 8,
+    "y": 84,
+    "label_y": 72,
+    "hotbar_y": 142
+  },
+  "elements": [
+    {
+      "id": "input_fluid",
+      "type": "fluid_tank",
+      "x": 8,
+      "y": 17,
+      "w": 16,
+      "h": 52,
+      "source": "input"
+    },
+    {
+      "id": "output_fluid",
+      "type": "fluid_tank",
+      "x": 152,
+      "y": 17,
+      "w": 16,
+      "h": 52,
+      "source": "output"
+    },
+    {
+      "id": "process_progress",
+      "type": "progressbar",
+      "x": 52,
+      "y": 50,
+      "w": 72,
+      "source": "process_progress"
+    }
+  ]
+}

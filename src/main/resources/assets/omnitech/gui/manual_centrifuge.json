@@ -1,0 +1,64 @@
+{
+  "background": "textures/gui/manual_centrifuge.png",
+  "draw_inventory": true,
+  "width": 176,
+  "height": 166,
+  "inventory": {
+    "x": 8,
+    "y": 84,
+    "label_y": 72,
+    "hotbar_y": 142
+  },
+  "elements": [
+    {
+      "id": "input",
+      "type": "slot",
+      "x": 80,
+      "y": 17,
+      "slot_index": 0
+    },
+    {
+      "id": "output_1",
+      "type": "slot",
+      "x": 44,
+      "y": 53,
+      "slot_index": 1
+    },
+    {
+      "id": "output_2",
+      "type": "slot",
+      "x": 62,
+      "y": 53,
+      "slot_index": 2
+    },
+    {
+      "id": "output_3",
+      "type": "slot",
+      "x": 80,
+      "y": 53,
+      "slot_index": 3
+    },
+    {
+      "id": "output_4",
+      "type": "slot",
+      "x": 98,
+      "y": 53,
+      "slot_index": 4
+    },
+    {
+      "id": "output_5",
+      "type": "slot",
+      "x": 116,
+      "y": 53,
+      "slot_index": 5
+    },
+    {
+      "id": "kf_progress",
+      "type": "progressbar",
+      "x": 56,
+      "y": 35,
+      "w": 24,
+      "source": "kf_progress"
+    }
+  ]
+}

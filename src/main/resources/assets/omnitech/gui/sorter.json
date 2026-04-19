@@ -1,0 +1,41 @@
+{
+  "background": "textures/gui/empty.png",
+  "draw_inventory": true,
+  "width": 176,
+  "height": 166,
+  "inventory": {
+    "x": 7,
+    "y": 84,
+    "label_y": 72,
+    "hotbar_y": 142
+  },
+  "elements": [
+    { "id": "filter_left_0", "type": "slot", "x":   7, "y": 18, "slot_index":  1 },
+    { "id": "filter_left_1", "type": "slot", "x":  25, "y": 18, "slot_index":  2 },
+    { "id": "filter_left_2", "type": "slot", "x":  43, "y": 18, "slot_index":  3 },
+    { "id": "filter_left_3", "type": "slot", "x":  61, "y": 18, "slot_index":  4 },
+    { "id": "filter_left_4", "type": "slot", "x":  79, "y": 18, "slot_index":  5 },
+    { "id": "filter_left_5", "type": "slot", "x":  97, "y": 18, "slot_index":  6 },
+    { "id": "filter_left_6", "type": "slot", "x": 115, "y": 18, "slot_index":  7 },
+    { "id": "filter_left_7", "type": "slot", "x": 133, "y": 18, "slot_index":  8 },
+    { "id": "filter_left_8", "type": "slot", "x": 151, "y": 18, "slot_index":  9 },
+    { "id": "filter_back_0", "type": "slot", "x":   7, "y": 36, "slot_index": 10 },
+    { "id": "filter_back_1", "type": "slot", "x":  25, "y": 36, "slot_index": 11 },
+    { "id": "filter_back_2", "type": "slot", "x":  43, "y": 36, "slot_index": 12 },
+    { "id": "filter_back_3", "type": "slot", "x":  61, "y": 36, "slot_index": 13 },
+    { "id": "filter_back_4", "type": "slot", "x":  79, "y": 36, "slot_index": 14 },
+    { "id": "filter_back_5", "type": "slot", "x":  97, "y": 36, "slot_index": 15 },
+    { "id": "filter_back_6", "type": "slot", "x": 115, "y": 36, "slot_index": 16 },
+    { "id": "filter_back_7", "type": "slot", "x": 133, "y": 36, "slot_index": 17 },
+    { "id": "filter_back_8", "type": "slot", "x": 151, "y": 36, "slot_index": 18 },
+    { "id": "filter_right_0", "type": "slot", "x":   7, "y": 54, "slot_index": 19 },
+    { "id": "filter_right_1", "type": "slot", "x":  25, "y": 54, "slot_index": 20 },
+    { "id": "filter_right_2", "type": "slot", "x":  43, "y": 54, "slot_index": 21 },
+    { "id": "filter_right_3", "type": "slot", "x":  61, "y": 54, "slot_index": 22 },
+    { "id": "filter_right_4", "type": "slot", "x":  79, "y": 54, "slot_index": 23 },
+    { "id": "filter_right_5", "type": "slot", "x":  97, "y": 54, "slot_index": 24 },
+    { "id": "filter_right_6", "type": "slot", "x": 115, "y": 54, "slot_index": 25 },
+    { "id": "filter_right_7", "type": "slot", "x": 133, "y": 54, "slot_index": 26 },
+    { "id": "filter_right_8", "type": "slot", "x": 151, "y": 54, "slot_index": 27 }
+  ]
+}

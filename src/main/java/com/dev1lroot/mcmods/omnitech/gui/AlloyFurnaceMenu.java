@@ -3,6 +3,9 @@ package com.dev1lroot.mcmods.omnitech.gui;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.AlloyFurnaceBlockEntity;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -12,17 +15,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import java.util.Comparator;
+import java.util.List;
+
 public class AlloyFurnaceMenu extends AbstractContainerMenu {
     private final Container container;
     private final ContainerData data;
-
-    // Slot positions
-    private static final int INPUT_1_X = 26, INPUT_1_Y = 17;
-    private static final int INPUT_2_X = 44, INPUT_2_Y = 17;
-    private static final int INPUT_3_X = 62, INPUT_3_Y = 17;
-    private static final int FUEL_X = 44, FUEL_Y = 53;
-    private static final int OUTPUT_1_X = 134, OUTPUT_1_Y = 17;
-    private static final int OUTPUT_2_X = 134, OUTPUT_2_Y = 53;
+    private final int machineSlotCount;
 
     // Client constructor
     public AlloyFurnaceMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
@@ -39,21 +38,25 @@ public class AlloyFurnaceMenu extends AbstractContainerMenu {
 
         addDataSlots(data);
 
-        // Input slots (3)
-        addSlot(new Slot(container, AlloyFurnaceBlockEntity.SLOT_INPUT_1, INPUT_1_X, INPUT_1_Y));
-        addSlot(new Slot(container, AlloyFurnaceBlockEntity.SLOT_INPUT_2, INPUT_2_X, INPUT_2_Y));
-        addSlot(new Slot(container, AlloyFurnaceBlockEntity.SLOT_INPUT_3, INPUT_3_X, INPUT_3_Y));
+        GuiLayout layout = GuiLayoutLoader.load("alloy_furnace");
 
-        // Fuel slot
-        addSlot(new FuelSlot(container, AlloyFurnaceBlockEntity.SLOT_FUEL, FUEL_X, FUEL_Y));
+        List<GuiElementDef> machineSlots = layout.getElementsByType("slot").stream()
+                .filter(e -> e.slot_index >= 0)
+                .sorted(Comparator.comparingInt(e -> e.slot_index))
+                .toList();
 
-        // Output slots (2)
-        addSlot(new OutputSlot(container, AlloyFurnaceBlockEntity.SLOT_OUTPUT_1, OUTPUT_1_X, OUTPUT_1_Y));
-        addSlot(new OutputSlot(container, AlloyFurnaceBlockEntity.SLOT_OUTPUT_2, OUTPUT_2_X, OUTPUT_2_Y));
+        for (GuiElementDef el : machineSlots) {
+            if (el.slot_index == AlloyFurnaceBlockEntity.SLOT_FUEL) {
+                addSlot(new FuelSlot(container, el.slot_index, el.x, el.y));
+            } else if (el.slot_index >= AlloyFurnaceBlockEntity.SLOT_OUTPUT_1) {
+                addSlot(new OutputSlot(container, el.slot_index, el.x, el.y));
+            } else {
+                addSlot(new Slot(container, el.slot_index, el.x, el.y));
+            }
+        }
+        this.machineSlotCount = machineSlots.size();
 
-        // Player inventory
-        addPlayerInventory(playerInventory);
-        addPlayerHotbar(playerInventory);
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     public boolean isLit() {
@@ -72,6 +75,11 @@ public class AlloyFurnaceMenu extends AbstractContainerMenu {
         return cookTotalTime != 0 ? cookProgress * 41 / cookTotalTime : 0;
     }
 
+    public float getCookProgressScaled() {
+        int total = data.get(3);
+        return total > 0 ? data.get(2) * 100f / total : 0f;
+    }
+
     public int getTemperature() {
         return data.get(4);
     }
@@ -82,6 +90,10 @@ public class AlloyFurnaceMenu extends AbstractContainerMenu {
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
+        int playerStart = machineSlotCount;
+        int playerEnd   = playerStart + 27;
+        int hotbarEnd   = playerEnd + 9;
+
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
 
@@ -89,51 +101,29 @@ public class AlloyFurnaceMenu extends AbstractContainerMenu {
             ItemStack slotStack = slot.getItem();
             itemstack = slotStack.copy();
 
-            // Output slots (4-5)
-            if (index == 4 || index == 5) {
-                if (!this.moveItemStackTo(slotStack, 6, 42, true)) {
-                    return ItemStack.EMPTY;
-                }
+            if (index == AlloyFurnaceBlockEntity.SLOT_OUTPUT_1 || index == AlloyFurnaceBlockEntity.SLOT_OUTPUT_2) {
+                if (!this.moveItemStackTo(slotStack, playerStart, hotbarEnd, true)) return ItemStack.EMPTY;
                 slot.onQuickCraft(slotStack, itemstack);
-            }
-            // Player inventory/hotbar (6-41)
-            else if (index >= 6) {
-                // Try fuel slot first
+            } else if (index >= playerStart) {
                 if (isFuel(slotStack)) {
-                    if (!this.moveItemStackTo(slotStack, 3, 4, false)) {
-                        // Then try input slots
-                        if (!this.moveItemStackTo(slotStack, 0, 3, false)) {
-                            return ItemStack.EMPTY;
-                        }
+                    if (!this.moveItemStackTo(slotStack, AlloyFurnaceBlockEntity.SLOT_FUEL, AlloyFurnaceBlockEntity.SLOT_FUEL + 1, false)) {
+                        if (!this.moveItemStackTo(slotStack, 0, AlloyFurnaceBlockEntity.SLOT_FUEL, false)) return ItemStack.EMPTY;
+                    }
+                } else if (!this.moveItemStackTo(slotStack, 0, AlloyFurnaceBlockEntity.SLOT_FUEL, false)) {
+                    if (index < playerEnd) {
+                        if (!this.moveItemStackTo(slotStack, playerEnd, hotbarEnd, false)) return ItemStack.EMPTY;
+                    } else {
+                        if (!this.moveItemStackTo(slotStack, playerStart, playerEnd, false)) return ItemStack.EMPTY;
                     }
                 }
-                // Otherwise try input slots
-                else if (!this.moveItemStackTo(slotStack, 0, 3, false)) {
-                    // Move between inventory and hotbar
-                    if (index < 33) {
-                        if (!this.moveItemStackTo(slotStack, 33, 42, false)) {
-                            return ItemStack.EMPTY;
-                        }
-                    } else if (!this.moveItemStackTo(slotStack, 6, 33, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                }
-            }
-            // Input/fuel slots (0-3)
-            else if (!this.moveItemStackTo(slotStack, 6, 42, false)) {
-                return ItemStack.EMPTY;
-            }
-
-            if (slotStack.isEmpty()) {
-                slot.set(ItemStack.EMPTY);
             } else {
-                slot.setChanged();
+                if (!this.moveItemStackTo(slotStack, playerStart, hotbarEnd, false)) return ItemStack.EMPTY;
             }
 
-            if (slotStack.getCount() == itemstack.getCount()) {
-                return ItemStack.EMPTY;
-            }
+            if (slotStack.isEmpty()) slot.set(ItemStack.EMPTY);
+            else slot.setChanged();
 
+            if (slotStack.getCount() == itemstack.getCount()) return ItemStack.EMPTY;
             slot.onTake(player, slotStack);
         }
 
@@ -151,20 +141,6 @@ public class AlloyFurnaceMenu extends AbstractContainerMenu {
         return stillValid(ContainerLevelAccess.create(container instanceof BlockEntity be ? be.getLevel() : null,
                 container instanceof BlockEntity be ? be.getBlockPos() : null),
                 player, OmniTechBlocks.ALLOY_FURNACE.get());
-    }
-
-    private void addPlayerInventory(Inventory inventory) {
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) {
-                addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
-            }
-        }
-    }
-
-    private void addPlayerHotbar(Inventory inventory) {
-        for (int col = 0; col < 9; col++) {
-            addSlot(new Slot(inventory, col, 8 + col * 18, 142));
-        }
     }
 
     // Custom slot that only accepts fuel

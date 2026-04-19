@@ -3,6 +3,9 @@ package com.dev1lroot.mcmods.omnitech.gui;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.ManualMaceratorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -11,15 +14,13 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import java.util.Comparator;
+import java.util.List;
+
 public class ManualMaceratorMenu extends AbstractContainerMenu {
     private final Container container;
     private final ContainerData data;
-
-    // Slot positions (176x166 GUI)
-    private static final int INPUT_X = 44, INPUT_Y = 17;
-    private static final int OUTPUT_1_X = 80, OUTPUT_1_Y = 53;
-    private static final int OUTPUT_2_X = 98, OUTPUT_2_Y = 53;
-    private static final int OUTPUT_3_X = 116, OUTPUT_3_Y = 53;
+    private final int machineSlotCount;
 
     // Client constructor
     public ManualMaceratorMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
@@ -36,26 +37,39 @@ public class ManualMaceratorMenu extends AbstractContainerMenu {
 
         addDataSlots(data);
 
-        addSlot(new Slot(container, ManualMaceratorBlockEntity.SLOT_INPUT, INPUT_X, INPUT_Y));
-        addSlot(new OutputSlot(container, ManualMaceratorBlockEntity.SLOT_OUTPUT_1, OUTPUT_1_X, OUTPUT_1_Y));
-        addSlot(new OutputSlot(container, ManualMaceratorBlockEntity.SLOT_OUTPUT_2, OUTPUT_2_X, OUTPUT_2_Y));
-        addSlot(new OutputSlot(container, ManualMaceratorBlockEntity.SLOT_OUTPUT_3, OUTPUT_3_X, OUTPUT_3_Y));
+        GuiLayout layout = GuiLayoutLoader.load("manual_macerator");
 
-        addPlayerInventory(playerInventory);
-        addPlayerHotbar(playerInventory);
+        List<GuiElementDef> machineSlots = layout.getElementsByType("slot").stream()
+                .filter(e -> e.slot_index >= 0)
+                .sorted(Comparator.comparingInt(e -> e.slot_index))
+                .toList();
+
+        for (GuiElementDef el : machineSlots) {
+            if (el.slot_index == ManualMaceratorBlockEntity.SLOT_INPUT) {
+                addSlot(new Slot(container, el.slot_index, el.x, el.y));
+            } else {
+                addSlot(new OutputSlot(container, el.slot_index, el.x, el.y));
+            }
+        }
+        this.machineSlotCount = machineSlots.size();
+
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
-    public int getKineticForce() { return data.get(0); }
+    public int getKineticForce()         { return data.get(0); }
     public int getRequiredKineticForce() { return data.get(1); }
 
-    public int getKineticProgress() {
-        int force = data.get(0);
-        int required = data.get(1);
-        return required != 0 ? force * 24 / required : 0; // 24px progress bar width
+    public float getKfProgressScaled() {
+        int required = getRequiredKineticForce();
+        return required != 0 ? Math.min(100f, getKineticForce() * 100f / required) : 0f;
     }
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
+        int playerStart = machineSlotCount;
+        int playerEnd   = playerStart + 27;
+        int hotbarEnd   = playerEnd + 9;
+
         ItemStack result = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
         if (!slot.hasItem()) return result;
@@ -63,24 +77,20 @@ public class ManualMaceratorMenu extends AbstractContainerMenu {
         ItemStack slotStack = slot.getItem();
         result = slotStack.copy();
 
-        // Output slots (1-3) → player inventory
-        if (index >= 1 && index <= 3) {
-            if (!this.moveItemStackTo(slotStack, 4, 40, true)) return ItemStack.EMPTY;
+        // Output slots (indices 1 to machineSlotCount-1) → player inventory
+        if (index >= 1 && index < machineSlotCount) {
+            if (!this.moveItemStackTo(slotStack, playerStart, hotbarEnd, true)) return ItemStack.EMPTY;
             slot.onQuickCraft(slotStack, result);
-        }
-        // Player inventory/hotbar (4-39) → input slot
-        else if (index >= 4) {
+        } else if (index >= playerStart) {
             if (!this.moveItemStackTo(slotStack, 0, 1, false)) {
-                if (index < 31) {
-                    if (!this.moveItemStackTo(slotStack, 31, 40, false)) return ItemStack.EMPTY;
+                if (index < playerEnd) {
+                    if (!this.moveItemStackTo(slotStack, playerEnd, hotbarEnd, false)) return ItemStack.EMPTY;
                 } else {
-                    if (!this.moveItemStackTo(slotStack, 4, 31, false)) return ItemStack.EMPTY;
+                    if (!this.moveItemStackTo(slotStack, playerStart, playerEnd, false)) return ItemStack.EMPTY;
                 }
             }
-        }
-        // Input slot (0) → player inventory
-        else {
-            if (!this.moveItemStackTo(slotStack, 4, 40, false)) return ItemStack.EMPTY;
+        } else {
+            if (!this.moveItemStackTo(slotStack, playerStart, hotbarEnd, false)) return ItemStack.EMPTY;
         }
 
         if (slotStack.isEmpty()) slot.set(ItemStack.EMPTY);
@@ -97,20 +107,6 @@ public class ManualMaceratorMenu extends AbstractContainerMenu {
                         container instanceof BlockEntity be ? be.getLevel() : null,
                         container instanceof BlockEntity be ? be.getBlockPos() : null),
                 player, OmniTechBlocks.MANUAL_MACERATOR.get());
-    }
-
-    private void addPlayerInventory(Inventory inventory) {
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) {
-                addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
-            }
-        }
-    }
-
-    private void addPlayerHotbar(Inventory inventory) {
-        for (int col = 0; col < 9; col++) {
-            addSlot(new Slot(inventory, col, 8 + col * 18, 142));
-        }
     }
 
     private static class OutputSlot extends Slot {

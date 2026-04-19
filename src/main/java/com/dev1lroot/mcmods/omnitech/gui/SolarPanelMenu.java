@@ -2,6 +2,8 @@ package com.dev1lroot.mcmods.omnitech.gui;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -9,7 +11,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.SimpleContainerData;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -23,6 +24,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 public class SolarPanelMenu extends AbstractContainerMenu {
     private final ContainerData data;
     private final BlockEntity blockEntity;
+
+    public static final int BAR_MAX_W = 100;
 
     /** Client-side constructor — reads block pos from packet. */
     public SolarPanelMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
@@ -39,8 +42,9 @@ public class SolarPanelMenu extends AbstractContainerMenu {
         this.data = data;
 
         addDataSlots(data);
-        addPlayerInventory(playerInventory);
-        addPlayerHotbar(playerInventory);
+
+        GuiLayout layout = GuiLayoutLoader.load("solar_panel");
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     /** Current EU/tick output (decoded from fixed-point ×1000). */
@@ -49,18 +53,8 @@ public class SolarPanelMenu extends AbstractContainerMenu {
     /** Sky light level directly above the panel (0–15). */
     public int getSkyLight() { return data.get(1); }
 
-    /**
-     * Sky light bar width in pixels (max {@value #BAR_MAX_W} px).
-     * Scales 0–15 to 0–{@value #BAR_MAX_W}.
-     */
-    public static final int BAR_MAX_W = 100;
     public int getSkyLightBarWidth() { return getSkyLight() * BAR_MAX_W / 15; }
-
-    /**
-     * Output bar width in pixels (max {@value #BAR_MAX_W} px).
-     * Scales 0–EU_PER_TICK (1.0f) to 0–{@value #BAR_MAX_W}.
-     */
-    public int getOutputBarWidth() { return (int)(getCurrentOutput() * BAR_MAX_W); }
+    public int getOutputBarWidth()   { return (int)(getCurrentOutput() * BAR_MAX_W); }
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) { return ItemStack.EMPTY; }
@@ -71,16 +65,5 @@ public class SolarPanelMenu extends AbstractContainerMenu {
                 ContainerLevelAccess.create(
                         blockEntity.getLevel(), blockEntity.getBlockPos()),
                 player, OmniTechBlocks.SOLAR_PANEL.get());
-    }
-
-    private void addPlayerInventory(Inventory inventory) {
-        for (int row = 0; row < 3; row++)
-            for (int col = 0; col < 9; col++)
-                addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
-    }
-
-    private void addPlayerHotbar(Inventory inventory) {
-        for (int col = 0; col < 9; col++)
-            addSlot(new Slot(inventory, col, 8 + col * 18, 142));
     }
 }

@@ -3,6 +3,9 @@ package com.dev1lroot.mcmods.omnitech.gui;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.ChemicalReactorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -12,14 +15,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+import java.util.Comparator;
+import java.util.List;
+
 public class ChemicalReactorMenu extends AbstractContainerMenu {
 
     private final Container  container;
     private final ContainerData data;
-
-    /** Catalyst item slot — displayed at the top-centre of the GUI. */
-    public static final int CATALYST_SLOT_X = 80;
-    public static final int CATALYST_SLOT_Y = 8;
+    private final int machineSlotCount;
 
     // Client constructor
     public ChemicalReactorMenu(int containerId, Inventory playerInventory,
@@ -38,18 +41,19 @@ public class ChemicalReactorMenu extends AbstractContainerMenu {
 
         addDataSlots(data);
 
-        // Catalyst slot (slot 0 in the BlockEntity)
-        addSlot(new Slot(container, ChemicalReactorBlockEntity.SLOT_CATALYST,
-                CATALYST_SLOT_X, CATALYST_SLOT_Y));
+        GuiLayout layout = GuiLayoutLoader.load("chemical_reactor");
 
-        // Player inventory (slots 1..27)
-        for (int row = 0; row < 3; row++)
-            for (int col = 0; col < 9; col++)
-                addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+        List<GuiElementDef> machineSlots = layout.getElementsByType("slot").stream()
+                .filter(e -> e.slot_index >= 0)
+                .sorted(Comparator.comparingInt(e -> e.slot_index))
+                .toList();
 
-        // Player hotbar (slots 28..36)
-        for (int col = 0; col < 9; col++)
-            addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
+        for (GuiElementDef el : machineSlots) {
+            addSlot(new Slot(container, el.slot_index, el.x, el.y));
+        }
+        this.machineSlotCount = machineSlots.size();
+
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     // ── Fluid accessors ───────────────────────────────────────────────────────
@@ -99,18 +103,22 @@ public class ChemicalReactorMenu extends AbstractContainerMenu {
         ItemStack slotStack = slot.getItem();
         result = slotStack.copy();
 
-        if (index == 0) {
+        int playerStart = machineSlotCount;
+        int playerEnd   = playerStart + 27;
+        int hotbarEnd   = playerEnd + 9;
+
+        if (index < machineSlotCount) {
             // Catalyst slot → player inventory
-            if (!moveItemStackTo(slotStack, 1, 37, true)) return ItemStack.EMPTY;
+            if (!moveItemStackTo(slotStack, playerStart, hotbarEnd, true)) return ItemStack.EMPTY;
             slot.onQuickCraft(slotStack, result);
-        } else if (index < 28) {
+        } else if (index < playerEnd) {
             // Player inventory → catalyst slot, then hotbar
-            if (!moveItemStackTo(slotStack, 0, 1, false))
-                if (!moveItemStackTo(slotStack, 28, 37, false)) return ItemStack.EMPTY;
+            if (!moveItemStackTo(slotStack, 0, machineSlotCount, false))
+                if (!moveItemStackTo(slotStack, playerEnd, hotbarEnd, false)) return ItemStack.EMPTY;
         } else {
             // Hotbar → catalyst slot, then player inventory
-            if (!moveItemStackTo(slotStack, 0, 1, false))
-                if (!moveItemStackTo(slotStack, 1, 28, false)) return ItemStack.EMPTY;
+            if (!moveItemStackTo(slotStack, 0, machineSlotCount, false))
+                if (!moveItemStackTo(slotStack, playerStart, playerEnd, false)) return ItemStack.EMPTY;
         }
 
         if (slotStack.isEmpty()) slot.set(ItemStack.EMPTY);

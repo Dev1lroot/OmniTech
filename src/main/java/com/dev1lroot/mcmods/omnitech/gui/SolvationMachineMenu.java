@@ -3,6 +3,9 @@ package com.dev1lroot.mcmods.omnitech.gui;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.SolvationMachineBlockEntity;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -12,14 +15,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+import java.util.Comparator;
+import java.util.List;
+
 public class SolvationMachineMenu extends AbstractContainerMenu {
 
     private final Container container;
     private final ContainerData data;
-
-    /** Item input slot position (GUI-relative). */
-    public static final int SLOT_X = 80;
-    public static final int SLOT_Y = 35;
+    private final int machineSlotCount;
 
     // Client constructor
     public SolvationMachineMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
@@ -37,21 +40,19 @@ public class SolvationMachineMenu extends AbstractContainerMenu {
 
         addDataSlots(data);
 
-        // Single item input slot
-        addSlot(new Slot(container, SolvationMachineBlockEntity.SLOT_INPUT, SLOT_X, SLOT_Y));
+        GuiLayout layout = GuiLayoutLoader.load("solvation_machine");
 
-        // Player inventory (slots 1–27)
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) {
-                addSlot(new Slot(playerInventory, col + row * 9 + 9,
-                        8 + col * 18, 84 + row * 18));
-            }
-        }
+        List<GuiElementDef> machineSlots = layout.getElementsByType("slot").stream()
+                .filter(e -> e.slot_index >= 0)
+                .sorted(Comparator.comparingInt(e -> e.slot_index))
+                .toList();
 
-        // Player hotbar (slots 28–36)
-        for (int col = 0; col < 9; col++) {
-            addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
+        for (GuiElementDef el : machineSlots) {
+            addSlot(new Slot(container, el.slot_index, el.x, el.y));
         }
+        this.machineSlotCount = machineSlots.size();
+
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     // ── Fluid accessors (cast to BE on server; return EMPTY on client) ─────────
@@ -100,17 +101,19 @@ public class SolvationMachineMenu extends AbstractContainerMenu {
         ItemStack slotStack = slot.getItem();
         result = slotStack.copy();
 
-        // Slot 0 is the machine input; slots 1–36 are player
-        if (index == 0) {
-            if (!this.moveItemStackTo(slotStack, 1, 37, true)) return ItemStack.EMPTY;
+        int playerStart = machineSlotCount;
+        int playerEnd   = playerStart + 27;
+        int hotbarEnd   = playerEnd + 9;
+
+        if (index < machineSlotCount) {
+            if (!this.moveItemStackTo(slotStack, playerStart, hotbarEnd, true)) return ItemStack.EMPTY;
             slot.onQuickCraft(slotStack, result);
         } else {
-            if (!this.moveItemStackTo(slotStack, 0, 1, false)) {
-                // Move between hotbar and inventory
-                if (index < 28) {
-                    if (!this.moveItemStackTo(slotStack, 28, 37, false)) return ItemStack.EMPTY;
+            if (!this.moveItemStackTo(slotStack, 0, machineSlotCount, false)) {
+                if (index < playerEnd) {
+                    if (!this.moveItemStackTo(slotStack, playerEnd, hotbarEnd, false)) return ItemStack.EMPTY;
                 } else {
-                    if (!this.moveItemStackTo(slotStack, 1, 28, false)) return ItemStack.EMPTY;
+                    if (!this.moveItemStackTo(slotStack, playerStart, playerEnd, false)) return ItemStack.EMPTY;
                 }
             }
         }

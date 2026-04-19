@@ -1,47 +1,47 @@
 package com.dev1lroot.mcmods.omnitech.gui;
 
-import com.dev1lroot.mcmods.omnitech.OmniTech;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutRenderer;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
 
 public class ManualMaceratorScreen extends AbstractContainerScreen<ManualMaceratorMenu> {
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(OmniTech.MODID, "textures/gui/manual_macerator.png");
 
-    public ManualMaceratorScreen(ManualMaceratorMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title);
+    private static final GuiLayout LAYOUT = GuiLayoutLoader.load("manual_macerator");
+    private GuiDataContext dataCtx;
+
+    public ManualMaceratorScreen(ManualMaceratorMenu menu, Inventory playerInventory,
+            Component title) {
+        super(menu, playerInventory, title, LAYOUT.width, LAYOUT.height);
     }
 
     @Override
     protected void init() {
         super.init();
-        this.titleLabelX = (this.imageWidth - this.font.width(this.title)) / 2;
+        this.titleLabelX     = (LAYOUT.width - this.font.width(this.title)) / 2;
+        this.inventoryLabelY = LAYOUT.inventory.label_y;
+
+        this.dataCtx = new GuiDataContext()
+                .value("kf_progress", menu::getKfProgressScaled);
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY,
+            float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
-        int x = this.leftPos;
-        int y = this.topPos;
-
-        // Draw background texture
-        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
-
-        // Draw kinetic force progress bar (horizontal bar, max 24px wide, at position 56,35)
-        int progress = menu.getKineticProgress();
-        if (progress > 0) {
-            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x + 56, y + 35, 176.0F, 0.0F, progress, 16, 256, 256);
-        }
+        GuiLayoutRenderer.renderBackground(graphics, LAYOUT, dataCtx,
+                this.leftPos, this.topPos, LAYOUT.width, LAYOUT.height);
     }
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractLabels(graphics, mouseX, mouseY);
 
-        int force = menu.getKineticForce();
+        int force    = menu.getKineticForce();
         int required = menu.getRequiredKineticForce();
 
         if (required > 0) {

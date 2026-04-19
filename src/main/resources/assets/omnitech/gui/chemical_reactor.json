@@ -1,0 +1,56 @@
+{
+  "background": "textures/gui/empty.png",
+  "draw_inventory": true,
+  "width": 176,
+  "height": 166,
+  "inventory": {
+    "x": 8,
+    "y": 84,
+    "label_y": 72,
+    "hotbar_y": 142
+  },
+  "elements": [
+    {
+      "id": "input_fluid_1",
+      "type": "fluid_tank",
+      "x": 8,
+      "y": 8,
+      "w": 16,
+      "h": 52,
+      "source": "input1"
+    },
+    {
+      "id": "input_fluid_2",
+      "type": "fluid_tank",
+      "x": 28,
+      "y": 8,
+      "w": 16,
+      "h": 52,
+      "source": "input2"
+    },
+    {
+      "id": "catalyst_slot",
+      "type": "slot",
+      "x": 80,
+      "y": 8,
+      "slot_index": 0
+    },
+    {
+      "id": "output_fluid",
+      "type": "fluid_tank",
+      "x": 148,
+      "y": 8,
+      "w": 16,
+      "h": 52,
+      "source": "output"
+    },
+    {
+      "id": "cook_progress",
+      "type": "progressbar",
+      "x": 68,
+      "y": 38,
+      "w": 24,
+      "source": "cook_progress"
+    }
+  ]
+}

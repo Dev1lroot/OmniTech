@@ -1,0 +1,36 @@
+{
+  "background": "textures/gui/empty.png",
+  "draw_inventory": true,
+  "width": 176,
+  "height": 166,
+  "inventory": {
+    "x": 8,
+    "y": 84,
+    "label_y": 72,
+    "hotbar_y": 142
+  },
+  "elements": [
+    {
+      "id": "fuel_in",
+      "type": "slot",
+      "x": 62,
+      "y": 35,
+      "slot_index": 0
+    },
+    {
+      "id": "bucket_out",
+      "type": "slot",
+      "x": 98,
+      "y": 35,
+      "slot_index": 1
+    },
+    {
+      "id": "fuel_progress",
+      "type": "progressbar",
+      "x": 8,
+      "y": 58,
+      "w": 160,
+      "source": "fuel_progress"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "background": "textures/gui/empty.png",
+  "draw_inventory": true,
+  "width": 176,
+  "height": 166,
+  "inventory": {
+    "x": 8,
+    "y": 84,
+    "label_y": 72,
+    "hotbar_y": 142
+  },
+  "elements": [
+    {
+      "id": "bucket_in_slot",
+      "type": "slot",
+      "x": 27,
+      "y": 17,
+      "slot_index": 0
+    },
+    {
+      "id": "bucket_out_slot",
+      "type": "slot",
+      "x": 27,
+      "y": 53,
+      "slot_index": 1
+    },
+    {
+      "id": "fluid",
+      "type": "fluid_tank",
+      "x": 51,
+      "y": 15,
+      "w": 16,
+      "h": 56,
+      "source": "fluid"
+    }
+  ]
+}

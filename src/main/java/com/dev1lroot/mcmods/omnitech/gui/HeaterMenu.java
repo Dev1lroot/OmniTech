@@ -4,6 +4,9 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.HeaterBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticGeneratorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -12,11 +15,13 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import java.util.Comparator;
+import java.util.List;
+
 public class HeaterMenu extends AbstractContainerMenu {
     private final Container container;
     private final ContainerData data;
-
-    private static final int FUEL_X = 80, FUEL_Y = 36;
+    private final int machineSlotCount;
 
     // Client constructor
     public HeaterMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
@@ -33,9 +38,20 @@ public class HeaterMenu extends AbstractContainerMenu {
         this.data      = data;
 
         addDataSlots(data);
-        addSlot(new FuelSlot(container, HeaterBlockEntity.SLOT_FUEL, FUEL_X, FUEL_Y));
-        addPlayerInventory(playerInventory);
-        addPlayerHotbar(playerInventory);
+
+        GuiLayout layout = GuiLayoutLoader.load("heater");
+
+        List<GuiElementDef> machineSlots = layout.getElementsByType("slot").stream()
+                .filter(e -> e.slot_index >= 0)
+                .sorted(Comparator.comparingInt(e -> e.slot_index))
+                .toList();
+
+        for (GuiElementDef el : machineSlots) {
+            addSlot(new FuelSlot(container, el.slot_index, el.x, el.y));
+        }
+        this.machineSlotCount = machineSlots.size();
+
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     // ── Data accessors ─────────────────────────────────────────────────────────
@@ -61,6 +77,10 @@ public class HeaterMenu extends AbstractContainerMenu {
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
+        int playerStart = machineSlotCount;
+        int playerEnd   = playerStart + 27;
+        int hotbarEnd   = playerEnd + 9;
+
         ItemStack result = ItemStack.EMPTY;
         Slot slot = slots.get(index);
         if (!slot.hasItem()) return result;
@@ -68,16 +88,14 @@ public class HeaterMenu extends AbstractContainerMenu {
         ItemStack slotStack = slot.getItem();
         result = slotStack.copy();
 
-        if (index == 0) {
-            if (!moveItemStackTo(slotStack, 1, 37, false)) return ItemStack.EMPTY;
+        if (index < machineSlotCount) {
+            if (!moveItemStackTo(slotStack, playerStart, hotbarEnd, false)) return ItemStack.EMPTY;
+        } else if (index < playerEnd) {
+            if (!moveItemStackTo(slotStack, 0, machineSlotCount, false))
+                if (!moveItemStackTo(slotStack, playerEnd, hotbarEnd, false)) return ItemStack.EMPTY;
         } else {
-            if (!moveItemStackTo(slotStack, 0, 1, false)) {
-                if (index < 28) {
-                    if (!moveItemStackTo(slotStack, 28, 37, false)) return ItemStack.EMPTY;
-                } else {
-                    if (!moveItemStackTo(slotStack, 1, 28, false)) return ItemStack.EMPTY;
-                }
-            }
+            if (!moveItemStackTo(slotStack, 0, machineSlotCount, false))
+                if (!moveItemStackTo(slotStack, playerStart, playerEnd, false)) return ItemStack.EMPTY;
         }
 
         if (slotStack.isEmpty()) slot.set(ItemStack.EMPTY);
@@ -96,21 +114,6 @@ public class HeaterMenu extends AbstractContainerMenu {
                         container instanceof BlockEntity be ? be.getBlockPos() : null),
                 player, OmniTechBlocks.HEATER.get());
     }
-
-    // ── Layout helpers ─────────────────────────────────────────────────────────
-
-    private void addPlayerInventory(Inventory inventory) {
-        for (int row = 0; row < 3; row++)
-            for (int col = 0; col < 9; col++)
-                addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
-    }
-
-    private void addPlayerHotbar(Inventory inventory) {
-        for (int col = 0; col < 9; col++)
-            addSlot(new Slot(inventory, col, 8 + col * 18, 142));
-    }
-
-    // ── Inner slot types ───────────────────────────────────────────────────────
 
     private static class FuelSlot extends Slot {
         public FuelSlot(Container container, int index, int x, int y) {

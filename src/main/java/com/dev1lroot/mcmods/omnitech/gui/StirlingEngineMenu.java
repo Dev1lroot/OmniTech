@@ -2,6 +2,8 @@ package com.dev1lroot.mcmods.omnitech.gui;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -14,14 +16,12 @@ public class StirlingEngineMenu extends AbstractContainerMenu {
     private final ContainerData data;
     private final ContainerLevelAccess access;
 
-    // Клиентский конструктор
     public StirlingEngineMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
         this(containerId, playerInventory,
                 playerInventory.player.level().getBlockEntity(extraData.readBlockPos()),
                 new SimpleContainerData(4));
     }
 
-    // Серверный конструктор
     public StirlingEngineMenu(int containerId, Inventory playerInventory,
                               @Nullable BlockEntity blockEntity, ContainerData data) {
         super(OmniTechMenuTypes.STIRLING_ENGINE.get(), containerId);
@@ -32,8 +32,9 @@ public class StirlingEngineMenu extends AbstractContainerMenu {
         );
 
         addDataSlots(data);
-        addPlayerInventory(playerInventory);
-        addPlayerHotbar(playerInventory);
+
+        GuiLayout layout = GuiLayoutLoader.load("stirling_engine");
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     public int getStoredSteam() { return data.get(0); }
@@ -62,9 +63,9 @@ public class StirlingEngineMenu extends AbstractContainerMenu {
         if (slot != null && slot.hasItem()) {
             ItemStack stack = slot.getItem();
             result = stack.copy();
-            if (index < 36) {
-                if (!moveItemStackTo(stack, 36, 36, false)) return ItemStack.EMPTY;
-            } else if (!moveItemStackTo(stack, 0, 36, false)) {
+            if (index < 27) {
+                if (!moveItemStackTo(stack, 27, 36, false)) return ItemStack.EMPTY;
+            } else if (!moveItemStackTo(stack, 0, 27, false)) {
                 return ItemStack.EMPTY;
             }
             if (stack.isEmpty()) slot.set(ItemStack.EMPTY);
@@ -76,16 +77,5 @@ public class StirlingEngineMenu extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player player) {
         return stillValid(this.access, player, OmniTechBlocks.STIRLING_ENGINE.get());
-    }
-
-    private void addPlayerInventory(Inventory inventory) {
-        for (int row = 0; row < 3; row++)
-            for (int col = 0; col < 9; col++)
-                addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
-    }
-
-    private void addPlayerHotbar(Inventory inventory) {
-        for (int col = 0; col < 9; col++)
-            addSlot(new Slot(inventory, col, 8 + col * 18, 142));
     }
 }

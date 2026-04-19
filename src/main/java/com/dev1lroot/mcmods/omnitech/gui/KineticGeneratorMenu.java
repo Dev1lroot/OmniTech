@@ -3,6 +3,9 @@ package com.dev1lroot.mcmods.omnitech.gui;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.KineticGeneratorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -11,21 +14,22 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import java.util.Comparator;
+import java.util.List;
+
 public class KineticGeneratorMenu extends AbstractContainerMenu {
     private final Container container;
     private final ContainerData data;
+    private final int machineSlotCount;
 
-    // Fuel slot centered in the upper portion of the 176×166 GUI
-    private static final int FUEL_X = 80, FUEL_Y = 35;
-
-    // Client-side constructor — reads block pos from packet, fetches BE from level
+    // Client-side constructor
     public KineticGeneratorMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
         this(containerId, playerInventory,
                 playerInventory.player.level().getBlockEntity(extraData.readBlockPos()),
                 new SimpleContainerData(2));
     }
 
-    // Server-side constructor — used directly from the block entity
+    // Server-side constructor
     public KineticGeneratorMenu(int containerId, Inventory playerInventory,
             BlockEntity blockEntity, ContainerData data) {
         super(OmniTechMenuTypes.KF_GENERATOR.get(), containerId);
@@ -33,22 +37,27 @@ public class KineticGeneratorMenu extends AbstractContainerMenu {
         this.data = data;
 
         addDataSlots(data);
-        addSlot(new FuelSlot(container, KineticGeneratorBlockEntity.SLOT_FUEL, FUEL_X, FUEL_Y));
-        addPlayerInventory(playerInventory);
-        addPlayerHotbar(playerInventory);
+
+        GuiLayout layout = GuiLayoutLoader.load("kinetic_generator");
+
+        List<GuiElementDef> machineSlots = layout.getElementsByType("slot").stream()
+                .filter(e -> e.slot_index >= 0)
+                .sorted(Comparator.comparingInt(e -> e.slot_index))
+                .toList();
+
+        for (GuiElementDef el : machineSlots) {
+            addSlot(new FuelSlot(container, el.slot_index, el.x, el.y));
+        }
+        this.machineSlotCount = machineSlots.size();
+
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     // ── Data accessors ─────────────────────────────────────────────────────────
 
-    /** Current burn time remaining, in ticks. */
     public int getBurnTime()    { return data.get(0); }
-    /** Max burn time of the last consumed fuel item, in ticks. */
     public int getMaxBurnTime() { return data.get(1); }
 
-    /**
-     * Burn progress scaled to 14px (matches a vanilla flame icon height).
-     * Returns 0 when not burning.
-     */
     public int getFlameHeight() {
         int max = getMaxBurnTime();
         return max != 0 ? getBurnTime() * 14 / max : 0;
@@ -58,6 +67,10 @@ public class KineticGeneratorMenu extends AbstractContainerMenu {
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
+        int playerStart = machineSlotCount;
+        int playerEnd   = playerStart + 27;
+        int hotbarEnd   = playerEnd + 9;
+
         ItemStack result = ItemStack.EMPTY;
         Slot slot = slots.get(index);
         if (!slot.hasItem()) return result;
@@ -65,19 +78,14 @@ public class KineticGeneratorMenu extends AbstractContainerMenu {
         ItemStack slotStack = slot.getItem();
         result = slotStack.copy();
 
-        // Fuel slot (0) → player inventory
-        if (index == 0) {
-            if (!moveItemStackTo(slotStack, 1, 37, false)) return ItemStack.EMPTY;
-        }
-        // Player inventory / hotbar (1–36) → fuel slot
-        else {
-            if (!moveItemStackTo(slotStack, 0, 1, false)) {
-                if (index < 28) {
-                    if (!moveItemStackTo(slotStack, 28, 37, false)) return ItemStack.EMPTY;
-                } else {
-                    if (!moveItemStackTo(slotStack, 1, 28, false)) return ItemStack.EMPTY;
-                }
-            }
+        if (index < machineSlotCount) {
+            if (!moveItemStackTo(slotStack, playerStart, hotbarEnd, false)) return ItemStack.EMPTY;
+        } else if (index < playerEnd) {
+            if (!moveItemStackTo(slotStack, 0, machineSlotCount, false))
+                if (!moveItemStackTo(slotStack, playerEnd, hotbarEnd, false)) return ItemStack.EMPTY;
+        } else {
+            if (!moveItemStackTo(slotStack, 0, machineSlotCount, false))
+                if (!moveItemStackTo(slotStack, playerStart, playerEnd, false)) return ItemStack.EMPTY;
         }
 
         if (slotStack.isEmpty()) slot.set(ItemStack.EMPTY);
@@ -97,22 +105,6 @@ public class KineticGeneratorMenu extends AbstractContainerMenu {
                 player, OmniTechBlocks.KF_GENERATOR.get());
     }
 
-    // ── Layout helpers ─────────────────────────────────────────────────────────
-
-    private void addPlayerInventory(Inventory inventory) {
-        for (int row = 0; row < 3; row++)
-            for (int col = 0; col < 9; col++)
-                addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
-    }
-
-    private void addPlayerHotbar(Inventory inventory) {
-        for (int col = 0; col < 9; col++)
-            addSlot(new Slot(inventory, col, 8 + col * 18, 142));
-    }
-
-    // ── Inner slot types ───────────────────────────────────────────────────────
-
-    /** Slot that only accepts items with a positive fuel burn duration. */
     private static class FuelSlot extends Slot {
         public FuelSlot(Container container, int index, int x, int y) {
             super(container, index, x, y);

@@ -2,8 +2,10 @@ package com.dev1lroot.mcmods.omnitech.gui;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
-import com.dev1lroot.mcmods.omnitech.blocks.FoundryBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.SmelterBlockEntity;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -13,14 +15,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+import java.util.Comparator;
+import java.util.List;
+
 public class SmelterMenu extends AbstractContainerMenu {
 
     private final Container container;
     private final ContainerData data;
-
-    // 3×3 input grid top-left at (8, 17)
-    public static final int GRID_START_X = 8;
-    public static final int GRID_START_Y = 17;
+    private final int machineSlotCount;
 
     // Client constructor
     public SmelterMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
@@ -38,28 +40,19 @@ public class SmelterMenu extends AbstractContainerMenu {
 
         addDataSlots(data);
 
-        // 9 input slots in 3×3 grid
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                int slotIndex = row * 3 + col;
-                addSlot(new Slot(container, slotIndex,
-                        GRID_START_X + col * 18,
-                        GRID_START_Y + row * 18));
-            }
-        }
+        GuiLayout layout = GuiLayoutLoader.load("smelter");
 
-        // Player inventory (slots 9–35)
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) {
-                addSlot(new Slot(playerInventory, col + row * 9 + 9,
-                        8 + col * 18, 84 + row * 18));
-            }
-        }
+        List<GuiElementDef> machineSlots = layout.getElementsByType("slot").stream()
+                .filter(e -> e.slot_index >= 0)
+                .sorted(Comparator.comparingInt(e -> e.slot_index))
+                .toList();
 
-        // Player hotbar (slots 36–44)
-        for (int col = 0; col < 9; col++) {
-            addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
+        for (GuiElementDef el : machineSlots) {
+            addSlot(new Slot(container, el.slot_index, el.x, el.y));
         }
+        this.machineSlotCount = machineSlots.size();
+
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     public FluidStack getOutputFluid()
@@ -97,22 +90,20 @@ public class SmelterMenu extends AbstractContainerMenu {
         ItemStack slotStack = slot.getItem();
         result = slotStack.copy();
 
-        // Machine input slots (0-8) → player inventory
-        if (index < SmelterBlockEntity.SLOT_COUNT) {
-            if (!this.moveItemStackTo(slotStack, SmelterBlockEntity.SLOT_COUNT, 45, true)) {
-                return ItemStack.EMPTY;
-            }
+        int playerStart = machineSlotCount;
+        int playerEnd   = playerStart + 27;
+        int hotbarEnd   = playerEnd + 9;
+
+        // Machine input slots → player inventory
+        if (index < machineSlotCount) {
+            if (!this.moveItemStackTo(slotStack, playerStart, hotbarEnd, true)) return ItemStack.EMPTY;
             slot.onQuickCraft(slotStack, result);
-        }
-        // Player inventory/hotbar → machine input slots
-        else if (index >= SmelterBlockEntity.SLOT_COUNT) {
-            if (!this.moveItemStackTo(slotStack, 0, SmelterBlockEntity.SLOT_COUNT, false)) {
-                int invStart = SmelterBlockEntity.SLOT_COUNT;
-                int hotbarStart = invStart + 27;
-                if (index < hotbarStart) {
-                    if (!this.moveItemStackTo(slotStack, hotbarStart, 45, false)) return ItemStack.EMPTY;
+        } else {
+            if (!this.moveItemStackTo(slotStack, 0, machineSlotCount, false)) {
+                if (index < playerEnd) {
+                    if (!this.moveItemStackTo(slotStack, playerEnd, hotbarEnd, false)) return ItemStack.EMPTY;
                 } else {
-                    if (!this.moveItemStackTo(slotStack, invStart, hotbarStart, false)) return ItemStack.EMPTY;
+                    if (!this.moveItemStackTo(slotStack, playerStart, playerEnd, false)) return ItemStack.EMPTY;
                 }
             }
         }

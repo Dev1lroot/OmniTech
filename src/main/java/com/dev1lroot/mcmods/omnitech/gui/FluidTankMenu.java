@@ -3,6 +3,9 @@ package com.dev1lroot.mcmods.omnitech.gui;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.FluidTankBlockEntity;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -14,12 +17,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+import java.util.Comparator;
+import java.util.List;
+
 public class FluidTankMenu extends AbstractContainerMenu {
     private final Container container;
     private final ContainerData data;
-
-    private static final int BUCKET_IN_X  = 27, BUCKET_IN_Y  = 17;
-    private static final int BUCKET_OUT_X = 27, BUCKET_OUT_Y = 53;
+    private final int machineSlotCount;
 
     // Client constructor
     public FluidTankMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
@@ -37,25 +41,26 @@ public class FluidTankMenu extends AbstractContainerMenu {
 
         addDataSlots(data);
 
-        // Slots
-        addSlot(new BucketInSlot(container, FluidTankBlockEntity.SLOT_BUCKET_IN,
-                BUCKET_IN_X, BUCKET_IN_Y));
-        addSlot(new OutputSlot(container, FluidTankBlockEntity.SLOT_BUCKET_OUT,
-                BUCKET_OUT_X, BUCKET_OUT_Y));
+        GuiLayout layout = GuiLayoutLoader.load("fluid_tank");
 
-        // Player inventory
-        for (int row = 0; row < 3; row++)
-            for (int col = 0; col < 9; col++)
-                addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+        List<GuiElementDef> machineSlots = layout.getElementsByType("slot").stream()
+                .filter(e -> e.slot_index >= 0)
+                .sorted(Comparator.comparingInt(e -> e.slot_index))
+                .toList();
 
-        // Player hotbar
-        for (int col = 0; col < 9; col++)
-            addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
+        for (GuiElementDef el : machineSlots) {
+            if (el.slot_index == FluidTankBlockEntity.SLOT_BUCKET_IN) {
+                addSlot(new BucketInSlot(container, el.slot_index, el.x, el.y));
+            } else {
+                addSlot(new OutputSlot(container, el.slot_index, el.x, el.y));
+            }
+        }
+        this.machineSlotCount = machineSlots.size();
+
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     // ── Fluid Accessor ────────────────────────────────────────────────────────
-    // Этот метод позволит GuiUtil в классе Screen получить объект FluidStack
-    // для извлечения названия, цвета и текстуры.
 
     public FluidStack getFluidStack() {
         if (container instanceof FluidTankBlockEntity be) {
@@ -69,16 +74,14 @@ public class FluidTankMenu extends AbstractContainerMenu {
     public int getStoredFluid()   { return data.get(0); }
     public int getMaxFluid()      { return data.get(1); }
 
-    /** Fluid gauge fill height (0–52 px). */
-    public int getFluidBarHeight() {
-        int max = getMaxFluid();
-        return max > 0 ? (int)((long)getStoredFluid() * 52 / max) : 0;
-    }
-
     // ── Menu logic ─────────────────────────────────────────────────────────────
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
+        int playerStart = machineSlotCount;
+        int playerEnd   = playerStart + 27;
+        int hotbarEnd   = playerEnd + 9;
+
         ItemStack result = ItemStack.EMPTY;
         Slot slot = slots.get(index);
 
@@ -86,20 +89,24 @@ public class FluidTankMenu extends AbstractContainerMenu {
             ItemStack slotStack = slot.getItem();
             result = slotStack.copy();
 
-            if (index < 2) {
-                // Из слотов бака в инвентарь игрока
-                if (!moveItemStackTo(slotStack, 2, 38, true)) return ItemStack.EMPTY;
+            if (index < machineSlotCount) {
+                if (!moveItemStackTo(slotStack, playerStart, hotbarEnd, true)) return ItemStack.EMPTY;
                 slot.onQuickCraft(slotStack, result);
             } else {
-                // Из инвентаря игрока в бак (только ведра с жидкостью)
                 if (slotStack.getItem() instanceof BucketItem b && b.getContent() != Fluids.EMPTY) {
                     if (!moveItemStackTo(slotStack, 0, 1, false)) {
-                        // Если слот входа занят, перемещаем между инв/хотбаром
-                        if (!moveBetweenPlayerInventories(index, slotStack)) return ItemStack.EMPTY;
+                        if (index < playerEnd) {
+                            if (!moveItemStackTo(slotStack, playerEnd, hotbarEnd, false)) return ItemStack.EMPTY;
+                        } else {
+                            if (!moveItemStackTo(slotStack, playerStart, playerEnd, false)) return ItemStack.EMPTY;
+                        }
                     }
                 } else {
-                    // Обычные предметы перемещаем между инв/хотбаром
-                    if (!moveBetweenPlayerInventories(index, slotStack)) return ItemStack.EMPTY;
+                    if (index < playerEnd) {
+                        if (!moveItemStackTo(slotStack, playerEnd, hotbarEnd, false)) return ItemStack.EMPTY;
+                    } else {
+                        if (!moveItemStackTo(slotStack, playerStart, playerEnd, false)) return ItemStack.EMPTY;
+                    }
                 }
             }
 
@@ -112,14 +119,6 @@ public class FluidTankMenu extends AbstractContainerMenu {
         return result;
     }
 
-    private boolean moveBetweenPlayerInventories(int index, ItemStack stack) {
-        if (index < 29) {
-            return moveItemStackTo(stack, 29, 38, false);
-        } else {
-            return moveItemStackTo(stack, 2, 29, false);
-        }
-    }
-
     @Override
     public boolean stillValid(Player player) {
         return stillValid(
@@ -128,8 +127,6 @@ public class FluidTankMenu extends AbstractContainerMenu {
                         container instanceof BlockEntity be ? be.getBlockPos() : null),
                 player, OmniTechBlocks.FLUID_TANK.get());
     }
-
-    // ── Inner slot types ───────────────────────────────────────────────────────
 
     private static class BucketInSlot extends Slot {
         public BucketInSlot(Container container, int index, int x, int y) { super(container, index, x, y); }

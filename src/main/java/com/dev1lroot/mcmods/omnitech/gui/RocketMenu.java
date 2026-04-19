@@ -2,6 +2,9 @@ package com.dev1lroot.mcmods.omnitech.gui;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntity;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
@@ -16,12 +19,7 @@ import net.minecraft.world.item.Items;
 public class RocketMenu extends AbstractContainerMenu {
 
     private final RocketEntity rocket;
-
-    // Slot positions (GUI-relative)
-    public static final int INPUT_SLOT_X  = 62;
-    public static final int INPUT_SLOT_Y  = 35;
-    public static final int OUTPUT_SLOT_X = 98;
-    public static final int OUTPUT_SLOT_Y = 35;
+    private final int machineSlotCount;
 
     // Client constructor — reads entity ID from the extra data buffer
     public RocketMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
@@ -42,36 +40,31 @@ public class RocketMenu extends AbstractContainerMenu {
 
         addDataSlots(data);
 
+        GuiLayout layout = GuiLayoutLoader.load("rocket");
+        int slotCount = 0;
+
         if (rocket != null) {
-            // Slot 0: fuel input — accepts only water buckets
-            addSlot(new Slot(rocket.getInventory(), 0, INPUT_SLOT_X, INPUT_SLOT_Y) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return stack.is(Items.WATER_BUCKET);
-                }
-            });
+            GuiElementDef fuelIn   = layout.getElementById("fuel_in").orElse(null);
+            GuiElementDef bucketOut = layout.getElementById("bucket_out").orElse(null);
 
-            // Slot 1: output — extract-only (empty bucket comes out here)
-            addSlot(new Slot(rocket.getInventory(), 1, OUTPUT_SLOT_X, OUTPUT_SLOT_Y) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return false;
-                }
-            });
-        }
-
-        // Player inventory (slots 2–28)
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) {
-                addSlot(new Slot(playerInventory, col + row * 9 + 9,
-                        8 + col * 18, 84 + row * 18));
+            if (fuelIn != null) {
+                addSlot(new Slot(rocket.getInventory(), 0, fuelIn.x, fuelIn.y) {
+                    @Override
+                    public boolean mayPlace(ItemStack stack) { return stack.is(Items.WATER_BUCKET); }
+                });
+                slotCount++;
+            }
+            if (bucketOut != null) {
+                addSlot(new Slot(rocket.getInventory(), 1, bucketOut.x, bucketOut.y) {
+                    @Override
+                    public boolean mayPlace(ItemStack stack) { return false; }
+                });
+                slotCount++;
             }
         }
+        this.machineSlotCount = slotCount;
 
-        // Player hotbar (slots 29–37)
-        for (int col = 0; col < 9; col++) {
-            addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
-        }
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     public int getFuelAmount() {
@@ -87,24 +80,21 @@ public class RocketMenu extends AbstractContainerMenu {
         ItemStack slotStack = slot.getItem();
         result = slotStack.copy();
 
-        int machineSlots = rocket != null ? 2 : 0;
+        int playerStart = machineSlotCount;
+        int playerEnd   = playerStart + 27;
+        int hotbarEnd   = playerEnd + 9;
 
-        if (index < machineSlots) {
+        if (index < machineSlotCount) {
             // Machine slots -> player inventory
-            if (!this.moveItemStackTo(slotStack, machineSlots, machineSlots + 36, true))
-                return ItemStack.EMPTY;
+            if (!this.moveItemStackTo(slotStack, playerStart, hotbarEnd, true)) return ItemStack.EMPTY;
             slot.onQuickCraft(slotStack, result);
         } else {
             // Player inventory -> machine input slot
-            if (machineSlots > 0 && !this.moveItemStackTo(slotStack, 0, 1, false)) {
-                int invStart = machineSlots;
-                int hotbarStart = invStart + 27;
-                if (index < hotbarStart) {
-                    if (!this.moveItemStackTo(slotStack, hotbarStart, machineSlots + 36, false))
-                        return ItemStack.EMPTY;
+            if (machineSlotCount > 0 && !this.moveItemStackTo(slotStack, 0, 1, false)) {
+                if (index < playerEnd) {
+                    if (!this.moveItemStackTo(slotStack, playerEnd, hotbarEnd, false)) return ItemStack.EMPTY;
                 } else {
-                    if (!this.moveItemStackTo(slotStack, invStart, hotbarStart, false))
-                        return ItemStack.EMPTY;
+                    if (!this.moveItemStackTo(slotStack, playerStart, playerEnd, false)) return ItemStack.EMPTY;
                 }
             }
         }

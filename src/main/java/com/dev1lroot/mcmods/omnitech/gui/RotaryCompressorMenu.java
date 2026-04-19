@@ -3,6 +3,8 @@ package com.dev1lroot.mcmods.omnitech.gui;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.RotaryCompressorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -33,18 +35,8 @@ public class RotaryCompressorMenu extends AbstractContainerMenu {
 
         addDataSlots(data);
 
-        // Player inventory (slots 0–26)
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) {
-                addSlot(new Slot(playerInventory, col + row * 9 + 9,
-                        8 + col * 18, 84 + row * 18));
-            }
-        }
-
-        // Player hotbar (slots 27–35)
-        for (int col = 0; col < 9; col++) {
-            addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
-        }
+        GuiLayout layout = GuiLayoutLoader.load("rotary_compressor");
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     // ── Fluid accessors ────────────────────────────────────────────────────────
@@ -72,7 +64,7 @@ public class RotaryCompressorMenu extends AbstractContainerMenu {
         return Math.min(100f, getKineticForce() / required * 100f);
     }
 
-    // ── Shift-click (no machine slots — just move within player inv) ──────────
+    // ── Shift-click ───────────────────────────────────────────────────────────
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
@@ -83,7 +75,6 @@ public class RotaryCompressorMenu extends AbstractContainerMenu {
         ItemStack slotStack = slot.getItem();
         result = slotStack.copy();
 
-        // Slots 0–26 = inventory, 27–35 = hotbar
         if (index < 27) {
             if (!this.moveItemStackTo(slotStack, 27, 36, false)) return ItemStack.EMPTY;
         } else {

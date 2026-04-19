@@ -3,6 +3,9 @@ package com.dev1lroot.mcmods.omnitech.gui;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.FoundryBlockEntity;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraft.world.Container;
@@ -12,14 +15,14 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import java.util.Comparator;
+import java.util.List;
+
 public class FoundryMenu extends AbstractContainerMenu {
 
     private final Container container;
     private final ContainerData data;
-
-    // Machine slot positions
-    public static final int TEMPLATE_X = 44, TEMPLATE_Y = 35;
-    public static final int OUTPUT_X   = 116, OUTPUT_Y   = 35;
+    private final int machineSlotCount;
 
     // Client constructor
     public FoundryMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
@@ -37,25 +40,23 @@ public class FoundryMenu extends AbstractContainerMenu {
 
         addDataSlots(data);
 
-        // Template slot — players can place/take freely; automation is blocked in the
-        // block entity's canPlaceItem / canTakeItem overrides.
-        addSlot(new TemplateSlot(container, FoundryBlockEntity.TEMPLATE_SLOT, TEMPLATE_X, TEMPLATE_Y));
+        GuiLayout layout = GuiLayoutLoader.load("foundry");
 
-        // Output slot — players can take; no one can insert.
-        addSlot(new Slot(container, FoundryBlockEntity.OUTPUT_SLOT, OUTPUT_X, OUTPUT_Y));
+        List<GuiElementDef> machineSlots = layout.getElementsByType("slot").stream()
+                .filter(e -> e.slot_index >= 0)
+                .sorted(Comparator.comparingInt(e -> e.slot_index))
+                .toList();
 
-        // Player inventory (slots 2–28)
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) {
-                addSlot(new Slot(playerInventory, col + row * 9 + 9,
-                        8 + col * 18, 84 + row * 18));
+        for (GuiElementDef el : machineSlots) {
+            if (el.slot_index == FoundryBlockEntity.TEMPLATE_SLOT) {
+                addSlot(new TemplateSlot(container, el.slot_index, el.x, el.y));
+            } else {
+                addSlot(new Slot(container, el.slot_index, el.x, el.y));
             }
         }
+        this.machineSlotCount = machineSlots.size();
 
-        // Player hotbar (slots 29–37)
-        for (int col = 0; col < 9; col++) {
-            addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
-        }
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     // ── Fluid type accessor (reads from BE, synced via getUpdatePacket) ────────
@@ -93,24 +94,22 @@ public class FoundryMenu extends AbstractContainerMenu {
         ItemStack slotStack = slot.getItem();
         result = slotStack.copy();
 
-        int invStart   = FoundryBlockEntity.SLOT_COUNT;   // 2
-        int invEnd     = invStart + 27;                    // 29
-        int hotbarEnd  = invEnd + 9;                       // 38
+        int playerStart = machineSlotCount;
+        int playerEnd   = playerStart + 27;
+        int hotbarEnd   = playerEnd + 9;
 
-        if (index == FoundryBlockEntity.TEMPLATE_SLOT || index == FoundryBlockEntity.OUTPUT_SLOT) {
+        if (index < machineSlotCount) {
             // Machine → player inventory
-            if (!this.moveItemStackTo(slotStack, invStart, hotbarEnd, true)) {
-                return ItemStack.EMPTY;
-            }
+            if (!this.moveItemStackTo(slotStack, playerStart, hotbarEnd, true)) return ItemStack.EMPTY;
             slot.onQuickCraft(slotStack, result);
         } else {
             // Player inventory/hotbar → template slot
             if (!this.moveItemStackTo(slotStack, 0, 1, false)) {
                 // Couldn't go to template; swap within player inv/hotbar
-                if (index < invEnd) {
-                    if (!this.moveItemStackTo(slotStack, invEnd, hotbarEnd, false)) return ItemStack.EMPTY;
+                if (index < playerEnd) {
+                    if (!this.moveItemStackTo(slotStack, playerEnd, hotbarEnd, false)) return ItemStack.EMPTY;
                 } else {
-                    if (!this.moveItemStackTo(slotStack, invStart, invEnd, false)) return ItemStack.EMPTY;
+                    if (!this.moveItemStackTo(slotStack, playerStart, playerEnd, false)) return ItemStack.EMPTY;
                 }
             }
         }

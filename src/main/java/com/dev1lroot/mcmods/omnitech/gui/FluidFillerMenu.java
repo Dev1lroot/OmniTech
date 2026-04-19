@@ -3,6 +3,9 @@ package com.dev1lroot.mcmods.omnitech.gui;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.FluidFillerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
+import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import com.dev1lroot.mcmods.omnitech.items.FluidCanisterItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
@@ -13,15 +16,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+import java.util.Comparator;
+import java.util.List;
+
 public class FluidFillerMenu extends AbstractContainerMenu {
 
     private final Container  container;
     private final ContainerData data;
-
-    public static final int IN_CANISTER_SLOT_X  = 80;
-    public static final int IN_CANISTER_SLOT_Y  = 8;
-    public static final int OUT_CANISTER_SLOT_X = 80;
-    public static final int OUT_CANISTER_SLOT_Y = 30;
+    private final int machineSlotCount;
 
     // Client constructor
     public FluidFillerMenu(int containerId, Inventory playerInventory,
@@ -40,30 +42,31 @@ public class FluidFillerMenu extends AbstractContainerMenu {
 
         addDataSlots(data);
 
-        // Input canister slot — only accepts FluidCanisterItem
-        addSlot(new Slot(container, FluidFillerBlockEntity.SLOT_INPUT_CANISTER,
-                IN_CANISTER_SLOT_X, IN_CANISTER_SLOT_Y) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return stack.getItem() instanceof FluidCanisterItem;
+        GuiLayout layout = GuiLayoutLoader.load("fluid_filler");
+
+        List<GuiElementDef> machineSlots = layout.getElementsByType("slot").stream()
+                .filter(e -> e.slot_index >= 0)
+                .sorted(Comparator.comparingInt(e -> e.slot_index))
+                .toList();
+
+        for (GuiElementDef el : machineSlots) {
+            if (el.slot_index == FluidFillerBlockEntity.SLOT_INPUT_CANISTER) {
+                addSlot(new Slot(container, el.slot_index, el.x, el.y) {
+                    @Override
+                    public boolean mayPlace(ItemStack stack) {
+                        return stack.getItem() instanceof FluidCanisterItem;
+                    }
+                });
+            } else {
+                addSlot(new Slot(container, el.slot_index, el.x, el.y) {
+                    @Override
+                    public boolean mayPlace(ItemStack stack) { return false; }
+                });
             }
-        });
+        }
+        this.machineSlotCount = machineSlots.size();
 
-        // Output canister slot — players may take items, but not insert
-        addSlot(new Slot(container, FluidFillerBlockEntity.SLOT_OUTPUT_CANISTER,
-                OUT_CANISTER_SLOT_X, OUT_CANISTER_SLOT_Y) {
-            @Override
-            public boolean mayPlace(ItemStack stack) { return false; }
-        });
-
-        // Player inventory (slots 2..28)
-        for (int row = 0; row < 3; row++)
-            for (int col = 0; col < 9; col++)
-                addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
-
-        // Player hotbar (slots 29..37)
-        for (int col = 0; col < 9; col++)
-            addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
+        layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
     // ── Fluid accessors (GUI) ─────────────────────────────────────────────────
@@ -104,18 +107,22 @@ public class FluidFillerMenu extends AbstractContainerMenu {
         ItemStack slotStack = slot.getItem();
         result = slotStack.copy();
 
-        if (index == 0 || index == 1) {
+        int playerStart = machineSlotCount;
+        int playerEnd   = playerStart + 27;
+        int hotbarEnd   = playerEnd + 9;
+
+        if (index < machineSlotCount) {
             // From machine slot → player inventory
-            if (!moveItemStackTo(slotStack, 2, 38, true)) return ItemStack.EMPTY;
+            if (!moveItemStackTo(slotStack, playerStart, hotbarEnd, true)) return ItemStack.EMPTY;
             slot.onQuickCraft(slotStack, result);
-        } else if (index < 29) {
+        } else if (index < playerEnd) {
             // From player inventory → try machine input slot
             if (!moveItemStackTo(slotStack, 0, 1, false))
-                if (!moveItemStackTo(slotStack, 29, 38, false)) return ItemStack.EMPTY;
+                if (!moveItemStackTo(slotStack, playerEnd, hotbarEnd, false)) return ItemStack.EMPTY;
         } else {
             // From hotbar → try machine input slot, then player inv
             if (!moveItemStackTo(slotStack, 0, 1, false))
-                if (!moveItemStackTo(slotStack, 2, 29, false)) return ItemStack.EMPTY;
+                if (!moveItemStackTo(slotStack, playerStart, playerEnd, false)) return ItemStack.EMPTY;
         }
 
         if (slotStack.isEmpty()) slot.set(ItemStack.EMPTY);
