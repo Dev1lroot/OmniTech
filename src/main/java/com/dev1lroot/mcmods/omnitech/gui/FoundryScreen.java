@@ -8,7 +8,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.neoforge.fluids.FluidStack;
 
 public class FoundryScreen extends AbstractContainerScreen<FoundryMenu> {
 
@@ -54,17 +53,6 @@ public class FoundryScreen extends AbstractContainerScreen<FoundryMenu> {
             graphics.text(this.font, reqStr, 0, 0, reqColor, false);
         }
 
-        FluidStack fluid  = menu.getInputFluid();
-        int amount        = menu.getFluidAmount();
-        int capacity      = menu.getFluidCapacity();
-        if (!fluid.isEmpty() && amount > 0) {
-            String fluidName = fluid.getFluidType().getDescription().getString();
-            graphics.text(this.font, fluidName, 64, 0, 0xFFCCCCCC, false);
-            graphics.text(this.font, amount + " mb", 16, 0, 0xFFFF8800, false);
-            graphics.text(this.font, "/ " + capacity, 16, 64, 0xFF886644, false);
-        } else {
-            graphics.text(this.font, "Empty", 64, 0, 0xFFAAAAAA, false);
-        }
     }
 
     @Override

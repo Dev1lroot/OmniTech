@@ -46,19 +46,6 @@ public class SolvationMachineScreen extends AbstractContainerScreen<SolvationMac
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractLabels(graphics, mouseX, mouseY);
 
-        // Input fluid label
-        HudWriter writer = new HudWriter(graphics, this.font, 32, 20, 10, false);
-        int inAmt = menu.getInputFluidAmount();
-        int inCap = menu.getInputFluidCapacity();
-        if (inAmt > 0) {
-            writer.setColor(0xFF4488FF).write(menu.getInputFluid().getHoverName().getString())
-                    .newLine()
-                    .setColor(0xFF4488FF).write(inAmt + "")
-                    .setColor(0xFF404040).write("/" + inCap + " mB");
-        } else {
-            writer.setColor(0xFF888888).write("Empty");
-        }
-
         // KF progress label (below the bar, bar at y=58)
         float kf    = menu.getKineticForce();
         float reqKf = menu.getRequiredKineticForce();
@@ -72,18 +59,6 @@ public class SolvationMachineScreen extends AbstractContainerScreen<SolvationMac
             kfWriter.setColor(0xFF888888).write("No recipe");
         }
 
-        // Output fluid label (right side)
-        int outAmt = menu.getOutputFluidAmount();
-        int outCap = menu.getOutputFluidCapacity();
-        HudWriter outWriter = new HudWriter(graphics, this.font, 170, 20, 10, false);
-        if (outAmt > 0) {
-            outWriter.setColor(0xFFFF8800).write(menu.getOutputFluid().getHoverName().getString())
-                    .newLine()
-                    .setColor(0xFFFF8800).write(outAmt + "")
-                    .setColor(0xFF404040).write("/" + outCap + " mB");
-        } else {
-            outWriter.setColor(0xFF888888).write("Empty");
-        }
     }
 
     @Override

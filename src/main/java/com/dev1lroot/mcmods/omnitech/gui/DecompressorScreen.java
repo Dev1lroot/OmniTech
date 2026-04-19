@@ -43,19 +43,6 @@ public class DecompressorScreen extends AbstractContainerScreen<DecompressorMenu
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractLabels(graphics, mouseX, mouseY);
 
-        // Input fluid label
-        HudWriter inWriter = new HudWriter(graphics, this.font, 26, 20, 10, false);
-        int inAmt = menu.getInputFluidAmount();
-        int inCap = menu.getInputFluidCapacity();
-        if (inAmt > 0) {
-            inWriter.setColor(0xFF44AAFF).write(menu.getInputFluid().getHoverName().getString())
-                    .newLine()
-                    .setColor(0xFF44AAFF).write(inAmt + "")
-                    .setColor(0xFF606060).write("/" + inCap + " mB");
-        } else {
-            inWriter.setColor(0xFF888888).write("Empty");
-        }
-
         // Cold readout (centre)
         int stored  = menu.getStoredCold();
         int maxCold = menu.getMaxCold();
@@ -99,18 +86,6 @@ public class DecompressorScreen extends AbstractContainerScreen<DecompressorMenu
             procWriter.setColor(0xFF888888).write("no recipe");
         }
 
-        // Output fluid label (right-aligned)
-        int outAmt = menu.getOutputFluidAmount();
-        int outCap = menu.getOutputFluidCapacity();
-        HudWriter outWriter = new HudWriter(graphics, this.font, 150, 20, 10, true);
-        if (outAmt > 0) {
-            outWriter.setColor(0xFF88EEFF).write(menu.getOutputFluid().getHoverName().getString())
-                    .newLine()
-                    .setColor(0xFF88EEFF).write(outAmt + "")
-                    .setColor(0xFF606060).write("/" + outCap + " mB");
-        } else {
-            outWriter.setColor(0xFF888888).write("Empty");
-        }
     }
 
     @Override

@@ -4,7 +4,6 @@ import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutRenderer;
-import com.dev1lroot.mcmods.omnitech.util.HudWriter;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -48,20 +47,6 @@ public class ChemicalReactorScreen extends AbstractContainerScreen<ChemicalReact
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractLabels(graphics, mouseX, mouseY);
 
-        // Input fluid 1 label
-        int in1Amt = menu.getInputFluid1Amount();
-        if (in1Amt > 0) {
-            new HudWriter(graphics, this.font, 8, 62, 8, false)
-                    .setColor(0xFF4488FF).write(menu.getInputFluid1().getHoverName().getString());
-        }
-
-        // Input fluid 2 label
-        int in2Amt = menu.getInputFluid2Amount();
-        if (in2Amt > 0) {
-            new HudWriter(graphics, this.font, 28, 62, 8, false)
-                    .setColor(0xFF44CCFF).write(menu.getInputFluid2().getHoverName().getString());
-        }
-
         // Temperature display (centred)
         int heat    = menu.getStoredHeat();
         int reqTemp = menu.getRequiredTemperature();
@@ -71,12 +56,6 @@ public class ChemicalReactorScreen extends AbstractContainerScreen<ChemicalReact
         graphics.text(this.font, tempText,
                 (LAYOUT.width - this.font.width(tempText)) / 2, 26, tempColor, false);
 
-        // Output fluid label (right-aligned)
-        int outAmt = menu.getOutputFluidAmount();
-        if (outAmt > 0) {
-            new HudWriter(graphics, this.font, 146, 62, 8, true)
-                    .setColor(0xFFFFAA00).write(menu.getOutputFluid().getHoverName().getString());
-        }
     }
 
     @Override

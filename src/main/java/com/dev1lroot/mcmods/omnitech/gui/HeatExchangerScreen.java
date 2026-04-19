@@ -43,19 +43,6 @@ public class HeatExchangerScreen extends AbstractContainerScreen<HeatExchangerMe
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractLabels(graphics, mouseX, mouseY);
 
-        // Input fluid label
-        HudWriter inWriter = new HudWriter(graphics, this.font, 26, 20, 10, false);
-        int inAmt = menu.getInputFluidAmount();
-        int inCap = menu.getInputFluidCapacity();
-        if (inAmt > 0) {
-            inWriter.setColor(0xFF4488FF).write(menu.getInputFluid().getHoverName().getString())
-                    .newLine()
-                    .setColor(0xFF4488FF).write(inAmt + "")
-                    .setColor(0xFF606060).write("/" + inCap + " mB");
-        } else {
-            inWriter.setColor(0xFF888888).write("Empty");
-        }
-
         // Heat display (centre)
         int stored  = menu.getStoredHeat();
         int maxHeat = menu.getMaxHeat();
@@ -99,18 +86,6 @@ public class HeatExchangerScreen extends AbstractContainerScreen<HeatExchangerMe
             procWriter.setColor(0xFF888888).write("no recipe");
         }
 
-        // Output fluid label (right-aligned)
-        int outAmt = menu.getOutputFluidAmount();
-        int outCap = menu.getOutputFluidCapacity();
-        HudWriter outWriter = new HudWriter(graphics, this.font, 150, 20, 10, true);
-        if (outAmt > 0) {
-            outWriter.setColor(0xFFFF8800).write(menu.getOutputFluid().getHoverName().getString())
-                    .newLine()
-                    .setColor(0xFFFF8800).write(outAmt + "")
-                    .setColor(0xFF606060).write("/" + outCap + " mB");
-        } else {
-            outWriter.setColor(0xFF888888).write("Empty");
-        }
     }
 
     @Override

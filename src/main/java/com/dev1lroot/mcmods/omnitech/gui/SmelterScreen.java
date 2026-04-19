@@ -57,18 +57,6 @@ public class SmelterScreen extends AbstractContainerScreen<SmelterMenu> {
                     .setColor(reqColor).write(requiredTemp + "°C");
         }
 
-        int amount   = menu.getFluidAmount();
-        int capacity = menu.getFluidCapacity();
-        if (amount > 0) {
-            writer.write("\n")
-                    .setColor(0xFF404040).write(menu.getOutputFluid().getHoverName().getString())
-                    .newLine()
-                    .setColor(0xFFFF8800).write(amount + "")
-                    .setColor(0xFF404040).write("/")
-                    .setColor(0xFF886644).write(capacity + " mb");
-        } else {
-            writer.write("\n").setColor(0xFF404040).write("Empty");
-        }
     }
 
     @Override

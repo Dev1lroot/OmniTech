@@ -60,10 +60,6 @@ public class BoilerScreen extends AbstractContainerScreen<BoilerMenu> {
                   .setColor(reqColor).write(requiredTemp + "°C");
         }
 
-        int waterAmt = menu.getWaterAmount();
-        if (waterAmt > 0) {
-            writer.write("\n").setColor(0xFF4488FF).write(waterAmt + " mb");
-        }
     }
 
     @Override

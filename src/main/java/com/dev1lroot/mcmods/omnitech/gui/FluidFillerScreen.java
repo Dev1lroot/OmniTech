@@ -43,20 +43,6 @@ public class FluidFillerScreen extends AbstractContainerScreen<FluidFillerMenu> 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractLabels(graphics, mouseX, mouseY);
-
-        int inAmt = menu.getInputFluidAmount();
-        if (inAmt > 0) {
-            graphics.text(this.font,
-                    menu.getInputFluid().getHoverName().getString() + " " + inAmt + " mB",
-                    26, 10, 0xFF4488FF, false);
-        }
-
-        int outAmt = menu.getOutputFluidAmount();
-        if (outAmt > 0) {
-            String outLabel = menu.getOutputFluid().getHoverName().getString() + " " + outAmt + " mB";
-            graphics.text(this.font, outLabel,
-                    148 - this.font.width(outLabel) - 2, 10, 0xFF44FF88, false);
-        }
     }
 
     @Override
