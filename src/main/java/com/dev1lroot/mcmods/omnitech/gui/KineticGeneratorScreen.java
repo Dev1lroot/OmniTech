@@ -38,7 +38,7 @@ public class KineticGeneratorScreen extends AbstractContainerScreen<KineticGener
             float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         GuiLayoutRenderer.renderBackground(graphics, LAYOUT, DATA_CTX,
-                this.leftPos, this.topPos, LAYOUT.width, LAYOUT.height);
+                this.leftPos, this.topPos, LAYOUT.width, LAYOUT.height, mouseX, mouseY);
 
         // Flame burn indicator sprite from the texture sheet
         int flameHeight = menu.getFlameHeight();

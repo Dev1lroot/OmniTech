@@ -2,6 +2,7 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.blocks.FluidPipeBlock;
 import com.dev1lroot.mcmods.omnitech.OmniTechItems;
+import com.dev1lroot.mcmods.omnitech.client.FluidCanisterItemModel;
 import com.dev1lroot.mcmods.omnitech.client.FluidCanisterTintSource;
 import com.dev1lroot.mcmods.omnitech.client.ConveyorBeltRenderer;
 import com.dev1lroot.mcmods.omnitech.client.CrankBlockEntityRenderer;
@@ -35,6 +36,7 @@ import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRender
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
@@ -57,6 +59,7 @@ public class OmniTechClient
         modEventBus.addListener(this::registerRenderPipelines);
         modEventBus.addListener(this::registerKeys);
         modEventBus.addListener(this::registerItemColors);
+        modEventBus.addListener(this::registerItemModels);
         modEventBus.register(OmniTechClient.class);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onClientTick);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::registerClientCommands);
@@ -98,6 +101,12 @@ public class OmniTechClient
         event.register(
                 net.minecraft.resources.Identifier.fromNamespaceAndPath(OmniTech.MODID, "fluid_canister_tint"),
                 FluidCanisterTintSource.MAP_CODEC);
+    }
+
+    void registerItemModels(RegisterItemModelsEvent event) {
+        event.register(
+                Identifier.fromNamespaceAndPath(OmniTech.MODID, "fluid_canister"),
+                FluidCanisterItemModel.Unbaked.MAP_CODEC);
     }
 
     void registerRenderPipelines(RegisterRenderPipelinesEvent event) {

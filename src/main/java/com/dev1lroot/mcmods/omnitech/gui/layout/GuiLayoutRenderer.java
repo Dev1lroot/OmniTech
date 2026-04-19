@@ -50,7 +50,8 @@ public final class GuiLayoutRenderer {
      */
     public static void renderBackground(GuiGraphicsExtractor graphics,
             GuiLayout layout, GuiDataContext ctx,
-            int guiLeft, int guiTop, int imageWidth, int imageHeight) {
+            int guiLeft, int guiTop, int imageWidth, int imageHeight,
+            int mouseX, int mouseY) {
 
         Identifier bg = Identifier.fromNamespaceAndPath(OmniTech.MODID, layout.background);
         graphics.blit(RenderPipelines.GUI_TEXTURED, bg,
@@ -68,6 +69,8 @@ public final class GuiLayoutRenderer {
                             ctx.getFluidAmount(el.source),
                             ctx.getFluidCapacity(el.source),
                             x, y, el.w, el.h);
+                    if (mouseX >= x && mouseX < x + el.w && mouseY >= y && mouseY < y + el.h)
+                        graphics.fill(x, y, x + el.w, y + el.h, 0x80FFFFFF);
                 }
                 case "slot" ->
                     GuiUtil.renderSlot(graphics, x, y);

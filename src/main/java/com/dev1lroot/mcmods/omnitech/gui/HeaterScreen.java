@@ -40,7 +40,7 @@ public class HeaterScreen extends AbstractContainerScreen<HeaterMenu> {
             float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         GuiLayoutRenderer.renderBackground(graphics, LAYOUT, DATA_CTX,
-                this.leftPos, this.topPos, LAYOUT.width, LAYOUT.height);
+                this.leftPos, this.topPos, LAYOUT.width, LAYOUT.height, mouseX, mouseY);
 
         Identifier tex = Identifier.fromNamespaceAndPath(OmniTech.MODID, LAYOUT.background);
 

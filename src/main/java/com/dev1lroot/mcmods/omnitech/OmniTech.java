@@ -74,6 +74,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import com.dev1lroot.mcmods.omnitech.client.FluidCanisterResourceHandler;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -316,6 +317,15 @@ public class OmniTech {
                 Capabilities.Energy.BLOCK,
                 OmniTechBlockEntities.ELECTRIC_CAPACITOR.get(),
                 (be, side) -> be.energyHandler
+        );
+
+        // Fluid Canister exposes its stored fluid via the item capability so that
+        // FluidUtil.getFirstStackContained (used by DynamicFluidContainerModel) can
+        // read the fluid at render time.
+        event.registerItem(
+                Capabilities.Fluid.ITEM,
+                (stack, access) -> new FluidCanisterResourceHandler(access),
+                OmniTechItems.FLUID_CANISTER.get()
         );
     }
 

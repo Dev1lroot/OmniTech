@@ -5,11 +5,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.resource.ResourceStack;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * A portable fluid container that holds 0–{@value #CAPACITY} mB of any single fluid.
@@ -84,19 +85,26 @@ public class FluidCanisterItem extends Item {
         return 0x2266FF;
     }
 
+    // ── Display name ─────────────────────────────────────────────────────────
+
+    @Override
+    public Component getName(ItemStack stack) {
+        FluidStack fluid = getFluid(stack);
+        if (fluid.isEmpty()) return Component.literal("Empty Fluid Canister");
+        return Component.literal(fluid.getHoverName().getString() + " Canister");
+    }
+
     // ── Tooltip ───────────────────────────────────────────────────────────────
 
-
+    @Override
     public void appendHoverText(ItemStack stack, TooltipContext context,
-            List<Component> tooltip, TooltipFlag flag) {
+            TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         FluidStack fluid = getFluid(stack);
         if (fluid.isEmpty()) {
-            tooltip.add(Component.translatable("tooltip.omnitech.fluid_canister.empty"));
+            tooltip.accept(Component.literal("Empty").withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
         } else {
-            tooltip.add(Component.translatable("tooltip.omnitech.fluid_canister.contents",
-                    fluid.getHoverName(),
-                    fluid.getAmount(),
-                    CAPACITY));
+            tooltip.accept(Component.literal(fluid.getAmount() + " / " + CAPACITY + " mB")
+                    .withStyle(net.minecraft.ChatFormatting.GRAY));
         }
     }
 }

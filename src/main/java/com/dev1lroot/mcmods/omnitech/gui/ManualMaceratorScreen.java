@@ -34,7 +34,7 @@ public class ManualMaceratorScreen extends AbstractContainerScreen<ManualMacerat
             float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         GuiLayoutRenderer.renderBackground(graphics, LAYOUT, dataCtx,
-                this.leftPos, this.topPos, LAYOUT.width, LAYOUT.height);
+                this.leftPos, this.topPos, LAYOUT.width, LAYOUT.height, mouseX, mouseY);
     }
 
     @Override

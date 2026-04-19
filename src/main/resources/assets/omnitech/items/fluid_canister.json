@@ -1,11 +1,5 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "omnitech:item/fluid_canister",
-    "tints": [
-      {
-        "type": "omnitech:fluid_canister_tint"
-      }
-    ]
+    "type": "omnitech:fluid_canister"
   }
 }

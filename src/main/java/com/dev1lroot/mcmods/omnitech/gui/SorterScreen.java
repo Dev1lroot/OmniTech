@@ -31,7 +31,7 @@ public class SorterScreen extends AbstractContainerScreen<SorterMenu> {
             float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         GuiLayoutRenderer.renderBackground(graphics, LAYOUT, DATA_CTX,
-                this.leftPos, this.topPos, LAYOUT.width, LAYOUT.height);
+                this.leftPos, this.topPos, LAYOUT.width, LAYOUT.height, mouseX, mouseY);
 
         // Thin separator between filter rows and player inventory
         graphics.fill(this.leftPos + 7,  this.topPos + 72,
