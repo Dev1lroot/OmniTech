@@ -32,17 +32,13 @@ public class SorterScreen extends AbstractContainerScreen<SorterMenu> {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         GuiLayoutRenderer.renderBackground(graphics, LAYOUT, DATA_CTX,
                 this.leftPos, this.topPos, LAYOUT.width, LAYOUT.height, mouseX, mouseY);
-
-        // Thin separator between filter rows and player inventory
-        graphics.fill(this.leftPos + 7,  this.topPos + 72,
-                      this.leftPos + 169, this.topPos + 73, 0xFF555555);
     }
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractLabels(graphics, mouseX, mouseY);
-        graphics.text(this.font, "L", 154, 22, 0xFFCCCCCC, false);
-        graphics.text(this.font, "B", 154, 40, 0xFFCCCCCC, false);
-        graphics.text(this.font, "R", 154, 58, 0xFFCCCCCC, false);
+        graphics.text(this.font, "R", 157, 22, 0xFFCCCCCC, false);
+        graphics.text(this.font, "B", 157, 40, 0xFFCCCCCC, false);
+        graphics.text(this.font, "L", 157, 58, 0xFFCCCCCC, false);
     }
 }
