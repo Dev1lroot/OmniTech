@@ -7,6 +7,7 @@ import com.dev1lroot.mcmods.omnitech.recipes.ManualCentrifugeRecipeManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.ContainerHelper;
@@ -99,6 +100,9 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
                         be.requiredKineticForce = recipe.getRequiredKineticForce();
                         be.setChanged();
                     }
+                    if (!state.getValue(ManualCentrifugeBlock.LIT)) {
+                        level.setBlock(pos, state.setValue(ManualCentrifugeBlock.LIT, true), Block.UPDATE_CLIENTS);
+                    }
                 },
                 () -> {
                     if (be.currentRecipe != null) {
@@ -107,6 +111,9 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
                         be.kineticForce = 0;
                         be.requiredKineticForce = 0;
                         be.setChanged();
+                    }
+                    if (state.getValue(ManualCentrifugeBlock.LIT)) {
+                        level.setBlock(pos, state.setValue(ManualCentrifugeBlock.LIT, false), Block.UPDATE_CLIENTS);
                     }
                 }
         );

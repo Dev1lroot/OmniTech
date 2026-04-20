@@ -46,6 +46,8 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> ALLOY_FURNACE;
     public static final DeferredBlock<Block> MANUAL_MACERATOR;
     public static final DeferredBlock<Block> MANUAL_CENTRIFUGE;
+    /** Ghost block – holds the {@code manual_centrifuge_rotor} blockstate for BERI spinning rotor rendering. */
+    public static final DeferredBlock<Block> MANUAL_CENTRIFUGE_ROTOR;
     public static final DeferredBlock<Block> CRANK;
 
     public static final DeferredBlock<Block> KF_GENERATOR;
@@ -93,6 +95,8 @@ public class OmniTechBlocks {
                 p -> new ManualMaceratorBlock(p.mapColor(MapColor.STONE).strength(3.5F).sound(SoundType.STONE)));
         MANUAL_CENTRIFUGE = register("manual_centrifuge",
                 p -> new ManualCentrifugeBlock(p.mapColor(MapColor.STONE).strength(3.5F).sound(SoundType.STONE)));
+        MANUAL_CENTRIFUGE_ROTOR = register("manual_centrifuge_rotor",
+                p -> new ManualCentrifugeRotorBlock(p.mapColor(MapColor.STONE).strength(3.5F).sound(SoundType.STONE).noLootTable()));
         CRANK = register("crank",
                 p -> new CrankBlock(p.mapColor(MapColor.WOOD).strength(1.5F).sound(SoundType.WOOD).noOcclusion()));
 
