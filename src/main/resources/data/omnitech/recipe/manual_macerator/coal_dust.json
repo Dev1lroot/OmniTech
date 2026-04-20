@@ -2,7 +2,6 @@
   "requiredKineticForce": 10,
   "input": "minecraft:coal",
   "output": [
-    { "item": "omnitech:coal_dust", "count": 1, "chance": 1.0 },
-    { "item": "omnitech:coal_mote", "count": 2, "chance": 0.4 }
+    { "item": "omnitech:coal_dust", "count": 1, "chance": 1.0 }
   ]
 }

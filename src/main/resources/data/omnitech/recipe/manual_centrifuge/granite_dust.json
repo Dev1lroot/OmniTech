@@ -1,5 +1,5 @@
 {
-  "requiredKineticForce": 3,
+  "requiredKineticForce": 20,
   "input": "omnitech:granite_dust",
   "output": [
     { "item": "omnitech:stone_dust", "count":  1, "chance":  1},

@@ -2,7 +2,6 @@
   "requiredKineticForce": 30,
   "input": "omnitech:zinc_ingot",
   "output": [
-    { "item": "omnitech:zinc_dust", "count": 1, "chance": 1.0 },
-    { "item": "omnitech:zinc_mote", "count": 2, "chance": 0.4 }
+    { "item": "omnitech:zinc_dust", "count": 1, "chance": 1.0 }
   ]
 }

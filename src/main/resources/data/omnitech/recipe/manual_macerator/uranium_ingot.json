@@ -2,7 +2,6 @@
   "requiredKineticForce": 30,
   "input": "omnitech:uranium_ingot",
   "output": [
-    { "item": "omnitech:uranium_dust", "count": 1, "chance": 1.0 },
-    { "item": "omnitech:uranium_mote", "count": 2, "chance": 0.4 }
+    { "item": "omnitech:uranium_dust", "count": 1, "chance": 1.0 }
   ]
 }

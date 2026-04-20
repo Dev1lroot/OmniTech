@@ -2,7 +2,6 @@
   "requiredKineticForce": 30,
   "input": "omnitech:tin_ingot",
   "output": [
-    { "item": "omnitech:tin_dust", "count": 1, "chance": 1.0 },
-    { "item": "omnitech:tin_mote", "count": 2, "chance": 0.4 }
+    { "item": "omnitech:tin_dust", "count": 1, "chance": 1.0 }
   ]
 }

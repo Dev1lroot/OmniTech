@@ -2,7 +2,6 @@
   "requiredKineticForce": 30,
   "input": "minecraft:copper_ingot",
   "output": [
-    { "item": "omnitech:copper_dust", "count": 1, "chance": 1.0 },
-    { "item": "omnitech:copper_mote", "count": 2, "chance": 0.4 }
+    { "item": "omnitech:copper_dust", "count": 1, "chance": 1.0 }
   ]
 }

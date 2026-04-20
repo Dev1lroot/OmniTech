@@ -2,7 +2,6 @@
   "requiredKineticForce": 30,
   "input": "omnitech:chromium_ingot",
   "output": [
-    { "item": "omnitech:chromium_dust", "count": 1, "chance": 1.0 },
-    { "item": "omnitech:chromium_mote", "count": 2, "chance": 0.4 }
+    { "item": "omnitech:chromium_dust", "count": 1, "chance": 1.0 }
   ]
 }
