@@ -3,8 +3,8 @@
   "textures": {
     "particle": "omnitech:block/machine_side",
     "top":    "omnitech:block/machine_side",
-    "front":  "omnitech:block/macerator_side",
-    "side":   "omnitech:block/machine_side",
+    "front":  "omnitech:block/logistic_side",
+    "side":   "omnitech:block/logistic_side",
     "bottom": "omnitech:block/machine_side"
   },
   "elements": [

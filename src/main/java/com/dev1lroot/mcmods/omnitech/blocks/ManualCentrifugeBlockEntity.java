@@ -40,8 +40,12 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
 
+    /** Ticks before LIT turns off after the last kinetic-force pulse. 10 ticks = 500 ms. */
+    public static final int SPIN_DECAY_TICKS = 20;
+
     private int kineticForce = 0;
     private int requiredKineticForce = 0;
+    private int spinningTimer = 0;
     private ManualCentrifugeRecipe currentRecipe = null;
     private String currentRecipeId = null;
 
@@ -91,6 +95,8 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
     public int getContainerSize() { return SLOT_COUNT; }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, ManualCentrifugeBlockEntity be) {
+        if (be.spinningTimer > 0) be.spinningTimer--;
+
         ManualCentrifugeRecipeManager.findRecipe(be.items.get(SLOT_INPUT)).ifPresentOrElse(
                 recipe -> {
                     if (!recipe.getId().equals(be.currentRecipeId)) {
@@ -99,9 +105,6 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
                         be.kineticForce = 0;
                         be.requiredKineticForce = recipe.getRequiredKineticForce();
                         be.setChanged();
-                    }
-                    if (!state.getValue(ManualCentrifugeBlock.LIT)) {
-                        level.setBlock(pos, state.setValue(ManualCentrifugeBlock.LIT, true), Block.UPDATE_CLIENTS);
                     }
                 },
                 () -> {
@@ -112,11 +115,19 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
                         be.requiredKineticForce = 0;
                         be.setChanged();
                     }
-                    if (state.getValue(ManualCentrifugeBlock.LIT)) {
-                        level.setBlock(pos, state.setValue(ManualCentrifugeBlock.LIT, false), Block.UPDATE_CLIENTS);
-                    }
                 }
         );
+
+        if (!be.hasOutputSpace() && (be.kineticForce != 0 || be.spinningTimer != 0)) {
+            be.kineticForce = 0;
+            be.spinningTimer = 0;
+            be.setChanged();
+        }
+
+        boolean shouldBeLit = be.spinningTimer > 0;
+        if (state.getValue(ManualCentrifugeBlock.LIT) != shouldBeLit) {
+            level.setBlock(pos, state.setValue(ManualCentrifugeBlock.LIT, shouldBeLit), Block.UPDATE_CLIENTS);
+        }
     }
 
     /** Only draw from the KF network when there is something to process. */
@@ -126,15 +137,24 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
     @Override
     public boolean addKineticForce(float amount) {
         if (currentRecipe == null) return false;
+        if (!hasOutputSpace()) return false;
 
+        spinningTimer = SPIN_DECAY_TICKS;
         kineticForce += amount;
         setChanged();
 
-        if (kineticForce >= requiredKineticForce)
-        {
+        if (kineticForce >= requiredKineticForce) {
             return process();
         }
         return true;
+    }
+
+    private boolean hasOutputSpace() {
+        for (int slot : OUTPUT_SLOTS) {
+            ItemStack stack = items.get(slot);
+            if (stack.isEmpty() || stack.getCount() < stack.getMaxStackSize()) return true;
+        }
+        return false;
     }
 
     private boolean process() {
@@ -208,6 +228,7 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
         ContainerHelper.loadAllItems(input, this.items);
         this.kineticForce = input.getIntOr("KineticForce", 0);
         this.requiredKineticForce = input.getIntOr("RequiredKineticForce", 0);
+        this.spinningTimer = input.getIntOr("SpinningTimer", 0);
     }
 
     @Override
@@ -216,6 +237,7 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
         ContainerHelper.saveAllItems(output, this.items);
         output.putInt("KineticForce", this.kineticForce);
         output.putInt("RequiredKineticForce", this.requiredKineticForce);
+        output.putInt("SpinningTimer", this.spinningTimer);
     }
 
     /** Output slots are extraction-only; input slot accepts items. */

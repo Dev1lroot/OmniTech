@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.blocks.BoilerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.ConveyorBeltBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.ElectricCapacitorBlockEntity;
 import net.minecraft.core.Direction;
 import org.slf4j.Logger;
@@ -310,6 +311,15 @@ public class OmniTech {
                     if (side == facing.getOpposite()) return fbe.outputFluidHandler;
                     return null;
                 }
+        );
+
+        // Conveyor belt exposes its item slot as an ItemResource handler so that
+        // capability-based machines (e.g. CokeOven) can push/pull items via the
+        // NeoForge transfer API.
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                OmniTechBlockEntities.CONVEYOR_BELT.get(),
+                (be, side) -> be.getItemHandler(side)
         );
 
         // Electric Capacitor exposes the NeoForge EnergyHandler capability for

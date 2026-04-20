@@ -6,7 +6,8 @@
 	"textures": {
 		"4": "omnitech:block/centrifuge_model",
 		"particle": "omnitech:block/machine_top_inset",
-		"top": "omnitech:block/machine_top_inset"
+		"top": "omnitech:block/machine_top_inset",
+		"side": "omnitech:block/machine_slab"
 	},
 	"elements": [
 		{
@@ -14,10 +15,10 @@
 			"from": [0, 0, 0],
 			"to": [16, 8, 16],
 			"faces": {
-				"north": {"uv": [0, 8, 16, 16], "texture": "#top", "cullface": "north"},
-				"east": {"uv": [0, 0, 16, 8], "texture": "#top", "cullface": "east"},
-				"south": {"uv": [0, 8, 16, 16], "texture": "#top", "cullface": "south"},
-				"west": {"uv": [0, 0, 16, 8], "texture": "#top", "cullface": "west"},
+				"north": {"uv": [0, 8, 16, 16], "texture": "#side", "cullface": "north"},
+				"east": {"uv": [0, 0, 16, 8], "texture": "#side", "cullface": "east"},
+				"south": {"uv": [0, 8, 16, 16], "texture": "#side", "cullface": "south"},
+				"west": {"uv": [0, 0, 16, 8], "texture": "#side", "cullface": "west"},
 				"up": {"uv": [0, 0, 16, 16], "texture": "#top", "cullface": "up"},
 				"down": {"uv": [0, 0, 16, 16], "texture": "#top", "cullface": "down"}
 			}

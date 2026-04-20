@@ -2,6 +2,11 @@ package com.dev1lroot.mcmods.omnitech.blocks;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.mojang.logging.LogUtils;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jetbrains.annotations.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -62,6 +67,9 @@ public class ConveyorBeltBlockEntity extends BlockEntity
 
     private NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
     private int poweredTimer  = 0;
+
+    /** Cached per-side item handlers for {@code Capabilities.Item.BLOCK}. Index 6 = null side. */
+    private final ConveyorItemHandler[] itemHandlers = new ConveyorItemHandler[7];
     /**
      * Transfer progress timer [0, TRANSFER_INTERVAL].
      * Capped at TRANSFER_INTERVAL when blocked (item at back edge, waiting
@@ -75,6 +83,14 @@ public class ConveyorBeltBlockEntity extends BlockEntity
 
     public ConveyorBeltBlockEntity(BlockPos pos, BlockState state) {
         super(OmniTechBlockEntities.CONVEYOR_BELT.get(), pos, state);
+        for (Direction dir : Direction.values()) {
+            itemHandlers[dir.ordinal()] = new ConveyorItemHandler(dir);
+        }
+        itemHandlers[6] = new ConveyorItemHandler(null);
+    }
+
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction side) {
+        return itemHandlers[side == null ? 6 : side.ordinal()];
     }
 
     // ── IKineticReceiver ──────────────────────────────────────────────────────
@@ -423,5 +439,78 @@ public class ConveyorBeltBlockEntity extends BlockEntity
         ContainerHelper.saveAllItems(output, items);
         output.putInt("PoweredTimer",  poweredTimer);
         output.putInt("TransferTimer", transferTimer);
+    }
+
+    // ── NeoForge item capability ──────────────────────────────────────────────
+
+    /**
+     * Per-side {@link ResourceHandler} over the belt's single item slot.
+     * Insertion is allowed from any side except the output (back) face.
+     * Extraction is allowed only from the back face once the transfer timer
+     * has reached {@link #TRANSFER_INTERVAL}.
+     */
+    private class ConveyorItemHandler extends SnapshotJournal<ItemStack>
+            implements ResourceHandler<ItemResource> {
+
+        private final @Nullable Direction side;
+
+        ConveyorItemHandler(@Nullable Direction side) { this.side = side; }
+
+        private boolean canInsert() {
+            if (side == null) return true;
+            Direction back = getBlockState().getValue(ConveyorBeltBlock.FACING).getOpposite();
+            return side != back;
+        }
+
+        private boolean canExtract() {
+            if (side == null) return transferTimer >= TRANSFER_INTERVAL;
+            Direction back = getBlockState().getValue(ConveyorBeltBlock.FACING).getOpposite();
+            return side == back && transferTimer >= TRANSFER_INTERVAL;
+        }
+
+        @Override protected ItemStack createSnapshot() { return items.get(0).copy(); }
+        @Override protected void revertToSnapshot(ItemStack snap) { items.set(0, snap); }
+
+        @Override public int size() { return 1; }
+
+        @Override
+        public ItemResource getResource(int slot) {
+            if (slot != 0 || items.get(0).isEmpty()) return ItemResource.EMPTY;
+            return ItemResource.of(items.get(0));
+        }
+
+        @Override
+        public long getAmountAsLong(int slot) {
+            return (slot == 0 && !items.get(0).isEmpty()) ? 1L : 0L;
+        }
+
+        @Override
+        public long getCapacityAsLong(int slot, ItemResource resource) {
+            return slot == 0 ? 1L : 0L;
+        }
+
+        @Override
+        public boolean isValid(int slot, ItemResource resource) {
+            return slot == 0 && !resource.isEmpty() && canInsert();
+        }
+
+        @Override
+        public int insert(int slot, ItemResource resource, int amount, TransactionContext tx) {
+            if (slot != 0 || resource.isEmpty() || amount <= 0 || !canInsert()) return 0;
+            if (!items.get(0).isEmpty()) return 0;
+            updateSnapshots(tx);
+            items.set(0, resource.toStack(1));
+            return 1;
+        }
+
+        @Override
+        public int extract(int slot, ItemResource resource, int amount, TransactionContext tx) {
+            if (slot != 0 || resource.isEmpty() || amount <= 0 || !canExtract()) return 0;
+            ItemStack held = items.get(0);
+            if (held.isEmpty() || !resource.matches(held)) return 0;
+            updateSnapshots(tx);
+            items.set(0, ItemStack.EMPTY);
+            return 1;
+        }
     }
 }

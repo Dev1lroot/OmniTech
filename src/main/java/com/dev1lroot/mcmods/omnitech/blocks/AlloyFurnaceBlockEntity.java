@@ -5,9 +5,11 @@ import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceMenu;
 import com.dev1lroot.mcmods.omnitech.recipes.AlloyFurnaceRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.AlloyFurnaceRecipeManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
@@ -20,12 +22,13 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class AlloyFurnaceBlockEntity extends BaseContainerBlockEntity {
+public class AlloyFurnaceBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
     public static final int SLOT_INPUT_1 = 0;
     public static final int SLOT_INPUT_2 = 1;
     public static final int SLOT_INPUT_3 = 2;
@@ -33,6 +36,10 @@ public class AlloyFurnaceBlockEntity extends BaseContainerBlockEntity {
     public static final int SLOT_OUTPUT_1 = 4;
     public static final int SLOT_OUTPUT_2 = 5;
     public static final int SLOT_COUNT = 6;
+
+    private static final int[] OUTPUT_SLOTS   = {SLOT_OUTPUT_1, SLOT_OUTPUT_2};
+    private static final int[] INPUT_SLOTS    = {SLOT_INPUT_1, SLOT_INPUT_2, SLOT_INPUT_3};
+    private static final int[] INPUT_FUEL     = {SLOT_INPUT_1, SLOT_INPUT_2, SLOT_INPUT_3, SLOT_FUEL};
 
     private static final int DEFAULT_COOK_TIME = 200;
     private static final int MAX_TEMPERATURE = 2000;
@@ -108,6 +115,34 @@ public class AlloyFurnaceBlockEntity extends BaseContainerBlockEntity {
     @Override
     public int getContainerSize() {
         return SLOT_COUNT;
+    }
+
+    // ── WorldlyContainer — side-aware slot access ────────────────────────────
+
+    @Override
+    public int[] getSlotsForFace(Direction side) {
+        if (side == Direction.DOWN) return OUTPUT_SLOTS;
+        if (side == Direction.UP)   return INPUT_SLOTS;
+        Direction facing = getBlockState().getValue(AlloyFurnaceBlock.FACING);
+        if (side == facing.getOpposite()) return OUTPUT_SLOTS;
+        return INPUT_FUEL;
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
+        return canPlaceItem(slot, stack);
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
+        return slot == SLOT_OUTPUT_1 || slot == SLOT_OUTPUT_2;
+    }
+
+    @Override
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        if (slot == SLOT_OUTPUT_1 || slot == SLOT_OUTPUT_2) return false;
+        if (slot == SLOT_FUEL) return getBurnDuration(stack) > 0;
+        return true;
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, AlloyFurnaceBlockEntity blockEntity) {
