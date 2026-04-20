@@ -1,9 +1,1 @@
-{
-  "parent": "minecraft:block/block",
-  "textures": {
-    "particle": "omnitech:block/machine_side",
-    "all": "omnitech:block/paleoregolith"
-  },
-  "elements": [
-  ]
-}
+{"elements":[]}

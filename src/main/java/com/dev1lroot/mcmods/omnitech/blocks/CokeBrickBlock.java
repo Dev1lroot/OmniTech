@@ -17,6 +17,8 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -37,6 +39,11 @@ public class CokeBrickBlock extends Block {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FORMED, DISPLAY);
+    }
+
+    @Override
+    protected VoxelShape getOcclusionShape(BlockState state) {
+        return state.getValue(FORMED) ? Shapes.empty() : super.getOcclusionShape(state);
     }
 
     @Override
