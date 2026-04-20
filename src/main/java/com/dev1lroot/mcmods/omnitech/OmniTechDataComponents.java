@@ -13,6 +13,7 @@ import net.neoforged.neoforge.transfer.resource.ResourceStack;
 
 import java.util.function.Supplier;
 
+
 public class OmniTechDataComponents {
 
     public static final DeferredRegister<DataComponentType<?>> REGISTRY =
@@ -48,6 +49,14 @@ public class OmniTechDataComponents {
                     DataComponentType.<ResourceStack<FluidResource>>builder()
                             .persistent(FLUID_STACK_CODEC)
                             .networkSynchronized(FLUID_STACK_STREAM_CODEC)
+                            .build());
+
+    /** EU stored in a bore tool (whole EU units, 0 = empty). */
+    public static final Supplier<DataComponentType<Integer>> EU_STORED =
+            REGISTRY.register("eu_stored", () ->
+                    DataComponentType.<Integer>builder()
+                            .persistent(Codec.INT)
+                            .networkSynchronized(ByteBufCodecs.INT)
                             .build());
 
     public static void register(IEventBus bus) {

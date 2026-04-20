@@ -2,6 +2,7 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.gui.BoilerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceScreen;
+import com.dev1lroot.mcmods.omnitech.gui.ElectricChargerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricCapacitorScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricEngineScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricFurnaceScreen;
@@ -67,6 +68,7 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.CHEMICAL_REACTOR.get(), ChemicalReactorScreen::new);
         event.register(OmniTechMenuTypes.FLUID_FILLER.get(), FluidFillerScreen::new);
         event.register(OmniTechMenuTypes.ROCKET.get(), RocketScreen::new);
+        event.register(OmniTechMenuTypes.ELECTRIC_CHARGER.get(), ElectricChargerScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)
@@ -76,6 +78,7 @@ public class OmniTechGUI {
             event.accept(OmniTechItems.MANUAL_MACERATOR_ITEM);
             event.accept(OmniTechItems.MANUAL_CENTRIFUGE_ITEM);
             event.accept(OmniTechItems.CRANK_ITEM);
+            event.accept(OmniTechItems.ELECTRIC_CHARGER_ITEM);
         }
         if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
             event.accept(OmniTechMaterials.TIN.blockItem("%_ore"));
@@ -102,6 +105,9 @@ public class OmniTechGUI {
                 event.accept(set.tool("%_axe"));
                 event.accept(set.tool("%_hoe"));
             }
+            event.accept(OmniTechItems.BASIC_BORE);
+            event.accept(OmniTechItems.ADVANCED_BORE);
+            event.accept(OmniTechItems.INDUSTRIAL_BORE);
         }
     }
 }

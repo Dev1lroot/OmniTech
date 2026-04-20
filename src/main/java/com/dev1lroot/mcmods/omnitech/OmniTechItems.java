@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech;
 
+import com.dev1lroot.mcmods.omnitech.items.BoreItem;
 import com.dev1lroot.mcmods.omnitech.items.FluidCanisterItem;
 import com.dev1lroot.mcmods.omnitech.items.SpaceSuitItem;
 import com.google.common.collect.Maps;
@@ -7,9 +8,13 @@ import java.util.Map;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.EquipmentAsset;
@@ -125,6 +130,43 @@ public class OmniTechItems
 
     public static final DeferredItem<FluidCanisterItem> FLUID_CANISTER =
             REGISTRY.registerItem("fluid_canister", FluidCanisterItem::new);
+
+    // ── Electric Charger block item ───────────────────────────────────────────
+
+    public static final DeferredItem<BlockItem> ELECTRIC_CHARGER_ITEM =
+            REGISTRY.registerSimpleBlockItem("electric_charger", OmniTechBlocks.ELECTRIC_CHARGER);
+
+    // ── Bore Tools ────────────────────────────────────────────────────────────
+
+    private static final TagKey<Block> INCORRECT_FOR_INDUSTRIAL_BORE =
+            BlockTags.create(Identifier.fromNamespaceAndPath(OmniTech.MODID, "incorrect_for_industrial_bore"));
+
+    private static final ToolMaterial BASIC_BORE_MATERIAL = new ToolMaterial(
+            BlockTags.INCORRECT_FOR_IRON_TOOL, 10000, 8.0f, 1.0f, 14,
+            ItemTags.create(Identifier.fromNamespaceAndPath(OmniTech.MODID, "repairs_bore")));
+
+    private static final ToolMaterial ADVANCED_BORE_MATERIAL = new ToolMaterial(
+            BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 10000, 12.0f, 1.0f, 14,
+            ItemTags.create(Identifier.fromNamespaceAndPath(OmniTech.MODID, "repairs_bore")));
+
+    private static final ToolMaterial INDUSTRIAL_BORE_MATERIAL = new ToolMaterial(
+            INCORRECT_FOR_INDUSTRIAL_BORE, 10000, 18.0f, 1.0f, 14,
+            ItemTags.create(Identifier.fromNamespaceAndPath(OmniTech.MODID, "repairs_bore")));
+
+    /** Iron-tier bore: 2000 EU capacity, 5 EU/block, 8× speed. */
+    public static final DeferredItem<BoreItem> BASIC_BORE =
+            REGISTRY.registerItem("basic_bore",
+                    props -> new BoreItem(BASIC_BORE_MATERIAL, 2000, 5, props));
+
+    /** Diamond-tier bore: 10 000 EU capacity, 3 EU/block, 12× speed. */
+    public static final DeferredItem<BoreItem> ADVANCED_BORE =
+            REGISTRY.registerItem("advanced_bore",
+                    props -> new BoreItem(ADVANCED_BORE_MATERIAL, 10000, 3, props));
+
+    /** Ultimate-tier bore: 50 000 EU capacity, 2 EU/block, 18× speed. */
+    public static final DeferredItem<BoreItem> INDUSTRIAL_BORE =
+            REGISTRY.registerItem("industrial_bore",
+                    props -> new BoreItem(INDUSTRIAL_BORE_MATERIAL, 50000, 2, props));
 
     // Vanilla Material Additions and templates are registered via ItemLoader
     // from data/omnitech/item/*.json — see ItemLoader.loadAll()

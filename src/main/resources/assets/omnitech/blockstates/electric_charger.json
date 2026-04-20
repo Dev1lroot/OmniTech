@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,lit=false": { "model": "omnitech:block/electric_charger" },
+    "facing=south,lit=false": { "model": "omnitech:block/electric_charger", "y": 180 },
+    "facing=east,lit=false":  { "model": "omnitech:block/electric_charger", "y": 90 },
+    "facing=west,lit=false":  { "model": "omnitech:block/electric_charger", "y": 270 },
+    "facing=north,lit=true":  { "model": "omnitech:block/electric_charger" },
+    "facing=south,lit=true":  { "model": "omnitech:block/electric_charger", "y": 180 },
+    "facing=east,lit=true":   { "model": "omnitech:block/electric_charger", "y": 90 },
+    "facing=west,lit=true":   { "model": "omnitech:block/electric_charger", "y": 270 }
+  }
+}

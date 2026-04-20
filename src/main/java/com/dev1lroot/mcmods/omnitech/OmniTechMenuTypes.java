@@ -2,6 +2,7 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.gui.BoilerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceMenu;
+import com.dev1lroot.mcmods.omnitech.gui.ElectricChargerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricCapacitorMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricEngineMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricFurnaceMenu;
@@ -131,6 +132,10 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<RocketMenu>> ROCKET =
             REGISTRY.register("rocket",
                     () -> IMenuTypeExtension.create(RocketMenu::new));
+
+    public static final Supplier<MenuType<ElectricChargerMenu>> ELECTRIC_CHARGER =
+            REGISTRY.register("electric_charger",
+                    () -> IMenuTypeExtension.create(ElectricChargerMenu::new));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

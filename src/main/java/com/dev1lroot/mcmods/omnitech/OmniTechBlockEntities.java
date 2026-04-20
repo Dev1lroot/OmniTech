@@ -163,6 +163,11 @@ public class OmniTechBlockEntities {
                     () -> new BlockEntityType<>(FluidFillerBlockEntity::new,
                             OmniTechBlocks.FLUID_FILLER.get()));
 
+    public static final Supplier<BlockEntityType<ElectricChargerBlockEntity>> ELECTRIC_CHARGER =
+            REGISTRY.register("electric_charger",
+                    () -> new BlockEntityType<>(ElectricChargerBlockEntity::new,
+                            OmniTechBlocks.ELECTRIC_CHARGER.get()));
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }

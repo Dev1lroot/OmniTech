@@ -84,6 +84,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> FRACTIONAL_DISTILLER;
     public static final DeferredBlock<Block> CHEMICAL_REACTOR;
     public static final DeferredBlock<Block> FLUID_FILLER;
+    public static final DeferredBlock<Block> ELECTRIC_CHARGER;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -207,6 +208,9 @@ public class OmniTechBlocks {
                         .sound(SoundType.METAL)));
         FLUID_FILLER = register("fluid_filler",
                 p -> new FluidFillerBlock(p.mapColor(MapColor.METAL).strength(3.0F)
+                        .sound(SoundType.METAL)));
+        ELECTRIC_CHARGER = register("electric_charger",
+                p -> new ElectricChargerBlock(p.mapColor(MapColor.METAL).strength(3.5F)
                         .sound(SoundType.METAL)));
     }
 
