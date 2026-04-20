@@ -13,6 +13,7 @@ import com.dev1lroot.mcmods.omnitech.client.ValveRenderer;
 import com.dev1lroot.mcmods.omnitech.client.SpaceMapSkyboxRenderer;
 import com.dev1lroot.mcmods.omnitech.client.SpaceSuitHudOverlay;
 import com.dev1lroot.mcmods.omnitech.entities.AbyssalEelRenderer;
+import com.dev1lroot.mcmods.omnitech.entities.CokeOvenEntityRenderer;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntity;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntityRenderer;
 import com.dev1lroot.mcmods.omnitech.models.RocketModel;
@@ -84,6 +85,7 @@ public class OmniTechClient
         event.registerBlockEntityRenderer(OmniTechBlockEntities.VALVE.get(), ValveRenderer::new);
         event.registerEntityRenderer(OmniTechEntities.ROCKET.get(), RocketEntityRenderer::new);
         event.registerEntityRenderer(OmniTechEntities.ABYSSAL_EEL.get(), AbyssalEelRenderer::new);
+        event.registerEntityRenderer(OmniTechEntities.COKE_OVEN.get(), CokeOvenEntityRenderer::new);
     }
 
     void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {

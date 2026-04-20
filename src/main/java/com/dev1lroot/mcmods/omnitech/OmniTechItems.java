@@ -136,6 +136,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> ELECTRIC_CHARGER_ITEM =
             REGISTRY.registerSimpleBlockItem("electric_charger", OmniTechBlocks.ELECTRIC_CHARGER);
 
+    public static final DeferredItem<BlockItem> COKE_BRICK_ITEM =
+            REGISTRY.registerSimpleBlockItem("coke_brick", OmniTechBlocks.COKE_BRICK);
+
     // ── Bore Tools ────────────────────────────────────────────────────────────
 
     private static final TagKey<Block> INCORRECT_FOR_INDUSTRIAL_BORE =

@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.gui.BoilerMenu;
+import com.dev1lroot.mcmods.omnitech.gui.CokeOvenMenu;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricChargerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricCapacitorMenu;
@@ -136,6 +137,10 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<ElectricChargerMenu>> ELECTRIC_CHARGER =
             REGISTRY.register("electric_charger",
                     () -> IMenuTypeExtension.create(ElectricChargerMenu::new));
+
+    public static final Supplier<MenuType<CokeOvenMenu>> COKE_OVEN =
+            REGISTRY.register("coke_oven",
+                    () -> IMenuTypeExtension.create(CokeOvenMenu::new));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

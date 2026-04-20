@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "display=false,formed=false": { "model": "omnitech:block/coke_brick" },
+    "display=false,formed=true":  { "model": "omnitech:block/null" },
+    "display=true,formed=false":  { "model": "omnitech:block/coke_brick" },
+    "display=true,formed=true":   { "model": "omnitech:block/coke_oven_formed" }
+  }
+}

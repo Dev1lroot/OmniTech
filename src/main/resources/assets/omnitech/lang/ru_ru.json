@@ -28,5 +28,10 @@
   "item.omnitech.electric_wire": "Электрический Провод",
   "block.omnitech.electric_furnace": "Электрическая Печь",
   "item.omnitech.electric_furnace": "Электрическая Печь",
-  "container.omnitech.electric_furnace": "Электрическая Печь"
+  "container.omnitech.electric_furnace": "Электрическая Печь",
+  "block.omnitech.coke_brick": "Коксовый Кирпич",
+  "item.omnitech.coke_brick": "Коксовый Кирпич",
+  "item.omnitech.coke_coal": "Коксовый Уголь",
+  "fluid.omnitech.creosote": "Креозот",
+  "container.omnitech.coke_oven": "Коксовая Печь"
 }

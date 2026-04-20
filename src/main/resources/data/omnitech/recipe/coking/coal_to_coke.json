@@ -1,0 +1,7 @@
+{
+  "input_item": "minecraft:coal",
+  "output_item": "omnitech:coke_coal",
+  "output_count": 1,
+  "creosote_amount": 250,
+  "production_time": 600
+}

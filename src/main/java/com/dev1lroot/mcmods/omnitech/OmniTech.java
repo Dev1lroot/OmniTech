@@ -59,6 +59,7 @@ import com.dev1lroot.mcmods.omnitech.recipes.ChemicalReactorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.blocks.FluidFillerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.FluidFillerBlock;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
+import com.dev1lroot.mcmods.omnitech.recipes.CokingRecipeManager;
 import com.dev1lroot.mcmods.omnitech.network.OpenRocketGuiPacket;
 import com.dev1lroot.mcmods.omnitech.network.RocketOrbitPacket;
 import com.dev1lroot.mcmods.omnitech.network.SpaceTravelPacket;
@@ -327,6 +328,7 @@ public class OmniTech {
                 (stack, access) -> new FluidCanisterResourceHandler(access),
                 OmniTechItems.FLUID_CANISTER.get()
         );
+
     }
 
     private void registerPayloads(RegisterPayloadHandlersEvent event) {
@@ -523,6 +525,15 @@ public class OmniTech {
                     PreparationBarrier barrier, Executor reloadExecutor) {
                 return CompletableFuture.runAsync(() -> {
                     ChemicalReactorRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "coking_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    CokingRecipeManager.loadRecipes(sharedState.resourceManager());
                 }, taskExecutor).thenCompose(barrier::wait);
             }
         });

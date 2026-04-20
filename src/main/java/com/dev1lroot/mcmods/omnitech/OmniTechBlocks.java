@@ -85,6 +85,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> CHEMICAL_REACTOR;
     public static final DeferredBlock<Block> FLUID_FILLER;
     public static final DeferredBlock<Block> ELECTRIC_CHARGER;
+    public static final DeferredBlock<Block> COKE_BRICK;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -212,6 +213,9 @@ public class OmniTechBlocks {
         ELECTRIC_CHARGER = register("electric_charger",
                 p -> new ElectricChargerBlock(p.mapColor(MapColor.METAL).strength(3.5F)
                         .sound(SoundType.METAL)));
+        COKE_BRICK = register("coke_brick",
+                p -> new CokeBrickBlock(p.mapColor(MapColor.STONE).strength(3.5F)
+                        .sound(SoundType.STONE)));
     }
 
     // ── Registration helpers ───────────────────────────────────────────────

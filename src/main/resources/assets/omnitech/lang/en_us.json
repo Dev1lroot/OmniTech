@@ -452,5 +452,9 @@
   "item.omnitech.cog_template": "Cog Template",
   "item.omnitech.ingot_template": "Ingot Template",
   "item.omnitech.coal_dust": "Coal Dust",
-  "item.omnitech.coal_mote": "Coal Mote"
+  "item.omnitech.coal_mote": "Coal Mote",
+  "item.omnitech.coke_coal": "Coke Coal",
+  "fluid.omnitech.creosote": "Creosote",
+  "block.omnitech.coke_brick": "Coke Brick",
+  "container.omnitech.coke_oven": "Coke Oven"
 }

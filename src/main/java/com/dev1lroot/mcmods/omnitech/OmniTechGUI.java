@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.gui.BoilerScreen;
+import com.dev1lroot.mcmods.omnitech.gui.CokeOvenScreen;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricChargerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricCapacitorScreen;
@@ -69,11 +70,13 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.FLUID_FILLER.get(), FluidFillerScreen::new);
         event.register(OmniTechMenuTypes.ROCKET.get(), RocketScreen::new);
         event.register(OmniTechMenuTypes.ELECTRIC_CHARGER.get(), ElectricChargerScreen::new);
+        event.register(OmniTechMenuTypes.COKE_OVEN.get(), CokeOvenScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)
     {
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+            event.accept(OmniTechItems.COKE_BRICK_ITEM);
             event.accept(OmniTechItems.ALLOY_FURNACE_ITEM);
             event.accept(OmniTechItems.MANUAL_MACERATOR_ITEM);
             event.accept(OmniTechItems.MANUAL_CENTRIFUGE_ITEM);

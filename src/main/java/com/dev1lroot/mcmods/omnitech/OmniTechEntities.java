@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.entities.AbyssalEelEntity;
+import com.dev1lroot.mcmods.omnitech.entities.CokeOvenEntity;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -28,6 +29,16 @@ public class OmniTechEntities {
                             .updateInterval(1)
                             .build(ResourceKey.create(Registries.ENTITY_TYPE,
                                     Identifier.fromNamespaceAndPath(OmniTech.MODID, "rocket"))));
+
+    public static final Supplier<EntityType<CokeOvenEntity>> COKE_OVEN =
+            REGISTRY.register("coke_oven",
+                    () -> EntityType.Builder.<CokeOvenEntity>of(CokeOvenEntity::new, MobCategory.MISC)
+                            .sized(3.0f, 3.0f)
+                            .noSummon()
+                            .clientTrackingRange(8)
+                            .updateInterval(4)
+                            .build(ResourceKey.create(Registries.ENTITY_TYPE,
+                                    Identifier.fromNamespaceAndPath(OmniTech.MODID, "coke_oven"))));
 
     /** Europa's deep-sea predator — hostile fish, 2× salmon size, below Y = 40 only. */
     public static final Supplier<EntityType<AbyssalEelEntity>> ABYSSAL_EEL =
