@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.recipes;
 
+import com.dev1lroot.mcmods.omnitech.blocks.labware.FractionalDistillerBlockEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.Fluid;
@@ -12,7 +13,7 @@ import java.util.List;
  *
  * <p>A recipe converts a single input fluid into an ordered list of output
  * fluids at a specified temperature.  The number of outputs must match the
- * height of the {@link com.dev1lroot.mcmods.omnitech.blocks.FractionalDistillerBlockEntity}
+ * height of the {@link FractionalDistillerBlockEntity}
  * multiblock structure for the recipe to be selected.
  *
  * <p>Output index 0 is dispensed from the bottom block's back face, index 1

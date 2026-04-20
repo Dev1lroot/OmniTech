@@ -1,11 +1,11 @@
 package com.dev1lroot.mcmods.omnitech.util;
 
-import com.dev1lroot.mcmods.omnitech.blocks.IKineticReceiver;
-import com.dev1lroot.mcmods.omnitech.blocks.IKineticSupplier;
-import com.dev1lroot.mcmods.omnitech.blocks.KineticPipeBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.KineticPipeBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.KineticReductorBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.KineticReductorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.io.IKineticReceiver;
+import com.dev1lroot.mcmods.omnitech.io.IKineticSupplier;
+import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticPipeBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticPipeBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticReductorBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticReductorBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;

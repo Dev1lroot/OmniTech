@@ -1,7 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.client;
 
-import com.dev1lroot.mcmods.omnitech.blocks.KineticPipeBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.KineticPipeBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticPipeBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticPipeBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 

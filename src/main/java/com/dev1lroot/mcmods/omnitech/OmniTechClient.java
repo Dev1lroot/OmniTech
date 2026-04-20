@@ -1,7 +1,5 @@
 package com.dev1lroot.mcmods.omnitech;
 
-import com.dev1lroot.mcmods.omnitech.blocks.FluidPipeBlock;
-import com.dev1lroot.mcmods.omnitech.OmniTechItems;
 import com.dev1lroot.mcmods.omnitech.client.FluidCanisterItemModel;
 import com.dev1lroot.mcmods.omnitech.client.FluidCanisterTintSource;
 import com.dev1lroot.mcmods.omnitech.client.ConveyorBeltRenderer;

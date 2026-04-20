@@ -1,7 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.gui;
 
 import com.dev1lroot.mcmods.omnitech.OmniTech;
-import com.dev1lroot.mcmods.omnitech.blocks.FractionalDistillerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.labware.FractionalDistillerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.util.GuiUtil;
 import com.dev1lroot.mcmods.omnitech.util.HudWriter;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

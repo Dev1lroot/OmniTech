@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.recipes;
 
+import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.Fluid;
@@ -21,7 +22,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
  * <p>{@code maxHeat} — the machine's stored-heat ceiling while this recipe is
  * active.  Processing is blocked whenever {@code storedHeat >= maxHeat}, so the
  * machine must radiate accumulated heat away (to adjacent {@link
- * com.dev1lroot.mcmods.omnitech.blocks.IHeatReceiver} blocks) before it can run
+ * IHeatReceiver} blocks) before it can run
  * the next batch.
  *
  * <p>{@code productionHeat} — degrees Celsius added to the machine's own

@@ -1,8 +1,8 @@
 package com.dev1lroot.mcmods.omnitech.client;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
-import com.dev1lroot.mcmods.omnitech.blocks.FluidPipeBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.FluidPipeBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.plumbing.FluidPipeBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.plumbing.FluidPipeBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -19,8 +19,6 @@ import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 /**

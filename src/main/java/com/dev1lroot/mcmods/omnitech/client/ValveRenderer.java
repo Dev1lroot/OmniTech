@@ -1,8 +1,8 @@
 package com.dev1lroot.mcmods.omnitech.client;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
-import com.dev1lroot.mcmods.omnitech.blocks.ValveBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.ValveBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.plumbing.ValveBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.plumbing.ValveBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.multiplayer.ClientLevel;

@@ -2,7 +2,7 @@ package com.dev1lroot.mcmods.omnitech.gui;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
-import com.dev1lroot.mcmods.omnitech.blocks.SolvationMachineBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.labware.SolvationMachineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;

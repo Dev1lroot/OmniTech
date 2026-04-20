@@ -1,6 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.client;
 
-import com.dev1lroot.mcmods.omnitech.blocks.CrankBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.kinetic.crank.CrankBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.multiplayer.ClientLevel;

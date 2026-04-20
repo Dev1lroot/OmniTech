@@ -1,8 +1,8 @@
 package com.dev1lroot.mcmods.omnitech.util;
 
-import com.dev1lroot.mcmods.omnitech.blocks.FluidPipeBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.FluidPipeBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.FluidTankBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.plumbing.FluidPipeBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.plumbing.FluidPipeBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.plumbing.FluidTankBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;

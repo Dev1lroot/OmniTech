@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 0.7,
+  "group": "iron_ingot",
+  "ingredient": "omnitech:iron_dust",
+  "result": {
+    "id": "minecraft:iron_ingot"
+  }
+}

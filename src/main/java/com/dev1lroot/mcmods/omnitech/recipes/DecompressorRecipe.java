@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.recipes;
 
+import com.dev1lroot.mcmods.omnitech.io.IColdReceiver;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.Fluid;
@@ -21,7 +22,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
  * <p>{@code maxCold} — the machine's stored-cold ceiling while this recipe is
  * active.  Processing is blocked whenever {@code storedCold >= maxCold}, so the
  * machine must radiate its accumulated cold to adjacent
- * {@link com.dev1lroot.mcmods.omnitech.blocks.IColdReceiver} blocks before the
+ * {@link IColdReceiver} blocks before the
  * next batch can run.
  *
  * <p>{@code productionCold} — degrees Celsius of cold added to the machine's

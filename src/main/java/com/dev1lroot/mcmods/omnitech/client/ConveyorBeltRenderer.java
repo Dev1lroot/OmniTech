@@ -1,7 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.client;
 
-import com.dev1lroot.mcmods.omnitech.blocks.ConveyorBeltBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.ConveyorBeltBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.logistic.conveyor_belt.ConveyorBeltBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.logistic.conveyor_belt.ConveyorBeltBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.HashCommon;
 import net.minecraft.client.renderer.SubmitNodeCollector;

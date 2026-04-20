@@ -1,8 +1,8 @@
 package com.dev1lroot.mcmods.omnitech.client;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
-import com.dev1lroot.mcmods.omnitech.blocks.ManualCentrifugeBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.ManualCentrifugeBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.processing.centrifuge.ManualCentrifugeBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.processing.centrifuge.ManualCentrifugeBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.multiplayer.ClientLevel;

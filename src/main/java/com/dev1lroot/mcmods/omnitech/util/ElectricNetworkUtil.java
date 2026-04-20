@@ -1,7 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.util;
 
-import com.dev1lroot.mcmods.omnitech.blocks.ElectricWireBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.IElectricReceiver;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_wire.ElectricWireBlock;
+import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;

@@ -1,6 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.client;
 
-import com.dev1lroot.mcmods.omnitech.blocks.FluidTankBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.plumbing.FluidTankBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;

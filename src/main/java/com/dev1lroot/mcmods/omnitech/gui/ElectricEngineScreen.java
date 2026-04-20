@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_engine.ElectricEngineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
@@ -71,7 +72,7 @@ public class ElectricEngineScreen extends AbstractContainerScreen<ElectricEngine
             float kfOut = menu.getKfOutput();
 
             String inputLabel = String.format("EU Buffer: %.1f / %.1f EU",
-                    euBuf, com.dev1lroot.mcmods.omnitech.blocks.ElectricEngineBlockEntity.MAX_EU_BUFFER);
+                    euBuf, ElectricEngineBlockEntity.MAX_EU_BUFFER);
             graphics.text(this.font, inputLabel, 8, 36, 0xFF44AAFF, false);
 
             String outputLabel = powered
