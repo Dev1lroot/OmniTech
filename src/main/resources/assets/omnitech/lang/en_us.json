@@ -601,5 +601,7 @@
   "item.omnitech.lithium_ingot": "Lithium Ingot",
   "item.omnitech.cesium_mote": "Cesium Mote",
   "item.omnitech.potassium_plate": "Potassium Plate",
-  "item.omnitech.cesium_dust": "Cesium Dust"
+  "item.omnitech.cesium_dust": "Cesium Dust",
+  "item.omnitech.carnotite_dust": "Carnotite Dust",
+  "block.omnitech.carnotite": "Carnotite"
 }

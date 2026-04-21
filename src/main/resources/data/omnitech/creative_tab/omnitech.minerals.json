@@ -1,0 +1,27 @@
+{
+  "icon": "omnitech:europa_ice",
+  "after": "omnitech:omnitech.utility",
+  "data": [
+    "omnitech:europa_stone",
+    "omnitech:europa_ice",
+    "omnitech:cracked_ice",
+    "omnitech:surface_regolith",
+    "omnitech:stratified_regolith",
+    "omnitech:paleoregolith",
+    "omnitech:megaregolith",
+    "omnitech:regolith_dust",
+    "omnitech:regolith_mote",
+    "omnitech:skutterudite_dust",
+    "omnitech:galena_dust",
+    "omnitech:halite_dust",
+    "omnitech:sphalerite_dust",
+    "omnitech:lepidolite_dust",
+    "omnitech:granite_dust",
+    "omnitech:andesite_dust",
+    "omnitech:diorite_dust",
+    "omnitech:stone_dust",
+    "omnitech:hematite_dust",
+    "omnitech:deepslate_dust",
+    "omnitech:carnotite_dust"
+  ]
+}

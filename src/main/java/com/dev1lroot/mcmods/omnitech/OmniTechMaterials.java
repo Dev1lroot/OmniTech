@@ -267,6 +267,37 @@ public class OmniTechMaterials {
             ))
     );
 
+    public static final MaterialSet CARNOTITE = MaterialSet.create(
+            "carnotite",
+            OmniTechItems.REGISTRY,
+            // Добавляем пыль и, возможно, "желтый кек" как промежуточный этап
+            new String[]{ "%_dust" },
+            OmniTechBlocks.REGISTRY,
+            new String[]{ "%" },
+            Map.of("%", new OreSpawnConfig(
+                    new GenerationConfig(
+                            "#minecraft:is_overworld",
+                            40, 120,                   // Спавним выше, ближе к поверхности
+                            4,                         // Небольшие кластеры (линзы)
+                            0, 2                      // Редкий спавн в обычном мире
+                    ),
+                    List.of(
+                            new BiomeOverride(
+                                    "#minecraft:is_desert",    // В пустынях его гораздо больше
+                                    30, 90,            // Глубина залегания в песчаных пластах
+                                    12,                // Большие "линзы" (ролл-фронты)
+                                    4, 14               // Высокая плотность на чанк
+                            ),
+                            new BiomeOverride(
+                                    "#minecraft:is_badlands",  // Меса/Бесплодные земли — идеальное место
+                                    40, 100,
+                                    15,                // Самые жирные залежи
+                                    5, 14
+                            )
+                    )
+            ))
+    );
+
     public static final MaterialSet SPHALERITE = MaterialSet.create(
             "sphalerite",
             OmniTechItems.REGISTRY,
