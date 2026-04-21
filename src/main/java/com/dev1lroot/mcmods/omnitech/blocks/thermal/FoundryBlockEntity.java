@@ -8,13 +8,14 @@ import com.dev1lroot.mcmods.omnitech.recipes.FoundryRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.FoundryRecipeManager;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
@@ -30,11 +31,13 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
-public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHeatReceiver, IColdReceiver {
+public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHeatReceiver, IColdReceiver, WorldlyContainer {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -43,6 +46,9 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
     /** Slot that receives the finished product. */
     public static final int OUTPUT_SLOT   = 1;
     public static final int SLOT_COUNT    = 2;
+
+    private static final int[] SLOTS_FOR_EXTRACTION = { OUTPUT_SLOT };
+    private static final int[] SLOTS_EMPTY = { };
 
     public static final int INPUT_TANK_CAPACITY = 16_000;
     private static final int DEFAULT_PROCESS_TIME = 200;
@@ -64,6 +70,45 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
 
     /** Capability-exposed insert-only fluid handler. */
     public final ResourceHandler<FluidResource> fluidHandler = new InputTankHandler();
+
+    @Override
+    public int @NonNull [] getSlotsForFace(Direction side) {
+        // Template slot (0) is never returned here, so automation can't see it.
+        // We only allow extraction from the output slot.
+        if (side == Direction.DOWN) {
+            return SLOTS_FOR_EXTRACTION;
+        }
+        // For other sides, we return empty to prevent item insertion,
+        // as the machine relies on fluid input and manual template placement.
+        return SLOTS_EMPTY;
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction direction) {
+        // Strictly block all item insertion via automation.
+        return false;
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
+        // Only allow pulling from the output slot, typically from the bottom.
+        return index == OUTPUT_SLOT;
+    }
+
+    // ── Hopper protection (Overrides from BaseContainer) ──────────────────────
+
+    @Override
+    public boolean canPlaceItem(int index, ItemStack stack) {
+        // Manual insertion logic for the GUI is handled by the Menu/Slot.
+        // This method returning false helps prevent generic automation.
+        return false;
+    }
+
+    @Override
+    public boolean canTakeItem(net.minecraft.world.Container target, int index, ItemStack stack) {
+        // Prevent hoppers from ever touching the template slot (0).
+        return index == OUTPUT_SLOT;
+    }
 
     protected final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -119,16 +164,6 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
      * Players still interact via the custom TemplateSlot in the menu.
      * The output slot is output-only, so block insertion there too.
      */
-    @Override
-    public boolean canPlaceItem(int index, ItemStack stack) {
-        return false; // All automation insertion blocked; players use the GUI slot directly
-    }
-
-    @Override
-    public boolean canTakeItem(Container target, int index, ItemStack stack) {
-        // Hoppers may extract from output but never from the template slot
-        return index == OUTPUT_SLOT;
-    }
 
     // ── IHeatReceiver ─────────────────────────────────────────────────────────
 

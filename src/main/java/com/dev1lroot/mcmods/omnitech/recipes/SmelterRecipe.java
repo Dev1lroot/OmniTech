@@ -9,6 +9,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SmelterRecipe {
     private final String id;
@@ -56,13 +57,30 @@ public class SmelterRecipe {
 
     /** Shapeless match — checks that all required ingredients are present in the input slots. */
     public boolean matches(List<ItemStack> inputStacks) {
-        List<Item> available = new ArrayList<>();
+        // 1. Map the frequency of items in the input grid
+        Map<Item, Integer> inputCounts = new java.util.HashMap<>();
+        int totalInputItems = 0;
+
         for (ItemStack stack : inputStacks) {
-            if (!stack.isEmpty()) available.add(stack.getItem());
+            if (!stack.isEmpty()) {
+                inputCounts.put(stack.getItem(), inputCounts.getOrDefault(stack.getItem(), 0) + 1);
+                totalInputItems++;
+            }
         }
-        for (Item required : ingredients) {
-            if (!available.remove(required)) return false;
+
+        // 2. Map the frequency of items required by the recipe
+        Map<Item, Integer> recipeCounts = new java.util.HashMap<>();
+        for (Item item : ingredients) {
+            recipeCounts.put(item, recipeCounts.getOrDefault(item, 0) + 1);
         }
-        return true;
+
+        // 3. Strict Check: Total number of items must match exactly
+        // This prevents 3 Copper + 1 Tin from matching a 1-item Copper recipe.
+        if (totalInputItems != ingredients.size()) {
+            return false;
+        }
+
+        // 4. Content Check: Frequencies must match
+        return inputCounts.equals(recipeCounts);
     }
 }
