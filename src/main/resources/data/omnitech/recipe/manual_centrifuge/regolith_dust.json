@@ -1,0 +1,10 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:regolith_dust",
+  "output": [
+    { "item": "omnitech:stone_dust", "count":  1, "chance":  1},
+    { "item": "omnitech:aluminium_mote",   "count": 1, "chance": 0.5 },
+    { "item": "omnitech:iron_mote",   "count": 1, "chance": 0.25 },
+    { "item": "omnitech:titanium_mote",   "count": 1, "chance": 0.1 }
+  ]
+}

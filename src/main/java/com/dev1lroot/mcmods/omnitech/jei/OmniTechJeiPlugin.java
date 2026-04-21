@@ -245,7 +245,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
         private final IDrawable arrow;
 
         ManualCentrifugeCategory(IGuiHelper gui) {
-            this.background = gui.createBlankDrawable(160, 60);
+            this.background = gui.createBlankDrawable(160, 78);
             this.icon       = gui.createDrawableItemLike(OmniTechBlocks.MANUAL_CENTRIFUGE.get());
             this.arrow      = gui.getRecipeArrow();
         }
@@ -253,17 +253,17 @@ public class OmniTechJeiPlugin implements IModPlugin {
         @Override public RecipeType<ManualCentrifugeRecipe> getRecipeType() { return MANUAL_CENTRIFUGE; }
         @Override public Component getTitle() { return Component.translatable("jei.omnitech.manual_centrifuge"); }
         @Override public int getWidth()  { return 160; }
-        @Override public int getHeight() { return 60; }
+        @Override public int getHeight() { return 78; }
         @Override public IDrawable getIcon() { return icon; }
 
         @Override
         public void setRecipe(IRecipeLayoutBuilder builder, ManualCentrifugeRecipe recipe, IFocusGroup focuses) {
             if (recipe.getInput() != null)
-                builder.addInputSlot(0, 10).addItemStack(new ItemStack(recipe.getInput())).setStandardSlotBackground();
+                builder.addInputSlot(0, 20).addItemStack(new ItemStack(recipe.getInput())).setStandardSlotBackground();
 
             List<ManualCentrifugeRecipe.Output> outputs = recipe.getOutputs();
-            for (int i = 0; i < outputs.size() && i < 6; i++) {
-                builder.addOutputSlot(108 + (i % 3) * 18, (i / 3) * 18)
+            for (int i = 0; i < outputs.size() && i < 9; i++) {
+                builder.addOutputSlot(96 + (i % 3) * 18, (i / 3) * 18)
                         .addItemStack(new ItemStack(outputs.get(i).item(), outputs.get(i).count()))
                         .setOutputSlotBackground();
             }
@@ -272,8 +272,8 @@ public class OmniTechJeiPlugin implements IModPlugin {
         @Override
         public void draw(ManualCentrifugeRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
             Font font = Minecraft.getInstance().font;
-            arrow.draw(graphics, 54, 14);
-            graphics.text(font, "KF: " + recipe.getRequiredKineticForce(), 0, 46, 0x555555, false);
+            arrow.draw(graphics, 54, 26);
+            graphics.text(font, "KF: " + recipe.getRequiredKineticForce(), 0, 62, 0x555555, false);
         }
     }
 

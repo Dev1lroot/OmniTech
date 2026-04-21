@@ -2,12 +2,12 @@
   "background": "textures/gui/manual_centrifuge.png",
   "draw_inventory": true,
   "width": 176,
-  "height": 166,
+  "height": 202,
   "inventory": {
     "x": 8,
-    "y": 84,
-    "label_y": 72,
-    "hotbar_y": 142
+    "y": 120,
+    "label_y": 108,
+    "hotbar_y": 178
   },
   "elements": [
     {
@@ -20,37 +20,65 @@
     {
       "id": "output_1",
       "type": "slot",
-      "x": 44,
+      "x": 62,
       "y": 53,
       "slot_index": 1
     },
     {
       "id": "output_2",
       "type": "slot",
-      "x": 62,
+      "x": 80,
       "y": 53,
       "slot_index": 2
     },
     {
       "id": "output_3",
       "type": "slot",
-      "x": 80,
+      "x": 98,
       "y": 53,
       "slot_index": 3
     },
     {
       "id": "output_4",
       "type": "slot",
-      "x": 98,
-      "y": 53,
+      "x": 62,
+      "y": 71,
       "slot_index": 4
     },
     {
       "id": "output_5",
       "type": "slot",
-      "x": 116,
-      "y": 53,
+      "x": 80,
+      "y": 71,
       "slot_index": 5
+    },
+    {
+      "id": "output_6",
+      "type": "slot",
+      "x": 98,
+      "y": 71,
+      "slot_index": 6
+    },
+    {
+      "id": "output_7",
+      "type": "slot",
+      "x": 62,
+      "y": 89,
+      "slot_index": 7
+    },
+    {
+      "id": "output_8",
+      "type": "slot",
+      "x": 80,
+      "y": 89,
+      "slot_index": 8
+    },
+    {
+      "id": "output_9",
+      "type": "slot",
+      "x": 98,
+      "y": 89,
+      "slot_index": 9
     },
     {
       "id": "kf_progress",

@@ -235,6 +235,46 @@ materials:
       toughness: 0.0
       knockback_resistance: 0.0
 
+  - name: "lithium"
+    formula: "Li"
+    colors: { dark: "#B3B3B3", light: "#E6E6E6", lum: 0.8, sat: 0.2 }
+    melt_temp: 180
+    density: 534
+    viscosity: 1200
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_rod"]
+    blocks: ["%_block"]
+
+  - name: "rubidium"
+    formula: "Rb"
+    colors: { dark: "#703535", light: "#B35B5B", lum: 0.9, sat: 1.3 }
+    melt_temp: 39
+    density: 1532
+    viscosity: 1000
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+
+  - name: "cesium"
+    formula: "Cs"
+    colors: { dark: "#917E4D", light: "#D9C58D", lum: 1.0, sat: 1.2 }
+    melt_temp: 28
+    density: 1873
+    viscosity: 900
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+
+  - name: "potassium"
+    formula: "K"
+    colors: { dark: "#5E6E7A", light: "#9EB0BD", lum: 0.8, sat: 0.4 }
+    melt_temp: 63
+    density: 862
+    viscosity: 1100
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+
   - name: "lead"
     formula: "Pb"
     colors: { dark: "#3D4259", light: "#7D87B0", lum: 0.9, sat: 1.1 }

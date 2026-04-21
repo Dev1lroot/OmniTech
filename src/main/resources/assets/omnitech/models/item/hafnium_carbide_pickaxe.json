@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "omnitech:item/hafnium_carbide_pickaxe"
+  }
+}

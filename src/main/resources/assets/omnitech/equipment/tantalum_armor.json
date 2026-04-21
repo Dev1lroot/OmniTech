@@ -1,0 +1,10 @@
+{
+  "layers": {
+    "humanoid": [
+      { "texture": "omnitech:tantalum_armor" }
+    ],
+    "humanoid_leggings": [
+      { "texture": "omnitech:tantalum_armor_leggings" }
+    ]
+  }
+}

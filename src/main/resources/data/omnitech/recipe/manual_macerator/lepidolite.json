@@ -1,0 +1,7 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:lepidolite",
+  "output": [
+    { "item":  "omnitech:lepidolite_dust", "count":  4, "chance":  1.0 }
+  ]
+}

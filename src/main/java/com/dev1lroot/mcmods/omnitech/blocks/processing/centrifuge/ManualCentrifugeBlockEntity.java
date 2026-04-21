@@ -33,10 +33,16 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
     public static final int SLOT_OUTPUT_3 = 3;
     public static final int SLOT_OUTPUT_4 = 4;
     public static final int SLOT_OUTPUT_5 = 5;
-    public static final int SLOT_COUNT    = 6;
+    public static final int SLOT_OUTPUT_6 = 6;
+    public static final int SLOT_OUTPUT_7 = 7;
+    public static final int SLOT_OUTPUT_8 = 8;
+    public static final int SLOT_OUTPUT_9 = 9;
+    public static final int SLOT_COUNT    = 10;
 
     private static final int[] OUTPUT_SLOTS = {
-            SLOT_OUTPUT_1, SLOT_OUTPUT_2, SLOT_OUTPUT_3, SLOT_OUTPUT_4, SLOT_OUTPUT_5
+            SLOT_OUTPUT_1, SLOT_OUTPUT_2, SLOT_OUTPUT_3,
+            SLOT_OUTPUT_4, SLOT_OUTPUT_5, SLOT_OUTPUT_6,
+            SLOT_OUTPUT_7, SLOT_OUTPUT_8, SLOT_OUTPUT_9
     };
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);

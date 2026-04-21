@@ -1,0 +1,10 @@
+{
+  "layers": {
+    "humanoid": [
+      { "texture": "omnitech:tungsten_carbide_armor" }
+    ],
+    "humanoid_leggings": [
+      { "texture": "omnitech:tungsten_carbide_armor_leggings" }
+    ]
+  }
+}
