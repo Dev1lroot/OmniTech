@@ -1,0 +1,12 @@
+{
+  "durability_multiplier": 45,
+  "defense_boots": 4,
+  "defense_leggings": 7,
+  "defense_chestplate": 9,
+  "defense_helmet": 4,
+  "defense_body": 30,
+  "enchantability": 4,
+  "toughness": 3.0,
+  "knockback_resistance": 0.1,
+  "repair_ingredient": "omnitech:hafnium_carbide_ingot"
+}

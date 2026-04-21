@@ -1,6 +1,11 @@
 {
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
-  "ingredients": [ "omnitech:nickel_block" ],
-  "result": { "count": 9, "id": "omnitech:nickel_ingot" }
+  "ingredients": [
+    "omnitech:nickel_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:nickel_ingot"
+  }
 }

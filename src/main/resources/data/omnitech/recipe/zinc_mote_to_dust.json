@@ -12,5 +12,8 @@
     "omnitech:zinc_mote",
     "omnitech:zinc_mote"
   ],
-  "result": { "count": 1, "id": "omnitech:zinc_dust" }
+  "result": {
+    "count": 1,
+    "id": "omnitech:zinc_dust"
+  }
 }

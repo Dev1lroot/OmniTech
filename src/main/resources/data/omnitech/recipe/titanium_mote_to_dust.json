@@ -12,5 +12,8 @@
     "omnitech:titanium_mote",
     "omnitech:titanium_mote"
   ],
-  "result": { "count": 1, "id": "omnitech:titanium_dust" }
+  "result": {
+    "count": 1,
+    "id": "omnitech:titanium_dust"
+  }
 }

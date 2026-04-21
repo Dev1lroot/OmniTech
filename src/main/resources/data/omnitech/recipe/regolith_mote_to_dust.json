@@ -12,5 +12,8 @@
     "omnitech:regolith_mote",
     "omnitech:regolith_mote"
   ],
-  "result": { "count": 1, "id": "omnitech:regolith_dust" }
+  "result": {
+    "count": 1,
+    "id": "omnitech:regolith_dust"
+  }
 }

@@ -1,5 +1,5 @@
 {
-  "requiredMinimalTemperature": 300,
+  "requiredMinimalTemperature": 232,
   "input": [
     "omnitech:tin_coil"
   ],

@@ -43,7 +43,10 @@ import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.lwjgl.glfw.GLFW;
 @Mod(value = OmniTech.MODID, dist = Dist.CLIENT)
 public class OmniTechClient
@@ -65,6 +68,7 @@ public class OmniTechClient
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onClientTick);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::registerClientCommands);
         NeoForge.EVENT_BUS.addListener(SpaceSuitHudOverlay::onRenderGui);
+        NeoForge.EVENT_BUS.addListener(OmniTechClient::onItemTooltip);
     }
 
     void onClientSetup(FMLClientSetupEvent event) {
@@ -151,6 +155,14 @@ public class OmniTechClient
             while (OPEN_ROCKET_GUI.consumeClick()) {
                 ClientPacketDistributor.sendToServer(new OpenRocketGuiPacket());
             }
+        }
+    }
+
+    public static void onItemTooltip(ItemTooltipEvent event) {
+        String formula = event.getItemStack().get(OmniTechDataComponents.FORMULA.get());
+        if (formula != null) {
+            event.getToolTip().add(
+                    Component.literal(formula).withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 

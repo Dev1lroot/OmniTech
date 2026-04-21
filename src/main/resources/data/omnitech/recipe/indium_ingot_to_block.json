@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "I": "omnitech:omnitech:indium_ingot"
+    "I": "omnitech:indium_ingot"
   },
   "pattern": [
     "III",

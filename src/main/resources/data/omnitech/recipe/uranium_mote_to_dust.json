@@ -12,5 +12,8 @@
     "omnitech:uranium_mote",
     "omnitech:uranium_mote"
   ],
-  "result": { "count": 1, "id": "omnitech:uranium_dust" }
+  "result": {
+    "count": 1,
+    "id": "omnitech:uranium_dust"
+  }
 }

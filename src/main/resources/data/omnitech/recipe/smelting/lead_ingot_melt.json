@@ -1,5 +1,10 @@
 {
   "requiredMinimalTemperature": 400,
-  "input": [ "omnitech:lead_ingot" ],
-  "output": { "fluid": "omnitech:molten_lead", "amount": 1000 }
+  "input": [
+    "omnitech:lead_ingot"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_lead",
+    "amount": 1000
+  }
 }

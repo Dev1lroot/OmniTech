@@ -1,6 +1,11 @@
 {
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
-  "ingredients": [ "omnitech:tin_block" ],
-  "result": { "count": 9, "id": "omnitech:tin_ingot" }
+  "ingredients": [
+    "omnitech:tin_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:tin_ingot"
+  }
 }

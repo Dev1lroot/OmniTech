@@ -1,0 +1,12 @@
+{
+  "durability_multiplier": 40,
+  "defense_boots": 4,
+  "defense_leggings": 7,
+  "defense_chestplate": 9,
+  "defense_helmet": 4,
+  "defense_body": 25,
+  "enchantability": 5,
+  "toughness": 2.5,
+  "knockback_resistance": 0.1,
+  "repair_ingredient": "omnitech:tungsten_carbide_ingot"
+}

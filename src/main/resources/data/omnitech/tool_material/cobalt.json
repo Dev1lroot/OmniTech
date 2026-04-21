@@ -1,0 +1,8 @@
+{
+  "incorrect_for_drops_tag": "minecraft:incorrect_for_iron_tool",
+  "durability": 600,
+  "speed": 7.0,
+  "attack_damage_bonus": 2.5,
+  "enchantability": 12,
+  "repair_ingredient": "omnitech:cobalt_ingot"
+}

@@ -24,8 +24,10 @@ import java.nio.file.Paths;
  * <p>JSON schema (all fields optional, defaults shown):
  * <pre>{@code
  * {
- *   "stack_size": 64,   // max items per stack (ignored when durability > 0)
- *   "durability":  0    // damage capacity; > 0 forces stack_size = 1 (MC rule)
+ *   "stack_size":    64,     // max items per stack (ignored when durability > 0)
+ *   "durability":     0,     // damage capacity; > 0 forces stack_size = 1 (MC rule)
+ *   "formula":       null,   // chemical formula shown in tooltip, e.g. "W"
+ *   "fire_resistant": false  // true = item survives lava/fire (burns: false in yml)
  * }
  * }</pre>
  *
@@ -64,8 +66,10 @@ public class ItemLoader {
             try (var reader = resource.bufferedReader()) {
                 JsonObject json = GSON.fromJson(reader, JsonObject.class);
 
-                int stackSize  = json.has("stack_size") ? json.get("stack_size").getAsInt()  : 64;
-                int durability = json.has("durability") ? json.get("durability").getAsInt()  : 0;
+                int stackSize      = json.has("stack_size")    ? json.get("stack_size").getAsInt()     : 64;
+                int durability     = json.has("durability")    ? json.get("durability").getAsInt()     : 0;
+                String formula     = json.has("formula")       ? json.get("formula").getAsString()     : null;
+                boolean fireRes    = json.has("fire_resistant") && json.get("fire_resistant").getAsBoolean();
 
                 if (durability > 0 && stackSize != 64) {
                     OmniTech.LOGGER.warn(
@@ -73,12 +77,18 @@ public class ItemLoader {
                             name, durability, stackSize);
                 }
 
-                final int finalDurability = durability;
-                final int finalStackSize  = stackSize;
+                final int    finalDurability = durability;
+                final int    finalStackSize  = stackSize;
+                final String finalFormula    = formula;
+                final boolean finalFireRes   = fireRes;
 
                 OmniTechItems.REGISTRY.registerSimpleItem(name, p -> {
-                    if (finalDurability > 0) return p.durability(finalDurability);
-                    return finalStackSize == 64 ? p : p.stacksTo(finalStackSize);
+                    if (finalDurability > 0) p = p.durability(finalDurability);
+                    else if (finalStackSize != 64) p = p.stacksTo(finalStackSize);
+                    if (finalFireRes) p = p.fireResistant();
+                    if (finalFormula != null)
+                        p = p.component(OmniTechDataComponents.FORMULA.get(), finalFormula);
+                    return p;
                 });
 
                 if (resourcesDir != null) generateResources(resourcesDir, name);

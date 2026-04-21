@@ -1,0 +1,12 @@
+{
+  "durability_multiplier": 18,
+  "defense_boots": 2,
+  "defense_leggings": 5,
+  "defense_chestplate": 7,
+  "defense_helmet": 2,
+  "defense_body": 7,
+  "enchantability": 12,
+  "toughness": 0.0,
+  "knockback_resistance": 0.0,
+  "repair_ingredient": "omnitech:cobalt_ingot"
+}

@@ -12,5 +12,8 @@
     "omnitech:cobalt_mote",
     "omnitech:cobalt_mote"
   ],
-  "result": { "count": 1, "id": "omnitech:cobalt_dust" }
+  "result": {
+    "count": 1,
+    "id": "omnitech:cobalt_dust"
+  }
 }

@@ -2,15 +2,19 @@
 """
 recipe_generator.py
 ===================
-Generates all OmniTech material recipe JSON files from materials.yml.
+Generates all OmniTech material JSON files from materials.yml.
 
-Covers every recipe category:
+Covers:
   Crafting    — mote↔dust (shapeless), ingot↔block (shaped), tools, armor
   Macerator   — ingot → dust
   Smelter     — any meltable item → molten fluid
   Foundry     — molten fluid → cog / ingot / rod
+  Fluid       — data/omnitech/fluid/molten_<name>.json
+  Tool mats   — data/omnitech/tool_material/<name>.json
+  Armor mats  — data/omnitech/armor_material/<name>.json
 
-Idempotent — existing files are never overwritten.
+Rules:
+  • JSON files are ALWAYS overwritten (schema may change with new parameters).
 
 Usage:
     python3 recipe_generator.py
@@ -20,9 +24,19 @@ import json
 from pathlib import Path
 import yaml
 
-SCRIPT_DIR = Path(__file__).parent
-RECIPE_DIR = SCRIPT_DIR / "src/main/resources/data/omnitech/recipe"
-MOD        = "omnitech"
+SCRIPT_DIR   = Path(__file__).parent
+RES_DIR      = SCRIPT_DIR / "src/main/resources"
+RECIPE_DIR   = RES_DIR / "data/omnitech/recipe"
+FLUID_DIR    = RES_DIR / "data/omnitech/fluid"
+TOOL_MAT_DIR = RES_DIR / "data/omnitech/tool_material"
+ARMOR_MAT_DIR = RES_DIR / "data/omnitech/armor_material"
+MOD          = "omnitech"
+
+TIER_TO_TAG = {
+    "stone":   "minecraft:incorrect_for_stone_tool",
+    "iron":    "minecraft:incorrect_for_iron_tool",
+    "diamond": "minecraft:incorrect_for_diamond_tool",
+}
 
 
 # ── Load config ───────────────────────────────────────────────────────────────
@@ -105,7 +119,7 @@ def r_foundry(material_name: str, temp: int, amount_mb: int, template: str, outp
         "output": item_id(output),
     }
 
-def r_tool(mat_name: str, tool: str, pattern: list[str]) -> dict:
+def r_tool(mat_name: str, tool: str, pattern: list) -> dict:
     return {
         "type": "minecraft:crafting_shaped",
         "category": "equipment",
@@ -114,7 +128,7 @@ def r_tool(mat_name: str, tool: str, pattern: list[str]) -> dict:
         "result": {"count": 1, "id": item_id(f"{mat_name}_{tool}")},
     }
 
-def r_armor(mat_name: str, piece: str, pattern: list[str]) -> dict:
+def r_armor(mat_name: str, piece: str, pattern: list) -> dict:
     return {
         "type": "minecraft:crafting_shaped",
         "category": "equipment",
@@ -151,22 +165,74 @@ TOOL_MELT = {
 
 # ── File I/O ──────────────────────────────────────────────────────────────────
 
-def write(rel_path: str, data: dict) -> bool:
-    path = RECIPE_DIR / rel_path
-    if path.exists():
-        return False
+def write(dir_path: Path, rel_path: str, data: dict):
+    path = dir_path / rel_path
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
-    return True
 
 
-# ── Generator ─────────────────────────────────────────────────────────────────
+# ── Fluid JSON ────────────────────────────────────────────────────────────────
+
+def generate_fluid_json(mat: dict):
+    name = mat["name"]
+    # temperature in Kelvin: melt_temp is in Celsius
+    temp_c = mat.get("melt_temp", 1000)
+    temp_k = temp_c + 273
+
+    data = {
+        "density":     mat.get("density", 7000),
+        "viscosity":   mat.get("viscosity", 5000),
+        "temperature": temp_k,
+        "light_level": 3,
+    }
+    write(FLUID_DIR, f"molten_{name}.json", data)
+
+
+# ── Tool material JSON ────────────────────────────────────────────────────────
+
+def generate_tool_material_json(mat: dict):
+    name  = mat["name"]
+    stats = mat["tool_stats"]
+    tier  = stats.get("tier", "iron")
+    data = {
+        "incorrect_for_drops_tag": TIER_TO_TAG.get(tier, TIER_TO_TAG["iron"]),
+        "durability":              stats["durability"],
+        "speed":                   float(stats["speed"]),
+        "attack_damage_bonus":     float(stats["attack_bonus"]),
+        "enchantability":          stats["enchantability"],
+        "repair_ingredient":       f"{MOD}:{name}_ingot",
+    }
+    write(TOOL_MAT_DIR, f"{name}.json", data)
+
+
+# ── Armor material JSON ───────────────────────────────────────────────────────
+
+def generate_armor_material_json(mat: dict):
+    name  = mat["name"]
+    stats = mat["armor_stats"]
+    defense = stats["defense"]  # [boots, leggings, chestplate, helmet, body]
+    data = {
+        "durability_multiplier":  stats["durability_mult"],
+        "defense_boots":          defense[0],
+        "defense_leggings":       defense[1],
+        "defense_chestplate":     defense[2],
+        "defense_helmet":         defense[3],
+        "defense_body":           defense[4],
+        "enchantability":         stats["enchantability"],
+        "toughness":              float(stats["toughness"]),
+        "knockback_resistance":   float(stats["knockback_resistance"]),
+        "repair_ingredient":      f"{MOD}:{name}_ingot",
+    }
+    write(ARMOR_MAT_DIR, f"{name}.json", data)
+
+
+# ── Main generator ────────────────────────────────────────────────────────────
 
 def generate():
-    written, skipped = [], []
-
-    def emit(rel_path: str, data: dict):
-        (written if write(rel_path, data) else skipped).append(rel_path)
+    count_recipes = 0
+    count_fluids  = 0
+    count_tools   = 0
+    count_armors  = 0
 
     for mat in MATERIALS:
         name       = mat["name"]
@@ -195,17 +261,20 @@ def generate():
 
         # ── Mote ↔ Dust ───────────────────────────────────────────────────────
         if dust and mote:
-            emit(f"{name}_mote_to_dust.json", r_mote_to_dust(mote, dust))
-            emit(f"{name}_dust_to_mote.json", r_dust_to_mote(dust, mote))
+            write(RECIPE_DIR, f"{name}_mote_to_dust.json", r_mote_to_dust(mote, dust))
+            write(RECIPE_DIR, f"{name}_dust_to_mote.json", r_dust_to_mote(dust, mote))
+            count_recipes += 2
 
         # ── Ingot ↔ Block ─────────────────────────────────────────────────────
         if ingot and block:
-            emit(f"{name}_ingot_to_block.json", r_ingot_to_block(ing_id, block))
-            emit(f"{name}_block_to_ingot.json", r_block_to_ingot(block, ing_id))
+            write(RECIPE_DIR, f"{name}_ingot_to_block.json", r_ingot_to_block(ing_id, block))
+            write(RECIPE_DIR, f"{name}_block_to_ingot.json", r_block_to_ingot(block, ing_id))
+            count_recipes += 2
 
         # ── Macerator: ingot → dust ───────────────────────────────────────────
         if ingot and dust:
-            emit(f"manual_macerator/{name}_ingot.json", r_macerator(ing_id, dust))
+            write(RECIPE_DIR, f"manual_macerator/{name}_ingot.json", r_macerator(ing_id, dust))
+            count_recipes += 1
 
         # ── Smelter melt recipes ──────────────────────────────────────────────
         if temp is not None:
@@ -214,63 +283,78 @@ def generate():
                 if mb is None:
                     continue
                 inp = ing_id if pattern == "%_ingot" else item_id(resolved(pattern))
-                emit(f"smelting/{resolved(pattern)}_melt.json",
-                     r_smelter_melt(inp, name, temp, mb))
+                write(RECIPE_DIR, f"smelting/{resolved(pattern)}_melt.json",
+                      r_smelter_melt(inp, name, temp, mb))
+                count_recipes += 1
 
             for pattern in blocks:
                 mb = MELT_MB.get(pattern)
                 if mb is None:
                     continue
-                emit(f"smelting/{resolved(pattern)}_melt.json",
-                     r_smelter_melt(item_id(resolved(pattern)), name, temp, mb))
+                write(RECIPE_DIR, f"smelting/{resolved(pattern)}_melt.json",
+                      r_smelter_melt(item_id(resolved(pattern)), name, temp, mb))
+                count_recipes += 1
 
             if armor_list:
                 for piece, mb in ARMOR_MELT.items():
-                    emit(f"smelting/{name}_{piece}_melt.json",
-                         r_smelter_melt(item_id(f"{name}_{piece}"), name, temp, mb))
+                    write(RECIPE_DIR, f"smelting/{name}_{piece}_melt.json",
+                          r_smelter_melt(item_id(f"{name}_{piece}"), name, temp, mb))
+                    count_recipes += 1
 
             if tools_list:
                 for tool, mb in TOOL_MELT.items():
-                    emit(f"smelting/{name}_{tool}_melt.json",
-                         r_smelter_melt(item_id(f"{name}_{tool}"), name, temp, mb))
+                    write(RECIPE_DIR, f"smelting/{name}_{tool}_melt.json",
+                          r_smelter_melt(item_id(f"{name}_{tool}"), name, temp, mb))
+                    count_recipes += 1
 
         # ── Foundry ───────────────────────────────────────────────────────────
         if temp is not None:
             if cog:
-                emit(f"foundry/{name}_cog.json",
-                     r_foundry(name, temp, 200, "cog_template", cog))
+                write(RECIPE_DIR, f"foundry/{name}_cog.json",
+                      r_foundry(name, temp, 200, "cog_template", cog))
+                count_recipes += 1
             if ingot:
-                emit(f"foundry/{name}_ingot.json",
-                     r_foundry(name, temp, 1000, "ingot_template", ingot))
+                write(RECIPE_DIR, f"foundry/{name}_ingot.json",
+                      r_foundry(name, temp, 1000, "ingot_template", ingot))
+                count_recipes += 1
             if rod:
-                emit(f"foundry/{name}_rod.json",
-                     r_foundry(name, temp, 1000, "rod_template", rod))
+                write(RECIPE_DIR, f"foundry/{name}_rod.json",
+                      r_foundry(name, temp, 1000, "rod_template", rod))
+                count_recipes += 1
 
         # ── Tool crafting recipes ─────────────────────────────────────────────
         if tools_list:
             for tool, shape in TOOL_SHAPES.items():
-                emit(f"{name}_{tool}.json", r_tool(name, tool, shape))
+                write(RECIPE_DIR, f"{name}_{tool}.json", r_tool(name, tool, shape))
+                count_recipes += 1
 
         # ── Armor crafting recipes ────────────────────────────────────────────
         if armor_list:
             for piece, shape in ARMOR_SHAPES.items():
-                emit(f"{name}_{piece}.json", r_armor(name, piece, shape))
+                write(RECIPE_DIR, f"{name}_{piece}.json", r_armor(name, piece, shape))
+                count_recipes += 1
 
-    return written, skipped
+        # ── Fluid JSON ────────────────────────────────────────────────────────
+        if temp is not None:
+            generate_fluid_json(mat)
+            count_fluids += 1
 
+        # ── Tool material JSON ────────────────────────────────────────────────
+        if tools_list and mat.get("tool_stats"):
+            generate_tool_material_json(mat)
+            count_tools += 1
 
-# ── Entry point ───────────────────────────────────────────────────────────────
+        # ── Armor material JSON ───────────────────────────────────────────────
+        if armor_list and mat.get("armor_stats"):
+            generate_armor_material_json(mat)
+            count_armors += 1
+
+    return count_recipes, count_fluids, count_tools, count_armors
+
 
 def main():
-    written, skipped = generate()
-    if written:
-        print(f"Generated {len(written)} recipe(s):")
-        for f in written:
-            print(f"  + {f}")
-    if skipped:
-        print(f"Skipped  {len(skipped)} (already exist)")
-    if not written and not skipped:
-        print("Nothing to do.")
+    r, f, t, a = generate()
+    print(f"Written {r} recipe(s), {f} fluid JSON(s), {t} tool material(s), {a} armor material(s).")
 
 
 if __name__ == "__main__":

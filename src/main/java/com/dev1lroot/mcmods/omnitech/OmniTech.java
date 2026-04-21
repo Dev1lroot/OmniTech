@@ -88,8 +88,8 @@ public class OmniTech {
 
         // Load material/tool/armor sets before registries fire so deferred entries are queued
         OmniTechMaterials.init();
-        OmniTechTools.init();
-        OmniTechArmors.init();
+        ToolSetLoader.loadAll();
+        ArmorSetLoader.loadAll();
 
         FluidLoader.loadAll();           // reads data/omnitech/fluid/*.json
         OmniTechFluids.register(modEventBus);

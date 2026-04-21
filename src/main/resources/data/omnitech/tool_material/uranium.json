@@ -1,0 +1,8 @@
+{
+  "incorrect_for_drops_tag": "minecraft:incorrect_for_diamond_tool",
+  "durability": 600,
+  "speed": 7.0,
+  "attack_damage_bonus": 3.0,
+  "enchantability": 8,
+  "repair_ingredient": "omnitech:uranium_ingot"
+}

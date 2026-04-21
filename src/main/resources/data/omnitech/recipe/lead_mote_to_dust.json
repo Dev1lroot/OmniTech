@@ -12,5 +12,8 @@
     "omnitech:lead_mote",
     "omnitech:lead_mote"
   ],
-  "result": { "count": 1, "id": "omnitech:lead_dust" }
+  "result": {
+    "count": 1,
+    "id": "omnitech:lead_dust"
+  }
 }

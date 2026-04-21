@@ -1,6 +1,11 @@
 {
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
-  "ingredients": [ "omnitech:chromium_dust" ],
-  "result": { "count": 9, "id": "omnitech:chromium_mote" }
+  "ingredients": [
+    "omnitech:chromium_dust"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:chromium_mote"
+  }
 }

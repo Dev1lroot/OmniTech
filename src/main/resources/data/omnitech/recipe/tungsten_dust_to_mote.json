@@ -1,6 +1,11 @@
 {
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
-  "ingredients": [ "omnitech:tungsten_dust" ],
-  "result": { "count": 9, "id": "omnitech:tungsten_mote" }
+  "ingredients": [
+    "omnitech:tungsten_dust"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:tungsten_mote"
+  }
 }

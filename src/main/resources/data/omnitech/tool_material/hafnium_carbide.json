@@ -1,0 +1,8 @@
+{
+  "incorrect_for_drops_tag": "minecraft:incorrect_for_diamond_tool",
+  "durability": 4000,
+  "speed": 10.0,
+  "attack_damage_bonus": 5.0,
+  "enchantability": 4,
+  "repair_ingredient": "omnitech:hafnium_carbide_ingot"
+}

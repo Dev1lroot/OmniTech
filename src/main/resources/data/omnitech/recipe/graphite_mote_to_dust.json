@@ -12,5 +12,8 @@
     "omnitech:graphite_mote",
     "omnitech:graphite_mote"
   ],
-  "result": { "count": 1, "id": "omnitech:graphite_dust" }
+  "result": {
+    "count": 1,
+    "id": "omnitech:graphite_dust"
+  }
 }

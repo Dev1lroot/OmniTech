@@ -1,6 +1,11 @@
 {
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
-  "ingredients": [ "omnitech:steel_block" ],
-  "result": { "count": 9, "id": "omnitech:steel_ingot" }
+  "ingredients": [
+    "omnitech:steel_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:steel_ingot"
+  }
 }

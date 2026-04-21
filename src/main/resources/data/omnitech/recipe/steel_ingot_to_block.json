@@ -1,7 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "key": { "I": "omnitech:steel_ingot" },
-  "pattern": [ "III", "III", "III" ],
-  "result": { "count": 1, "id": "omnitech:steel_block" }
+  "key": {
+    "I": "omnitech:steel_ingot"
+  },
+  "pattern": [
+    "III",
+    "III",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:steel_block"
+  }
 }

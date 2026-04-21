@@ -1,6 +1,11 @@
 {
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
-  "ingredients": [ "omnitech:uranium_block" ],
-  "result": { "count": 9, "id": "omnitech:uranium_ingot" }
+  "ingredients": [
+    "omnitech:uranium_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:uranium_ingot"
+  }
 }

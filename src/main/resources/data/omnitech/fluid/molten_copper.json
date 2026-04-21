@@ -1,5 +1,6 @@
 {
-  "density":     8960,
-  "viscosity":   5000,
-  "temperature": 1358
+  "density": 8960,
+  "viscosity": 3300,
+  "temperature": 1373,
+  "light_level": 3
 }

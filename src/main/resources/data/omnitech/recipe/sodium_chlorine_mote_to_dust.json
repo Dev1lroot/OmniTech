@@ -12,5 +12,8 @@
     "omnitech:sodium_chlorine_mote",
     "omnitech:sodium_chlorine_mote"
   ],
-  "result": { "count": 1, "id": "omnitech:sodium_chlorine_dust" }
+  "result": {
+    "count": 1,
+    "id": "omnitech:sodium_chlorine_dust"
+  }
 }

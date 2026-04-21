@@ -1,0 +1,8 @@
+{
+  "incorrect_for_drops_tag": "minecraft:incorrect_for_stone_tool",
+  "durability": 200,
+  "speed": 5.0,
+  "attack_damage_bonus": 1.0,
+  "enchantability": 10,
+  "repair_ingredient": "omnitech:zinc_ingot"
+}

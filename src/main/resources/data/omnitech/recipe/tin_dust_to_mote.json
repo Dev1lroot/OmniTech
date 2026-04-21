@@ -1,6 +1,11 @@
 {
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
-  "ingredients": [ "omnitech:tin_dust" ],
-  "result": { "count": 9, "id": "omnitech:tin_mote" }
+  "ingredients": [
+    "omnitech:tin_dust"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:tin_mote"
+  }
 }

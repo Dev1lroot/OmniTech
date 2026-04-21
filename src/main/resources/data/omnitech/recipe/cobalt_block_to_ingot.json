@@ -1,6 +1,11 @@
 {
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
-  "ingredients": [ "omnitech:cobalt_block" ],
-  "result": { "count": 9, "id": "omnitech:cobalt_ingot" }
+  "ingredients": [
+    "omnitech:cobalt_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:cobalt_ingot"
+  }
 }

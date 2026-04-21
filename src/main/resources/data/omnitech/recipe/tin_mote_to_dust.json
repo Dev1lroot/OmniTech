@@ -12,5 +12,8 @@
     "omnitech:tin_mote",
     "omnitech:tin_mote"
   ],
-  "result": { "count": 1, "id": "omnitech:tin_dust" }
+  "result": {
+    "count": 1,
+    "id": "omnitech:tin_dust"
+  }
 }

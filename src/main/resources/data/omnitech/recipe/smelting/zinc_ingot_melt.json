@@ -1,5 +1,10 @@
 {
   "requiredMinimalTemperature": 500,
-  "input": [ "omnitech:zinc_ingot" ],
-  "output": { "fluid": "omnitech:molten_zinc", "amount": 1000 }
+  "input": [
+    "omnitech:zinc_ingot"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_zinc",
+    "amount": 1000
+  }
 }

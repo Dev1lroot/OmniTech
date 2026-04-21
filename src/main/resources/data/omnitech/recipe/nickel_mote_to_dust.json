@@ -12,5 +12,8 @@
     "omnitech:nickel_mote",
     "omnitech:nickel_mote"
   ],
-  "result": { "count": 1, "id": "omnitech:nickel_dust" }
+  "result": {
+    "count": 1,
+    "id": "omnitech:nickel_dust"
+  }
 }

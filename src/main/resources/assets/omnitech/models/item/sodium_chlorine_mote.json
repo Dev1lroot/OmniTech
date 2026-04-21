@@ -1,1 +1,6 @@
-{"parent":"minecraft:item/generated","textures":{"layer0":"omnitech:item/sodium_chlorine_mote"}}
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "omnitech:item/sodium_chlorine_mote"
+  }
+}

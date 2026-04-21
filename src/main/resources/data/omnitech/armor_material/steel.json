@@ -1,0 +1,12 @@
+{
+  "durability_multiplier": 20,
+  "defense_boots": 2,
+  "defense_leggings": 5,
+  "defense_chestplate": 7,
+  "defense_helmet": 3,
+  "defense_body": 6,
+  "enchantability": 14,
+  "toughness": 0.0,
+  "knockback_resistance": 0.0,
+  "repair_ingredient": "omnitech:steel_ingot"
+}

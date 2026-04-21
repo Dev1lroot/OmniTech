@@ -12,5 +12,8 @@
     "omnitech:chromium_mote",
     "omnitech:chromium_mote"
   ],
-  "result": { "count": 1, "id": "omnitech:chromium_dust" }
+  "result": {
+    "count": 1,
+    "id": "omnitech:chromium_dust"
+  }
 }

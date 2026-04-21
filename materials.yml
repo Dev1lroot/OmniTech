@@ -2,178 +2,486 @@
 #
 # Fields per entry:
 #   name        unique identifier; % in patterns expands to this name
+#   formula     chemical formula shown in item tooltip
 #   colors      texture tint params (omit = no texture generation for this material)
 #     dark        base/shadow colour hex
 #     light       highlight colour hex
 #     lum         brightness multiplier  (PIL ImageEnhance.Brightness)
 #     sat         contrast  multiplier   (PIL ImageEnhance.Contrast)
-#   melt_temp   minimum smelter temperature °C  (omit = no smelting recipes)
+#   melt_temp   minimum smelter temperature °C  (omit = no smelting/fluid)
+#   density     molten fluid density kg/m³     (default 7000)
+#   viscosity   molten fluid viscosity         (default 5000)
+#   burns       false = fire-resistant items (melt_temp ≥ 2000)  (default true)
 #   vanilla_id  full item-ID for the ingot when it lives in minecraft: namespace
 #   items       item name patterns   (omit or [] = skip item generation)
 #   blocks      block name patterns  (omit or [] = skip block generation)
 #   tools       tool item patterns   (omit or [] = no tool texture / recipe generation)
 #   armor       armor item patterns  (omit or [] = no armor texture / recipe generation)
+#   tool_stats  stats for ToolSet (required when tools is non-empty)
+#     durability    base uses
+#     speed         mining speed multiplier
+#     attack_bonus  added attack damage
+#     enchantability enchantment value
+#     tier          "stone" | "iron" | "diamond"
+#   armor_stats stats for ArmorSet (required when armor is non-empty)
+#     durability_mult  multiplier × per-slot base values
+#     defense          [boots, leggings, chestplate, helmet, body]
+#     enchantability   enchantment value
+#     toughness        extra damage reduction
+#     knockback_resistance  0.0–1.0
 #
 # Generators that consume this file:
-#   asset_factory.py     — all materials with colors
-#   armor_factory.py     — materials with non-empty armor list
-#   tool_factory.py      — materials with non-empty tools list
-#   material_generator.py — materials with non-empty items list
-#   recipe_generator.py  — materials with melt_temp and/or items
+#   asset_factory.py      — colors (item/block/fluid textures)
+#   armor_factory.py      — armor list (armor textures)
+#   tool_factory.py       — tools list (tool textures)
+#   material_generator.py — items list (item data JSONs, model JSONs)
+#   recipe_generator.py   — melt_temp/items (recipes + fluid/tool/armor material JSONs)
 
 materials:
 
   # ── Full metals with ore ──────────────────────────────────────────────────────
 
   - name: "tungsten"
+    formula: "W"
     colors: { dark: "#31363B", light: "#5E6770", lum: 0.9, sat: 1.2 }
     melt_temp: 3500
+    density: 19300
+    viscosity: 8000
+    burns: false
     items: ["raw_%", "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_ore", "%_block", "raw_%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 3000
+      speed: 9.0
+      attack_bonus: 4.0
+      enchantability: 6
+      tier: "diamond"
+    armor_stats:
+      durability_mult: 35
+      defense: [3, 6, 8, 3, 20]
+      enchantability: 6
+      toughness: 2.0
+      knockback_resistance: 0.05
 
   - name: "tungsten_carbide"
+    formula: "WC"
     colors: { dark: "#1E2124", light: "#434950", lum: 0.8, sat: 0.6 }
     melt_temp: 2870
+    density: 15700
+    viscosity: 9000
+    burns: false
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 3500
+      speed: 9.5
+      attack_bonus: 4.5
+      enchantability: 4
+      tier: "diamond"
+    armor_stats:
+      durability_mult: 40
+      defense: [4, 7, 9, 4, 25]
+      enchantability: 5
+      toughness: 2.5
+      knockback_resistance: 0.1
 
   - name: "chromium"
+    formula: "Cr"
     colors: { dark: "#C0C9CC", light: "#FFFFFF", lum: 1.2, sat: 1.4 }
-    melt_temp: 2000
+    melt_temp: 1907
+    density: 7190
+    viscosity: 4000
+    burns: true
     items: ["raw_%", "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_ore", "%_block", "raw_%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 2000
+      speed: 8.5
+      attack_bonus: 3.5
+      enchantability: 8
+      tier: "diamond"
+    armor_stats:
+      durability_mult: 30
+      defense: [3, 6, 8, 3, 11]
+      enchantability: 8
+      toughness: 1.5
+      knockback_resistance: 0.0
 
   - name: "tin"
+    formula: "Sn"
     colors: { dark: "#9BA9AB", light: "#DDE9EB", lum: 1.0, sat: 1.1 }
     melt_temp: 232
+    density: 7300
+    viscosity: 1800
+    burns: true
     items: ["raw_%", "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_ore", "%_block", "raw_%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 280
+      speed: 6.0
+      attack_bonus: 1.5
+      enchantability: 10
+      tier: "iron"
+    armor_stats:
+      durability_mult: 13
+      defense: [2, 4, 5, 2, 4]
+      enchantability: 10
+      toughness: 0.0
+      knockback_resistance: 0.0
 
   # ── Standard metals without ore ───────────────────────────────────────────────
 
   - name: "aluminium"
+    formula: "Al"
     colors: { dark: "#B2BFC2", light: "#FFFFFF", lum: 1.1, sat: 1.3 }
     melt_temp: 700
+    density: 2700
+    viscosity: 1300
+    burns: true
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 350
+      speed: 7.0
+      attack_bonus: 1.5
+      enchantability: 14
+      tier: "iron"
+    armor_stats:
+      durability_mult: 14
+      defense: [2, 4, 5, 2, 4]
+      enchantability: 14
+      toughness: 0.0
+      knockback_resistance: 0.0
 
   - name: "cobalt"
+    formula: "Co"
     colors: { dark: "#1E8A2B", light: "#006AFF", lum: 1.0, sat: 1.4 }
     melt_temp: 1500
+    density: 8900
+    viscosity: 4500
+    burns: true
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 600
+      speed: 7.0
+      attack_bonus: 2.5
+      enchantability: 12
+      tier: "iron"
+    armor_stats:
+      durability_mult: 18
+      defense: [2, 5, 7, 2, 7]
+      enchantability: 12
+      toughness: 0.0
+      knockback_resistance: 0.0
 
   - name: "nickel"
+    formula: "Ni"
     colors: { dark: "#A8B59A", light: "#E6EFD3", lum: 1.0, sat: 1.1 }
     melt_temp: 1500
+    density: 8900
+    viscosity: 5000
+    burns: true
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 320
+      speed: 6.0
+      attack_bonus: 2.0
+      enchantability: 12
+      tier: "iron"
+    armor_stats:
+      durability_mult: 15
+      defense: [2, 5, 6, 2, 5]
+      enchantability: 12
+      toughness: 0.0
+      knockback_resistance: 0.0
 
   - name: "zinc"
+    formula: "Zn"
     colors: { dark: "#8D9FA3", light: "#C7D6D9", lum: 1.0, sat: 1.0 }
     melt_temp: 500
+    density: 7130
+    viscosity: 3000
+    burns: true
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 200
+      speed: 5.0
+      attack_bonus: 1.0
+      enchantability: 10
+      tier: "stone"
+    armor_stats:
+      durability_mult: 10
+      defense: [1, 3, 4, 2, 4]
+      enchantability: 10
+      toughness: 0.0
+      knockback_resistance: 0.0
 
   - name: "lead"
+    formula: "Pb"
     colors: { dark: "#3D4259", light: "#7D87B0", lum: 0.9, sat: 1.1 }
     melt_temp: 400
+    density: 11340
+    viscosity: 2300
+    burns: true
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 150
+      speed: 4.5
+      attack_bonus: 1.5
+      enchantability: 5
+      tier: "stone"
+    armor_stats:
+      durability_mult: 12
+      defense: [2, 4, 5, 2, 4]
+      enchantability: 6
+      toughness: 0.0
+      knockback_resistance: 0.0
 
   - name: "steel"
+    formula: "Fe"
     colors: { dark: "#525252", light: "#A1A1A1", lum: 1.0, sat: 1.2 }
     melt_temp: 1500
+    density: 7800
+    viscosity: 5000
+    burns: true
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 800
+      speed: 7.5
+      attack_bonus: 2.5
+      enchantability: 14
+      tier: "iron"
+    armor_stats:
+      durability_mult: 20
+      defense: [2, 5, 7, 3, 6]
+      enchantability: 14
+      toughness: 0.0
+      knockback_resistance: 0.0
 
   - name: "brass"
+    formula: "CuZn"
     colors: { dark: "#A68521", light: "#FDE68A", lum: 1.1, sat: 1.3 }
     melt_temp: 1000
+    density: 8500
+    viscosity: 3500
+    burns: true
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 400
+      speed: 6.5
+      attack_bonus: 2.0
+      enchantability: 18
+      tier: "iron"
+    armor_stats:
+      durability_mult: 12
+      defense: [2, 4, 6, 2, 5]
+      enchantability: 18
+      toughness: 0.0
+      knockback_resistance: 0.0
 
   - name: "tantalum"
+    formula: "Ta"
     colors: { dark: "#3E4147", light: "#8D97A3", lum: 1.0, sat: 1.1 }
     melt_temp: 3017
+    density: 16700
+    viscosity: 7000
+    burns: false
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 2500
+      speed: 8.5
+      attack_bonus: 4.0
+      enchantability: 6
+      tier: "diamond"
+    armor_stats:
+      durability_mult: 38
+      defense: [3, 7, 9, 3, 22]
+      enchantability: 6
+      toughness: 2.0
+      knockback_resistance: 0.05
 
   - name: "hafnium"
+    formula: "Hf"
     colors: { dark: "#4E5254", light: "#BCC1C4", lum: 1.1, sat: 1.0 }
     melt_temp: 2233
+    density: 13310
+    viscosity: 6000
+    burns: false
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 2200
+      speed: 8.0
+      attack_bonus: 3.5
+      enchantability: 8
+      tier: "diamond"
+    armor_stats:
+      durability_mult: 32
+      defense: [3, 6, 8, 3, 15]
+      enchantability: 8
+      toughness: 1.5
+      knockback_resistance: 0.0
 
   - name: "hafnium_tantalum_carbide"
+    formula: "(Hf,Ta)C"
     colors: { dark: "#2C2C2B", light: "#5A5A58", lum: 0.9, sat: 0.8 }
     melt_temp: 3990
+    density: 15000
+    viscosity: 9500
+    burns: false
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 4500
+      speed: 10.5
+      attack_bonus: 5.5
+      enchantability: 4
+      tier: "diamond"
+    armor_stats:
+      durability_mult: 50
+      defense: [4, 8, 10, 4, 35]
+      enchantability: 4
+      toughness: 3.5
+      knockback_resistance: 0.15
 
   - name: "hafnium_carbide"
+    formula: "HfC"
     colors: { dark: "#36393B", light: "#6D747A", lum: 0.9, sat: 0.7 }
     melt_temp: 3890
+    density: 12200
+    viscosity: 8500
+    burns: false
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 4000
+      speed: 10.0
+      attack_bonus: 5.0
+      enchantability: 4
+      tier: "diamond"
+    armor_stats:
+      durability_mult: 45
+      defense: [4, 7, 9, 4, 30]
+      enchantability: 4
+      toughness: 3.0
+      knockback_resistance: 0.1
 
   - name: "cadmium"
+    formula: "Cd"
     colors: { dark: "#BA4444", light: "#D8A2C3", lum: 1.1, sat: 1.4 }
     melt_temp: 321
+    density: 8650
+    viscosity: 2500
+    burns: true
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 180
+      speed: 5.0
+      attack_bonus: 1.0
+      enchantability: 8
+      tier: "stone"
+    armor_stats:
+      durability_mult: 10
+      defense: [1, 3, 4, 2, 4]
+      enchantability: 8
+      toughness: 0.0
+      knockback_resistance: 0.0
 
   - name: "uranium"
+    formula: "U"
     colors: { dark: "#3E523A", light: "#9DFF00", lum: 1.1, sat: 1.4 }
     melt_temp: 1200
+    density: 19050
+    viscosity: 7000
+    burns: true
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 600
+      speed: 7.0
+      attack_bonus: 3.0
+      enchantability: 8
+      tier: "diamond"
+    armor_stats:
+      durability_mult: 22
+      defense: [2, 5, 6, 2, 6]
+      enchantability: 8
+      toughness: 0.0
+      knockback_resistance: 0.0
 
   - name: "titanium"
+    formula: "Ti"
     colors: { dark: "#6D6375", light: "#D9D0E3", lum: 1.1, sat: 1.2 }
     melt_temp: 1700
+    density: 4510
+    viscosity: 3000
+    burns: true
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+    tool_stats:
+      durability: 1500
+      speed: 8.0
+      attack_bonus: 3.5
+      enchantability: 12
+      tier: "diamond"
+    armor_stats:
+      durability_mult: 28
+      defense: [3, 6, 8, 3, 11]
+      enchantability: 12
+      toughness: 1.0
+      knockback_resistance: 0.0
 
   - name: "indium"
+    formula: "In"
     colors: { dark: "#525462", light: "#ABFEFF", lum: 1.2, sat: 1.5 }
     melt_temp: 157
+    density: 7310
+    viscosity: 2000
+    burns: true
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
     blocks: ["%_block"]
     tools: []
@@ -182,8 +490,12 @@ materials:
   # ── Vanilla metals (ore/ingot/block already in minecraft:) ───────────────────
 
   - name: "iron"
+    formula: "Fe"
     colors: { dark: "#999999", light: "#D9D9D9", lum: 1.0, sat: 1.1 }
     melt_temp: 1600
+    density: 7874
+    viscosity: 5000
+    burns: true
     vanilla_id: "minecraft:iron_ingot"
     items: ["%_dust", "%_plate", "%_mote", "%_reductor", "%_wire", "%_coil", "%_rod"]
     blocks: []
@@ -191,8 +503,12 @@ materials:
     armor: []
 
   - name: "copper"
+    formula: "Cu"
     colors: { dark: "#B05130", light: "#F9A886", lum: 1.0, sat: 1.3 }
     melt_temp: 1100
+    density: 8960
+    viscosity: 3300
+    burns: true
     vanilla_id: "minecraft:copper_ingot"
     items: ["%_dust", "%_plate", "%_mote", "%_reductor", "%_wire", "%_coil", "%_rod"]
     blocks: []
@@ -202,14 +518,18 @@ materials:
   # ── Chemical compounds ────────────────────────────────────────────────────────
 
   - name: "sodium_chlorine"
+    formula: "NaCl"
     colors: { dark: "#E5E5E5", light: "#FFFFFF", lum: 1.0, sat: 0.8 }
+    burns: true
     items: ["%_dust", "%_mote"]
     blocks: []
     tools: []
     armor: []
 
   - name: "graphite"
+    formula: "C"
     colors: { dark: "#1A1A1A", light: "#404040", lum: 0.8, sat: 0.7 }
+    burns: true
     items: ["%_dust", "%_mote", "%_rod"]
     blocks: []
     tools: []
@@ -218,41 +538,53 @@ materials:
   # ── Mineral ores ──────────────────────────────────────────────────────────────
 
   - name: "regolith"
+    formula: "SiO₂"
+    burns: true
     items: ["%_dust", "%_mote"]
     blocks: ["surface_%", "stratified_%", "paleo%", "mega%"]
     tools: []
     armor: []
 
   - name: "skutterudite"
+    formula: "CoAs₃"
     colors: { dark: "#6B6B6B", light: "#B0B0B0", lum: 0.9, sat: 0.9 }
+    burns: true
     items: ["%_dust"]
     blocks: ["%"]
     tools: []
     armor: []
 
   - name: "galena"
+    formula: "PbS"
     colors: { dark: "#3A3C4A", light: "#7A7E91", lum: 0.9, sat: 1.2 }
+    burns: true
     items: ["%_dust"]
     blocks: ["%"]
     tools: []
     armor: []
 
   - name: "halite"
+    formula: "NaCl"
     colors: { dark: "#D4C4A1", light: "#F9F1DC", lum: 1.0, sat: 0.9 }
+    burns: true
     items: ["%_dust"]
     blocks: ["%"]
     tools: []
     armor: []
 
   - name: "sphalerite"
+    formula: "ZnS"
     colors: { dark: "#5E4935", light: "#A68B6A", lum: 0.9, sat: 1.1 }
+    burns: true
     items: ["%_dust"]
     blocks: ["%"]
     tools: []
     armor: []
 
   - name: "lepidolite"
+    formula: "K(Li,Al)₃(AlSi₃)O₁₀F₂"
     colors: { dark: "#A36BA3", light: "#F0B2F0", lum: 1.1, sat: 1.2 }
+    burns: true
     items: ["%_dust"]
     blocks: ["%"]
     tools: []
@@ -261,64 +593,78 @@ materials:
   # ── Planned metals (texture pre-generation only — not yet registered in Java) ──
 
   - name: "platinum"
+    formula: "Pt"
     colors: { dark: "#CFE2E6", light: "#FFFFFF", lum: 1.2, sat: 1.3 }
+    burns: false
     items: []
     blocks: []
     tools: []
     armor: []
 
   - name: "silver"
+    formula: "Ag"
     colors: { dark: "#A5BCC2", light: "#F0F8FA", lum: 1.1, sat: 1.5 }
+    burns: true
     items: []
     blocks: []
     tools: []
     armor: []
 
   - name: "bronze"
+    formula: "CuSn"
     colors: { dark: "#824F21", light: "#EBB067", lum: 1.0, sat: 1.3 }
+    burns: true
     items: []
     blocks: []
     tools: []
     armor: []
 
   - name: "invar"
+    formula: "FeNi"
     colors: { dark: "#4A524A", light: "#9BA39B", lum: 1.0, sat: 1.1 }
+    burns: true
     items: []
     blocks: []
     tools: []
     armor: []
 
   - name: "electrum"
+    formula: "AgAu"
     colors: { dark: "#B5A632", light: "#FFF9C4", lum: 1.2, sat: 1.4 }
+    burns: true
     items: []
     blocks: []
     tools: []
     armor: []
 
   - name: "cupronickel"
+    formula: "CuNi"
     colors: { dark: "#8C9E91", light: "#D1E0D6", lum: 1.0, sat: 1.1 }
+    burns: true
     items: []
     blocks: []
     tools: []
     armor: []
 
   - name: "kanthal"
+    formula: "FeCrAl"
     colors: { dark: "#5E4033", light: "#B38C7D", lum: 1.0, sat: 1.2 }
+    burns: true
     items: []
     blocks: []
     tools: []
     armor: []
 
   - name: "nichrome"
+    formula: "NiCr"
     colors: { dark: "#4D4D5C", light: "#9494B0", lum: 1.1, sat: 1.1 }
+    burns: true
     items: []
     blocks: []
     tools: []
     armor: []
 
 # ── Melt amounts (mb) per item pattern ────────────────────────────────────────
-# Used by recipe_generator.py to determine smelter output amount per input item.
-# Rule: ingot = 1000 mb base; processed items refund ≤ 50%.
 melt_values:
   "raw_%":        1000
   "%_ingot":      1000

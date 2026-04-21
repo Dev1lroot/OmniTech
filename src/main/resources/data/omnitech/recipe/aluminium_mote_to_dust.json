@@ -12,5 +12,8 @@
     "omnitech:aluminium_mote",
     "omnitech:aluminium_mote"
   ],
-  "result": { "count": 1, "id": "omnitech:aluminium_dust" }
+  "result": {
+    "count": 1,
+    "id": "omnitech:aluminium_dust"
+  }
 }

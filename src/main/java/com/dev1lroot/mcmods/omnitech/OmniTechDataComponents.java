@@ -59,6 +59,14 @@ public class OmniTechDataComponents {
                             .networkSynchronized(ByteBufCodecs.INT)
                             .build());
 
+    /** Chemical formula shown in item tooltip (e.g. "W", "WC", "(Hf,Ta)C"). */
+    public static final Supplier<DataComponentType<String>> FORMULA =
+            REGISTRY.register("formula", () ->
+                    DataComponentType.<String>builder()
+                            .persistent(Codec.STRING)
+                            .networkSynchronized(ByteBufCodecs.STRING_UTF8)
+                            .build());
+
     public static void register(IEventBus bus) {
         REGISTRY.register(bus);
     }

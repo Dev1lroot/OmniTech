@@ -1,3 +1,5 @@
 {
-  "durability": 100
+  "durability": 100,
+  "formula": "Hf",
+  "fire_resistant": true
 }

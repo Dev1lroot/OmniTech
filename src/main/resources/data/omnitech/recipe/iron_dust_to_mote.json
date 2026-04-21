@@ -1,6 +1,11 @@
 {
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
-  "ingredients": [ "omnitech:iron_dust" ],
-  "result": { "count": 9, "id": "omnitech:iron_mote" }
+  "ingredients": [
+    "omnitech:iron_dust"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:iron_mote"
+  }
 }

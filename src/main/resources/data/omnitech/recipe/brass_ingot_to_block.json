@@ -1,7 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "key": { "I": "omnitech:brass_ingot" },
-  "pattern": [ "III", "III", "III" ],
-  "result": { "count": 1, "id": "omnitech:brass_block" }
+  "key": {
+    "I": "omnitech:brass_ingot"
+  },
+  "pattern": [
+    "III",
+    "III",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:brass_block"
+  }
 }

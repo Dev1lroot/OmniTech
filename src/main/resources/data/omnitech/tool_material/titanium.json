@@ -1,0 +1,8 @@
+{
+  "incorrect_for_drops_tag": "minecraft:incorrect_for_diamond_tool",
+  "durability": 1500,
+  "speed": 8.0,
+  "attack_damage_bonus": 3.5,
+  "enchantability": 12,
+  "repair_ingredient": "omnitech:titanium_ingot"
+}

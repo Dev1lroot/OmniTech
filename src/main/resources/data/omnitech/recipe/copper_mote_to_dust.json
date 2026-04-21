@@ -12,5 +12,8 @@
     "omnitech:copper_mote",
     "omnitech:copper_mote"
   ],
-  "result": { "count": 1, "id": "omnitech:copper_dust" }
+  "result": {
+    "count": 1,
+    "id": "omnitech:copper_dust"
+  }
 }

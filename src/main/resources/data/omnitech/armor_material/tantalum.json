@@ -1,0 +1,12 @@
+{
+  "durability_multiplier": 38,
+  "defense_boots": 3,
+  "defense_leggings": 7,
+  "defense_chestplate": 9,
+  "defense_helmet": 3,
+  "defense_body": 22,
+  "enchantability": 6,
+  "toughness": 2.0,
+  "knockback_resistance": 0.05,
+  "repair_ingredient": "omnitech:tantalum_ingot"
+}

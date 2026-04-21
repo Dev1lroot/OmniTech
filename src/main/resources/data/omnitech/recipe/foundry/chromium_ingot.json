@@ -1,5 +1,5 @@
 {
-  "requiredMinimalTemperature": 2000,
+  "requiredMinimalTemperature": 1907,
   "input": {
     "fluid": "omnitech:molten_chromium",
     "amount": 1000
