@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_badlands",
+  "features": "omnitech:chromium_ore_biome_1",
+  "step": "underground_ores"
+}

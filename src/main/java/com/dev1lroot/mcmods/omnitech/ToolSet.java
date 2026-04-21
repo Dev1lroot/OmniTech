@@ -23,7 +23,7 @@ import java.util.*;
 
 /**
  * ToolSet: mass-registers a complete tool set (pickaxe, shovel, sword, axe, hoe)
- * for a given material, mirroring the {@link MaterialSet} pattern.
+ * for a given material, mirroring the {@link MineralSet} pattern.
  *
  * <p>Usage:
  * <pre>{@code

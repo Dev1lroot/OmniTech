@@ -45,7 +45,7 @@ public class OmniTechBlocks {
     /**
      * All ore entries — iterated by datagen to generate worldgen JSON files.
      * Each entry pairs a block reference with its spawn configuration.
-     * Populated by {@link #registerOre} and by {@link MaterialSet} for MaterialSet-based ores.
+     * Populated by {@link #registerOre} and by {@link MineralSet} for MineralSet-based ores.
      */
     public static final List<OreEntry> ALL_ORES = new ArrayList<>();
 

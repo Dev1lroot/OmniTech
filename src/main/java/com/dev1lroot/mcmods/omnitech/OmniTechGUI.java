@@ -84,9 +84,9 @@ public class OmniTechGUI {
             event.accept(OmniTechItems.ELECTRIC_CHARGER_ITEM);
         }
         if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
-            event.accept(OmniTechMaterials.TIN.blockItem("%_ore"));
-            event.accept(OmniTechMaterials.TUNGSTEN.blockItem("%_ore"));
-            event.accept(OmniTechMaterials.CHROMIUM.blockItem("%_ore"));
+            event.accept(OmniTechMinerals.TIN.blockItem("%_ore"));
+            event.accept(OmniTechMinerals.TUNGSTEN.blockItem("%_ore"));
+            event.accept(OmniTechMinerals.CHROMIUM.blockItem("%_ore"));
         }
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(OmniTechItems.SPACE_SUIT_HELMET);

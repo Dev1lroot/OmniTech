@@ -35,7 +35,7 @@ import net.neoforged.fml.jarcontents.JarContents;
  *
  * <p>Special sentinel values in {@code data}:
  * <ul>
- *   <li>{@code "$material_sets"} – calls {@link MaterialSet#addAllToTab}</li>
+ *   <li>{@code "$material_sets"} – calls {@link MineralSet#addAllToTab} (all mineral/ore blocks)</li>
  *   <li>{@code "$armor_sets"}   – calls {@link ArmorSet#addAllToTab}</li>
  *   <li>{@code "$tool_sets"}    – calls {@link ToolSet#addAllToTab}</li>
  * </ul>
@@ -83,7 +83,7 @@ public class CreativeTabLoader {
                             .displayItems((parameters, output) -> {
                                 for (String entry : data) {
                                     switch (entry) {
-                                        case "$material_sets" -> MaterialSet.addAllToTab(output);
+                                        case "$material_sets" -> MineralSet.addAllToTab(output);
                                         case "$armor_sets"    -> ArmorSet.addAllToTab(output);
                                         case "$tool_sets"     -> ToolSet.addAllToTab(output);
                                         default -> BuiltInRegistries.ITEM

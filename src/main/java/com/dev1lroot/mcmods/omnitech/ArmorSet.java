@@ -28,7 +28,7 @@ import java.util.*;
 
 /**
  * ArmorSet: mass-registers a complete armor set (helmet, chestplate, leggings, boots)
- * for a given material, mirroring the {@link MaterialSet} pattern.
+ * for a given material, mirroring the {@link MineralSet} pattern.
  *
  * <p>Usage:
  * <pre>{@code

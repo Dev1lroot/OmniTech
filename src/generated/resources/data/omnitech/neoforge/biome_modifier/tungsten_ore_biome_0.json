@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_mountain",
+  "features": "omnitech:tungsten_ore_biome_0",
+  "step": "underground_ores"
+}
