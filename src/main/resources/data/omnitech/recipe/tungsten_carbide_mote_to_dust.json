@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:tungsten_carbide_mote",
+    "omnitech:tungsten_carbide_mote",
+    "omnitech:tungsten_carbide_mote",
+    "omnitech:tungsten_carbide_mote",
+    "omnitech:tungsten_carbide_mote",
+    "omnitech:tungsten_carbide_mote",
+    "omnitech:tungsten_carbide_mote",
+    "omnitech:tungsten_carbide_mote",
+    "omnitech:tungsten_carbide_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:tungsten_carbide_dust"
+  }
+}

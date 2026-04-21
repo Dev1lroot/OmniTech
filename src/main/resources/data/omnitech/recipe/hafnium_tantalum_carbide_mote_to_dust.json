@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:hafnium_tantalum_carbide_mote",
+    "omnitech:hafnium_tantalum_carbide_mote",
+    "omnitech:hafnium_tantalum_carbide_mote",
+    "omnitech:hafnium_tantalum_carbide_mote",
+    "omnitech:hafnium_tantalum_carbide_mote",
+    "omnitech:hafnium_tantalum_carbide_mote",
+    "omnitech:hafnium_tantalum_carbide_mote",
+    "omnitech:hafnium_tantalum_carbide_mote",
+    "omnitech:hafnium_tantalum_carbide_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:hafnium_tantalum_carbide_dust"
+  }
+}

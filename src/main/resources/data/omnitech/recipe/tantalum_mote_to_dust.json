@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:tantalum_mote",
+    "omnitech:tantalum_mote",
+    "omnitech:tantalum_mote",
+    "omnitech:tantalum_mote",
+    "omnitech:tantalum_mote",
+    "omnitech:tantalum_mote",
+    "omnitech:tantalum_mote",
+    "omnitech:tantalum_mote",
+    "omnitech:tantalum_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:tantalum_dust"
+  }
+}

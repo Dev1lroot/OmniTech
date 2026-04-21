@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 2870,
+  "input": {
+    "fluid": "omnitech:molten_tungsten_carbide",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:tungsten_carbide_rod"
+}

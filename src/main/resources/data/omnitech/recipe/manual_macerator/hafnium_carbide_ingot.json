@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:hafnium_carbide_ingot",
+  "output": [
+    {
+      "item": "omnitech:hafnium_carbide_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

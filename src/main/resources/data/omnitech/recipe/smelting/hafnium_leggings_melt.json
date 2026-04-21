@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 2233,
+  "input": [
+    "omnitech:hafnium_leggings"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_hafnium",
+    "amount": 3500
+  }
+}

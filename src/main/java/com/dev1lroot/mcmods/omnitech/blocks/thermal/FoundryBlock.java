@@ -106,7 +106,9 @@ public class FoundryBlock extends BaseEntityBlock implements IFluidContainer {
 
     // Accept fluid pipe connections from all sides (input only)
     @Override
-    public boolean isConnectable(BlockState state, Direction face) { return true; }
+    public boolean isConnectable(BlockState state, Direction face) {
+        return face == Direction.UP;
+    }
 
     @Override
     public boolean isInput(BlockState state, Direction face)  { return true; }

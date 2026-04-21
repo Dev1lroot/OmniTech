@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 3017,
+  "input": [
+    "omnitech:tantalum_nugget"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_tantalum",
+    "amount": 100
+  }
+}

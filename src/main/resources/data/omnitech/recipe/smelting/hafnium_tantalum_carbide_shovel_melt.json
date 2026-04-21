@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 3990,
+  "input": [
+    "omnitech:hafnium_tantalum_carbide_shovel"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_hafnium_tantalum_carbide",
+    "amount": 500
+  }
+}

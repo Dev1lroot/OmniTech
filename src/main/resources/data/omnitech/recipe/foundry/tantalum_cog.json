@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 3017,
+  "input": {
+    "fluid": "omnitech:molten_tantalum",
+    "amount": 200
+  },
+  "template": "omnitech:cog_template",
+  "output": "omnitech:tantalum_cog"
+}

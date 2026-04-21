@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:hafnium_mote",
+    "omnitech:hafnium_mote",
+    "omnitech:hafnium_mote",
+    "omnitech:hafnium_mote",
+    "omnitech:hafnium_mote",
+    "omnitech:hafnium_mote",
+    "omnitech:hafnium_mote",
+    "omnitech:hafnium_mote",
+    "omnitech:hafnium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:hafnium_dust"
+  }
+}

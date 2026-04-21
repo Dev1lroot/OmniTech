@@ -26,10 +26,12 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
@@ -73,13 +75,9 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
 
     @Override
     public int @NonNull [] getSlotsForFace(Direction side) {
-        // Template slot (0) is never returned here, so automation can't see it.
-        // We only allow extraction from the output slot.
-        if (side == Direction.DOWN) {
+        if (side.getAxis().isHorizontal()) {
             return SLOTS_FOR_EXTRACTION;
         }
-        // For other sides, we return empty to prevent item insertion,
-        // as the machine relies on fluid input and manual template placement.
         return SLOTS_EMPTY;
     }
 
@@ -91,8 +89,8 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
 
     @Override
     public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
-        // Only allow pulling from the output slot, typically from the bottom.
-        return index == OUTPUT_SLOT;
+        if (index != OUTPUT_SLOT) return false;
+        return direction.getAxis().isHorizontal();
     }
 
     // ── Hopper protection (Overrides from BaseContainer) ──────────────────────
@@ -183,6 +181,25 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
         return absorbed;
     }
 
+    private static boolean tryPullFluid(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to) {
+        try (var tx = Transaction.openRoot()) {
+            for (int i = 0; i < from.size(); i++) {
+                FluidResource res = from.getResource(i);
+                if (!res.isEmpty() && to.isValid(0, res)) {
+                    // Try to pull up to 1000mB (or whatever your preferred throughput is)
+                    int available = (int) Math.min(1000, from.getAmountAsLong(i));
+                    int accepted = to.insert(res, available, tx);
+                    if (accepted > 0) {
+                        from.extract(res, accepted, tx);
+                        tx.commit();
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     // ── Server tick ───────────────────────────────────────────────────────────
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, FoundryBlockEntity be) {
@@ -199,6 +216,14 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
             }
         } else {
             be.heatLossTimer = 0;
+        }
+
+        if (be.inputFluid.getAmount() < INPUT_TANK_CAPACITY) {
+            var topPos = pos.above();
+            var fluidSource = level.getCapability(Capabilities.Fluid.BLOCK, topPos, Direction.DOWN);
+            if (fluidSource != null) {
+                changed |= tryPullFluid(fluidSource, be.fluidHandler);
+            }
         }
 
         // Recipe lookup

@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:tungsten_carbide_ingot",
+  "output": [
+    {
+      "item": "omnitech:tungsten_carbide_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

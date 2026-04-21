@@ -33,6 +33,14 @@ materials:
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
     armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
 
+  - name: "tungsten_carbide"
+    colors: { dark: "#1E2124", light: "#434950", lum: 0.8, sat: 0.6 }
+    melt_temp: 2870
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
   - name: "chromium"
     colors: { dark: "#C0C9CC", light: "#FFFFFF", lum: 1.2, sat: 1.4 }
     melt_temp: 2000
@@ -102,6 +110,38 @@ materials:
   - name: "brass"
     colors: { dark: "#A68521", light: "#FDE68A", lum: 1.1, sat: 1.3 }
     melt_temp: 1000
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  - name: "tantalum"
+    colors: { dark: "#3E4147", light: "#8D97A3", lum: 1.0, sat: 1.1 }
+    melt_temp: 3017
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  - name: "hafnium"
+    colors: { dark: "#4E5254", light: "#BCC1C4", lum: 1.1, sat: 1.0 }
+    melt_temp: 2233
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  - name: "hafnium_tantalum_carbide"
+    colors: { dark: "#2C2C2B", light: "#5A5A58", lum: 0.9, sat: 0.8 }
+    melt_temp: 3990
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  - name: "hafnium_carbide"
+    colors: { dark: "#36393B", light: "#6D747A", lum: 0.9, sat: 0.7 }
+    melt_temp: 3890
     items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
     blocks: ["%_block"]
     tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]

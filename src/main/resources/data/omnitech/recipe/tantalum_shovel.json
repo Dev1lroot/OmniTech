@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "X": "omnitech:tantalum_ingot",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    " X ",
+    " S ",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:tantalum_shovel"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 3017,
+  "input": [
+    "omnitech:tantalum_axe"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_tantalum",
+    "amount": 1500
+  }
+}

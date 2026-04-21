@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "X": "omnitech:hafnium_carbide_ingot",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    "XX ",
+    " S ",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:hafnium_carbide_hoe"
+  }
+}

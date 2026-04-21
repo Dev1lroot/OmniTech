@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 3890,
+  "input": [
+    "omnitech:hafnium_carbide_leggings"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_hafnium_carbide",
+    "amount": 3500
+  }
+}
