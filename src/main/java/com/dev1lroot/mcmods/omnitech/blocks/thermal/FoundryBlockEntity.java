@@ -59,6 +59,8 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
     private int processProgress = 0;
     private int processTotalTime = DEFAULT_PROCESS_TIME;
     private int heatLossTimer   = 0;
+    /** Game-time tick when the last craft completed; used by the client renderer for the 200 ms output flash. */
+    private long lastCraftGameTime = Long.MIN_VALUE / 2;
 
     /** Capability-exposed insert-only fluid handler. */
     public final ResourceHandler<FluidResource> fluidHandler = new InputTankHandler();
@@ -242,13 +244,17 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
         } else {
             output.grow(1);
         }
+
+        // Record completion time so the client renderer can show the 200 ms output flash
+        if (level != null) lastCraftGameTime = level.getGameTime();
     }
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 
-    public FluidStack getInputFluid()    { return inputFluid; }
-    public int getTemperature()          { return temperature; }
+    public FluidStack getInputFluid()       { return inputFluid; }
+    public int getTemperature()             { return temperature; }
     public ContainerData getContainerData() { return dataAccess; }
+    public long getLastCraftGameTime()      { return lastCraftGameTime; }
 
     // ── Client sync ───────────────────────────────────────────────────────────
 
@@ -282,9 +288,10 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
         super.loadAdditional(input);
         items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(input, items);
-        temperature      = input.getIntOr("Temperature", 0);
-        processProgress  = input.getIntOr("ProcessProgress", 0);
-        processTotalTime = input.getIntOr("ProcessTotalTime", DEFAULT_PROCESS_TIME);
+        temperature       = input.getIntOr("Temperature", 0);
+        processProgress   = input.getIntOr("ProcessProgress", 0);
+        processTotalTime  = input.getIntOr("ProcessTotalTime", DEFAULT_PROCESS_TIME);
+        lastCraftGameTime = input.getLongOr("LastCraftGameTime", Long.MIN_VALUE / 2);
         inputFluid = input.read("InputFluid", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
     }
 
@@ -295,6 +302,7 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
         output.putInt("Temperature", temperature);
         output.putInt("ProcessProgress", processProgress);
         output.putInt("ProcessTotalTime", processTotalTime);
+        output.putLong("LastCraftGameTime", lastCraftGameTime);
         output.store("InputFluid", FluidStack.OPTIONAL_CODEC, inputFluid);
     }
 

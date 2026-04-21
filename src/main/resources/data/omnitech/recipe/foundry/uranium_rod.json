@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1200,
+  "input": {
+    "fluid": "omnitech:molten_uranium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:uranium_rod"
+}

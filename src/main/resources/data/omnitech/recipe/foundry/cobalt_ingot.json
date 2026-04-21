@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1500,
+  "input": {
+    "fluid": "omnitech:molten_cobalt",
+    "amount": 1000
+  },
+  "template": "omnitech:ingot_template",
+  "output": "omnitech:cobalt_ingot"
+}

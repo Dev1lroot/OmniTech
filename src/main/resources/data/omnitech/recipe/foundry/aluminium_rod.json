@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 700,
+  "input": {
+    "fluid": "omnitech:molten_aluminium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:aluminium_rod"
+}

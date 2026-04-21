@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:indium_mote",
+    "omnitech:indium_mote",
+    "omnitech:indium_mote",
+    "omnitech:indium_mote",
+    "omnitech:indium_mote",
+    "omnitech:indium_mote",
+    "omnitech:indium_mote",
+    "omnitech:indium_mote",
+    "omnitech:indium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:indium_dust"
+  }
+}

@@ -1,0 +1,304 @@
+# OmniTech Materials Registry — single source of truth for all generators.
+#
+# Fields per entry:
+#   name        unique identifier; % in patterns expands to this name
+#   colors      texture tint params (omit = no texture generation for this material)
+#     dark        base/shadow colour hex
+#     light       highlight colour hex
+#     lum         brightness multiplier  (PIL ImageEnhance.Brightness)
+#     sat         contrast  multiplier   (PIL ImageEnhance.Contrast)
+#   melt_temp   minimum smelter temperature °C  (omit = no smelting recipes)
+#   vanilla_id  full item-ID for the ingot when it lives in minecraft: namespace
+#   items       item name patterns   (omit or [] = skip item generation)
+#   blocks      block name patterns  (omit or [] = skip block generation)
+#   tools       tool item patterns   (omit or [] = no tool texture / recipe generation)
+#   armor       armor item patterns  (omit or [] = no armor texture / recipe generation)
+#
+# Generators that consume this file:
+#   asset_factory.py     — all materials with colors
+#   armor_factory.py     — materials with non-empty armor list
+#   tool_factory.py      — materials with non-empty tools list
+#   material_generator.py — materials with non-empty items list
+#   recipe_generator.py  — materials with melt_temp and/or items
+
+materials:
+
+  # ── Full metals with ore ──────────────────────────────────────────────────────
+
+  - name: "tungsten"
+    colors: { dark: "#31363B", light: "#5E6770", lum: 0.9, sat: 1.2 }
+    melt_temp: 3500
+    items: ["raw_%", "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_ore", "%_block", "raw_%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  - name: "chromium"
+    colors: { dark: "#C0C9CC", light: "#FFFFFF", lum: 1.2, sat: 1.4 }
+    melt_temp: 2000
+    items: ["raw_%", "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_ore", "%_block", "raw_%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  - name: "tin"
+    colors: { dark: "#9BA9AB", light: "#DDE9EB", lum: 1.0, sat: 1.1 }
+    melt_temp: 232
+    items: ["raw_%", "%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_ore", "%_block", "raw_%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  # ── Standard metals without ore ───────────────────────────────────────────────
+
+  - name: "aluminium"
+    colors: { dark: "#B2BFC2", light: "#FFFFFF", lum: 1.1, sat: 1.3 }
+    melt_temp: 700
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  - name: "cobalt"
+    colors: { dark: "#1E8A2B", light: "#006AFF", lum: 1.0, sat: 1.4 }
+    melt_temp: 1500
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  - name: "nickel"
+    colors: { dark: "#A8B59A", light: "#E6EFD3", lum: 1.0, sat: 1.1 }
+    melt_temp: 1500
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  - name: "zinc"
+    colors: { dark: "#8D9FA3", light: "#C7D6D9", lum: 1.0, sat: 1.0 }
+    melt_temp: 500
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  - name: "lead"
+    colors: { dark: "#3D4259", light: "#7D87B0", lum: 0.9, sat: 1.1 }
+    melt_temp: 400
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  - name: "steel"
+    colors: { dark: "#525252", light: "#A1A1A1", lum: 1.0, sat: 1.2 }
+    melt_temp: 1500
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  - name: "brass"
+    colors: { dark: "#A68521", light: "#FDE68A", lum: 1.1, sat: 1.3 }
+    melt_temp: 1000
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  - name: "cadmium"
+    colors: { dark: "#BA4444", light: "#D8A2C3", lum: 1.1, sat: 1.4 }
+    melt_temp: 321
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  - name: "uranium"
+    colors: { dark: "#3E523A", light: "#9DFF00", lum: 1.1, sat: 1.4 }
+    melt_temp: 1200
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  - name: "titanium"
+    colors: { dark: "#6D6375", light: "#D9D0E3", lum: 1.1, sat: 1.2 }
+    melt_temp: 1700
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_reductor", "%_cog", "%_wire", "%_coil", "%_rod"]
+    blocks: ["%_block"]
+    tools: ["%_pickaxe", "%_shovel", "%_sword", "%_axe", "%_hoe"]
+    armor: ["%_helmet", "%_chestplate", "%_leggings", "%_boots"]
+
+  - name: "indium"
+    colors: { dark: "#525462", light: "#ABFEFF", lum: 1.2, sat: 1.5 }
+    melt_temp: 157
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  # ── Vanilla metals (ore/ingot/block already in minecraft:) ───────────────────
+
+  - name: "iron"
+    colors: { dark: "#999999", light: "#D9D9D9", lum: 1.0, sat: 1.1 }
+    melt_temp: 1600
+    vanilla_id: "minecraft:iron_ingot"
+    items: ["%_dust", "%_plate", "%_mote", "%_reductor", "%_wire", "%_coil", "%_rod"]
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "copper"
+    colors: { dark: "#B05130", light: "#F9A886", lum: 1.0, sat: 1.3 }
+    melt_temp: 1100
+    vanilla_id: "minecraft:copper_ingot"
+    items: ["%_dust", "%_plate", "%_mote", "%_reductor", "%_wire", "%_coil", "%_rod"]
+    blocks: []
+    tools: []
+    armor: []
+
+  # ── Chemical compounds ────────────────────────────────────────────────────────
+
+  - name: "sodium_chlorine"
+    colors: { dark: "#E5E5E5", light: "#FFFFFF", lum: 1.0, sat: 0.8 }
+    items: ["%_dust", "%_mote"]
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "graphite"
+    colors: { dark: "#1A1A1A", light: "#404040", lum: 0.8, sat: 0.7 }
+    items: ["%_dust", "%_mote", "%_rod"]
+    blocks: []
+    tools: []
+    armor: []
+
+  # ── Mineral ores ──────────────────────────────────────────────────────────────
+
+  - name: "regolith"
+    items: ["%_dust", "%_mote"]
+    blocks: ["surface_%", "stratified_%", "paleo%", "mega%"]
+    tools: []
+    armor: []
+
+  - name: "skutterudite"
+    colors: { dark: "#6B6B6B", light: "#B0B0B0", lum: 0.9, sat: 0.9 }
+    items: ["%_dust"]
+    blocks: ["%"]
+    tools: []
+    armor: []
+
+  - name: "galena"
+    colors: { dark: "#3A3C4A", light: "#7A7E91", lum: 0.9, sat: 1.2 }
+    items: ["%_dust"]
+    blocks: ["%"]
+    tools: []
+    armor: []
+
+  - name: "halite"
+    colors: { dark: "#D4C4A1", light: "#F9F1DC", lum: 1.0, sat: 0.9 }
+    items: ["%_dust"]
+    blocks: ["%"]
+    tools: []
+    armor: []
+
+  - name: "sphalerite"
+    colors: { dark: "#5E4935", light: "#A68B6A", lum: 0.9, sat: 1.1 }
+    items: ["%_dust"]
+    blocks: ["%"]
+    tools: []
+    armor: []
+
+  - name: "lepidolite"
+    colors: { dark: "#A36BA3", light: "#F0B2F0", lum: 1.1, sat: 1.2 }
+    items: ["%_dust"]
+    blocks: ["%"]
+    tools: []
+    armor: []
+
+  # ── Planned metals (texture pre-generation only — not yet registered in Java) ──
+
+  - name: "platinum"
+    colors: { dark: "#CFE2E6", light: "#FFFFFF", lum: 1.2, sat: 1.3 }
+    items: []
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "silver"
+    colors: { dark: "#A5BCC2", light: "#F0F8FA", lum: 1.1, sat: 1.5 }
+    items: []
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "bronze"
+    colors: { dark: "#824F21", light: "#EBB067", lum: 1.0, sat: 1.3 }
+    items: []
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "invar"
+    colors: { dark: "#4A524A", light: "#9BA39B", lum: 1.0, sat: 1.1 }
+    items: []
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "electrum"
+    colors: { dark: "#B5A632", light: "#FFF9C4", lum: 1.2, sat: 1.4 }
+    items: []
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "cupronickel"
+    colors: { dark: "#8C9E91", light: "#D1E0D6", lum: 1.0, sat: 1.1 }
+    items: []
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "kanthal"
+    colors: { dark: "#5E4033", light: "#B38C7D", lum: 1.0, sat: 1.2 }
+    items: []
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "nichrome"
+    colors: { dark: "#4D4D5C", light: "#9494B0", lum: 1.1, sat: 1.1 }
+    items: []
+    blocks: []
+    tools: []
+    armor: []
+
+# ── Melt amounts (mb) per item pattern ────────────────────────────────────────
+# Used by recipe_generator.py to determine smelter output amount per input item.
+# Rule: ingot = 1000 mb base; processed items refund ≤ 50%.
+melt_values:
+  "raw_%":        1000
+  "%_ingot":      1000
+  "%_nugget":     100
+  "%_dust":       500
+  "%_mote":       50
+  "%_plate":      500
+  "%_cog":        200
+  "%_wire":       500
+  "%_coil":       1500
+  "%_rod":        500
+  "%_reductor":   500
+  "%_block":      4500
+  "raw_%_block":  4500
+  "%_helmet":     2500
+  "%_chestplate": 4000
+  "%_leggings":   3500
+  "%_boots":      2000
+  "%_pickaxe":    1500
+  "%_shovel":     500
+  "%_sword":      1000
+  "%_axe":        1500
+  "%_hoe":        1000

@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 321,
+  "input": [
+    "omnitech:cadmium_leggings"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_cadmium",
+    "amount": 3500
+  }
+}

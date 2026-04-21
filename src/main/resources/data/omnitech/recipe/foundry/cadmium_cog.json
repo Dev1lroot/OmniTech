@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 321,
+  "input": {
+    "fluid": "omnitech:molten_cadmium",
+    "amount": 200
+  },
+  "template": "omnitech:cog_template",
+  "output": "omnitech:cadmium_cog"
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1000,
+  "input": {
+    "fluid": "omnitech:molten_brass",
+    "amount": 1000
+  },
+  "template": "omnitech:ingot_template",
+  "output": "omnitech:brass_ingot"
+}

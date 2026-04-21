@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1600,
+  "input": {
+    "fluid": "omnitech:molten_iron",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:iron_rod"
+}

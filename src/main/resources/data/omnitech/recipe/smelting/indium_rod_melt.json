@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 157,
+  "input": [
+    "omnitech:indium_rod"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_indium",
+    "amount": 500
+  }
+}

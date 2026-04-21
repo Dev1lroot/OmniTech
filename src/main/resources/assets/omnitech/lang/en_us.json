@@ -456,5 +456,21 @@
   "item.omnitech.coke_coal": "Coke Coal",
   "fluid.omnitech.creosote": "Creosote",
   "block.omnitech.coke_brick": "Coke Brick",
-  "container.omnitech.coke_oven": "Coke Oven"
+  "container.omnitech.coke_oven": "Coke Oven",
+  "item.omnitech.indium_dust": "Indium Dust",
+  "item.omnitech.indium_plate": "Indium Plate",
+  "item.omnitech.cadmium_wire": "Cadmium Wire",
+  "item.omnitech.indium_mote": "Indium Mote",
+  "item.omnitech.cadmium_nugget": "Cadmium Nugget",
+  "item.omnitech.indium_rod": "Indium Rod",
+  "item.omnitech.cadmium_mote": "Cadmium Mote",
+  "item.omnitech.cadmium_reductor": "Cadmium Reductor",
+  "item.omnitech.indium_ingot": "Indium Ingot",
+  "item.omnitech.cadmium_rod": "Cadmium Rod",
+  "item.omnitech.indium_nugget": "Indium Nugget",
+  "item.omnitech.cadmium_plate": "Cadmium Plate",
+  "item.omnitech.cadmium_coil": "Cadmium Coil",
+  "item.omnitech.cadmium_ingot": "Cadmium Ingot",
+  "item.omnitech.cadmium_cog": "Cadmium Cog",
+  "item.omnitech.cadmium_dust": "Cadmium Dust"
 }
