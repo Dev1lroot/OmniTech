@@ -35,7 +35,7 @@ public class FoundryBlock extends BaseEntityBlock implements IFluidContainer {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
     public FoundryBlock(Properties properties) {
-        super(properties.lightLevel(state -> state.getValue(LIT) ? 9 : 0));
+        super(properties.lightLevel(state -> state.getValue(LIT) ? 9 : 0).noOcclusion());
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(LIT, false));

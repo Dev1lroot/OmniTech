@@ -6,8 +6,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.jetbrains.annotations.Nullable;
 
 public class FoundryRenderState extends BlockEntityRenderState {
-    /** Template item's particle sprite; null when slot is empty. */
-    public @Nullable TextureAtlasSprite templateSprite = null;
+    /** Full item render state for the template slot; null when empty. */
+    public @Nullable ItemStackRenderState templateItemState = null;
     /** Fluid still-texture sprite; null when no fluid is present. */
     public @Nullable TextureAtlasSprite fluidSprite    = null;
     /** Packed ARGB tint for the fluid layer (-1 = white / no tint). */

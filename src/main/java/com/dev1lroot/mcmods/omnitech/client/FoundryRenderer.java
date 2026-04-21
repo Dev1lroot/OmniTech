@@ -20,9 +20,8 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.RandomSource;
+import com.mojang.math.Axis;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -33,10 +32,8 @@ import org.jetbrains.annotations.Nullable;
  * Renders three visual layers inside the Foundry block:
  *
  * <ol>
- *   <li><b>Template</b> — item particle sprite on a centred 12×12 px slab,
- *       rendered with full alpha support and voxel depth (top face + 4 thin
- *       side faces, each 1/16 block thick), mirroring how MC renders flat items
- *       in the world.</li>
+ *   <li><b>Template</b> — full 3D item lying flat in the bowl using MC's own
+ *       item rendering pipeline (proper per-pixel silhouette voxel depth).</li>
  *   <li><b>Fluid</b> — fluid still-texture on a 12×12 top face whose Y
  *       position rises from {@link #Y_FLUID_BOT} to {@link #Y_FLUID_MAX} as
  *       crafting progresses.</li>
@@ -52,23 +49,23 @@ public class FoundryRenderer
     private static final float L1 = 14f / 16f;
 
     // Y positions (user-adjusted to match the foundry bowl geometry)
-    private static final float Y_TEMPLATE_BOT = 1f / 16f;
-    private static final float Y_TEMPLATE_TOP = 2f / 16f;
-    private static final float Y_FLUID_BOT    = 1f / 16f;
-    private static final float Y_FLUID_MAX    = 2f / 16f;
+    private static final float Y_FLUID_BOT = 1f / 16f;
+    private static final float Y_FLUID_MAX = 2f / 16f;
+
+    /** Y base for the flat template item (GROUND display transform adds its own offset). */
+    private static final float Y_TEMPLATE = 1.63f / 16f;
 
     /** Y for the floating output item. */
     private static final float ITEM_Y     = 8f / 16f;
     private static final float ITEM_SCALE = 0.9f;
 
+    /** Template item scale — fits within the 12×12 bowl. */
+    private static final float TEMPLATE_SCALE = 1.5f;
+
     /** Craft-completion flash duration in game ticks (≈ 400 ms at 20 TPS). */
     private static final long FLASH_TICKS = 8L;
 
     private final ItemModelResolver itemModelResolver;
-
-    /** Scratch state reused each frame to look up item particle sprites. */
-    private final ItemStackRenderState tempItemState = new ItemStackRenderState();
-    private static final RandomSource RANDOM = RandomSource.create();
 
     public FoundryRenderer(BlockEntityRendererProvider.Context context) {
         this.itemModelResolver = context.itemModelResolver();
@@ -93,15 +90,23 @@ public class FoundryRenderer
                 entity, state, partialTicks, cameraPosition, breakProgress);
 
         if (!(entity.getLevel() instanceof ClientLevel clientLevel)) {
-            state.templateSprite  = null;
-            state.fluidSprite     = null;
-            state.outputItemState = null;
+            state.templateItemState = null;
+            state.fluidSprite       = null;
+            state.outputItemState   = null;
             return;
         }
 
-        // ── Template sprite ───────────────────────────────────────────────────
-        state.templateSprite = particleSprite(
-                entity.getItem(FoundryBlockEntity.TEMPLATE_SLOT), clientLevel);
+        // ── Template item ─────────────────────────────────────────────────────
+        ItemStack templateStack = entity.getItem(FoundryBlockEntity.TEMPLATE_SLOT);
+        if (!templateStack.isEmpty()) {
+            ItemStackRenderState itemState = new ItemStackRenderState();
+            int seed = HashCommon.long2int(entity.getBlockPos().asLong()) ^ 1;
+            itemModelResolver.updateForTopItem(
+                    itemState, templateStack, ItemDisplayContext.GROUND, clientLevel, null, seed);
+            state.templateItemState = itemState;
+        } else {
+            state.templateItemState = null;
+        }
 
         // ── Fluid sprite & progress ───────────────────────────────────────────
         FluidStack fluid = entity.getInputFluid();
@@ -152,16 +157,16 @@ public class FoundryRenderer
 
         final int light = state.lightCoords;
 
-        // ── Layer 1: template — voxel depth (top + 4 thin sides), alpha-aware ─
-        if (state.templateSprite != null) {
-            final TextureAtlasSprite ts = state.templateSprite;
-            // Always use translucent so per-pixel alpha in the item texture works.
-            submitNodeCollector.submitCustomGeometry(poseStack,
-                    RenderTypes.entityTranslucent(ts.atlasLocation()), (pose, buf) ->
-                templateVoxel(pose, buf,
-                        L0, L1, L0, L1,
-                        Y_TEMPLATE_BOT, Y_TEMPLATE_TOP,
-                        ts, ARGB.color(0xFF, 255, 255, 255), light));
+        // ── Layer 1: template — full item rendered lying flat in the bowl ─────
+        if (state.templateItemState != null) {
+            poseStack.pushPose();
+            poseStack.translate(0.5f, Y_TEMPLATE, 0.685f);
+            poseStack.mulPose(Axis.XP.rotationDegrees(-90f));
+            poseStack.scale(TEMPLATE_SCALE, TEMPLATE_SCALE, TEMPLATE_SCALE);
+            state.templateItemState.submit(
+                    poseStack, submitNodeCollector,
+                    light, OverlayTexture.NO_OVERLAY, 0);
+            poseStack.popPose();
         }
 
         // ── Layer 2: fluid — top face only, grows with craft progress ─────────
@@ -199,70 +204,7 @@ public class FoundryRenderer
 
     // ── Geometry helpers ──────────────────────────────────────────────────────
 
-    /**
-     * Renders a 1/16-thick item-style voxel slab:
-     * <ul>
-     *   <li>Top face — full texture with alpha.</li>
-     *   <li>North/South sides — top/bottom pixel row of the texture.</li>
-     *   <li>West/East sides — left/right pixel column of the texture.</li>
-     * </ul>
-     * Assumes a 16×16 sprite; pixel size = 1/16 of the sprite's UV extent.
-     */
-    private static void templateVoxel(
-            PoseStack.Pose pose, VertexConsumer buf,
-            float x0, float x1, float z0, float z1,
-            float yBot, float yTop,
-            TextureAtlasSprite s,
-            int color, int light) {
-
-        final float u0 = s.getU0(), u1 = s.getU1();
-        final float v0 = s.getV0(), v1 = s.getV1();
-        // One-pixel slice in atlas UV space (assumes 16×16 sprite)
-        final float pu = (u1 - u0) / 16f;
-        final float pv = (v1 - v0) / 16f;
-
-        // Top face — full texture (u0→u1, v0→v1)
-        quad(pose, buf,
-                x0, yTop, z0,  u0, v0,
-                x0, yTop, z1,  u0, v1,
-                x1, yTop, z1,  u1, v1,
-                x1, yTop, z0,  u1, v0,
-                color, light, 0, 1, 0);
-
-        // North side (-Z) — top pixel row (v0 → v0+pv)
-        quad(pose, buf,
-                x0, yTop, z0,  u0, v0,
-                x1, yTop, z0,  u1, v0,
-                x1, yBot, z0,  u1, v0 + pv,
-                x0, yBot, z0,  u0, v0 + pv,
-                color, light, 0, 0, -1);
-
-        // South side (+Z) — bottom pixel row (v1-pv → v1)
-        quad(pose, buf,
-                x1, yTop, z1,  u0, v1 - pv,
-                x0, yTop, z1,  u1, v1 - pv,
-                x0, yBot, z1,  u1, v1,
-                x1, yBot, z1,  u0, v1,
-                color, light, 0, 0, 1);
-
-        // West side (-X) — left pixel column (u0 → u0+pu)
-        quad(pose, buf,
-                x0, yTop, z1,  u0,      v0,
-                x0, yTop, z0,  u0 + pu, v0,
-                x0, yBot, z0,  u0 + pu, v1,
-                x0, yBot, z1,  u0,      v1,
-                color, light, -1, 0, 0);
-
-        // East side (+X) — right pixel column (u1-pu → u1)
-        quad(pose, buf,
-                x1, yTop, z0,  u1 - pu, v0,
-                x1, yTop, z1,  u1,      v0,
-                x1, yBot, z1,  u1,      v1,
-                x1, yBot, z0,  u1 - pu, v1,
-                color, light, 1, 0, 0);
-    }
-
-    /** Single top-face quad. */
+    /** Single top-face quad for the fluid layer. */
     private static void topFace(
             PoseStack.Pose pose, VertexConsumer buf,
             float x0, float x1, float z0, float z1, float y,
@@ -297,15 +239,5 @@ public class FoundryRenderer
         buf.addVertex(pose, x3, y3, z3).setColor(color)
                 .setUv(u3, v3).setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(light).setNormal(pose, nx, ny, nz);
-    }
-
-    /** Returns the particle sprite for {@code stack}, or null. */
-    private @Nullable TextureAtlasSprite particleSprite(ItemStack stack, ClientLevel level) {
-        if (stack.isEmpty()) return null;
-        tempItemState.clear();
-        itemModelResolver.updateForTopItem(
-                tempItemState, stack, ItemDisplayContext.GROUND, level, null, 0);
-        Material.Baked mat = tempItemState.pickParticleMaterial(RANDOM);
-        return mat != null ? mat.sprite() : null;
     }
 }
