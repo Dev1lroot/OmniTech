@@ -1,0 +1,10 @@
+{
+  "default": {
+    "biomes":    "#minecraft:is_overworld",
+    "min_y":       0,
+    "max_y":      32,
+    "vein_size":  32,
+    "min_count":   0,
+    "max_count":   1
+  }
+}

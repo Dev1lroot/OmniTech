@@ -1,0 +1,20 @@
+{
+  "default": {
+    "biomes": "#minecraft:is_overworld",
+    "min_y": -32,
+    "max_y": 48,
+    "vein_size": 5,
+    "min_count": 0,
+    "max_count": 2
+  },
+  "overrides": [
+    {
+      "biomes": "#minecraft:is_mountain",
+      "min_y": -16,
+      "max_y": 80,
+      "vein_size": 7,
+      "min_count": 0,
+      "max_count": 2
+    }
+  ]
+}

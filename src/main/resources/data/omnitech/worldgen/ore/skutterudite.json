@@ -1,0 +1,28 @@
+{
+  "default": {
+    "biomes":    "#minecraft:is_overworld",
+    "min_y":       0,
+    "max_y":      32,
+    "vein_size":  20,
+    "min_count":   0,
+    "max_count":   1
+  },
+  "overrides": [
+    {
+      "biomes":    "#minecraft:is_mountain",
+      "min_y":       0,
+      "max_y":      60,
+      "vein_size":  20,
+      "min_count":   0,
+      "max_count":   1
+    },
+    {
+      "biomes":    "#minecraft:is_taiga",
+      "min_y":       0,
+      "max_y":      24,
+      "vein_size":  25,
+      "min_count":   0,
+      "max_count":   1
+    }
+  ]
+}

@@ -258,7 +258,7 @@ public class OmniTechBlocks {
             Function<BlockBehaviour.Properties, BlockBehaviour.Properties> props,
             OreSpawnConfig config) {
         DeferredBlock<OmniTechOreBlock> block = register(name,
-                p -> new OmniTechOreBlock(props.apply(p), config));
+                p -> new OmniTechOreBlock(props.apply(p)));
         ALL_ORES.add(new OreEntry(block, config));
         return block;
     }

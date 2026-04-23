@@ -86,8 +86,9 @@ public class OmniTech {
         modEventBus.addListener(this::registerPayloads);
         modEventBus.addListener(OmniTechDatagen::gatherData);
 
-        // Load mineral/tool/armor sets before registries fire so deferred entries are queued
-        OmniTechMinerals.init();
+        // Load blocks and ore spawn configs before registries fire so deferred entries are queued
+        BlockLoader.loadAll();
+        OreSpawnLoader.loadAll();   // must run after BlockLoader
         ToolSetLoader.loadAll();
         ArmorSetLoader.loadAll();
 

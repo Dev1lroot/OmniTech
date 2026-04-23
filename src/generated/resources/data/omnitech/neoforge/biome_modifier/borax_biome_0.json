@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:desert",
+  "features": "omnitech:borax_biome_0",
+  "step": "underground_ores"
+}

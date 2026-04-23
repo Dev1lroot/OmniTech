@@ -603,5 +603,16 @@
   "item.omnitech.potassium_plate": "Potassium Plate",
   "item.omnitech.cesium_dust": "Cesium Dust",
   "item.omnitech.carnotite_dust": "Carnotite Dust",
-  "block.omnitech.carnotite": "Carnotite"
+  "block.omnitech.carnotite": "Carnotite",
+  "block.omnitech.pentlandite": "Pentlandite",
+  "block.omnitech.monazite": "Monazite",
+  "block.omnitech.bauxite": "Bauxite",
+  "block.omnitech.ilmenite": "Ilmenite",
+  "block.omnitech.borax": "Borax",
+  "block.omnitech.cinnabar": "Cinnabar",
+  "block.omnitech.pyrolusite": "Pyrolusite",
+  "block.omnitech.baddeleyite": "Baddeleyite",
+  "block.omnitech.chromite": "Chromite",
+  "block.omnitech.uraninite": "Uraninite",
+  "block.omnitech.fluorite": "Fluorite"
 }

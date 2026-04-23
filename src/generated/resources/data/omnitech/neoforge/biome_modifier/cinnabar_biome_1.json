@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:desert",
+  "features": "omnitech:cinnabar_biome_1",
+  "step": "underground_ores"
+}

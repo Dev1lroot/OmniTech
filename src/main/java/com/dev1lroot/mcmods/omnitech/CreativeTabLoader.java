@@ -83,7 +83,7 @@ public class CreativeTabLoader {
                             .displayItems((parameters, output) -> {
                                 for (String entry : data) {
                                     switch (entry) {
-                                        case "$material_sets" -> MineralSet.addAllToTab(output);
+                                        case "$material_sets" -> BlockLoader.addAllToTab(output);
                                         case "$armor_sets"    -> ArmorSet.addAllToTab(output);
                                         case "$tool_sets"     -> ToolSet.addAllToTab(output);
                                         default -> BuiltInRegistries.ITEM

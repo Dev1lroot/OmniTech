@@ -1,0 +1,374 @@
+minerals:
+  - name: "bauxite"
+    visuals:
+      # Базовая текстура
+      base_layer:
+        color: "#7B3F00"
+        texture_type: "grainy" # Зернистая текстура
+      # Цветные вкрапления
+      inclusions:
+        - color: "#A0522D"
+          size: { min: 0.1, max: 0.3 }
+          density: 0.6
+          shading: "matte"
+        - color: "#D2691E" # Светлые глинистые пятна
+          size: { min: 0.05, max: 0.1 }
+          density: 0.2
+          shading: "dull"
+      effects:
+        emissive: false # Боксит не светится
+        reflectivity: 0.1
+    generation:
+      global:
+        cluster_size: { min: 1, max: 4 }
+        height: { min: -40, max: 50 }
+        replaces: ["minecraft:stone", "minecraft:sandstone"]
+      "minecraft:desert":
+        cluster_size: { min: 4, max: 12 }
+        clusters_per_chunk: { min: 4, max: 8 }
+
+  - name: "fluorite" # Флюорит (разноцветный кристалл)
+    visuals:
+      base_layer:
+        color: "#2F4F4F" # Темный сланец
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#9370DB" # Фиолетовые кристаллы
+          size: { min: 0.2, max: 0.5 }
+          density: 0.4
+          shading: "translucent" # Полупрозрачный
+        - color: "#00FF7F" # Зеленые прожилки
+          size: { min: 0.1, max: 0.4 }
+          density: 0.3
+          shading: "glowing"
+      effects:
+        emissive: true
+        emissive_power: 0.4
+        sparkle_factor: 0.8 # Эффект искр при взгляде под углом
+    generation:
+      global:
+        cluster_size: { min: 2, max: 6 }
+        height: { min: -64, max: 32 }
+        replaces: ["minecraft:deepslate"]
+
+  - name: "pyrite" # "Золото дураков"
+    visuals:
+      base_layer:
+        color: "#4A4A4A"
+        texture_type: "stony"
+      inclusions:
+        - color: "#D4AF37" # Металлический желтый
+          size: { min: 0.1, max: 0.2 }
+          density: 0.7
+          shading: "metallic"
+          shape: "cubic" # Характерная форма кристаллов пирита
+      effects:
+        emissive: false
+        reflectivity: 0.9
+        metalness: 1.0
+    generation:
+      global:
+        cluster_size: { min: 3, max: 8 }
+        height: { min: -16, max: 48 }
+        replaces: ["minecraft:stone"]
+  - name: "uraninite" # Урановая руда
+    visuals:
+      base_layer:
+        color: "#1A1A1A" # Почти черный глубокий сланец
+        texture_type: "cracked"
+      inclusions:
+        - color: "#2E8B57" # Темно-зеленый окисел
+          size: { min: 0.1, max: 0.25 }
+          density: 0.4
+          shading: "matte"
+        - color: "#7FFF00" # Ярко-зеленые активные вкрапления
+          size: { min: 0.05, max: 0.15 }
+          density: 0.15
+          shading: "glowing"
+      effects:
+        emissive: true
+        emissive_power: 0.8
+        hazard_glow: true # Кастомный флаг для шейдера радиации
+    generation:
+      global:
+        cluster_size: { min: 1, max: 3 }
+        height: { min: -64, max: -20 }
+        replaces: ["minecraft:deepslate"]
+
+  - name: "zircon" # Циркон
+    visuals:
+      base_layer:
+        color: "#3D2B1F" # Коричневая порода
+        texture_type: "stony"
+      inclusions:
+        - color: "#E1A95F" # Золотисто-коричневые кристаллы
+          size: { min: 0.1, max: 0.3 }
+          density: 0.3
+          shading: "translucent"
+        - color: "#FFD700" # Яркие искры
+          size: { min: 0.05, max: 0.1 }
+          density: 0.1
+          shading: "bright"
+      effects:
+        emissive: false
+        sparkle_factor: 0.9
+        reflectivity: 0.6
+    generation:
+      global:
+        cluster_size: { min: 2, max: 5 }
+        height: { min: 10, max: 60 }
+        replaces: ["minecraft:stone", "minecraft:granite"]
+
+  - name: "ilmenite" # Титановая руда
+    visuals:
+      base_layer:
+        color: "#2C2C2C"
+        texture_type: "grainy"
+      inclusions:
+        - color: "#464646" # Стальной серый
+          size: { min: 0.2, max: 0.4 }
+          density: 0.5
+          shading: "metallic"
+        - color: "#1C1C1C" # Черные вставки
+          size: { min: 0.1, max: 0.2 }
+          density: 0.3
+          shading: "matte"
+      effects:
+        emissive: false
+        metalness: 0.8
+        reflectivity: 0.4
+    generation:
+      global:
+        cluster_size: { min: 3, max: 6 }
+        height: { min: -10, max: 40 }
+        replaces: ["minecraft:stone", "minecraft:andesite"]
+
+  - name: "wolframite" # Вольфрам
+    visuals:
+      base_layer:
+        color: "#121212"
+        texture_type: "stony"
+      inclusions:
+        - color: "#303030" # Тяжелый серый
+          size: { min: 0.1, max: 0.2 }
+          density: 0.6
+          shading: "metallic"
+          shape: "plates"
+      effects:
+        emissive: false
+        density_factor: 1.5 # Тяжелая руда
+    generation:
+      global:
+        cluster_size: { min: 1, max: 2 }
+        height: { min: -64, max: -32 }
+        replaces: ["minecraft:deepslate", "minecraft:tuff"]
+
+  - name: "cobaltite" # Кобальт
+    visuals:
+      base_layer:
+        color: "#303035"
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#0047AB" # Глубокий синий (кобальтовый)
+          size: { min: 0.15, max: 0.35 }
+          density: 0.4
+          shading: "metallic"
+        - color: "#4169E1" # Светло-синие прожилки
+          size: { min: 0.05, max: 0.2 }
+          density: 0.2
+          shading: "glossy"
+      effects:
+        emissive: false
+        reflectivity: 0.5
+    generation:
+      global:
+        cluster_size: { min: 2, max: 4 }
+        height: { min: -20, max: 30 }
+        replaces: ["minecraft:stone", "minecraft:deepslate"]
+
+  - name: "pentlandite" # Никелевая руда
+    visuals:
+      base_layer:
+        color: "#463E31" # Грязновато-бурая основа
+        texture_type: "grainy"
+      inclusions:
+        - color: "#C5B358" # Бледно-желтый, латунный блеск
+          size: { min: 0.15, max: 0.4 }
+          density: 0.5
+          shading: "metallic"
+        - color: "#EEDC82" # Светлые "никелевые" пятна
+          size: { min: 0.05, max: 0.1 }
+          density: 0.2
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.7
+    generation:
+      global:
+        cluster_size: { min: 3, max: 7 }
+        height: { min: -20, max: 40 }
+        replaces: ["minecraft:stone", "minecraft:magma_block"] # Можно найти у лавовых озер
+
+  - name: "monazite" # Редкоземельные металлы / Торий
+    visuals:
+      base_layer:
+        color: "#4E3B31" # Красновато-коричневый песок/камень
+        texture_type: "stony"
+      inclusions:
+        - color: "#964B00" # Насыщенный коричневый
+          size: { min: 0.2, max: 0.5 }
+          density: 0.3
+          shading: "matte"
+        - color: "#FF8C00" # Оранжево-желтые вкрапления
+          size: { min: 0.1, max: 0.2 }
+          density: 0.2
+          shading: "translucent"
+      effects:
+        emissive: false
+        radioactive_hint: true # Для интеграции с механикой радиации
+    generation:
+      global:
+        cluster_size: { min: 1, max: 4 }
+        height: { min: 0, max: 70 }
+        replaces: ["minecraft:sandstone", "minecraft:granite"]
+
+  - name: "chromite" # Хром
+    visuals:
+      base_layer:
+        color: "#1A1A1A" # Очень темная порода
+        texture_type: "cracked"
+      inclusions:
+        - color: "#000000" # Глубокий черный
+          size: { min: 0.2, max: 0.6 }
+          density: 0.6
+          shading: "matte"
+        - color: "#36454F" # Оружейная сталь (блеск)
+          size: { min: 0.1, max: 0.3 }
+          density: 0.2
+          shading: "metallic"
+      effects:
+        emissive: false
+        reflectivity: 0.3
+    generation:
+      global:
+        cluster_size: { min: 2, max: 5 }
+        height: { min: -48, max: 10 }
+        replaces: ["minecraft:deepslate", "minecraft:tuff"]
+
+  - name: "tantalite" # Тантал
+    visuals:
+      base_layer:
+        color: "#242124"
+        texture_type: "stony"
+      inclusions:
+        - color: "#121212" # Черные кристаллы
+          size: { min: 0.1, max: 0.2 }
+          density: 0.4
+          shading: "matte"
+        - color: "#4B0082" # Едва заметный фиолетовый отлив
+          size: { min: 0.05, max: 0.15 }
+          density: 0.1
+          shading: "glossy"
+      effects:
+        emissive: false
+        metalness: 0.5
+    generation:
+      global:
+        cluster_size: { min: 1, max: 2 }
+        height: { min: -64, max: -30 }
+        replaces: ["minecraft:deepslate"]
+
+  - name: "chalcopyrite" # Основная медная руда
+    visuals:
+      base_layer:
+        color: "#4D4D4D"
+        texture_type: "stony"
+      inclusions:
+        - color: "#B87333" # Медный рыжий
+          size: { min: 0.2, max: 0.4 }
+          density: 0.5
+          shading: "metallic"
+        - color: "#E3963E" # Золотистые вкрапления латуни
+          size: { min: 0.1, max: 0.2 }
+          density: 0.2
+          shading: "bright"
+    generation:
+      global:
+        cluster_size: { min: 4, max: 10 }
+        height: { min: -16, max: 112 }
+        replaces: ["minecraft:stone"]
+
+  - name: "galena" # Свинцовая руда (сульфид свинца)
+    visuals:
+      base_layer:
+        color: "#2F2F2F"
+        texture_type: "cracked"
+      inclusions:
+        - color: "#708090" # Свинцово-серый
+          size: { min: 0.3, max: 0.5 }
+          density: 0.6
+          shading: "metallic"
+          shape: "cubic" # Галенит кристаллизуется кубами
+      effects:
+        reflectivity: 0.3
+    generation:
+      global:
+        cluster_size: { min: 3, max: 6 }
+        height: { min: -40, max: 30 }
+        replaces: ["minecraft:stone", "minecraft:deepslate"]
+
+  - name: "stannite" # Оловянная руда
+    visuals:
+      base_layer:
+        color: "#3B3B3B"
+        texture_type: "grainy"
+      inclusions:
+        - color: "#D3D3D3" # Серебристо-белое олово
+          size: { min: 0.1, max: 0.3 }
+          density: 0.4
+          shading: "metallic"
+        - color: "#5F5F5F" # Серый металл
+          size: { min: 0.05, max: 0.15 }
+          density: 0.2
+          shading: "matte"
+    generation:
+      global:
+        cluster_size: { min: 4, max: 8 }
+        height: { min: 20, max: 80 }
+        replaces: ["minecraft:stone", "minecraft:granite"]
+
+  - name: "native_silver" # Самородное серебро
+    visuals:
+      base_layer:
+        color: "#1E1E1E" # Темный сланец для контраста
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#C0C0C0" # Чистое серебро
+          size: { min: 0.1, max: 0.4 }
+          density: 0.3
+          shading: "metallic"
+          shape: "veins" # Серебро часто идет жилами
+      effects:
+        sparkle_factor: 1.0
+        reflectivity: 0.9
+    generation:
+      global:
+        cluster_size: { min: 1, max: 4 }
+        height: { min: -64, max: 0 }
+        replaces: ["minecraft:deepslate"]
+
+  - name: "magnesite" # Магний
+    visuals:
+      base_layer:
+        color: "#5A5A5A"
+        texture_type: "stony"
+      inclusions:
+        - color: "#F5F5F5" # Белые кристаллические пятна
+          size: { min: 0.2, max: 0.4 }
+          density: 0.5
+          shading: "translucent"
+    generation:
+      global:
+        cluster_size: { min: 2, max: 6 }
+        height: { min: 10, max: 50 }
+        replaces: ["minecraft:stone", "minecraft:andesite"]

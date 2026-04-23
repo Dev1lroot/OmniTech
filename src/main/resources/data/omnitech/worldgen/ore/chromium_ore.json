@@ -1,0 +1,28 @@
+{
+  "default": {
+    "biomes":    "#minecraft:is_overworld",
+    "min_y":     -32,
+    "max_y":      48,
+    "vein_size":   7,
+    "min_count":   0,
+    "max_count":   1
+  },
+  "overrides": [
+    {
+      "biomes":    "#minecraft:is_savanna",
+      "min_y":     -16,
+      "max_y":      64,
+      "vein_size":  10,
+      "min_count":   0,
+      "max_count":   2
+    },
+    {
+      "biomes":    "#minecraft:is_badlands",
+      "min_y":     -16,
+      "max_y":      64,
+      "vein_size":  10,
+      "min_count":   0,
+      "max_count":   2
+    }
+  ]
+}
