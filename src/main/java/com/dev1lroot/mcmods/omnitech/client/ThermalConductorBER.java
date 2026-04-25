@@ -67,7 +67,7 @@ public class ThermalConductorBER
         } else {
             // Static tint: neutral at 0 deviation, full red/blue at ±273 °C.
             float frac = Math.min(1f, Math.abs(deviation) / 273f);
-            int alpha = (int)(0x50 + 0xAF * frac);
+            int alpha = (int)(0xAF * frac);
             int r, g, b;
             if (deviation > 0) {
                 r = 255; g = 0; b = 0;
@@ -110,8 +110,10 @@ public class ThermalConductorBER
         int color = state.argb;
         int light = LightCoordsUtil.FULL_BRIGHT; // glow effect, independent of block lighting
 
+        // sprite.atlasLocation() = "minecraft:textures/atlas/blocks.png" — the actual PNG path
+        // AtlasIds.BLOCKS = "minecraft:blocks" — only the atlas lookup key, not the texture path
         submitNodeCollector.submitCustomGeometry(poseStack,
-                RenderTypes.entityTranslucent(AtlasIds.BLOCKS), (pose, buf) -> {
+                RenderTypes.eyes(sprite.atlasLocation()), (pose, buf) -> {
 
             // Core cube — always present
             box(pose, buf, C0 - EP, C0 - EP, C0 - EP, C1 + EP, C1 + EP, C1 + EP,
