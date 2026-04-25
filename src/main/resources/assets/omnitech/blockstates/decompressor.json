@@ -1,5 +1,8 @@
 {
   "variants": {
-    "": { "model": "omnitech:block/decompressor" }
+    "facing=north": { "model": "omnitech:block/decompressor" },
+    "facing=south": { "model": "omnitech:block/decompressor", "y": 180 },
+    "facing=west":  { "model": "omnitech:block/decompressor", "y": 270 },
+    "facing=east":  { "model": "omnitech:block/decompressor", "y": 90 }
   }
 }

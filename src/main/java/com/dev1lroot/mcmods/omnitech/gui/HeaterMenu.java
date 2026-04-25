@@ -2,7 +2,7 @@ package com.dev1lroot.mcmods.omnitech.gui;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
-import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticGeneratorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.thermal.HeaterFuelRegistry;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
@@ -120,7 +120,7 @@ public class HeaterMenu extends AbstractContainerMenu {
         }
         @Override
         public boolean mayPlace(ItemStack stack) {
-            return KineticGeneratorBlockEntity.getBurnDuration(stack) > 0;
+            return HeaterFuelRegistry.isValidFuel(stack);
         }
     }
 }

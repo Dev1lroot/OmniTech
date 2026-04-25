@@ -1,5 +1,8 @@
 {
   "variants": {
-    "": { "model": "omnitech:block/rotary_compressor" }
+    "facing=north": { "model": "omnitech:block/rotary_compressor" },
+    "facing=south": { "model": "omnitech:block/rotary_compressor", "y": 180 },
+    "facing=west":  { "model": "omnitech:block/rotary_compressor", "y": 270 },
+    "facing=east":  { "model": "omnitech:block/rotary_compressor", "y": 90 }
   }
 }

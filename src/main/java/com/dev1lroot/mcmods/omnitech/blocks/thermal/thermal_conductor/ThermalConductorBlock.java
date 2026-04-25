@@ -93,7 +93,7 @@ public class ThermalConductorBlock extends BaseEntityBlock {
             ScheduledTickAccess scheduledTickAccess, BlockPos pos,
             Direction direction, BlockPos neighborPos, BlockState neighborState,
             RandomSource random) {
-        return state.setValue(propertyFor(direction), canConnectTo(level, neighborPos));
+        return state.setValue(propertyFor(direction), canConnectTo(level, neighborPos, direction));
     }
 
     // ── VoxelShape ────────────────────────────────────────────────────────────
@@ -128,10 +128,21 @@ public class ThermalConductorBlock extends BaseEntityBlock {
 
     // ── Connection logic ──────────────────────────────────────────────────────
 
-    /** Connects to other conductors, thermal nodes (sources/radiators), and heat/cold sinks. */
-    public static boolean canConnectTo(LevelReader level, BlockPos neighborPos) {
+    /**
+     * Returns true if a conductor arm in {@code dir} should extend toward {@code neighborPos}.
+     *
+     * <p>Radiators are directional: a conductor only connects to a radiator's back face.
+     * The back is {@code FACING.getOpposite()}, so the conductor is on the back when
+     * {@code dir == radiatorFacing} (the conductor lies in the direction the front faces).
+     */
+    public static boolean canConnectTo(LevelReader level, BlockPos neighborPos, Direction dir) {
         BlockState neighborState = level.getBlockState(neighborPos);
         if (neighborState.getBlock() instanceof ThermalConductorBlock) return true;
+        if (neighborState.getBlock() instanceof
+                com.dev1lroot.mcmods.omnitech.blocks.thermal.radiator.RadiatorBlock) {
+            return dir == neighborState.getValue(
+                    com.dev1lroot.mcmods.omnitech.blocks.thermal.radiator.RadiatorBlock.FACING);
+        }
         BlockEntity be = level.getBlockEntity(neighborPos);
         return be instanceof IThermalNode || be instanceof IHeatReceiver || be instanceof IColdReceiver;
     }
@@ -151,7 +162,7 @@ public class ThermalConductorBlock extends BaseEntityBlock {
 
     private static BlockState calculateState(BlockState state, LevelReader level, BlockPos pos) {
         for (Direction dir : Direction.values()) {
-            state = state.setValue(propertyFor(dir), canConnectTo(level, pos.relative(dir)));
+            state = state.setValue(propertyFor(dir), canConnectTo(level, pos.relative(dir), dir));
         }
         return state;
     }

@@ -1,5 +1,8 @@
 {
   "variants": {
-    "": { "model": "omnitech:block/heat_exchanger" }
+    "facing=north": { "model": "omnitech:block/heat_exchanger" },
+    "facing=south": { "model": "omnitech:block/heat_exchanger", "y": 180 },
+    "facing=west":  { "model": "omnitech:block/heat_exchanger", "y": 270 },
+    "facing=east":  { "model": "omnitech:block/heat_exchanger", "y": 90 }
   }
 }

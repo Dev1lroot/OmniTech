@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
  * measured in celsius.  Each tick it radiates heat to all directly adjacent
  * blocks that implement {@link IHeatReceiver}.
  *
- * <p>Maximum stored heat: {@link HeaterBlockEntity#MAX_HEAT} = 300 °C.
+ * <p>Maximum stored heat depends on the fuel used — see {@link HeaterFuelRegistry} for tiers.
  * The heater has no directional facing — it outputs heat equally on all six faces.
  */
 public class HeaterBlock extends BaseEntityBlock {

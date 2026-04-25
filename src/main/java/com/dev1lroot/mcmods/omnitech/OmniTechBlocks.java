@@ -227,16 +227,16 @@ public class OmniTechBlocks {
                 p -> new ElectrolysisMachineBlock(p.mapColor(MapColor.METAL).strength(3.5F)
                         .sound(SoundType.METAL)));
         ROTARY_COMPRESSOR = register("rotary_compressor",
-                p -> new RotaryCompressorBlock(p.mapColor(MapColor.METAL).strength(3.5F)
+                p -> new RotaryCompressorBlock(p.mapColor(MapColor.METAL).strength(3.5F).noOcclusion()
                         .sound(SoundType.METAL)));
         FLUID_COLLECTOR = register("fluid_collector",
                 p -> new FluidCollectorBlock(p.mapColor(MapColor.METAL).strength(3.0F)
                         .sound(SoundType.METAL).noOcclusion()));
         HEAT_EXCHANGER = register("heat_exchanger",
-                p -> new HeatExchangerBlock(p.mapColor(MapColor.METAL).strength(3.5F)
+                p -> new HeatExchangerBlock(p.mapColor(MapColor.METAL).strength(3.5F).noOcclusion()
                         .sound(SoundType.METAL)));
         DECOMPRESSOR = register("decompressor",
-                p -> new DecompressorBlock(p.mapColor(MapColor.METAL).strength(3.5F)
+                p -> new DecompressorBlock(p.mapColor(MapColor.METAL).strength(3.5F).noOcclusion()
                         .sound(SoundType.METAL)));
         FRACTIONAL_DISTILLER = register("fractional_distiller",
                 p -> new FractionalDistillerBlock(p.mapColor(MapColor.METAL).strength(3.5F)

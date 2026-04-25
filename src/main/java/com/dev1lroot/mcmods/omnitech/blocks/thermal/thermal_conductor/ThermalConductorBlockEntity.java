@@ -84,8 +84,13 @@ public class ThermalConductorBlockEntity extends BlockEntity implements IThermal
                 totalDelta += CONDUCTIVITY * (adjConductor.temperature - be.temperature);
 
             } else if (neighbor instanceof com.dev1lroot.mcmods.omnitech.blocks.thermal.radiator.RadiatorBlockEntity adjRadiator) {
-                // Radiator: passive diffusion — radiator handles its own tick
-                totalDelta += CONDUCTIVITY * (adjRadiator.getTemperature() - be.temperature);
+                // Radiator: only connect if this conductor is on the radiator's back face
+                BlockState neighborState = level.getBlockState(neighborPos);
+                Direction radiatorFacing = neighborState.getValue(
+                        com.dev1lroot.mcmods.omnitech.blocks.thermal.radiator.RadiatorBlock.FACING);
+                if (dir == radiatorFacing) {
+                    totalDelta += CONDUCTIVITY * (adjRadiator.getTemperature() - be.temperature);
+                }
 
             } else if (be.temperature > AMBIENT_TEMP + 1f && neighbor instanceof IHeatReceiver hr) {
                 // Hot conductor pushes discrete heat to adjacent sink machine

@@ -1,6 +1,16 @@
 {
   "variants": {
-    "lit=false": { "model": "omnitech:block/radiator" },
-    "lit=true":  { "model": "omnitech:block/radiator" }
+    "facing=north,lit=false":  { "model": "omnitech:block/radiator" },
+    "facing=south,lit=false":  { "model": "omnitech:block/radiator", "y": 180 },
+    "facing=east,lit=false":   { "model": "omnitech:block/radiator", "y": 90 },
+    "facing=west,lit=false":   { "model": "omnitech:block/radiator", "y": 270 },
+    "facing=up,lit=false":     { "model": "omnitech:block/radiator", "x": 270 },
+    "facing=down,lit=false":   { "model": "omnitech:block/radiator", "x": 90 },
+    "facing=north,lit=true":   { "model": "omnitech:block/radiator_lit" },
+    "facing=south,lit=true":   { "model": "omnitech:block/radiator_lit", "y": 180 },
+    "facing=east,lit=true":    { "model": "omnitech:block/radiator_lit", "y": 90 },
+    "facing=west,lit=true":    { "model": "omnitech:block/radiator_lit", "y": 270 },
+    "facing=up,lit=true":      { "model": "omnitech:block/radiator_lit", "x": 270 },
+    "facing=down,lit=true":    { "model": "omnitech:block/radiator_lit", "x": 90 }
   }
 }

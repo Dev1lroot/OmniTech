@@ -62,25 +62,23 @@ public class RadiatorBlockEntity extends BlockEntity implements IThermalNode {
     public static void serverTick(Level level, BlockPos pos, BlockState state,
             RadiatorBlockEntity be) {
 
+        // Only the back face (opposite of FACING) connects to the thermal network
+        Direction backDir = state.getValue(RadiatorBlock.FACING).getOpposite();
         float totalDelta = 0f;
 
-        for (Direction dir : Direction.values()) {
-            BlockEntity neighbor = level.getBlockEntity(pos.relative(dir));
+        BlockEntity neighbor = level.getBlockEntity(pos.relative(backDir));
 
-            if (neighbor instanceof ThermalConductorBlockEntity adjConductor) {
-                // Passive diffusion with adjacent conductors
-                totalDelta += CONDUCTIVITY * (adjConductor.getTemperature() - be.temperature);
+        if (neighbor instanceof ThermalConductorBlockEntity adjConductor) {
+            totalDelta += CONDUCTIVITY * (adjConductor.getTemperature() - be.temperature);
 
-            } else if (neighbor instanceof RadiatorBlockEntity adjRadiator) {
-                // Radiator-to-radiator diffusion (chain dissipation)
-                totalDelta += CONDUCTIVITY * (adjRadiator.temperature - be.temperature);
+        } else if (neighbor instanceof RadiatorBlockEntity adjRadiator) {
+            // Back-to-back radiator chaining
+            totalDelta += CONDUCTIVITY * (adjRadiator.temperature - be.temperature);
 
-            } else if (neighbor instanceof IThermalNode node) {
-                // Adjacent machine (heat/cold source): exchange and inform machine
-                float delta = CONDUCTIVITY * (node.getTemperature() - be.temperature);
-                totalDelta += delta;
-                node.applyHeat(-delta);
-            }
+        } else if (neighbor instanceof IThermalNode node) {
+            float delta = CONDUCTIVITY * (node.getTemperature() - be.temperature);
+            totalDelta += delta;
+            node.applyHeat(-delta);
         }
 
         // Proportional dissipation to ambient
