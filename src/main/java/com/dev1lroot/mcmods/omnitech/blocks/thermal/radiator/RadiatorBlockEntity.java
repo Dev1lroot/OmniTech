@@ -36,6 +36,8 @@ public class RadiatorBlockEntity extends BlockEntity implements IThermalNode {
     public static final float CONDUCTIVITY = ThermalConductorBlockEntity.CONDUCTIVITY;
     /** Fraction of temperature excess/deficit shed to ambient each tick. */
     public static final float DISSIPATION_RATE = 0.08f;
+    /** Flat heat bleed toward ambient per tick (network loss per radiator tile). */
+    public static final float AMBIENT_BLEED = 0.5f;
     /** Threshold for LIT blockstate toggle. */
     private static final float LIT_THRESHOLD = 5f;
     private static final float SYNC_THRESHOLD = 1f;
@@ -81,8 +83,12 @@ public class RadiatorBlockEntity extends BlockEntity implements IThermalNode {
             }
         }
 
-        // Passive dissipation to ambient — the radiator's defining property
+        // Proportional dissipation to ambient
         totalDelta -= DISSIPATION_RATE * (be.temperature - AMBIENT_TEMP);
+
+        // Flat bleed toward ambient — 0.5°C per tick, clamped so we don't overshoot
+        float diff = be.temperature - AMBIENT_TEMP;
+        totalDelta -= diff >= 0 ? Math.min(AMBIENT_BLEED, diff) : Math.max(-AMBIENT_BLEED, diff);
 
         be.temperature = Math.clamp(be.temperature + totalDelta, -500f, 2000f);
 

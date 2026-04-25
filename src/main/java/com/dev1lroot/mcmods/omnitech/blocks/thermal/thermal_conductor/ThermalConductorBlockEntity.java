@@ -38,6 +38,8 @@ public class ThermalConductorBlockEntity extends BlockEntity implements IThermal
 
     /** Fraction of temperature difference transferred per tick per adjacent node. */
     public static final float CONDUCTIVITY = 0.10f;
+    /** Flat heat bleed toward ambient per tick (network loss per conductor tile). */
+    public static final float AMBIENT_BLEED = 0.1f;
     /** Minimum temperature delta before treating the conductor as active for display. */
     public static final float DISPLAY_THRESHOLD = 2f;
     /** Sync threshold — don't spam packets for sub-degree changes. */
@@ -101,6 +103,10 @@ public class ThermalConductorBlockEntity extends BlockEntity implements IThermal
                 }
             }
         }
+
+        // Flat bleed toward ambient — 0.1°C per tick, clamped so we don't overshoot
+        float diff = be.temperature - AMBIENT_TEMP;
+        totalDelta -= diff >= 0 ? Math.min(AMBIENT_BLEED, diff) : Math.max(-AMBIENT_BLEED, diff);
 
         be.temperature = Math.clamp(be.temperature + totalDelta, -500f, 5000f);
 
