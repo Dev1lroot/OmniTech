@@ -4,6 +4,7 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticGeneratorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.HeaterMenu;
 import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
+import com.dev1lroot.mcmods.omnitech.io.IThermalNode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -34,7 +35,7 @@ import net.minecraft.world.level.storage.ValueOutput;
  *   <li>Output to each adjacent receiver: {@code storedHeat / 60} °C per tick (0–5 °C).</li>
  * </ul>
  */
-public class HeaterBlockEntity extends BaseContainerBlockEntity {
+public class HeaterBlockEntity extends BaseContainerBlockEntity implements IThermalNode {
     public static final int SLOT_FUEL  = 0;
     public static final int SLOT_COUNT = 1;
 
@@ -132,23 +133,19 @@ public class HeaterBlockEntity extends BaseContainerBlockEntity {
             level.setBlock(pos, state.setValue(HeaterBlock.LIT, be.isLit()), 3);
         }
 
-        // ── Radiate heat to adjacent IHeatReceiver blocks ─────────────────────
-        // Heat that a neighbor actually absorbs is deducted from this heater's
-        // stored heat — so energy genuinely flows rather than being duplicated.
-        if (be.storedHeat > 0) {
-            int transfer = be.storedHeat / 60; // 0–5 °C per tick
-            if (transfer > 0) {
-                for (Direction dir : Direction.values()) {
-                    BlockEntity neighbor = level.getBlockEntity(pos.relative(dir));
-                    if (neighbor instanceof IHeatReceiver receiver) {
-                        int absorbed = receiver.addHeat(transfer);
-                        be.storedHeat = Math.max(0, be.storedHeat - absorbed);
-                    }
-                }
-            }
-        }
+        // Heat is now extracted by adjacent ThermalConductorBlockEntity tiles via IThermalNode.
 
         be.setChanged();
+    }
+
+    // ── IThermalNode ──────────────────────────────────────────────────────────
+
+    @Override
+    public float getTemperature() { return AMBIENT_TEMP + storedHeat; }
+
+    @Override
+    public void applyHeat(float dT) {
+        if (dT < 0) storedHeat = Math.max(0, storedHeat + (int) dT);
     }
 
     // ── Accessors ─────────────────────────────────────────────────────────────

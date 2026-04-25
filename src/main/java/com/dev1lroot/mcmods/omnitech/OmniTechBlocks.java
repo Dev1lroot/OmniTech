@@ -10,6 +10,10 @@ import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticReductorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.ElectrolysisMachineBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.FractionalDistillerBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.SolvationMachineBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.labware.chemical_infuser.ChemicalInfuserBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.labware.extractor.ExtractorBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.thermal.radiator.RadiatorBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logistic.SorterBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.processing.macerator.ManualMaceratorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.*;
@@ -113,6 +117,10 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> FLUID_FILLER;
     public static final DeferredBlock<Block> ELECTRIC_CHARGER;
     public static final DeferredBlock<Block> COKE_BRICK;
+    public static final DeferredBlock<Block> CHEMICAL_INFUSER;
+    public static final DeferredBlock<Block> EXTRACTOR;
+    public static final DeferredBlock<Block> RADIATOR;
+    public static final DeferredBlock<Block> THERMAL_CONDUCTOR;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -245,6 +253,19 @@ public class OmniTechBlocks {
         COKE_BRICK = register("coke_brick",
                 p -> new CokeBrickBlock(p.mapColor(MapColor.STONE).strength(3.5F)
                         .sound(SoundType.STONE)));
+        CHEMICAL_INFUSER = register("chemical_infuser",
+                p -> new ChemicalInfuserBlock(p.mapColor(MapColor.METAL).strength(3.5F)
+                        .sound(SoundType.METAL)));
+        EXTRACTOR = register("extractor",
+                p -> new ExtractorBlock(p.mapColor(MapColor.METAL).strength(3.5F)
+                        .sound(SoundType.METAL)));
+        RADIATOR = register("radiator",
+                p -> new RadiatorBlock(p.mapColor(MapColor.METAL).strength(3.0F)
+                        .sound(SoundType.METAL).noOcclusion()));
+        THERMAL_CONDUCTOR = register("thermal_conductor",
+                p -> new ThermalConductorBlock(p.mapColor(MapColor.METAL).strength(2.0F)
+                        .sound(SoundType.METAL).noOcclusion()
+                        .pushReaction(net.minecraft.world.level.material.PushReaction.NORMAL)));
     }
 
     // ── Registration helpers ───────────────────────────────────────────────

@@ -4,6 +4,8 @@ import com.dev1lroot.mcmods.omnitech.gui.BoilerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.CokeOvenMenu;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricChargerMenu;
+import com.dev1lroot.mcmods.omnitech.gui.ChemicalInfuserMenu;
+import com.dev1lroot.mcmods.omnitech.gui.ExtractorMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricCapacitorMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricEngineMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricFurnaceMenu;
@@ -137,6 +139,14 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<ElectricChargerMenu>> ELECTRIC_CHARGER =
             REGISTRY.register("electric_charger",
                     () -> IMenuTypeExtension.create(ElectricChargerMenu::new));
+
+    public static final Supplier<MenuType<ChemicalInfuserMenu>> CHEMICAL_INFUSER =
+            REGISTRY.register("chemical_infuser",
+                    () -> IMenuTypeExtension.create(ChemicalInfuserMenu::new));
+
+    public static final Supplier<MenuType<ExtractorMenu>> EXTRACTOR =
+            REGISTRY.register("extractor",
+                    () -> IMenuTypeExtension.create(ExtractorMenu::new));
 
     public static final Supplier<MenuType<CokeOvenMenu>> COKE_OVEN =
             REGISTRY.register("coke_oven",

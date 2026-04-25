@@ -3,6 +3,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.pressure.decompressor;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.HeatExchangerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.io.IColdReceiver;
+import com.dev1lroot.mcmods.omnitech.io.IThermalNode;
 import com.dev1lroot.mcmods.omnitech.gui.DecompressorMenu;
 import com.dev1lroot.mcmods.omnitech.recipes.DecompressorRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.DecompressorRecipeManager;
@@ -48,7 +49,7 @@ import java.util.Optional;
  * machine pushes {@code storedCold / 60} °C to every adjacent receiver, and
  * the absorbed amount is deducted from {@code storedCold}.
  */
-public class DecompressorBlockEntity extends BlockEntity implements MenuProvider {
+public class DecompressorBlockEntity extends BlockEntity implements MenuProvider, IThermalNode {
 
     public static final int INPUT_TANK_CAPACITY  = 8_000;
     public static final int OUTPUT_TANK_CAPACITY = 8_000;
@@ -162,21 +163,7 @@ public class DecompressorBlockEntity extends BlockEntity implements MenuProvider
             changed = true;
         }
 
-        // 4. Radiate stored cold to adjacent IColdReceiver blocks.
-        //    The absorbed amount is deducted from storedCold so cold genuinely flows.
-        if (be.storedCold > 0) {
-            int transfer = be.storedCold / 60;
-            if (transfer > 0) {
-                for (Direction dir : Direction.values()) {
-                    BlockEntity neighbor = level.getBlockEntity(pos.relative(dir));
-                    if (neighbor instanceof IColdReceiver receiver) {
-                        int absorbed = receiver.addCold(transfer);
-                        be.storedCold = Math.max(0, be.storedCold - absorbed);
-                    }
-                }
-            }
-            changed = true;
-        }
+        // 4. Cold is now extracted by adjacent ThermalConductorBlockEntity tiles via IThermalNode.
 
         // 5. Ambient decay — storedCold drifts toward 0 (cold dissipates) every 20 ticks
         if (be.storedCold > 0) {
@@ -346,6 +333,17 @@ public class DecompressorBlockEntity extends BlockEntity implements MenuProvider
             if (outputFluid.getAmount() <= 0) outputFluid = FluidStack.EMPTY;
             return toExt;
         }
+    }
+
+    // ── IThermalNode ──────────────────────────────────────────────────────────
+
+    @Override
+    public float getTemperature() { return AMBIENT_TEMP - storedCold; }
+
+    @Override
+    public void applyHeat(float dT) {
+        // Warming up means losing stored cold
+        if (dT > 0) storedCold = Math.max(0, storedCold - (int) dT);
     }
 
     // ── Accessors ─────────────────────────────────────────────────────────────

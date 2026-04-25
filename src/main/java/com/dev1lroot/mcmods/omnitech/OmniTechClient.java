@@ -9,6 +9,7 @@ import com.dev1lroot.mcmods.omnitech.client.FluidPipeRenderer;
 import com.dev1lroot.mcmods.omnitech.client.FluidTankRenderer;
 import com.dev1lroot.mcmods.omnitech.client.FoundryRenderer;
 import com.dev1lroot.mcmods.omnitech.client.KineticPipeRenderer;
+import com.dev1lroot.mcmods.omnitech.client.ThermalConductorBER;
 import com.dev1lroot.mcmods.omnitech.client.ValveRenderer;
 import com.dev1lroot.mcmods.omnitech.client.SpaceMapSkyboxRenderer;
 import com.dev1lroot.mcmods.omnitech.client.SpaceSuitHudOverlay;
@@ -89,6 +90,7 @@ public class OmniTechClient
         event.registerBlockEntityRenderer(OmniTechBlockEntities.FOUNDRY.get(), FoundryRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.FLUID_PIPE.get(), FluidPipeRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.VALVE.get(), ValveRenderer::new);
+        event.registerBlockEntityRenderer(OmniTechBlockEntities.THERMAL_CONDUCTOR.get(), ThermalConductorBER::new);
         event.registerEntityRenderer(OmniTechEntities.ROCKET.get(), RocketEntityRenderer::new);
         event.registerEntityRenderer(OmniTechEntities.ABYSSAL_EEL.get(), AbyssalEelRenderer::new);
         event.registerEntityRenderer(OmniTechEntities.COKE_OVEN.get(), CokeOvenEntityRenderer::new);

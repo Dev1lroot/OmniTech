@@ -139,6 +139,18 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> COKE_BRICK_ITEM =
             REGISTRY.registerSimpleBlockItem("coke_brick", OmniTechBlocks.COKE_BRICK);
 
+    public static final DeferredItem<BlockItem> CHEMICAL_INFUSER_ITEM =
+            REGISTRY.registerSimpleBlockItem("chemical_infuser", OmniTechBlocks.CHEMICAL_INFUSER);
+
+    public static final DeferredItem<BlockItem> EXTRACTOR_ITEM =
+            REGISTRY.registerSimpleBlockItem("extractor", OmniTechBlocks.EXTRACTOR);
+
+    public static final DeferredItem<BlockItem> RADIATOR_ITEM =
+            REGISTRY.registerSimpleBlockItem("radiator", OmniTechBlocks.RADIATOR);
+
+    public static final DeferredItem<BlockItem> THERMAL_CONDUCTOR_ITEM =
+            REGISTRY.registerSimpleBlockItem("thermal_conductor", OmniTechBlocks.THERMAL_CONDUCTOR);
+
     // ── Bore Tools ────────────────────────────────────────────────────────────
 
     private static final TagKey<Block> INCORRECT_FOR_INDUSTRIAL_BORE =

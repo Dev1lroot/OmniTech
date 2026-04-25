@@ -18,6 +18,10 @@ import com.dev1lroot.mcmods.omnitech.blocks.kinetic.crank.CrankBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.pressure.decompressor.DecompressorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_capacitor.ElectricCapacitorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_charger.ElectricChargerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.labware.chemical_infuser.ChemicalInfuserBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.labware.extractor.ExtractorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.thermal.radiator.RadiatorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_engine.ElectricEngineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_furnace.ElectricFurnaceBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.plumbing.*;
@@ -189,6 +193,26 @@ public class OmniTechBlockEntities {
             REGISTRY.register("electric_charger",
                     () -> new BlockEntityType<>(ElectricChargerBlockEntity::new,
                             OmniTechBlocks.ELECTRIC_CHARGER.get()));
+
+    public static final Supplier<BlockEntityType<ChemicalInfuserBlockEntity>> CHEMICAL_INFUSER =
+            REGISTRY.register("chemical_infuser",
+                    () -> new BlockEntityType<>(ChemicalInfuserBlockEntity::new,
+                            OmniTechBlocks.CHEMICAL_INFUSER.get()));
+
+    public static final Supplier<BlockEntityType<ExtractorBlockEntity>> EXTRACTOR =
+            REGISTRY.register("extractor",
+                    () -> new BlockEntityType<>(ExtractorBlockEntity::new,
+                            OmniTechBlocks.EXTRACTOR.get()));
+
+    public static final Supplier<BlockEntityType<RadiatorBlockEntity>> RADIATOR =
+            REGISTRY.register("radiator",
+                    () -> new BlockEntityType<>(RadiatorBlockEntity::new,
+                            OmniTechBlocks.RADIATOR.get()));
+
+    public static final Supplier<BlockEntityType<ThermalConductorBlockEntity>> THERMAL_CONDUCTOR =
+            REGISTRY.register("thermal_conductor",
+                    () -> new BlockEntityType<>(ThermalConductorBlockEntity::new,
+                            OmniTechBlocks.THERMAL_CONDUCTOR.get()));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

@@ -614,5 +614,19 @@
   "block.omnitech.baddeleyite": "Baddeleyite",
   "block.omnitech.chromite": "Chromite",
   "block.omnitech.uraninite": "Uraninite",
-  "block.omnitech.fluorite": "Fluorite"
+  "block.omnitech.fluorite": "Fluorite",
+
+  "block.omnitech.chemical_infuser": "Chemical Infuser",
+  "item.omnitech.chemical_infuser": "Chemical Infuser",
+  "container.omnitech.chemical_infuser": "Chemical Infuser",
+
+  "block.omnitech.extractor": "Extractor",
+  "item.omnitech.extractor": "Extractor",
+  "container.omnitech.extractor": "Extractor",
+
+  "block.omnitech.radiator": "Radiator",
+  "item.omnitech.radiator": "Radiator",
+
+  "block.omnitech.thermal_conductor": "Thermal Conductor",
+  "item.omnitech.thermal_conductor": "Thermal Conductor"
 }

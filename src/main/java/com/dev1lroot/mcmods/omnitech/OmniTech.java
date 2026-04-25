@@ -56,6 +56,8 @@ import com.dev1lroot.mcmods.omnitech.recipes.ChemicalReactorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.blocks.plumbing.FluidFillerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.plumbing.FluidFillerBlock;
 import com.dev1lroot.mcmods.omnitech.recipes.CokingRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.ChemicalInfuserRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.ExtractorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.network.OpenRocketGuiPacket;
 import com.dev1lroot.mcmods.omnitech.network.RocketOrbitPacket;
 import com.dev1lroot.mcmods.omnitech.network.SpaceTravelPacket;
@@ -335,6 +337,36 @@ public class OmniTech {
                 OmniTechItems.FLUID_CANISTER.get()
         );
 
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.CHEMICAL_INFUSER.get(),
+                (be, side) -> {
+                    if (side == null) return null;
+                    var state = be.getLevel() != null
+                            ? be.getLevel().getBlockState(be.getBlockPos()) : null;
+                    if (state == null) return null;
+                    Direction facing = state.getValue(
+                            com.dev1lroot.mcmods.omnitech.blocks.labware.chemical_infuser.ChemicalInfuserBlock.FACING);
+                    if (side == facing) return ((com.dev1lroot.mcmods.omnitech.blocks.labware.chemical_infuser.ChemicalInfuserBlockEntity) be).inputFluidHandler;
+                    return null;
+                }
+        );
+
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.EXTRACTOR.get(),
+                (be, side) -> {
+                    if (side == null) return null;
+                    var state = be.getLevel() != null
+                            ? be.getLevel().getBlockState(be.getBlockPos()) : null;
+                    if (state == null) return null;
+                    Direction facing = state.getValue(
+                            com.dev1lroot.mcmods.omnitech.blocks.labware.extractor.ExtractorBlock.FACING);
+                    if (side == facing) return ((com.dev1lroot.mcmods.omnitech.blocks.labware.extractor.ExtractorBlockEntity) be).outputFluidHandler;
+                    return null;
+                }
+        );
+
     }
 
     private void registerPayloads(RegisterPayloadHandlersEvent event) {
@@ -540,6 +572,24 @@ public class OmniTech {
                     PreparationBarrier barrier, Executor reloadExecutor) {
                 return CompletableFuture.runAsync(() -> {
                     CokingRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "chemical_infuser_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    ChemicalInfuserRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "extractor_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    ExtractorRecipeManager.loadRecipes(sharedState.resourceManager());
                 }, taskExecutor).thenCompose(barrier::wait);
             }
         });

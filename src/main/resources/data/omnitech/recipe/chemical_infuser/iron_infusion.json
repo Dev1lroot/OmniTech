@@ -1,0 +1,7 @@
+{
+  "requiredKineticForce": 5.0,
+  "requiredTemperature": 300,
+  "inputFluid": { "fluid": "minecraft:water", "amount": 500 },
+  "inputItem":  { "item": "minecraft:iron_ingot", "amount": 1 },
+  "outputItem": { "item": "minecraft:iron_ingot", "amount": 1 }
+}

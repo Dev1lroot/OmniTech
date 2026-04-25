@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "lit=false": { "model": "omnitech:block/radiator" },
+    "lit=true":  { "model": "omnitech:block/radiator" }
+  }
+}

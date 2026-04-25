@@ -98,8 +98,6 @@ public class OreSpawnLoader {
         OmniTech.LOGGER.info("[OreSpawnLoader] {} ore spawn configs loaded", count[0]);
     }
 
-    // ── Parsing helpers ───────────────────────────────────────────────────────
-
     private static OreSpawnConfig.GenerationConfig parseDefault(JsonObject o) {
         return new OreSpawnConfig.GenerationConfig(
                 o.get("biomes").getAsString(),

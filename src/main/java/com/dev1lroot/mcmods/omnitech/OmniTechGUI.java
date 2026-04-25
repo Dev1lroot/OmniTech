@@ -4,6 +4,8 @@ import com.dev1lroot.mcmods.omnitech.gui.BoilerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.CokeOvenScreen;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricChargerScreen;
+import com.dev1lroot.mcmods.omnitech.gui.ChemicalInfuserScreen;
+import com.dev1lroot.mcmods.omnitech.gui.ExtractorScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricCapacitorScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricEngineScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricFurnaceScreen;
@@ -71,6 +73,8 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.ROCKET.get(), RocketScreen::new);
         event.register(OmniTechMenuTypes.ELECTRIC_CHARGER.get(), ElectricChargerScreen::new);
         event.register(OmniTechMenuTypes.COKE_OVEN.get(), CokeOvenScreen::new);
+        event.register(OmniTechMenuTypes.CHEMICAL_INFUSER.get(), ChemicalInfuserScreen::new);
+        event.register(OmniTechMenuTypes.EXTRACTOR.get(), ExtractorScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)

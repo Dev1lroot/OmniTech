@@ -4,6 +4,7 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.gui.HeatExchangerMenu;
 import com.dev1lroot.mcmods.omnitech.io.IColdReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
+import com.dev1lroot.mcmods.omnitech.io.IThermalNode;
 import com.dev1lroot.mcmods.omnitech.recipes.HeatExchangerRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.HeatExchangerRecipeManager;
 import net.minecraft.core.BlockPos;
@@ -48,7 +49,7 @@ import java.util.Optional;
  * {@code storedHeat / 60} °C to every adjacent receiver, and the absorbed
  * amount is deducted from {@code storedHeat}.
  */
-public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvider, IColdReceiver {
+public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvider, IColdReceiver, IThermalNode {
 
     public static final int INPUT_TANK_CAPACITY  = 8_000;
     public static final int OUTPUT_TANK_CAPACITY = 8_000;
@@ -121,6 +122,16 @@ public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvide
         return new HeatExchangerMenu(containerId, inv, this, dataAccess);
     }
 
+    // ── IThermalNode ──────────────────────────────────────────────────────────
+
+    @Override
+    public float getTemperature() { return AMBIENT_TEMP + storedHeat; }
+
+    @Override
+    public void applyHeat(float dT) {
+        if (dT < 0) storedHeat = Math.max(0, storedHeat + (int) dT);
+    }
+
     // ── IColdReceiver ─────────────────────────────────────────────────────────
 
     @Override
@@ -184,21 +195,7 @@ public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvide
             changed = true;
         }
 
-        // 4. Radiate stored heat to adjacent IHeatReceiver blocks.
-        //    The absorbed amount is deducted from storedHeat so heat genuinely flows.
-        if (be.storedHeat > 0) {
-            int transfer = be.storedHeat / 60; // 0–16 °C per tick (at MAX_STORED_HEAT=1000)
-            if (transfer > 0) {
-                for (Direction dir : Direction.values()) {
-                    BlockEntity neighbor = level.getBlockEntity(pos.relative(dir));
-                    if (neighbor instanceof IHeatReceiver receiver) {
-                        int absorbed = receiver.addHeat(transfer);
-                        be.storedHeat = Math.max(0, be.storedHeat - absorbed);
-                    }
-                }
-            }
-            changed = true;
-        }
+        // 4. Heat is now extracted by adjacent ThermalConductorBlockEntity tiles via IThermalNode.
 
         // 5. Ambient decay — storedHeat drifts 1°C toward 15 every 20 ticks
         if (be.storedHeat != AMBIENT_TEMPERATURE) {

@@ -34,6 +34,10 @@
     "omnitech:heat_exchanger",
     "omnitech:decompressor",
     "omnitech:fractional_distiller",
-    "omnitech:chemical_reactor"
+    "omnitech:chemical_reactor",
+    "omnitech:chemical_infuser",
+    "omnitech:extractor",
+    "omnitech:radiator",
+    "omnitech:thermal_conductor"
   ]
 }
