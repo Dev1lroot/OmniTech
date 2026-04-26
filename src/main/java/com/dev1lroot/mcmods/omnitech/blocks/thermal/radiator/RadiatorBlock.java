@@ -4,7 +4,11 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -20,6 +24,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -74,6 +79,19 @@ public class RadiatorBlock extends BaseEntityBlock {
     }
 
     // ── Block entity ──────────────────────────────────────────────────────────
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
+            Player player, BlockHitResult hit) {
+        if (player instanceof ServerPlayer sp) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof RadiatorBlockEntity rbe) {
+                sp.sendSystemMessage(
+                    Component.literal(String.format("%.1f °C", rbe.getTemperature())), true);
+            }
+        }
+        return InteractionResult.SUCCESS;
+    }
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
