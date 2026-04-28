@@ -1,0 +1,17 @@
+{
+  "uuid": "ganymede",
+  "parent": "jupiter",
+  "type": "moon",
+  "texture": "omnitech:textures/space/moon/ganymede.png",
+  "orbital_radius": 135,
+  "orbital_speed": 0.0034944,
+  "size": 0.41,
+  "parent_distance_km": 1070400,
+  "orbital_inclination": 0.2,
+  "ascending_node": 63.55,
+  "base_temperature": -163.0,
+  "temperature_amplitude": 5.0,
+  "surface_pressure": 0.0,
+  "pressure_gradient": 0.0,
+  "surface_y": 64
+}

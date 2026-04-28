@@ -1,0 +1,9 @@
+{
+  "uuid": "andromeda",
+  "parent": "root",
+  "type": "galaxy",
+  "texture": "omnitech:textures/space/galaxy/milky_way.png",
+  "background": "omnitech:textures/space/background/milky_way.png",
+  "orbital_radius": 100,
+  "orbital_speed": 0
+}

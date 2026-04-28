@@ -1,0 +1,18 @@
+{
+  "uuid": "saturn",
+  "parent": "sol",
+  "type": "planet",
+  "texture": "omnitech:textures/space/planet/saturn.png",
+  "background": "omnitech:textures/space/background/saturn.png",
+  "orbital_radius": 365,
+  "orbital_speed": 0.0000023175,
+  "size": 9.45,
+  "orbital_distance_km": 1429394000,
+  "orbital_inclination": 2.49,
+  "ascending_node": 113.67,
+  "base_temperature": -178.0,
+  "temperature_amplitude": 0.0,
+  "surface_pressure": 1000000.0,
+  "pressure_gradient": 50000.0,
+  "surface_y": 64
+}

@@ -1,0 +1,17 @@
+{
+  "uuid": "mars",
+  "parent": "sol",
+  "type": "planet",
+  "texture": "omnitech:textures/space/planet/mars.png",
+  "orbital_radius": 200,
+  "orbital_speed": 0.0000363806,
+  "size": 0.53,
+  "orbital_distance_km": 227939000,
+  "orbital_inclination": 1.85,
+  "ascending_node": 49.57,
+  "base_temperature": -60.0,
+  "temperature_amplitude": 40.0,
+  "surface_pressure": 600.0,
+  "pressure_gradient": 6.0,
+  "surface_y": 64
+}

@@ -72,8 +72,8 @@ public class SpaceNavigationScreen extends Screen {
     private static final int ORBIT_R  = 18;  // orbiting body base radius
     private static final int HIT_R    = 24;  // minimum click detection radius
 
-    /** Base orbital speed (rad/ms) applied to all bodies. */
-    private static final double ORBIT_SPEED = (2 * Math.PI) / 30_000.0;
+    /** Base orbital speed (rad/tick) applied to all bodies. */
+    private static final double ORBIT_SPEED = (2 * Math.PI) / 600.0;
     /** Reference radius for the Kepler fallback formula (r^-1.5 scaling). */
     private static final int    SPEED_REF_R = 200;
     private static final double ZOOM_MIN    = 0.15;
@@ -257,7 +257,7 @@ public class SpaceNavigationScreen extends Screen {
 
         drawCentralBody(g, cx, cy);
 
-        long now = System.currentTimeMillis();
+        long now = minecraft.level != null ? minecraft.level.getOverworldClockTime() : 0;
         int  n   = items.size();
 
         for (int i = 0; i < n; i++) {

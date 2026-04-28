@@ -1,0 +1,19 @@
+{
+  "uuid": "earth",
+  "parent": "sol",
+  "type": "planet",
+  "dimension": "minecraft:overworld",
+  "texture": "omnitech:textures/space/planet/earth.png",
+  "background": "omnitech:textures/space/background/earth.png",
+  "orbital_radius": 155,
+  "orbital_speed": 0.0000684463,
+  "size": 1.0,
+  "orbital_distance_km": 149598000,
+  "orbital_inclination": 0.0,
+  "ascending_node": 174.87,
+  "base_temperature": 15.0,
+  "temperature_amplitude": 10.0,
+  "surface_pressure": 101325.0,
+  "pressure_gradient": 12.0,
+  "surface_y": 64
+}

@@ -1,0 +1,18 @@
+{
+  "uuid": "europa",
+  "parent": "jupiter",
+  "type": "moon",
+  "dimension": "omnitech:europa",
+  "texture": "omnitech:textures/space/moon/europa.png",
+  "orbital_radius": 100,
+  "orbital_speed": 0.0070398,
+  "size": 0.25,
+  "parent_distance_km": 671100,
+  "orbital_inclination": 0.47,
+  "ascending_node": 219.06,
+  "base_temperature": -160.0,
+  "temperature_amplitude": 5.0,
+  "surface_pressure": 0.0,
+  "pressure_gradient": 10132.0,
+  "surface_y": 103
+}

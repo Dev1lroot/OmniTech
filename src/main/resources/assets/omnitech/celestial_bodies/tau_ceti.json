@@ -1,0 +1,10 @@
+{
+  "uuid": "tau_ceti",
+  "parent": "milky_way",
+  "type": "star",
+  "texture": "omnitech:textures/space/star/tau_ceti.png",
+  "background": "omnitech:textures/space/background/tau_ceti.png",
+  "orbital_radius": 240,
+  "orbital_speed": 0,
+  "size": 86.0
+}

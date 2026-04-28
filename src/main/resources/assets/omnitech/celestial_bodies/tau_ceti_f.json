@@ -1,0 +1,12 @@
+{
+  "uuid": "tau_ceti_f",
+  "parent": "tau_ceti",
+  "type": "planet",
+  "texture": "omnitech:textures/space/planet/tau_ceti_f.png",
+  "orbital_radius": 200,
+  "orbital_speed": 0.0000436344,
+  "size": 6.6,
+  "orbital_distance_km": 201957000,
+  "orbital_inclination": 2.0,
+  "ascending_node": 85.0
+}

@@ -1,0 +1,17 @@
+{
+  "uuid": "venus",
+  "parent": "sol",
+  "type": "planet",
+  "texture": "omnitech:textures/space/planet/venus.png",
+  "orbital_radius": 115,
+  "orbital_speed": 0.000111249,
+  "size": 0.95,
+  "orbital_distance_km": 108209000,
+  "orbital_inclination": 3.39,
+  "ascending_node": 76.68,
+  "base_temperature": 465.0,
+  "temperature_amplitude": 5.0,
+  "surface_pressure": 9200000.0,
+  "pressure_gradient": 50000.0,
+  "surface_y": 64
+}

@@ -1,0 +1,12 @@
+{
+  "uuid": "neptune",
+  "parent": "sol",
+  "type": "planet",
+  "texture": "omnitech:textures/space/planet/neptune.png",
+  "orbital_radius": 490,
+  "orbital_speed": 0.000000415,
+  "size": 3.9,
+  "orbital_distance_km": 4498252000,
+  "orbital_inclination": 1.77,
+  "ascending_node": 131.78
+}

@@ -1,0 +1,10 @@
+{
+  "uuid": "alpha_centauri",
+  "parent": "milky_way",
+  "type": "star",
+  "texture": "omnitech:textures/space/star/alpha_centauri.png",
+  "background": "omnitech:textures/space/background/alpha_centauri.png",
+  "orbital_radius": 320,
+  "orbital_speed": 0,
+  "size": 120.0
+}

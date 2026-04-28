@@ -1,0 +1,10 @@
+{
+  "uuid": "sol",
+  "parent": "milky_way",
+  "type": "star",
+  "texture": "omnitech:textures/space/star/sun.png",
+  "background": "omnitech:textures/space/background/sol.png",
+  "orbital_radius": 140,
+  "orbital_speed": 0,
+  "size": 109.0
+}

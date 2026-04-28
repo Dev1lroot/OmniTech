@@ -1,0 +1,12 @@
+{
+  "uuid": "uranus",
+  "parent": "sol",
+  "type": "planet",
+  "texture": "omnitech:textures/space/planet/uranus.png",
+  "orbital_radius": 430,
+  "orbital_speed": 0.000000813873,
+  "size": 4.0,
+  "orbital_distance_km": 2870990000,
+  "orbital_inclination": 0.77,
+  "ascending_node": 74.01
+}

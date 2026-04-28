@@ -1,0 +1,17 @@
+{
+  "uuid": "io",
+  "parent": "jupiter",
+  "type": "moon",
+  "texture": "omnitech:textures/space/moon/io.png",
+  "orbital_radius": 70,
+  "orbital_speed": 0.014131,
+  "size": 0.29,
+  "parent_distance_km": 421700,
+  "orbital_inclination": 0.04,
+  "ascending_node": 43.98,
+  "base_temperature": -130.0,
+  "temperature_amplitude": 5.0,
+  "surface_pressure": 0.0,
+  "pressure_gradient": 0.0,
+  "surface_y": 64
+}

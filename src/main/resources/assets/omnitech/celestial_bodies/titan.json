@@ -1,0 +1,17 @@
+{
+  "uuid": "titan",
+  "parent": "saturn",
+  "type": "moon",
+  "texture": "omnitech:textures/space/moon/titan.png",
+  "orbital_radius": 110,
+  "orbital_speed": 0.0015679,
+  "size": 0.4,
+  "parent_distance_km": 1221870,
+  "orbital_inclination": 0.35,
+  "ascending_node": 28.06,
+  "base_temperature": -179.0,
+  "temperature_amplitude": 2.0,
+  "surface_pressure": 146000.0,
+  "pressure_gradient": 15.0,
+  "surface_y": 64
+}

@@ -1,0 +1,12 @@
+{
+  "uuid": "proxima_b",
+  "parent": "alpha_centauri",
+  "type": "planet",
+  "texture": "omnitech:textures/space/planet/proxima_b.png",
+  "orbital_radius": 120,
+  "orbital_speed": 0.0064077,
+  "size": 1.3,
+  "orbital_distance_km": 7254000,
+  "orbital_inclination": 1.5,
+  "ascending_node": 200.0
+}

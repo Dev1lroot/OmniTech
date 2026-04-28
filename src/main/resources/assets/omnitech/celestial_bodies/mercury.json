@@ -1,0 +1,17 @@
+{
+  "uuid": "mercury",
+  "parent": "sol",
+  "type": "planet",
+  "texture": "omnitech:textures/space/planet/mercury.png",
+  "orbital_radius": 80,
+  "orbital_speed": 0.000284136,
+  "size": 0.38,
+  "orbital_distance_km": 57909000,
+  "orbital_inclination": 7.0,
+  "ascending_node": 48.33,
+  "base_temperature": 167.0,
+  "temperature_amplitude": 300.0,
+  "surface_pressure": 0.0,
+  "pressure_gradient": 0.0,
+  "surface_y": 64
+}
