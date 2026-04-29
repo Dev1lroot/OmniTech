@@ -42,6 +42,8 @@ public class ElectrolysisRecipeManager {
 
                     float energy = json.has("energyRequired")
                             ? json.get("energyRequired").getAsFloat() : 200.0f;
+                    int requiredTemperature = json.has("requiredTemperature")
+                            ? json.get("requiredTemperature").getAsInt() : 0;
 
                     JsonObject inFluidObj = json.getAsJsonObject("inputFluid");
                     String inFluid  = inFluidObj.get("fluid").getAsString();
@@ -71,7 +73,7 @@ public class ElectrolysisRecipeManager {
                             .replace(PATH + "/", "").replace(".json", "");
 
                     ElectrolysisRecipe recipe = new ElectrolysisRecipe(
-                            recipeId, energy,
+                            recipeId, energy, requiredTemperature,
                             inFluid, inFAmt,
                             outAnode, outAnodeAmt,
                             outCathode, outCathodeAmt,

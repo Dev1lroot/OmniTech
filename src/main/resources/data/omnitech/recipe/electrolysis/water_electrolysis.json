@@ -1,27 +1,27 @@
 {
-  "energyRequired": 600.0,
+  "energyRequired": 450.0,
   "inputFluid": {
-    "fluid": "omnitech:brine",
+    "fluid": "minecraft:water",
     "amount": 1000
   },
   "outputAnode": {
-    "fluid": "omnitech:chlorine",
-    "amount": 250
+    "fluid": "omnitech:oxygen",
+    "amount": 330
   },
   "outputCathode": {
     "fluid": "omnitech:hydrogen",
-    "amount": 250
+    "amount": 660
   },
   "outputSolution": {
     "fluid": "omnitech:sodium_hydroxide",
-    "amount": 500
+    "amount": 10
   },
   "anode": {
     "item": "omnitech:graphite_rod",
-    "damage": 5
+    "damage": 1
   },
   "cathode": {
     "item": "omnitech:nickel_rod",
-    "damage": 2
+    "damage": 1
   }
 }

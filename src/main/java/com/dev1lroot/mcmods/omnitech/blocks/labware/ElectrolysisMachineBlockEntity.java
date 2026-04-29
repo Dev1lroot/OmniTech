@@ -3,6 +3,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.labware;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.gui.ElectrolysisMachineMenu;
 import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
+import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
 import com.dev1lroot.mcmods.omnitech.recipes.ElectrolysisRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.ElectrolysisRecipeManager;
 import net.minecraft.core.BlockPos;
@@ -66,7 +67,7 @@ import java.util.Optional;
  *   <li>12 – OUTPUT_TANK_CAPACITY</li>
  * </ul>
  */
-public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity implements IElectricReceiver, WorldlyContainer
+public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity implements IElectricReceiver, IHeatReceiver, WorldlyContainer
 {
     public static final int SLOT_ANODE   = 0;
     public static final int SLOT_CATHODE = 1;
@@ -76,6 +77,9 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
     public static final int   OUTPUT_TANK_CAPACITY = 8_000;
     public static final float MAX_EU               = 1600f;
     public static final int   COOK_TIME            = 100;
+    public static final int   MAX_HEAT             = 3000;
+    private static final int  AMBIENT_TEMPERATURE  = 20;
+    private static final int  HEAT_LOSS_INTERVAL   = 20;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
 
@@ -84,9 +88,12 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
     private FluidStack cathodeFluid  = FluidStack.EMPTY;
     private FluidStack solutionFluid = FluidStack.EMPTY;
 
-    private float energyStored       = 0f;
-    private int   cookProgress       = 0;
-    private float currentRecipeEnergy= 0f;
+    private float energyStored        = 0f;
+    private int   cookProgress        = 0;
+    private float currentRecipeEnergy = 0f;
+    private int   temperature         = 0;
+    private int   requiredTemperature = 0;
+    private int   heatLossTimer       = 0;
 
     private ElectrolysisRecipe currentRecipe   = null;
     private String             currentRecipeId = null;
@@ -112,16 +119,20 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
                 case 10 -> OUTPUT_TANK_CAPACITY;
                 case 11 -> solutionFluid.getAmount();
                 case 12 -> OUTPUT_TANK_CAPACITY;
+                case 13 -> temperature;
+                case 14 -> requiredTemperature;
                 default -> 0;
             };
         }
         @Override public void set(int index, int value) {
             switch (index) {
-                case 0 -> energyStored = value / 10f;
-                case 2 -> cookProgress = value;
+                case 0  -> energyStored = value / 10f;
+                case 2  -> cookProgress = value;
+                case 13 -> temperature  = value;
+                case 14 -> requiredTemperature = value;
             }
         }
-        @Override public int getCount() { return 13; }
+        @Override public int getCount() { return 15; }
     };
 
     public ElectrolysisMachineBlockEntity(BlockPos pos, BlockState state) {
@@ -170,12 +181,38 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
         return accepted;
     }
 
+    // ── IHeatReceiver ─────────────────────────────────────────────────────────
+
+    @Override
+    public int addHeat(int celsius) {
+        if (temperature >= MAX_HEAT) return 0;
+        int absorbed = Math.min(celsius, MAX_HEAT - temperature);
+        temperature += absorbed;
+        setChanged();
+        return absorbed;
+    }
+
+    public int getTemperature() { return temperature; }
+
     // ── Server tick ───────────────────────────────────────────────────────────
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
             ElectrolysisMachineBlockEntity be) {
         boolean changed = false;
         Direction facing = state.getValue(ElectrolysisMachineBlock.FACING);
+
+        // 0. Ambient temperature drift — 1°C toward ambient every 20 ticks
+        if (be.temperature != AMBIENT_TEMPERATURE) {
+            be.heatLossTimer++;
+            if (be.heatLossTimer >= HEAT_LOSS_INTERVAL) {
+                be.heatLossTimer = 0;
+                if (be.temperature > AMBIENT_TEMPERATURE) be.temperature--;
+                else be.temperature++;
+                changed = true;
+            }
+        } else {
+            be.heatLossTimer = 0;
+        }
 
         // 1. Pull input fluid from front neighbor
         if (be.inputFluid.getAmount() < INPUT_TANK_CAPACITY) {
@@ -190,18 +227,20 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
         if (found.isPresent()) {
             ElectrolysisRecipe recipe = found.get();
             if (!recipe.getId().equals(be.currentRecipeId)) {
-                be.currentRecipe       = recipe;
-                be.currentRecipeId     = recipe.getId();
-                be.cookProgress        = 0;
-                be.currentRecipeEnergy = recipe.getEnergyRequired();
+                be.currentRecipe          = recipe;
+                be.currentRecipeId        = recipe.getId();
+                be.cookProgress           = 0;
+                be.currentRecipeEnergy    = recipe.getEnergyRequired();
+                be.requiredTemperature    = recipe.getRequiredTemperature();
                 changed = true;
             }
         } else {
             if (be.currentRecipe != null) {
-                be.currentRecipe       = null;
-                be.currentRecipeId     = null;
-                be.cookProgress        = 0;
-                be.currentRecipeEnergy = 0f;
+                be.currentRecipe          = null;
+                be.currentRecipeId        = null;
+                be.cookProgress           = 0;
+                be.currentRecipeEnergy    = 0f;
+                be.requiredTemperature    = 0;
                 changed = true;
             }
         }
@@ -262,6 +301,7 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
     private boolean canProcess() {
         if (currentRecipe == null) return false;
         if (!currentRecipe.matches(inputFluid, items.get(SLOT_ANODE), items.get(SLOT_CATHODE))) return false;
+        if (currentRecipe.getRequiredTemperature() > 0 && temperature < currentRecipe.getRequiredTemperature()) return false;
         if (!hasOutputSpace(anodeFluid,    currentRecipe.getOutputAnode()))    return false;
         if (!hasOutputSpace(cathodeFluid,  currentRecipe.getOutputCathode()))  return false;
         if (!hasOutputSpace(solutionFluid, currentRecipe.getOutputSolution())) return false;
@@ -468,9 +508,10 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
         anodeFluid    = input.read("AnodeFluid",    FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
         cathodeFluid  = input.read("CathodeFluid",  FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
         solutionFluid = input.read("SolutionFluid", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
-        energyStored       = input.getFloatOr("EnergyStored",        0f);
-        cookProgress       = input.getIntOr("CookProgress",           0);
-        currentRecipeEnergy= input.getFloatOr("CurrentRecipeEnergy",  0f);
+        energyStored        = input.getFloatOr("EnergyStored",        0f);
+        cookProgress        = input.getIntOr("CookProgress",           0);
+        currentRecipeEnergy = input.getFloatOr("CurrentRecipeEnergy",  0f);
+        temperature         = input.getIntOr("Temperature",            0);
     }
 
     @Override
@@ -484,5 +525,6 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
         output.putFloat("EnergyStored",        energyStored);
         output.putInt(  "CookProgress",        cookProgress);
         output.putFloat("CurrentRecipeEnergy", currentRecipeEnergy);
+        output.putInt(  "Temperature",         temperature);
     }
 }

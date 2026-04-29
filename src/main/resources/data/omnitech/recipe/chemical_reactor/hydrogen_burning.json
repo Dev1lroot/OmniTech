@@ -1,0 +1,10 @@
+{
+  "requiredTemperature": 0,
+  "productionTime": 40,
+  "inputs": [
+    { "fluid": "omnitech:hydrogen", "amount": 200 },
+    { "fluid": "omnitech:oxygen", "amount": 100 }
+  ],
+  "output": { "fluid": "minecraft:water", "amount": 300 },
+  "catalyst": { "item": "minecraft:flint_and_steel", "damage": 1 }
+}

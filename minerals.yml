@@ -71,6 +71,26 @@ minerals:
         cluster_size: { min: 3, max: 8 }
         height: { min: -16, max: 48 }
         replaces: ["minecraft:stone"]
+  - name: "cryolite" # "Морозный камень"
+    visuals:
+      base_layer:
+        color: "#E8F1F2" # Светлый, почти белый фон (как лед)
+        texture_type: "stony"
+      inclusions:
+        - color: "#FFFFFF" # Чисто белые, полупрозрачные вкрапления
+          size: { min: 0.15, max: 0.3 }
+          density: 0.6
+          shading: "glassy" # Стеклянный/ледяной блеск
+          shape: "irregular" # Массивные зернистые формы
+      effects:
+        emissive: false
+        reflectivity: 0.4
+        metalness: 0.0 # Это минерал, а не металл
+    generation:
+      global:
+        cluster_size: { min: 2, max: 5 } # Встречается небольшими жилами
+        height: { min: 0, max: 64 } # Обычно находится в гранитных слоях
+        replaces: ["minecraft:stone", "minecraft:andesite"]
   - name: "uraninite" # Урановая руда
     visuals:
       base_layer:

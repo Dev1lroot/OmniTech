@@ -1,15 +1,16 @@
 {
   "energyRequired": 600.0,
+  "requiredTemperature": 950.0,
   "inputFluid": {
-    "fluid": "omnitech:brine",
+    "fluid": "omnitech:molten_alumina",
     "amount": 1000
   },
   "outputAnode": {
-    "fluid": "omnitech:chlorine",
+    "fluid": "omnitech:carbon_dioxide",
     "amount": 250
   },
   "outputCathode": {
-    "fluid": "omnitech:hydrogen",
+    "fluid": "omnitech:molten_aluminum",
     "amount": 250
   },
   "outputSolution": {
@@ -18,10 +19,10 @@
   },
   "anode": {
     "item": "omnitech:graphite_rod",
-    "damage": 5
+    "damage": 50
   },
   "cathode": {
-    "item": "omnitech:nickel_rod",
+    "item": "omnitech:steel_rod",
     "damage": 2
   }
 }

@@ -23,11 +23,13 @@ import net.neoforged.neoforge.fluids.FluidStack;
  * }
  * }</pre>
  * {@code energyRequired} is optional and defaults to 200.0 EU per cycle.
+ * {@code requiredTemperature} is optional and defaults to 0 (no heat required).
  */
 public class ElectrolysisRecipe {
 
     private final String id;
     private final float  energyRequired;
+    private final int    requiredTemperature;
 
     private final Identifier inputFluidId;
     private final int        inputFluidAmount;
@@ -54,7 +56,7 @@ public class ElectrolysisRecipe {
     private Item       cachedCathodeItem   = null;
     private boolean    cathodeResolved     = false;
 
-    public ElectrolysisRecipe(String id, float energyRequired,
+    public ElectrolysisRecipe(String id, float energyRequired, int requiredTemperature,
                               String inputFluidId,    int inputFluidAmount,
                               String outputAnodeId,   int outputAnodeAmount,
                               String outputCathodeId, int outputCathodeAmount,
@@ -63,6 +65,7 @@ public class ElectrolysisRecipe {
                               String cathodeItemId,   int cathodeDamage) {
         this.id                   = id;
         this.energyRequired       = energyRequired;
+        this.requiredTemperature  = requiredTemperature;
         this.inputFluidId         = parseId(inputFluidId,    "minecraft");
         this.inputFluidAmount     = inputFluidAmount;
         this.outputAnodeId        = parseId(outputAnodeId,   "omnitech");
@@ -84,8 +87,9 @@ public class ElectrolysisRecipe {
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 
-    public String getId()            { return id; }
-    public float  getEnergyRequired(){ return energyRequired; }
+    public String getId()                  { return id; }
+    public float  getEnergyRequired()      { return energyRequired; }
+    public int    getRequiredTemperature() { return requiredTemperature; }
     public int    getInputFluidAmount()    { return inputFluidAmount; }
     public int    getOutputAnodeAmount()   { return outputAnodeAmount; }
     public int    getOutputCathodeAmount() { return outputCathodeAmount; }
