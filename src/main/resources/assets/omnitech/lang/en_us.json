@@ -632,5 +632,17 @@
 
   "block.omnitech.electric_heater": "Electric Heater",
   "item.omnitech.electric_heater": "Electric Heater",
-  "container.omnitech.electric_heater": "Electric Heater"
+  "container.omnitech.electric_heater": "Electric Heater",
+
+  "block.omnitech.radio_transmitter": "Radio Transmitter",
+  "item.omnitech.radio_transmitter": "Radio Transmitter",
+  "container.omnitech.radio_transmitter": "Radio Transmitter",
+
+  "block.omnitech.radio_receiver": "Radio Receiver",
+  "item.omnitech.radio_receiver": "Radio Receiver",
+  "container.omnitech.radio_receiver": "Radio Receiver",
+
+  "block.omnitech.radio_scanner": "Radio Scanner",
+  "item.omnitech.radio_scanner": "Radio Scanner",
+  "container.omnitech.radio_scanner": "Radio Scanner"
 }

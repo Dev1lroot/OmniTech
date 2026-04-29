@@ -2,6 +2,9 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.gui.BoilerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricHeaterScreen;
+import com.dev1lroot.mcmods.omnitech.gui.RadioTransmitterScreen;
+import com.dev1lroot.mcmods.omnitech.gui.RadioReceiverScreen;
+import com.dev1lroot.mcmods.omnitech.gui.RadioScannerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.CokeOvenScreen;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricChargerScreen;
@@ -77,6 +80,9 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.CHEMICAL_INFUSER.get(), ChemicalInfuserScreen::new);
         event.register(OmniTechMenuTypes.EXTRACTOR.get(), ExtractorScreen::new);
         event.register(OmniTechMenuTypes.ELECTRIC_HEATER.get(), ElectricHeaterScreen::new);
+        event.register(OmniTechMenuTypes.RADIO_TRANSMITTER.get(), RadioTransmitterScreen::new);
+        event.register(OmniTechMenuTypes.RADIO_RECEIVER.get(), RadioReceiverScreen::new);
+        event.register(OmniTechMenuTypes.RADIO_SCANNER.get(), RadioScannerScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)

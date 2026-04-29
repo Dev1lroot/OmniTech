@@ -22,6 +22,9 @@ import com.dev1lroot.mcmods.omnitech.blocks.labware.chemical_infuser.ChemicalInf
 import com.dev1lroot.mcmods.omnitech.blocks.labware.extractor.ExtractorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.electric_heater.ElectricHeaterBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.radiator.RadiatorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_transmitter.RadioTransmitterBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_receiver.RadioReceiverBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_scanner.RadioScannerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_engine.ElectricEngineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_furnace.ElectricFurnaceBlockEntity;
@@ -219,6 +222,21 @@ public class OmniTechBlockEntities {
             REGISTRY.register("electric_heater",
                     () -> new BlockEntityType<>(ElectricHeaterBlockEntity::new,
                             OmniTechBlocks.ELECTRIC_HEATER.get()));
+
+    public static final Supplier<BlockEntityType<RadioTransmitterBlockEntity>> RADIO_TRANSMITTER =
+            REGISTRY.register("radio_transmitter",
+                    () -> new BlockEntityType<>(RadioTransmitterBlockEntity::new,
+                            OmniTechBlocks.RADIO_TRANSMITTER.get()));
+
+    public static final Supplier<BlockEntityType<RadioReceiverBlockEntity>> RADIO_RECEIVER =
+            REGISTRY.register("radio_receiver",
+                    () -> new BlockEntityType<>(RadioReceiverBlockEntity::new,
+                            OmniTechBlocks.RADIO_RECEIVER.get()));
+
+    public static final Supplier<BlockEntityType<RadioScannerBlockEntity>> RADIO_SCANNER =
+            REGISTRY.register("radio_scanner",
+                    () -> new BlockEntityType<>(RadioScannerBlockEntity::new,
+                            OmniTechBlocks.RADIO_SCANNER.get()));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

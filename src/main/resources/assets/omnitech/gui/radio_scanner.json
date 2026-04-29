@@ -1,0 +1,13 @@
+{
+  "background": "textures/gui/empty.png",
+  "draw_inventory": false,
+  "width": 320,
+  "height": 122,
+  "inventory": {
+    "x": 8,
+    "y": 999,
+    "label_y": 999,
+    "hotbar_y": 999
+  },
+  "elements": []
+}

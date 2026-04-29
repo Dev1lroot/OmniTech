@@ -2,6 +2,9 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.gui.BoilerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricHeaterMenu;
+import com.dev1lroot.mcmods.omnitech.gui.RadioTransmitterMenu;
+import com.dev1lroot.mcmods.omnitech.gui.RadioReceiverMenu;
+import com.dev1lroot.mcmods.omnitech.gui.RadioScannerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.CokeOvenMenu;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricChargerMenu;
@@ -156,6 +159,18 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<ElectricHeaterMenu>> ELECTRIC_HEATER =
             REGISTRY.register("electric_heater",
                     () -> IMenuTypeExtension.create(ElectricHeaterMenu::new));
+
+    public static final Supplier<MenuType<RadioTransmitterMenu>> RADIO_TRANSMITTER =
+            REGISTRY.register("radio_transmitter",
+                    () -> IMenuTypeExtension.create(RadioTransmitterMenu::new));
+
+    public static final Supplier<MenuType<RadioReceiverMenu>> RADIO_RECEIVER =
+            REGISTRY.register("radio_receiver",
+                    () -> IMenuTypeExtension.create(RadioReceiverMenu::new));
+
+    public static final Supplier<MenuType<RadioScannerMenu>> RADIO_SCANNER =
+            REGISTRY.register("radio_scanner",
+                    () -> IMenuTypeExtension.create(RadioScannerMenu::new));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

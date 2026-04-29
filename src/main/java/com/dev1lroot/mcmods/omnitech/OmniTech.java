@@ -61,6 +61,9 @@ import com.dev1lroot.mcmods.omnitech.recipes.ExtractorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.network.OpenRocketGuiPacket;
 import com.dev1lroot.mcmods.omnitech.network.RocketOrbitPacket;
 import com.dev1lroot.mcmods.omnitech.network.SpaceTravelPacket;
+import com.dev1lroot.mcmods.omnitech.network.SetRadioFrequencyPacket;
+import com.dev1lroot.mcmods.omnitech.network.RadioScannerRowPacket;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioManager;
 import com.dev1lroot.mcmods.omnitech.entities.AbyssalEelEntity;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechCarvers;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechFeatures;
@@ -382,6 +385,14 @@ public class OmniTech {
                 RocketOrbitPacket.TYPE,
                 RocketOrbitPacket.CODEC,
                 RocketOrbitPacket::handle);
+        event.registrar("1").playToServer(
+                SetRadioFrequencyPacket.TYPE,
+                SetRadioFrequencyPacket.CODEC,
+                SetRadioFrequencyPacket::handle);
+        event.registrar("1").playToClient(
+                RadioScannerRowPacket.TYPE,
+                RadioScannerRowPacket.CODEC,
+                RadioScannerRowPacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -436,6 +447,7 @@ public class OmniTech {
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         LOGGER.info("OmniTech by Dev1lroot (c) 2026");
+        RadioManager.clearAll();
     }
 
     @SubscribeEvent

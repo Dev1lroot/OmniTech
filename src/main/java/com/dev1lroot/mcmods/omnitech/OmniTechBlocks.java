@@ -14,6 +14,9 @@ import com.dev1lroot.mcmods.omnitech.blocks.labware.chemical_infuser.ChemicalInf
 import com.dev1lroot.mcmods.omnitech.blocks.labware.extractor.ExtractorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.electric_heater.ElectricHeaterBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.radiator.RadiatorBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_transmitter.RadioTransmitterBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_receiver.RadioReceiverBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_scanner.RadioScannerBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logistic.SorterBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.processing.macerator.ManualMaceratorBlock;
@@ -123,6 +126,10 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> RADIATOR;
     public static final DeferredBlock<Block> THERMAL_CONDUCTOR;
     public static final DeferredBlock<Block> ELECTRIC_HEATER;
+
+    public static final DeferredBlock<Block> RADIO_TRANSMITTER;
+    public static final DeferredBlock<Block> RADIO_RECEIVER;
+    public static final DeferredBlock<Block> RADIO_SCANNER;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -270,6 +277,16 @@ public class OmniTechBlocks {
                         .pushReaction(net.minecraft.world.level.material.PushReaction.NORMAL)));
         ELECTRIC_HEATER = register("electric_heater",
                 p -> new ElectricHeaterBlock(p.mapColor(MapColor.METAL).strength(3.5F)
+                        .sound(SoundType.METAL)));
+
+        RADIO_TRANSMITTER = register("radio_transmitter",
+                p -> new RadioTransmitterBlock(p.mapColor(MapColor.METAL).strength(3.0F)
+                        .sound(SoundType.METAL)));
+        RADIO_RECEIVER = register("radio_receiver",
+                p -> new RadioReceiverBlock(p.mapColor(MapColor.METAL).strength(3.0F)
+                        .sound(SoundType.METAL)));
+        RADIO_SCANNER = register("radio_scanner",
+                p -> new RadioScannerBlock(p.mapColor(MapColor.METAL).strength(3.0F)
                         .sound(SoundType.METAL)));
     }
 

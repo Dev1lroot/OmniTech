@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "omnitech:block/radio_transmitter" },
+    "facing=south": { "model": "omnitech:block/radio_transmitter", "y": 180 },
+    "facing=west":  { "model": "omnitech:block/radio_transmitter", "y": 270 },
+    "facing=east":  { "model": "omnitech:block/radio_transmitter", "y": 90 }
+  }
+}
