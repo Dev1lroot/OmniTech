@@ -20,6 +20,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_capacitor.Electr
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_charger.ElectricChargerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.chemical_infuser.ChemicalInfuserBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.extractor.ExtractorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.thermal.electric_heater.ElectricHeaterBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.radiator.RadiatorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_engine.ElectricEngineBlockEntity;
@@ -213,6 +214,11 @@ public class OmniTechBlockEntities {
             REGISTRY.register("thermal_conductor",
                     () -> new BlockEntityType<>(ThermalConductorBlockEntity::new,
                             OmniTechBlocks.THERMAL_CONDUCTOR.get()));
+
+    public static final Supplier<BlockEntityType<ElectricHeaterBlockEntity>> ELECTRIC_HEATER =
+            REGISTRY.register("electric_heater",
+                    () -> new BlockEntityType<>(ElectricHeaterBlockEntity::new,
+                            OmniTechBlocks.ELECTRIC_HEATER.get()));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

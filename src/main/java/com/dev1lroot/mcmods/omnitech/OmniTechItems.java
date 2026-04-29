@@ -151,6 +151,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> THERMAL_CONDUCTOR_ITEM =
             REGISTRY.registerSimpleBlockItem("thermal_conductor", OmniTechBlocks.THERMAL_CONDUCTOR);
 
+    public static final DeferredItem<BlockItem> ELECTRIC_HEATER_ITEM =
+            REGISTRY.registerSimpleBlockItem("electric_heater", OmniTechBlocks.ELECTRIC_HEATER);
+
     // ── Bore Tools ────────────────────────────────────────────────────────────
 
     private static final TagKey<Block> INCORRECT_FOR_INDUSTRIAL_BORE =

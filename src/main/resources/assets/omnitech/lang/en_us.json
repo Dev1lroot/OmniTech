@@ -628,5 +628,9 @@
   "item.omnitech.radiator": "Radiator",
 
   "block.omnitech.thermal_conductor": "Thermal Conductor",
-  "item.omnitech.thermal_conductor": "Thermal Conductor"
+  "item.omnitech.thermal_conductor": "Thermal Conductor",
+
+  "block.omnitech.electric_heater": "Electric Heater",
+  "item.omnitech.electric_heater": "Electric Heater",
+  "container.omnitech.electric_heater": "Electric Heater"
 }
