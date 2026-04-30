@@ -119,6 +119,7 @@ public class OmniTech {
         modEventBus.addListener(OmniTechEntities::registerSpawnPlacements);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        modContainer.registerConfig(ModConfig.Type.CLIENT, com.dev1lroot.mcmods.omnitech.client.MicrophoneConfig.SPEC, "omnitech-microphone-client.toml");
     }
 
     private void registerCapabilities(RegisterCapabilitiesEvent event) {

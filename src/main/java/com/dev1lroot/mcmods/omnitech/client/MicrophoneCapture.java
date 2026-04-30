@@ -1,5 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.client;
 
+import org.jspecify.annotations.Nullable;
+
 import javax.sound.sampled.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +42,10 @@ public final class MicrophoneCapture {
      */
     private static final int MAX_QUEUE_SIZE = 15;
 
+    private static volatile String selectedDevice = "";
     private static volatile float rmsLevel = 0f;
     private static final AtomicBoolean running = new AtomicBoolean(false);
-    private static Thread   captureThread = null;
+    private static Thread captureThread = null;
     private static TargetDataLine line = null;
 
     /** Thread-safe queue of raw 16-bit PCM chunks produced by the capture thread. */
@@ -56,7 +59,36 @@ public final class MicrophoneCapture {
     public static float getRmsLevel() { return rmsLevel; }
 
     /**
-     * Opens the default system microphone and starts the capture thread.
+     * Returns the display names of all available input devices (mixers with TargetDataLine support).
+     * The list does not include the implicit "default" entry.
+     */
+    public static List<String> getAvailableInputDevices() {
+        List<String> devices = new ArrayList<>();
+        DataLine.Info info = new DataLine.Info(TargetDataLine.class, FORMAT);
+        for (Mixer.Info mixerInfo : AudioSystem.getMixerInfo()) {
+            try {
+                if (AudioSystem.getMixer(mixerInfo).isLineSupported(info)) {
+                    devices.add(mixerInfo.getName());
+                }
+            } catch (Exception ignored) {}
+        }
+        return devices;
+    }
+
+    /**
+     * Switches to a different input device. Pass "" for the system default.
+     * If capture is already running it is restarted on the new device.
+     */
+    public static void setDevice(String deviceName) {
+        selectedDevice = deviceName == null ? "" : deviceName;
+        if (running.get()) {
+            stop();
+            start();
+        }
+    }
+
+    /**
+     * Opens the default (or configured) system microphone and starts the capture thread.
      * No-op if already running.  Silently does nothing if no mic is available.
      */
     public static void start() {
@@ -64,8 +96,15 @@ public final class MicrophoneCapture {
         sampleQueue.clear();
         try {
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, FORMAT);
-            if (!AudioSystem.isLineSupported(info)) { running.set(false); return; }
-            line = (TargetDataLine) AudioSystem.getLine(info);
+            TargetDataLine target;
+            if (selectedDevice.isEmpty()) {
+                if (!AudioSystem.isLineSupported(info)) { running.set(false); return; }
+                target = (TargetDataLine) AudioSystem.getLine(info);
+            } else {
+                target = openNamedDevice(selectedDevice, info);
+                if (target == null) { running.set(false); return; }
+            }
+            line = target;
             line.open(FORMAT);
             line.start();
             captureThread = new Thread(MicrophoneCapture::captureLoop, "omnitech-mic-capture");
@@ -74,6 +113,19 @@ public final class MicrophoneCapture {
         } catch (LineUnavailableException e) {
             running.set(false);
         }
+    }
+
+    private static @Nullable TargetDataLine openNamedDevice(String name, DataLine.Info info) {
+        for (Mixer.Info mixerInfo : AudioSystem.getMixerInfo()) {
+            if (!mixerInfo.getName().equals(name)) continue;
+            try {
+                Mixer mixer = AudioSystem.getMixer(mixerInfo);
+                if (mixer.isLineSupported(info)) {
+                    return (TargetDataLine) mixer.getLine(info);
+                }
+            } catch (Exception ignored) {}
+        }
+        return null;
     }
 
     /** Stops capture and releases the microphone. No-op if not running. */

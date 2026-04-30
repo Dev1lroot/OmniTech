@@ -33,5 +33,17 @@
   "item.omnitech.coke_brick": "Коксовый Кирпич",
   "item.omnitech.coke_coal": "Коксовый Уголь",
   "fluid.omnitech.creosote": "Креозот",
-  "container.omnitech.coke_oven": "Коксовая Печь"
+  "container.omnitech.coke_oven": "Коксовая Печь",
+
+  "key.omnitech.push_to_talk": "Нажать для разговора",
+  "key.categories.omnitech": "OmniTech",
+
+  "options.omnitech.microphone": "Микрофон и запись...",
+  "options.omnitech.microphone.title": "Микрофон и запись",
+  "options.omnitech.microphone.device": "Устройство ввода",
+  "options.omnitech.microphone.device.default": "По умолчанию",
+  "options.omnitech.microphone.mode": "Режим",
+  "options.omnitech.microphone.mode.enabled": "Включено",
+  "options.omnitech.microphone.mode.push_to_talk": "Нажать для разговора",
+  "options.omnitech.microphone.mode.disabled": "Отключено"
 }

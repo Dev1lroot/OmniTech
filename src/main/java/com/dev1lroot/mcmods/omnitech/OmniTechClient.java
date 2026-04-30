@@ -17,6 +17,9 @@ import com.dev1lroot.mcmods.omnitech.client.SpaceSuitHudOverlay;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlockEntity;
 import com.dev1lroot.mcmods.omnitech.client.MicrophoneCapture;
+import com.dev1lroot.mcmods.omnitech.client.MicrophoneConfig;
+import com.dev1lroot.mcmods.omnitech.client.MicrophoneMode;
+import com.dev1lroot.mcmods.omnitech.client.MicrophoneSoundOptionsScreen;
 import com.dev1lroot.mcmods.omnitech.client.SpeakerAudioManager;
 import com.dev1lroot.mcmods.omnitech.network.MicrophoneAudioPacket;
 import com.dev1lroot.mcmods.omnitech.entities.AbyssalEelRenderer;
@@ -31,6 +34,7 @@ import com.dev1lroot.mcmods.omnitech.gui.SpaceNavigationScreen;
 import com.dev1lroot.mcmods.omnitech.network.OpenRocketGuiPacket;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.options.SoundOptionsScreen;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.resources.Identifier;
@@ -50,6 +54,7 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
@@ -62,6 +67,7 @@ import org.lwjgl.glfw.GLFW;
 public class OmniTechClient
 {
     public static KeyMapping OPEN_ROCKET_GUI;
+    public static KeyMapping PUSH_TO_TALK;
 
     public OmniTechClient(ModContainer container, IEventBus modEventBus) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
@@ -77,6 +83,7 @@ public class OmniTechClient
         modEventBus.register(OmniTechClient.class);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onClientTick);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::registerClientCommands);
+        NeoForge.EVENT_BUS.addListener(OmniTechClient::onSoundOptionsOpening);
         NeoForge.EVENT_BUS.addListener(SpaceSuitHudOverlay::onRenderGui);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onItemTooltip);
     }
@@ -142,6 +149,19 @@ public class OmniTechClient
                 GLFW.GLFW_KEY_G,
                 category);
         event.register(OPEN_ROCKET_GUI);
+        PUSH_TO_TALK = new KeyMapping(
+                "key.omnitech.push_to_talk",
+                GLFW.GLFW_KEY_UNKNOWN,
+                category);
+        event.register(PUSH_TO_TALK);
+    }
+
+    public static void onSoundOptionsOpening(ScreenEvent.Opening event) {
+        if (event.getNewScreen().getClass() == SoundOptionsScreen.class) {
+            event.setNewScreen(new MicrophoneSoundOptionsScreen(
+                    event.getCurrentScreen(),
+                    Minecraft.getInstance().options));
+        }
     }
 
     public static void registerClientCommands(RegisterClientCommandsEvent event) {
@@ -187,11 +207,23 @@ public class OmniTechClient
     }
 
     private static void tickMicrophoneCapture(Minecraft mc) {
+        MicrophoneMode mode = MicrophoneConfig.getMode();
+        if (mode == MicrophoneMode.DISABLED) {
+            MicrophoneCapture.stop();
+            return;
+        }
+
         List<BlockPos> mics = findNearbyMicrophones(mc);
         if (mics.isEmpty()) {
             MicrophoneCapture.stop();
             return;
         }
+
+        if (mode == MicrophoneMode.PUSH_TO_TALK && (PUSH_TO_TALK == null || !PUSH_TO_TALK.isDown())) {
+            MicrophoneCapture.stop();
+            return;
+        }
+
         if (!MicrophoneCapture.isRunning()) MicrophoneCapture.start();
 
         byte[] samples = MicrophoneCapture.drainSamples();
