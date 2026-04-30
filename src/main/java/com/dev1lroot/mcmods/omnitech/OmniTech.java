@@ -65,6 +65,8 @@ import com.dev1lroot.mcmods.omnitech.network.SetRadioFrequencyPacket;
 import com.dev1lroot.mcmods.omnitech.network.RadioScannerRowPacket;
 import com.dev1lroot.mcmods.omnitech.network.MicrophoneAudioPacket;
 import com.dev1lroot.mcmods.omnitech.network.SpeakerPlayPacket;
+import com.dev1lroot.mcmods.omnitech.network.VoiceChatSendPacket;
+import com.dev1lroot.mcmods.omnitech.network.VoiceChatReceivePacket;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioManager;
 import com.dev1lroot.mcmods.omnitech.entities.AbyssalEelEntity;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechCarvers;
@@ -404,6 +406,14 @@ public class OmniTech {
                 SpeakerPlayPacket.TYPE,
                 SpeakerPlayPacket.CODEC,
                 SpeakerPlayPacket::handle);
+        event.registrar("1").playToServer(
+                VoiceChatSendPacket.TYPE,
+                VoiceChatSendPacket.CODEC,
+                VoiceChatSendPacket::handle);
+        event.registrar("1").playToClient(
+                VoiceChatReceivePacket.TYPE,
+                VoiceChatReceivePacket.CODEC,
+                VoiceChatReceivePacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

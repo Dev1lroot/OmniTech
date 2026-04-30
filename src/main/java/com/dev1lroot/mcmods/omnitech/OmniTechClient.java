@@ -21,7 +21,9 @@ import com.dev1lroot.mcmods.omnitech.client.MicrophoneConfig;
 import com.dev1lroot.mcmods.omnitech.client.MicrophoneMode;
 import com.dev1lroot.mcmods.omnitech.client.MicrophoneSoundOptionsScreen;
 import com.dev1lroot.mcmods.omnitech.client.SpeakerAudioManager;
+import com.dev1lroot.mcmods.omnitech.client.VoiceAudioManager;
 import com.dev1lroot.mcmods.omnitech.network.MicrophoneAudioPacket;
+import com.dev1lroot.mcmods.omnitech.network.VoiceChatSendPacket;
 import com.dev1lroot.mcmods.omnitech.entities.AbyssalEelRenderer;
 import net.minecraft.core.BlockPos;
 import java.util.ArrayList;
@@ -183,6 +185,7 @@ public class OmniTechClient
         if (mc.level == null) {
             MicrophoneCapture.stop();
             SpeakerAudioManager.closeAll();
+            VoiceAudioManager.closeAll();
         }
 
         if (mc.screen != null) return;
@@ -199,27 +202,20 @@ public class OmniTechClient
 
         if (mc.level != null) {
             long gameTime = mc.level.getGameTime();
-            // Microphone block audio capture — runs every 4 ticks
+            // Microphone block and voice chat capture — runs every 4 ticks
             if (gameTime % 4 == 0) tickMicrophoneCapture(mc);
-            // Expire silent speaker sources
+            // Expire silent audio sources
             SpeakerAudioManager.tick(gameTime);
+            VoiceAudioManager.tick(gameTime);
         }
     }
 
     private static void tickMicrophoneCapture(Minecraft mc) {
         MicrophoneMode mode = MicrophoneConfig.getMode();
-        if (mode == MicrophoneMode.DISABLED) {
-            MicrophoneCapture.stop();
-            return;
-        }
+        boolean captureActive = mode != MicrophoneMode.DISABLED
+                && (mode != MicrophoneMode.PUSH_TO_TALK || (PUSH_TO_TALK != null && PUSH_TO_TALK.isDown()));
 
-        List<BlockPos> mics = findNearbyMicrophones(mc);
-        if (mics.isEmpty()) {
-            MicrophoneCapture.stop();
-            return;
-        }
-
-        if (mode == MicrophoneMode.PUSH_TO_TALK && (PUSH_TO_TALK == null || !PUSH_TO_TALK.isDown())) {
+        if (!captureActive) {
             MicrophoneCapture.stop();
             return;
         }
@@ -229,9 +225,13 @@ public class OmniTechClient
         byte[] samples = MicrophoneCapture.drainSamples();
         if (samples.length == 0) return;
 
-        for (BlockPos micPos : mics) {
+        // Feed nearby microphone blocks (radio/cable network path)
+        for (BlockPos micPos : findNearbyMicrophones(mc)) {
             ClientPacketDistributor.sendToServer(new MicrophoneAudioPacket(micPos, samples));
         }
+
+        // Feed voice chat (direct player-to-player path)
+        ClientPacketDistributor.sendToServer(new VoiceChatSendPacket(samples));
     }
 
     /** Scans the area around the player for Microphone blocks within MAX_RANGE. */

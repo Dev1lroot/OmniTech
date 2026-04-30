@@ -20,11 +20,21 @@ public final class SpeakerAudioSource {
     private final int source;
 
     public SpeakerAudioSource(double x, double y, double z) {
+        this(x, y, z, 4.0f, 24.0f, 1.0f);
+    }
+
+    public SpeakerAudioSource(double x, double y, double z,
+                               float referenceDistance, float maxDistance, float rolloff) {
         source = AL10.alGenSources();
         AL10.alSource3f(source, AL10.AL_POSITION, (float) x, (float) y, (float) z);
-        AL10.alSourcef(source, AL10.AL_REFERENCE_DISTANCE, 4.0f);
-        AL10.alSourcef(source, AL10.AL_MAX_DISTANCE, 24.0f);
-        AL10.alSourcef(source, AL10.AL_ROLLOFF_FACTOR, 1.0f);
+        AL10.alSourcef(source, AL10.AL_REFERENCE_DISTANCE, referenceDistance);
+        AL10.alSourcef(source, AL10.AL_MAX_DISTANCE, maxDistance);
+        AL10.alSourcef(source, AL10.AL_ROLLOFF_FACTOR, rolloff);
+    }
+
+    /** Updates the 3D world position of this source (for moving speakers such as players). */
+    public void setPosition(double x, double y, double z) {
+        AL10.alSource3f(source, AL10.AL_POSITION, (float) x, (float) y, (float) z);
     }
 
     /**
