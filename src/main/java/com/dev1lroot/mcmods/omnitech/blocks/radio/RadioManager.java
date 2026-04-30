@@ -10,7 +10,15 @@ import java.util.Map;
  */
 public final class RadioManager {
 
-    private static final Map<Integer, Float> SIGNALS = new HashMap<>();
+    /**
+     * A PCM audio frame stored per frequency channel.
+     * {@code frameTime} is the game-tick at which the frame was captured by the transmitter,
+     * used by receivers to detect new frames without replaying the same buffer.
+     */
+    public record AudioFrame(byte[] samples, long frameTime) {}
+
+    private static final Map<Integer, Float>      SIGNALS = new HashMap<>();
+    private static final Map<Integer, AudioFrame> AUDIO   = new HashMap<>();
 
     private RadioManager() {}
 
@@ -45,8 +53,32 @@ public final class RadioManager {
         SIGNALS.remove(freqX10);
     }
 
+    /**
+     * Store a PCM audio frame at the given frequency.
+     * {@code frameTime} is the game-tick when the transmitter originally received this frame;
+     * receivers use it to detect new frames without re-pushing the same buffer.
+     */
+    public static void setAudio(int freqX10, byte[] samples, long frameTime) {
+        if (samples == null || samples.length == 0) {
+            AUDIO.remove(freqX10);
+        } else {
+            AUDIO.put(freqX10, new AudioFrame(samples, frameTime));
+        }
+    }
+
+    /** Return the current audio frame at a frequency, or {@code null} if none. */
+    public static AudioFrame getAudio(int freqX10) {
+        return AUDIO.get(freqX10);
+    }
+
+    /** Remove the audio contribution for a frequency. */
+    public static void clearAudio(int freqX10) {
+        AUDIO.remove(freqX10);
+    }
+
     /** Wipe the entire spectrum — called on server start to remove stale state. */
     public static void clearAll() {
         SIGNALS.clear();
+        AUDIO.clear();
     }
 }

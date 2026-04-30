@@ -163,6 +163,15 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> RADIO_SCANNER_ITEM =
             REGISTRY.registerSimpleBlockItem("radio_scanner", OmniTechBlocks.RADIO_SCANNER);
 
+    public static final DeferredItem<BlockItem> ANALOG_CABLE_ITEM =
+            REGISTRY.registerSimpleBlockItem("analog_cable", OmniTechBlocks.ANALOG_CABLE);
+
+    public static final DeferredItem<BlockItem> MICROPHONE_ITEM =
+            REGISTRY.registerSimpleBlockItem("microphone", OmniTechBlocks.MICROPHONE);
+
+    public static final DeferredItem<BlockItem> SPEAKER_ITEM =
+            REGISTRY.registerSimpleBlockItem("speaker", OmniTechBlocks.SPEAKER);
+
     // ── Bore Tools ────────────────────────────────────────────────────────────
 
     private static final TagKey<Block> INCORRECT_FOR_INDUSTRIAL_BORE =

@@ -14,7 +14,15 @@ import com.dev1lroot.mcmods.omnitech.client.ThermalConductorBER;
 import com.dev1lroot.mcmods.omnitech.client.ValveRenderer;
 import com.dev1lroot.mcmods.omnitech.client.SpaceMapSkyboxRenderer;
 import com.dev1lroot.mcmods.omnitech.client.SpaceSuitHudOverlay;
+import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlockEntity;
+import com.dev1lroot.mcmods.omnitech.client.MicrophoneCapture;
+import com.dev1lroot.mcmods.omnitech.client.SpeakerAudioManager;
+import com.dev1lroot.mcmods.omnitech.network.MicrophoneAudioPacket;
 import com.dev1lroot.mcmods.omnitech.entities.AbyssalEelRenderer;
+import net.minecraft.core.BlockPos;
+import java.util.ArrayList;
+import java.util.List;
 import com.dev1lroot.mcmods.omnitech.entities.CokeOvenEntityRenderer;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntity;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntityRenderer;
@@ -149,7 +157,15 @@ public class OmniTechClient
 
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.screen != null) return;
+        if (mc.player == null) return;
+
+        // Stop audio systems when disconnected from a level
+        if (mc.level == null) {
+            MicrophoneCapture.stop();
+            SpeakerAudioManager.closeAll();
+        }
+
+        if (mc.screen != null) return;
 
         // Rocket inventory key — opens the rocket's container GUI.
         // Handled server-side; only send while the player is mounted in the rocket
@@ -160,6 +176,52 @@ public class OmniTechClient
                 ClientPacketDistributor.sendToServer(new OpenRocketGuiPacket());
             }
         }
+
+        if (mc.level != null) {
+            long gameTime = mc.level.getGameTime();
+            // Microphone block audio capture — runs every 4 ticks
+            if (gameTime % 4 == 0) tickMicrophoneCapture(mc);
+            // Expire silent speaker sources
+            SpeakerAudioManager.tick(gameTime);
+        }
+    }
+
+    private static void tickMicrophoneCapture(Minecraft mc) {
+        List<BlockPos> mics = findNearbyMicrophones(mc);
+        if (mics.isEmpty()) {
+            MicrophoneCapture.stop();
+            return;
+        }
+        if (!MicrophoneCapture.isRunning()) MicrophoneCapture.start();
+
+        byte[] samples = MicrophoneCapture.drainSamples();
+        if (samples.length == 0) return;
+
+        for (BlockPos micPos : mics) {
+            ClientPacketDistributor.sendToServer(new MicrophoneAudioPacket(micPos, samples));
+        }
+    }
+
+    /** Scans the area around the player for Microphone blocks within MAX_RANGE. */
+    private static List<BlockPos> findNearbyMicrophones(Minecraft mc) {
+        List<BlockPos> result = new ArrayList<>();
+        int range = (int) MicrophoneBlockEntity.MAX_RANGE;
+        BlockPos origin = mc.player.blockPosition();
+        double rangeSq = (double) range * range;
+        for (int dx = -range; dx <= range; dx++) {
+            for (int dy = -range / 2; dy <= range / 2; dy++) {
+                for (int dz = -range; dz <= range; dz++) {
+                    BlockPos check = origin.offset(dx, dy, dz);
+                    if (mc.player.distanceToSqr(
+                            check.getX() + 0.5, check.getY() + 0.5, check.getZ() + 0.5) > rangeSq)
+                        continue;
+                    if (mc.level.getBlockState(check).getBlock() instanceof MicrophoneBlock) {
+                        result.add(check.immutable());
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     public static void onItemTooltip(ItemTooltipEvent event) {

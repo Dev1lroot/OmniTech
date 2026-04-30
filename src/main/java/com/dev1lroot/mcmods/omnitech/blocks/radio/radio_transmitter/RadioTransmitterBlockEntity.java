@@ -4,6 +4,8 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioConstants;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioManager;
 import com.dev1lroot.mcmods.omnitech.gui.RadioTransmitterMenu;
+import com.dev1lroot.mcmods.omnitech.io.IAnalogInput;
+import com.dev1lroot.mcmods.omnitech.io.IAudioInput;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -29,7 +31,7 @@ import net.minecraft.world.level.storage.ValueOutput;
  *   <li>1 – currentSignal × 100 (0–1500)</li>
  * </ul>
  */
-public class RadioTransmitterBlockEntity extends BaseContainerBlockEntity {
+public class RadioTransmitterBlockEntity extends BaseContainerBlockEntity implements IAnalogInput, IAudioInput {
 
     // ── Button IDs ────────────────────────────────────────────────────────────
 
@@ -45,6 +47,14 @@ public class RadioTransmitterBlockEntity extends BaseContainerBlockEntity {
     private NonNullList<ItemStack> items = NonNullList.withSize(0, ItemStack.EMPTY);
     private int   frequencyX10   = RadioConstants.FREQ_MIN_X10; // 87.5 MHz default
     private float currentSignal  = 0f;
+
+    // Analog input — set by receiveAnalogSignal(), considered stale after 12 ticks
+    private float  analogSignal   = 0f;
+    private long   lastAnalogTick = Long.MIN_VALUE;
+
+    // Audio input — set by receiveAudio(), keyed by the game-tick it arrived
+    private byte[] audioBuffer   = new byte[0];
+    private long   lastAudioTick = Long.MIN_VALUE;
 
     // ── ContainerData ─────────────────────────────────────────────────────────
 
@@ -87,6 +97,23 @@ public class RadioTransmitterBlockEntity extends BaseContainerBlockEntity {
         return new RadioTransmitterMenu(containerId, inv, this, dataAccess);
     }
 
+    // ── IAnalogInput ──────────────────────────────────────────────────────────
+
+    @Override
+    public void receiveAnalogSignal(float signal) {
+        analogSignal = signal;
+        if (level != null) lastAnalogTick = level.getGameTime();
+    }
+
+    // ── IAudioInput ───────────────────────────────────────────────────────────
+
+    @Override
+    public void receiveAudio(byte[] samples) {
+        if (samples == null || samples.length == 0) return;
+        audioBuffer   = samples;
+        if (level != null) lastAudioTick = level.getGameTime();
+    }
+
     // ── Frequency control ─────────────────────────────────────────────────────
 
     public boolean adjustFrequency(int buttonId) {
@@ -118,8 +145,16 @@ public class RadioTransmitterBlockEntity extends BaseContainerBlockEntity {
     public static void serverTick(Level level, BlockPos pos, BlockState state,
             RadioTransmitterBlockEntity be) {
         int redstone = level.getBestNeighborSignal(pos);
-        be.currentSignal = redstone;
+        float effective = (level.getGameTime() - be.lastAnalogTick <= 12) ? be.analogSignal : 0f;
+        be.currentSignal = Math.max(redstone, effective);
         RadioManager.set(be.frequencyX10, be.currentSignal);
+
+        if (be.audioBuffer.length > 0 && level.getGameTime() - be.lastAudioTick <= 12) {
+            RadioManager.setAudio(be.frequencyX10, be.audioBuffer, be.lastAudioTick);
+        } else {
+            RadioManager.clearAudio(be.frequencyX10);
+        }
+
         be.setChanged();
     }
 
@@ -130,6 +165,7 @@ public class RadioTransmitterBlockEntity extends BaseContainerBlockEntity {
         super.setRemoved();
         if (level != null && !level.isClientSide()) {
             RadioManager.clear(frequencyX10);
+            RadioManager.clearAudio(frequencyX10);
         }
     }
 

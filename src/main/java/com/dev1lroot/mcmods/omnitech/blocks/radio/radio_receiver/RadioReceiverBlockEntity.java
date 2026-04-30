@@ -4,6 +4,10 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioConstants;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioManager;
 import com.dev1lroot.mcmods.omnitech.gui.RadioReceiverMenu;
+import com.dev1lroot.mcmods.omnitech.io.IAnalogOutput;
+import com.dev1lroot.mcmods.omnitech.util.AnalogNetworkUtil;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioManager.AudioFrame;
+import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -30,7 +34,7 @@ import net.minecraft.world.level.storage.ValueOutput;
  *   <li>1 – currentSignal × 100 (0–1500)</li>
  * </ul>
  */
-public class RadioReceiverBlockEntity extends BaseContainerBlockEntity {
+public class RadioReceiverBlockEntity extends BaseContainerBlockEntity implements IAnalogOutput {
 
     // ── Button IDs ────────────────────────────────────────────────────────────
 
@@ -44,8 +48,10 @@ public class RadioReceiverBlockEntity extends BaseContainerBlockEntity {
     // ── State ─────────────────────────────────────────────────────────────────
 
     private NonNullList<ItemStack> items = NonNullList.withSize(0, ItemStack.EMPTY);
-    private int   frequencyX10  = RadioConstants.FREQ_MIN_X10;
-    private float currentSignal = 0f;
+    private int   frequencyX10       = RadioConstants.FREQ_MIN_X10;
+    private float currentSignal      = 0f;
+    private float lastPushedSignal   = -1f;
+    private long  lastAudioFrameTime = Long.MIN_VALUE;
 
     // ── ContainerData ─────────────────────────────────────────────────────────
 
@@ -88,6 +94,11 @@ public class RadioReceiverBlockEntity extends BaseContainerBlockEntity {
         return new RadioReceiverMenu(containerId, inv, this, dataAccess);
     }
 
+    // ── IAnalogOutput ─────────────────────────────────────────────────────────
+
+    @Override
+    public float getAnalogSignal() { return currentSignal; }
+
     // ── Frequency control ─────────────────────────────────────────────────────
 
     public boolean adjustFrequency(int buttonId) {
@@ -122,6 +133,20 @@ public class RadioReceiverBlockEntity extends BaseContainerBlockEntity {
         if (newPower != oldPower) {
             // Flag 3 = UPDATE_NEIGHBORS | UPDATE_CLIENTS — notifies adjacent blocks
             level.setBlock(pos, state.setValue(RadioReceiverBlock.POWER, newPower), 3);
+        }
+
+        // Push analog signal to connected cable network every 8 ticks or on change
+        if (Math.abs(be.currentSignal - be.lastPushedSignal) >= 0.1f
+                || level.getGameTime() % 8 == 0) {
+            be.lastPushedSignal = be.currentSignal;
+            AnalogNetworkUtil.pushSignal(level, pos, be.currentSignal, Direction.values());
+        }
+
+        // Push audio frame downstream when a new one arrives from the transmitter
+        AudioFrame frame = RadioManager.getAudio(be.frequencyX10);
+        if (frame != null && frame.frameTime() != be.lastAudioFrameTime) {
+            be.lastAudioFrameTime = frame.frameTime();
+            AnalogNetworkUtil.pushAudio(level, pos, frame.samples(), Direction.values());
         }
 
         be.setChanged();

@@ -25,6 +25,8 @@ import com.dev1lroot.mcmods.omnitech.blocks.thermal.radiator.RadiatorBlockEntity
 import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_transmitter.RadioTransmitterBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_receiver.RadioReceiverBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_scanner.RadioScannerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.analog.speaker.SpeakerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_engine.ElectricEngineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_furnace.ElectricFurnaceBlockEntity;
@@ -237,6 +239,16 @@ public class OmniTechBlockEntities {
             REGISTRY.register("radio_scanner",
                     () -> new BlockEntityType<>(RadioScannerBlockEntity::new,
                             OmniTechBlocks.RADIO_SCANNER.get()));
+
+    public static final Supplier<BlockEntityType<MicrophoneBlockEntity>> MICROPHONE =
+            REGISTRY.register("microphone",
+                    () -> new BlockEntityType<>(MicrophoneBlockEntity::new,
+                            OmniTechBlocks.MICROPHONE.get()));
+
+    public static final Supplier<BlockEntityType<SpeakerBlockEntity>> SPEAKER =
+            REGISTRY.register("speaker",
+                    () -> new BlockEntityType<>(SpeakerBlockEntity::new,
+                            OmniTechBlocks.SPEAKER.get()));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
