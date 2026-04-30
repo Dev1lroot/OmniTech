@@ -2,6 +2,7 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.items.BoreItem;
 import com.dev1lroot.mcmods.omnitech.items.FluidCanisterItem;
+import com.dev1lroot.mcmods.omnitech.items.RadioLocatorItem;
 import com.dev1lroot.mcmods.omnitech.items.SpaceSuitItem;
 import com.google.common.collect.Maps;
 import java.util.Map;
@@ -171,6 +172,9 @@ public class OmniTechItems
 
     public static final DeferredItem<BlockItem> SPEAKER_ITEM =
             REGISTRY.registerSimpleBlockItem("speaker", OmniTechBlocks.SPEAKER);
+
+    public static final DeferredItem<RadioLocatorItem> RADIO_LOCATOR =
+            REGISTRY.registerItem("radio_locator", RadioLocatorItem::new);
 
     // ── Bore Tools ────────────────────────────────────────────────────────────
 

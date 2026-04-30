@@ -20,6 +20,7 @@ import com.dev1lroot.mcmods.omnitech.client.MicrophoneCapture;
 import com.dev1lroot.mcmods.omnitech.client.MicrophoneConfig;
 import com.dev1lroot.mcmods.omnitech.client.MicrophoneMode;
 import com.dev1lroot.mcmods.omnitech.client.MicrophoneSoundOptionsScreen;
+import com.dev1lroot.mcmods.omnitech.client.RadioLocatorHudOverlay;
 import com.dev1lroot.mcmods.omnitech.client.SpeakerAudioManager;
 import com.dev1lroot.mcmods.omnitech.client.VoiceAudioManager;
 import com.dev1lroot.mcmods.omnitech.network.MicrophoneAudioPacket;
@@ -87,6 +88,7 @@ public class OmniTechClient
         NeoForge.EVENT_BUS.addListener(OmniTechClient::registerClientCommands);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onSoundOptionsOpening);
         NeoForge.EVENT_BUS.addListener(SpaceSuitHudOverlay::onRenderGui);
+        NeoForge.EVENT_BUS.addListener(RadioLocatorHudOverlay::onRenderGui);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onItemTooltip);
     }
 

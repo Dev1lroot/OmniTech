@@ -1,7 +1,14 @@
 package com.dev1lroot.mcmods.omnitech.blocks.radio;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
+
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Server-side in-memory store for the virtual FM radio spectrum.
@@ -19,6 +26,7 @@ public final class RadioManager {
 
     private static final Map<Integer, Float>      SIGNALS = new HashMap<>();
     private static final Map<Integer, AudioFrame> AUDIO   = new HashMap<>();
+    private static final Map<ResourceKey<Level>, Map<Integer, Set<BlockPos>>> TRANSMITTER_POSITIONS = new HashMap<>();
 
     private RadioManager() {}
 
@@ -76,9 +84,31 @@ public final class RadioManager {
         AUDIO.remove(freqX10);
     }
 
+    public static void registerTransmitter(ResourceKey<Level> dim, int freqX10, BlockPos pos) {
+        TRANSMITTER_POSITIONS.computeIfAbsent(dim, k -> new HashMap<>())
+                .computeIfAbsent(freqX10, k -> new HashSet<>()).add(pos.immutable());
+    }
+
+    public static void unregisterTransmitter(ResourceKey<Level> dim, int freqX10, BlockPos pos) {
+        Map<Integer, Set<BlockPos>> byFreq = TRANSMITTER_POSITIONS.get(dim);
+        if (byFreq == null) return;
+        Set<BlockPos> set = byFreq.get(freqX10);
+        if (set == null) return;
+        set.remove(pos);
+        if (set.isEmpty()) byFreq.remove(freqX10);
+        if (byFreq.isEmpty()) TRANSMITTER_POSITIONS.remove(dim);
+    }
+
+    public static Set<BlockPos> getTransmitterPositions(ResourceKey<Level> dim, int freqX10) {
+        Map<Integer, Set<BlockPos>> byFreq = TRANSMITTER_POSITIONS.get(dim);
+        if (byFreq == null) return Collections.emptySet();
+        return Collections.unmodifiableSet(byFreq.getOrDefault(freqX10, Collections.emptySet()));
+    }
+
     /** Wipe the entire spectrum — called on server start to remove stale state. */
     public static void clearAll() {
         SIGNALS.clear();
         AUDIO.clear();
+        TRANSMITTER_POSITIONS.clear();
     }
 }

@@ -136,6 +136,7 @@ public class RadioTransmitterBlockEntity extends BaseContainerBlockEntity implem
         frequencyX10 = Math.clamp(newFreqX10, RadioConstants.FREQ_MIN_X10, RadioConstants.FREQ_MAX_X10);
         if (old != frequencyX10 && level != null && !level.isClientSide()) {
             RadioManager.clear(old);
+            RadioManager.unregisterTransmitter(level.dimension(), old, worldPosition);
         }
         setChanged();
     }
@@ -148,6 +149,7 @@ public class RadioTransmitterBlockEntity extends BaseContainerBlockEntity implem
         float effective = (level.getGameTime() - be.lastAnalogTick <= 12) ? be.analogSignal : 0f;
         be.currentSignal = Math.max(redstone, effective);
         RadioManager.set(be.frequencyX10, be.currentSignal);
+        RadioManager.registerTransmitter(level.dimension(), be.frequencyX10, pos);
 
         if (be.audioBuffer.length > 0 && level.getGameTime() - be.lastAudioTick <= 12) {
             RadioManager.setAudio(be.frequencyX10, be.audioBuffer, be.lastAudioTick);
@@ -166,6 +168,7 @@ public class RadioTransmitterBlockEntity extends BaseContainerBlockEntity implem
         if (level != null && !level.isClientSide()) {
             RadioManager.clear(frequencyX10);
             RadioManager.clearAudio(frequencyX10);
+            RadioManager.unregisterTransmitter(level.dimension(), frequencyX10, worldPosition);
         }
     }
 

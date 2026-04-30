@@ -67,6 +67,14 @@ public class OmniTechDataComponents {
                             .networkSynchronized(ByteBufCodecs.STRING_UTF8)
                             .build());
 
+    /** Selected frequency (freqX10) stored on a RadioLocator item. */
+    public static final Supplier<DataComponentType<Integer>> RADIO_LOCATOR_FREQ =
+            REGISTRY.register("radio_locator_freq", () ->
+                    DataComponentType.<Integer>builder()
+                            .persistent(Codec.INT)
+                            .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
     public static void register(IEventBus bus) {
         REGISTRY.register(bus);
     }

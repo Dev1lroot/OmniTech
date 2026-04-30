@@ -654,5 +654,8 @@
 
   "block.omnitech.radio_scanner": "Radio Scanner",
   "item.omnitech.radio_scanner": "Radio Scanner",
-  "container.omnitech.radio_scanner": "Radio Scanner"
+  "container.omnitech.radio_scanner": "Radio Scanner",
+
+  "item.omnitech.radio_locator": "Radio Locator",
+  "screen.omnitech.radio_locator": "Radio Locator"
 }

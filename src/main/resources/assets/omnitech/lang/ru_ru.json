@@ -45,5 +45,8 @@
   "options.omnitech.microphone.mode": "Режим",
   "options.omnitech.microphone.mode.enabled": "Включено",
   "options.omnitech.microphone.mode.push_to_talk": "Нажать для разговора",
-  "options.omnitech.microphone.mode.disabled": "Отключено"
+  "options.omnitech.microphone.mode.disabled": "Отключено",
+
+  "item.omnitech.radio_locator": "Радиолокатор",
+  "screen.omnitech.radio_locator": "Радиолокатор"
 }

@@ -39,6 +39,13 @@
     "omnitech:chemical_infuser",
     "omnitech:extractor",
     "omnitech:radiator",
-    "omnitech:thermal_conductor"
+    "omnitech:thermal_conductor",
+    "omnitech:radio_transmitter",
+    "omnitech:radio_receiver",
+    "omnitech:radio_scanner",
+    "omnitech:analog_cable",
+    "omnitech:microphone",
+    "omnitech:speaker",
+    "omnitech:radio_locator"
   ]
 }

@@ -67,18 +67,27 @@ import com.dev1lroot.mcmods.omnitech.network.MicrophoneAudioPacket;
 import com.dev1lroot.mcmods.omnitech.network.SpeakerPlayPacket;
 import com.dev1lroot.mcmods.omnitech.network.VoiceChatSendPacket;
 import com.dev1lroot.mcmods.omnitech.network.VoiceChatReceivePacket;
+import com.dev1lroot.mcmods.omnitech.network.SetRadioLocatorFreqPacket;
+import com.dev1lroot.mcmods.omnitech.network.RadioLocatorSignalPacket;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioConstants;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioManager;
+import com.dev1lroot.mcmods.omnitech.items.RadioLocatorItem;
 import com.dev1lroot.mcmods.omnitech.entities.AbyssalEelEntity;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechCarvers;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechFeatures;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.DimensionArgument;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import com.dev1lroot.mcmods.omnitech.client.FluidCanisterResourceHandler;
 import java.util.concurrent.CompletableFuture;
@@ -117,6 +126,7 @@ public class OmniTech {
 
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.addListener(OmniTech::registerCommands);
+        NeoForge.EVENT_BUS.addListener(OmniTech::onServerTick);
         modEventBus.addListener(OmniTech::registerAttributes);
         modEventBus.addListener(OmniTechEntities::registerSpawnPlacements);
 
@@ -414,6 +424,14 @@ public class OmniTech {
                 VoiceChatReceivePacket.TYPE,
                 VoiceChatReceivePacket.CODEC,
                 VoiceChatReceivePacket::handle);
+        event.registrar("1").playToServer(
+                SetRadioLocatorFreqPacket.TYPE,
+                SetRadioLocatorFreqPacket.CODEC,
+                SetRadioLocatorFreqPacket::handle);
+        event.registrar("1").playToClient(
+                RadioLocatorSignalPacket.TYPE,
+                RadioLocatorSignalPacket.CODEC,
+                RadioLocatorSignalPacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -463,6 +481,39 @@ public class OmniTech {
                     })
                 )
         );
+    }
+
+    public static void onServerTick(ServerTickEvent.Post event) {
+        long tick = event.getServer().getTickCount();
+        if (tick % 10 != 0) return;
+
+        for (ServerPlayer sp : event.getServer().getPlayerList().getPlayers()) {
+            ItemStack stack = null;
+            InteractionHand hand = null;
+            ItemStack main = sp.getItemInHand(InteractionHand.MAIN_HAND);
+            ItemStack off  = sp.getItemInHand(InteractionHand.OFF_HAND);
+            if (main.getItem() instanceof RadioLocatorItem) { stack = main; hand = InteractionHand.MAIN_HAND; }
+            else if (off.getItem() instanceof RadioLocatorItem) { stack = off; hand = InteractionHand.OFF_HAND; }
+            if (stack == null) continue;
+
+            int freqX10 = stack.getOrDefault(OmniTechDataComponents.RADIO_LOCATOR_FREQ.get(),
+                    RadioConstants.FREQ_MIN_X10);
+
+            var positions = RadioManager.getTransmitterPositions(sp.level().dimension(), freqX10);
+            float signal = 0f;
+            double rangeSq = RadioLocatorItem.MAX_RANGE * RadioLocatorItem.MAX_RANGE;
+            double px = sp.getX(), py = sp.getY(), pz = sp.getZ();
+            for (BlockPos txPos : positions) {
+                double dx = txPos.getX() + 0.5 - px;
+                double dy = txPos.getY() + 0.5 - py;
+                double dz = txPos.getZ() + 0.5 - pz;
+                double distSq = dx * dx + dy * dy + dz * dz;
+                if (distSq > rangeSq) continue;
+                float s = (float) (15.0 * (1.0 - Math.sqrt(distSq) / RadioLocatorItem.MAX_RANGE));
+                signal = Math.max(signal, s);
+            }
+            PacketDistributor.sendToPlayer(sp, new RadioLocatorSignalPacket(signal));
+        }
     }
 
     @SubscribeEvent
