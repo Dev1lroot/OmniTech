@@ -657,5 +657,23 @@
   "container.omnitech.radio_scanner": "Radio Scanner",
 
   "item.omnitech.radio_locator": "Radio Locator",
-  "screen.omnitech.radio_locator": "Radio Locator"
+  "screen.omnitech.radio_locator": "Radio Locator",
+
+  "advancement.omnitech.root.title": "OmniTech",
+  "advancement.omnitech.root.description": "Welcome to the age of technology",
+
+  "advancement.omnitech.radio.radio_pioneer.title": "Radio Pioneer",
+  "advancement.omnitech.radio.radio_pioneer.description": "Craft your first Radio Transmitter",
+
+  "advancement.omnitech.radio.on_air.title": "On Air",
+  "advancement.omnitech.radio.on_air.description": "Place a Radio Transmitter and start broadcasting",
+
+  "advancement.omnitech.radio.tuned_in.title": "Tuned In",
+  "advancement.omnitech.radio.tuned_in.description": "Place a Radio Receiver to pick up signals from the ether",
+
+  "advancement.omnitech.radio.signal_sweep.title": "Signal Sweep",
+  "advancement.omnitech.radio.signal_sweep.description": "Deploy a Radio Scanner to visualize the full spectrum",
+
+  "advancement.omnitech.radio.full_spectrum.title": "Full Spectrum",
+  "advancement.omnitech.radio.full_spectrum.description": "Assemble the complete radio toolkit: Transmitter, Receiver, Scanner, and Locator"
 }

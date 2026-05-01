@@ -48,5 +48,23 @@
   "options.omnitech.microphone.mode.disabled": "Отключено",
 
   "item.omnitech.radio_locator": "Радиолокатор",
-  "screen.omnitech.radio_locator": "Радиолокатор"
+  "screen.omnitech.radio_locator": "Радиолокатор",
+
+  "advancement.omnitech.root.title": "OmniTech",
+  "advancement.omnitech.root.description": "Добро пожаловать в эпоху технологий",
+
+  "advancement.omnitech.radio.radio_pioneer.title": "Радиопионер",
+  "advancement.omnitech.radio.radio_pioneer.description": "Скрафтите первый Радиопередатчик",
+
+  "advancement.omnitech.radio.on_air.title": "В эфире",
+  "advancement.omnitech.radio.on_air.description": "Установите Радиопередатчик и начните вещание",
+
+  "advancement.omnitech.radio.tuned_in.title": "На частоте",
+  "advancement.omnitech.radio.tuned_in.description": "Установите Радиоприёмник для приёма сигналов",
+
+  "advancement.omnitech.radio.signal_sweep.title": "Прочёс эфира",
+  "advancement.omnitech.radio.signal_sweep.description": "Разверните Радиосканер для визуализации всего спектра",
+
+  "advancement.omnitech.radio.full_spectrum.title": "Полный спектр",
+  "advancement.omnitech.radio.full_spectrum.description": "Соберите полный радионабор: Передатчик, Приёмник, Сканер и Локатор"
 }

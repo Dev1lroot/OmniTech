@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "omnitech:radio_transmitter"
+    },
+    "title": {"translate": "advancement.omnitech.radio.radio_pioneer.title"},
+    "description": {"translate": "advancement.omnitech.radio.radio_pioneer.description"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "omnitech:root",
+  "criteria": {
+    "has_transmitter": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {"items": "omnitech:radio_transmitter"}
+        ]
+      }
+    }
+  }
+}

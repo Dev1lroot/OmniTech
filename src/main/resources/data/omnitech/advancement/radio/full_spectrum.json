@@ -1,0 +1,46 @@
+{
+  "display": {
+    "icon": {
+      "id": "omnitech:radio_locator"
+    },
+    "title": {"translate": "advancement.omnitech.radio.full_spectrum.title"},
+    "description": {"translate": "advancement.omnitech.radio.full_spectrum.description"},
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "omnitech:radio/signal_sweep",
+  "criteria": {
+    "has_transmitter": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "omnitech:radio_transmitter"}]
+      }
+    },
+    "has_receiver": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "omnitech:radio_receiver"}]
+      }
+    },
+    "has_scanner": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "omnitech:radio_scanner"}]
+      }
+    },
+    "has_locator": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "omnitech:radio_locator"}]
+      }
+    }
+  },
+  "requirements": [
+    ["has_transmitter"],
+    ["has_receiver"],
+    ["has_scanner"],
+    ["has_locator"]
+  ]
+}

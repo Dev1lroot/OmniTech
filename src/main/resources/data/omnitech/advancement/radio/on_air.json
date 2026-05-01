@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "id": "omnitech:radio_transmitter"
+    },
+    "title": {"translate": "advancement.omnitech.radio.on_air.title"},
+    "description": {"translate": "advancement.omnitech.radio.on_air.description"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "omnitech:radio/radio_pioneer",
+  "criteria": {
+    "place_transmitter": {
+      "trigger": "minecraft:placed_block",
+      "conditions": {
+        "block": "omnitech:radio_transmitter"
+      }
+    }
+  }
+}

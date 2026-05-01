@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "id": "omnitech:radio_receiver"
+    },
+    "title": {"translate": "advancement.omnitech.radio.tuned_in.title"},
+    "description": {"translate": "advancement.omnitech.radio.tuned_in.description"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "omnitech:radio/on_air",
+  "criteria": {
+    "place_receiver": {
+      "trigger": "minecraft:placed_block",
+      "conditions": {
+        "block": "omnitech:radio_receiver"
+      }
+    }
+  }
+}
