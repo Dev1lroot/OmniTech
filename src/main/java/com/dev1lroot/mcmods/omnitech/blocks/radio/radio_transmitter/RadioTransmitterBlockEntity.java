@@ -1,7 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.blocks.radio.radio_transmitter;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioConstants;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioManager;
 import com.dev1lroot.mcmods.omnitech.gui.RadioTransmitterMenu;
 import com.dev1lroot.mcmods.omnitech.io.IAnalogInput;
@@ -22,18 +22,17 @@ import net.minecraft.world.level.storage.ValueOutput;
 /**
  * Block entity for {@link RadioTransmitterBlock}.
  *
- * <p>Each server tick it reads the strongest incoming redstone signal (0–15),
- * converts it to a float, and writes it to {@link RadioManager} at the tuned frequency.
- *
  * <p>ContainerData layout:
  * <ul>
- *   <li>0 – frequencyX10 (875–1174)</li>
- *   <li>1 – currentSignal × 100 (0–1500)</li>
+ *   <li>0 – band ordinal (0–8)</li>
+ *   <li>1 – channel index within band</li>
+ *   <li>2 – currentSignal × 100 (0–1500)</li>
  * </ul>
+ *
+ * <p>Button IDs 0–5: frequency ±1/±10/±100 within current band.
+ * Button IDs 6–14: switch to band N (N = id − 6).
  */
 public class RadioTransmitterBlockEntity extends BaseContainerBlockEntity implements IAnalogInput, IAudioInput {
-
-    // ── Button IDs ────────────────────────────────────────────────────────────
 
     public static final int BTN_FREQ_MINUS_100 = 0;
     public static final int BTN_FREQ_MINUS_10  = 1;
@@ -41,53 +40,48 @@ public class RadioTransmitterBlockEntity extends BaseContainerBlockEntity implem
     public static final int BTN_FREQ_PLUS_1    = 3;
     public static final int BTN_FREQ_PLUS_10   = 4;
     public static final int BTN_FREQ_PLUS_100  = 5;
-
-    // ── State ─────────────────────────────────────────────────────────────────
+    public static final int BTN_BAND_BASE      = 6;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(0, ItemStack.EMPTY);
-    private int   frequencyX10   = RadioConstants.FREQ_MIN_X10; // 87.5 MHz default
-    private float currentSignal  = 0f;
 
-    // Analog input — set by receiveAnalogSignal(), considered stale after 12 ticks
+    private FrequencyBand band       = FrequencyBand.VHF;
+    private int           channelIdx = 0;
+    private float         currentSignal = 0f;
+
     private float  analogSignal   = 0f;
     private long   lastAnalogTick = Long.MIN_VALUE;
-
-    // Audio input — set by receiveAudio(), keyed by the game-tick it arrived
-    private byte[] audioBuffer   = new byte[0];
-    private long   lastAudioTick = Long.MIN_VALUE;
-
-    // ── ContainerData ─────────────────────────────────────────────────────────
+    private byte[] audioBuffer    = new byte[0];
+    private long   lastAudioTick  = Long.MIN_VALUE;
 
     protected final ContainerData dataAccess = new ContainerData() {
         @Override public int get(int index) {
             return switch (index) {
-                case 0 -> frequencyX10;
-                case 1 -> (int)(currentSignal * 100f);
+                case 0 -> band.ordinal();
+                case 1 -> channelIdx;
+                case 2 -> (int)(currentSignal * 100f);
                 default -> 0;
             };
         }
         @Override public void set(int index, int value) {
             switch (index) {
-                case 0 -> frequencyX10  = value;
-                case 1 -> currentSignal = value / 100f;
+                case 0 -> {
+                    FrequencyBand[] vals = FrequencyBand.values();
+                    band = (value >= 0 && value < vals.length) ? vals[value] : FrequencyBand.VHF;
+                }
+                case 1 -> channelIdx = Math.clamp(value, 0, band.channels() - 1);
+                case 2 -> currentSignal = value / 100f;
             }
         }
-        @Override public int getCount() { return 2; }
+        @Override public int getCount() { return 3; }
     };
-
-    // ── Constructor ───────────────────────────────────────────────────────────
 
     public RadioTransmitterBlockEntity(BlockPos pos, BlockState state) {
         super(OmniTechBlockEntities.RADIO_TRANSMITTER.get(), pos, state);
     }
 
-    // ── BaseContainerBlockEntity ──────────────────────────────────────────────
-
-    @Override
-    protected Component getDefaultName() {
+    @Override protected Component getDefaultName() {
         return Component.translatable("container.omnitech.radio_transmitter");
     }
-
     @Override protected NonNullList<ItemStack> getItems()           { return items; }
     @Override protected void setItems(NonNullList<ItemStack> items) { this.items = items; }
     @Override public int getContainerSize()                         { return 0; }
@@ -97,15 +91,11 @@ public class RadioTransmitterBlockEntity extends BaseContainerBlockEntity implem
         return new RadioTransmitterMenu(containerId, inv, this, dataAccess);
     }
 
-    // ── IAnalogInput ──────────────────────────────────────────────────────────
-
     @Override
     public void receiveAnalogSignal(float signal) {
         analogSignal = signal;
         if (level != null) lastAnalogTick = level.getGameTime();
     }
-
-    // ── IAudioInput ───────────────────────────────────────────────────────────
 
     @Override
     public void receiveAudio(byte[] samples) {
@@ -114,32 +104,58 @@ public class RadioTransmitterBlockEntity extends BaseContainerBlockEntity implem
         if (level != null) lastAudioTick = level.getGameTime();
     }
 
-    // ── Frequency control ─────────────────────────────────────────────────────
+    // ── Button / frequency control ────────────────────────────────────────────
 
-    public boolean adjustFrequency(int buttonId) {
-        int delta = switch (buttonId) {
+    public boolean handleButton(int id) {
+        FrequencyBand[] bands = FrequencyBand.values();
+        if (id >= BTN_BAND_BASE && id < BTN_BAND_BASE + bands.length) {
+            FrequencyBand newBand = bands[id - BTN_BAND_BASE];
+            if (newBand != band && level != null && !level.isClientSide()) {
+                int oldKey = globalKey();
+                RadioManager.clear(level.dimension(), oldKey, band.interdimensional());
+                RadioManager.clearAudio(level.dimension(), oldKey, band.interdimensional());
+                RadioManager.unregisterTransmitter(level.dimension(), oldKey, worldPosition);
+            }
+            band = newBand;
+            channelIdx = 0;
+            setChanged();
+            return true;
+        }
+        int delta = switch (id) {
             case BTN_FREQ_MINUS_100 -> -100;
             case BTN_FREQ_MINUS_10  -> -10;
             case BTN_FREQ_MINUS_1   -> -1;
             case BTN_FREQ_PLUS_1    -> +1;
             case BTN_FREQ_PLUS_10   -> +10;
             case BTN_FREQ_PLUS_100  -> +100;
-            default                 -> 0;
+            default -> 0;
         };
         if (delta == 0) return false;
-        setFrequency(frequencyX10 + delta);
+        if (level != null && !level.isClientSide()) {
+            RadioManager.clear(level.dimension(), globalKey(), band.interdimensional());
+            RadioManager.unregisterTransmitter(level.dimension(), globalKey(), worldPosition);
+        }
+        channelIdx = Math.clamp(channelIdx + delta, 0, band.channels() - 1);
+        setChanged();
         return true;
     }
 
-    public void setFrequency(int newFreqX10) {
-        int old = frequencyX10;
-        frequencyX10 = Math.clamp(newFreqX10, RadioConstants.FREQ_MIN_X10, RadioConstants.FREQ_MAX_X10);
-        if (old != frequencyX10 && level != null && !level.isClientSide()) {
-            RadioManager.clear(old);
-            RadioManager.unregisterTransmitter(level.dimension(), old, worldPosition);
+    /** Set via direct-entry packet: globalKey encodes band + channel. */
+    public void setFrequency(int globalKey) {
+        FrequencyBand newBand = FrequencyBand.fromGlobalKey(globalKey);
+        int newCh = Math.clamp(FrequencyBand.channelOf(globalKey), 0, newBand.channels() - 1);
+        if (newBand == band && newCh == channelIdx) return;
+        if (level != null && !level.isClientSide()) {
+            RadioManager.clear(level.dimension(), globalKey(), band.interdimensional());
+            RadioManager.clearAudio(level.dimension(), globalKey(), band.interdimensional());
+            RadioManager.unregisterTransmitter(level.dimension(), globalKey(), worldPosition);
         }
+        band       = newBand;
+        channelIdx = newCh;
         setChanged();
     }
+
+    private int globalKey() { return band.globalKey(channelIdx); }
 
     // ── Server tick ───────────────────────────────────────────────────────────
 
@@ -148,13 +164,17 @@ public class RadioTransmitterBlockEntity extends BaseContainerBlockEntity implem
         int redstone = level.getBestNeighborSignal(pos);
         float effective = (level.getGameTime() - be.lastAnalogTick <= 12) ? be.analogSignal : 0f;
         be.currentSignal = Math.max(redstone, effective);
-        RadioManager.set(be.frequencyX10, be.currentSignal);
-        RadioManager.registerTransmitter(level.dimension(), be.frequencyX10, pos);
+
+        int key = be.globalKey();
+        boolean interdim = be.band.interdimensional();
+
+        RadioManager.set(level.dimension(), key, be.currentSignal, interdim);
+        RadioManager.registerTransmitter(level.dimension(), key, pos);
 
         if (be.audioBuffer.length > 0 && level.getGameTime() - be.lastAudioTick <= 12) {
-            RadioManager.setAudio(be.frequencyX10, be.audioBuffer, be.lastAudioTick);
+            RadioManager.setAudio(level.dimension(), key, be.audioBuffer, be.lastAudioTick, interdim);
         } else {
-            RadioManager.clearAudio(be.frequencyX10);
+            RadioManager.clearAudio(level.dimension(), key, interdim);
         }
 
         be.setChanged();
@@ -166,16 +186,19 @@ public class RadioTransmitterBlockEntity extends BaseContainerBlockEntity implem
     public void setRemoved() {
         super.setRemoved();
         if (level != null && !level.isClientSide()) {
-            RadioManager.clear(frequencyX10);
-            RadioManager.clearAudio(frequencyX10);
-            RadioManager.unregisterTransmitter(level.dimension(), frequencyX10, worldPosition);
+            int key = globalKey();
+            boolean interdim = band.interdimensional();
+            RadioManager.clear(level.dimension(), key, interdim);
+            RadioManager.clearAudio(level.dimension(), key, interdim);
+            RadioManager.unregisterTransmitter(level.dimension(), key, worldPosition);
         }
     }
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 
-    public int   getFrequencyX10()  { return frequencyX10; }
-    public float getCurrentSignal() { return currentSignal; }
+    public FrequencyBand getBand()        { return band; }
+    public int           getChannelIdx()  { return channelIdx; }
+    public float         getCurrentSignal() { return currentSignal; }
     public ContainerData getContainerData() { return dataAccess; }
 
     // ── Persistence ───────────────────────────────────────────────────────────
@@ -183,14 +206,18 @@ public class RadioTransmitterBlockEntity extends BaseContainerBlockEntity implem
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        frequencyX10  = input.getIntOr("FrequencyX10", RadioConstants.FREQ_MIN_X10);
+        int bandOrd = input.getIntOr("Band", FrequencyBand.VHF.ordinal());
+        FrequencyBand[] vals = FrequencyBand.values();
+        band = (bandOrd >= 0 && bandOrd < vals.length) ? vals[bandOrd] : FrequencyBand.VHF;
+        channelIdx    = Math.clamp(input.getIntOr("ChannelIdx", 0), 0, band.channels() - 1);
         currentSignal = input.getFloatOr("CurrentSignal", 0f);
     }
 
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.putInt  ("FrequencyX10",  frequencyX10);
+        output.putInt  ("Band",          band.ordinal());
+        output.putInt  ("ChannelIdx",    channelIdx);
         output.putFloat("CurrentSignal", currentSignal);
     }
 }

@@ -2,7 +2,7 @@ package com.dev1lroot.mcmods.omnitech.gui;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
-import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioConstants;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_transmitter.RadioTransmitterBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -21,11 +21,11 @@ public class RadioTransmitterMenu extends AbstractContainerMenu {
     private final ContainerData data;
     private final BlockPos pos;
 
-    /** Client-side constructor. */
+    /** Client-side constructor — ContainerData is synced from server. */
     public RadioTransmitterMenu(int containerId, Inventory playerInventory, FriendlyByteBuf buf) {
         this(containerId, playerInventory,
                 playerInventory.player.level().getBlockEntity(buf.readBlockPos()),
-                new SimpleContainerData(2));
+                new SimpleContainerData(3));
     }
 
     /** Server-side constructor. */
@@ -40,18 +40,29 @@ public class RadioTransmitterMenu extends AbstractContainerMenu {
 
     // ── Data accessors ────────────────────────────────────────────────────────
 
-    public int   getFrequencyX10()  { return data.get(0); }
-    public float getCurrentSignal() { return data.get(1) / 100f; }
-    public BlockPos getBlockPos()   { return pos; }
+    public FrequencyBand getBand() {
+        int ord = data.get(0);
+        FrequencyBand[] vals = FrequencyBand.values();
+        return (ord >= 0 && ord < vals.length) ? vals[ord] : FrequencyBand.VHF;
+    }
 
-    public float getFrequencyMHz()  { return getFrequencyX10() / 10f; }
+    public int   getChannelIndex()   { return data.get(1); }
+    public float getCurrentSignal()  { return data.get(2) / 100f; }
+    public BlockPos getBlockPos()    { return pos; }
+
+    public String getFreqDisplay() { return getBand().freqDisplay(getChannelIndex()); }
+
+    public float getFreqValue() {
+        FrequencyBand b = getBand();
+        return b.freqMin() + getChannelIndex() * b.freqStep();
+    }
 
     // ── Button handling ───────────────────────────────────────────────────────
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (blockEntity instanceof RadioTransmitterBlockEntity tx) {
-            return tx.adjustFrequency(id);
+            return tx.handleButton(id);
         }
         return false;
     }

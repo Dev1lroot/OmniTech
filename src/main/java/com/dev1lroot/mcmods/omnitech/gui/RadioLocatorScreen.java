@@ -1,6 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.gui;
 
-import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioConstants;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
 import com.dev1lroot.mcmods.omnitech.network.SetRadioLocatorFreqPacket;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -16,10 +16,9 @@ public class RadioLocatorScreen extends Screen {
     private static final int W = 200;
     private static final int H = 60;
 
-    private static final int BTN_W = 16;
-    private static final int BTN_H = 12;
-    private static final int BTN_Y = 22;
-
+    private static final int BTN_W        = 16;
+    private static final int BTN_H        = 12;
+    private static final int BTN_Y        = 22;
     private static final int BX_MINUS_100 = 6;
     private static final int BX_MINUS_10  = 24;
     private static final int BX_MINUS_1   = 42;
@@ -30,20 +29,19 @@ public class RadioLocatorScreen extends Screen {
     private static final int BX_PLUS_100  = 160;
 
     private final InteractionHand hand;
-    private int freqX10;
+    private int globalKey;
     private EditBox freqBox;
 
-    public RadioLocatorScreen(int freqX10, InteractionHand hand) {
+    public RadioLocatorScreen(int globalKey, InteractionHand hand) {
         super(Component.translatable("screen.omnitech.radio_locator"));
-        this.freqX10 = freqX10;
-        this.hand    = hand;
+        this.globalKey = globalKey;
+        this.hand      = hand;
     }
 
     @Override
     protected void init() {
         int lx = (this.width  - W) / 2;
         int ty = (this.height - H) / 2;
-
         int by = ty + BTN_Y;
 
         addRenderableWidget(Button.builder(Component.literal("-100"),
@@ -62,10 +60,10 @@ public class RadioLocatorScreen extends Screen {
         this.freqBox = new EditBox(this.font,
                 lx + 40, ty + 42, 120, 12,
                 Component.literal("Frequency"));
-        this.freqBox.setMaxLength(7);
+        this.freqBox.setMaxLength(10);
         this.freqBox.setBordered(true);
         this.freqBox.setCanLoseFocus(true);
-        this.freqBox.setValue(formatMHz(freqX10));
+        this.freqBox.setValue(formatFreq(globalKey));
         addRenderableWidget(this.freqBox);
     }
 
@@ -96,7 +94,9 @@ public class RadioLocatorScreen extends Screen {
         int titleX = (W - this.font.width(this.title)) / 2;
         graphics.text(this.font, this.title, lx + titleX, ty + 6, 0xFF404040, false);
 
-        String freqStr = String.format("%.1f MHz", freqX10 / 10f);
+        FrequencyBand band = FrequencyBand.fromGlobalKey(globalKey);
+        int ch = FrequencyBand.channelOf(globalKey);
+        String freqStr = "[" + band.displayName() + "] " + band.freqDisplay(ch);
         int fw = this.font.width(freqStr);
         int fx = lx + DISP_X + (DISP_W - fw) / 2;
         graphics.text(this.font, freqStr, fx, ty + BTN_Y + 2, 0xFF00AAFF, false);
@@ -108,30 +108,35 @@ public class RadioLocatorScreen extends Screen {
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private void adjustFreq(int delta) {
-        freqX10 = Math.clamp(freqX10 + delta,
-                RadioConstants.FREQ_MIN_X10, RadioConstants.FREQ_MAX_X10);
-        freqBox.setValue(formatMHz(freqX10));
+        FrequencyBand band = FrequencyBand.fromGlobalKey(globalKey);
+        int ch = Math.clamp(FrequencyBand.channelOf(globalKey) + delta, 0, band.channels() - 1);
+        globalKey = band.globalKey(ch);
+        freqBox.setValue(formatFreq(globalKey));
         sendFreq();
     }
 
     private void applyFreqText() {
         try {
-            float mhz = Float.parseFloat(freqBox.getValue().trim());
-            freqX10 = Math.clamp(Math.round(mhz * 10f),
-                    RadioConstants.FREQ_MIN_X10, RadioConstants.FREQ_MAX_X10);
-            freqBox.setValue(formatMHz(freqX10));
+            FrequencyBand band = FrequencyBand.fromGlobalKey(globalKey);
+            float freq = Float.parseFloat(freqBox.getValue().trim());
+            int ch = band.channelFromFreq(freq);
+            globalKey = band.globalKey(ch);
+            freqBox.setValue(formatFreq(globalKey));
             sendFreq();
         } catch (NumberFormatException ignored) {
-            freqBox.setValue(formatMHz(freqX10));
+            freqBox.setValue(formatFreq(globalKey));
         }
     }
 
     private void sendFreq() {
         ClientPacketDistributor.sendToServer(
-                new SetRadioLocatorFreqPacket(freqX10, hand.ordinal()));
+                new SetRadioLocatorFreqPacket(globalKey, hand.ordinal()));
     }
 
-    private static String formatMHz(int x10) {
-        return String.format("%.1f", x10 / 10f);
+    private static String formatFreq(int key) {
+        FrequencyBand band = FrequencyBand.fromGlobalKey(key);
+        int ch = FrequencyBand.channelOf(key);
+        float v = band.freqMin() + ch * band.freqStep();
+        return band.freqStep() < 1f ? String.format("%.1f", v) : String.format("%.0f", v);
     }
 }

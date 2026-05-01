@@ -1,7 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.network;
 
 import com.dev1lroot.mcmods.omnitech.OmniTech;
-import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioConstants;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
 import com.dev1lroot.mcmods.omnitech.gui.RadioScannerScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -11,11 +11,11 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /**
- * Sent server → client every {@code SEND_INTERVAL} ticks while the player has
- * the Radio Scanner GUI open.  Carries one row of FM-band signal strengths
- * (300 channels, 87.5–117.4 MHz) encoded as unsigned bytes (0=no signal, 255=max).
+ * Server → client: one waterfall row for a specific band.
+ * Signal values are encoded as unsigned bytes (0 = no signal, 255 = max).
+ * Row length equals {@link FrequencyBand#channels()} for the given band.
  */
-public record RadioScannerRowPacket(float[] row) implements CustomPacketPayload {
+public record RadioScannerRowPacket(int bandOrdinal, float[] row) implements CustomPacketPayload {
 
     public static final Type<RadioScannerRowPacket> TYPE =
             new Type<>(Identifier.fromNamespaceAndPath(OmniTech.MODID, "radio_scanner_row"));
@@ -23,28 +23,31 @@ public record RadioScannerRowPacket(float[] row) implements CustomPacketPayload 
     public static final StreamCodec<RegistryFriendlyByteBuf, RadioScannerRowPacket> CODEC =
             StreamCodec.of(
                     (buf, pkt) -> {
+                        buf.writeByte(pkt.bandOrdinal);
                         for (float v : pkt.row) {
                             buf.writeByte((int) Math.clamp(v / 15f * 255f, 0, 255));
                         }
                     },
                     buf -> {
-                        float[] row = new float[RadioConstants.CHANNELS];
-                        for (int i = 0; i < RadioConstants.CHANNELS; i++) {
+                        int ord = buf.readUnsignedByte();
+                        FrequencyBand[] vals = FrequencyBand.values();
+                        FrequencyBand band = (ord >= 0 && ord < vals.length) ? vals[ord] : FrequencyBand.VHF;
+                        float[] row = new float[band.channels()];
+                        for (int i = 0; i < band.channels(); i++) {
                             row[i] = (buf.readUnsignedByte() / 255f) * 15f;
                         }
-                        return new RadioScannerRowPacket(row);
+                        return new RadioScannerRowPacket(ord, row);
                     }
             );
 
     @Override
     public Type<? extends CustomPacketPayload> type() { return TYPE; }
 
-    /** Client-side handler: pushes the row into the currently open scanner screen. */
     public static void handle(RadioScannerRowPacket pkt, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             Minecraft mc = Minecraft.getInstance();
             if (mc.screen instanceof RadioScannerScreen scanner) {
-                scanner.receiveRow(pkt.row());
+                scanner.receiveRow(pkt.bandOrdinal(), pkt.row());
             }
         });
     }

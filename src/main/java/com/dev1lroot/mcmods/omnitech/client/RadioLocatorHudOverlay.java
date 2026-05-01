@@ -1,7 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.client;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
-import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioConstants;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
 import com.dev1lroot.mcmods.omnitech.items.RadioLocatorItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -36,8 +36,10 @@ public final class RadioLocatorHudOverlay {
         ItemStack held = getHeldLocator(player);
         if (held == null) return;
 
-        int freqX10 = held.getOrDefault(OmniTechDataComponents.RADIO_LOCATOR_FREQ.get(),
-                RadioConstants.FREQ_MIN_X10);
+        int globalKey = held.getOrDefault(OmniTechDataComponents.RADIO_LOCATOR_FREQ.get(),
+                FrequencyBand.VHF.globalKey(0));
+        FrequencyBand band = FrequencyBand.fromGlobalKey(globalKey);
+        int ch = FrequencyBand.channelOf(globalKey);
         float signal = lastSignal;
 
         Font font = mc.font;
@@ -49,7 +51,7 @@ public final class RadioLocatorHudOverlay {
         int screenW = mc.getWindow().getGuiScaledWidth();
         int panelX = screenW - BAR_W - 6 - 2;
 
-        String freqStr   = String.format("FM: %.1f MHz", freqX10 / 10f);
+        String freqStr = band.displayName() + ": " + band.freqDisplay(ch);
         String sigStr    = String.format("Sig: %.1f", signal);
         int labelW = Math.max(font.width(freqStr), font.width(sigStr));
         int panelW = Math.max(labelW, BAR_W) + 4;

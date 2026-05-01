@@ -69,7 +69,7 @@ import com.dev1lroot.mcmods.omnitech.network.VoiceChatSendPacket;
 import com.dev1lroot.mcmods.omnitech.network.VoiceChatReceivePacket;
 import com.dev1lroot.mcmods.omnitech.network.SetRadioLocatorFreqPacket;
 import com.dev1lroot.mcmods.omnitech.network.RadioLocatorSignalPacket;
-import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioConstants;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioManager;
 import com.dev1lroot.mcmods.omnitech.items.RadioLocatorItem;
 import com.dev1lroot.mcmods.omnitech.entities.AbyssalEelEntity;
@@ -496,10 +496,10 @@ public class OmniTech {
             else if (off.getItem() instanceof RadioLocatorItem) { stack = off; hand = InteractionHand.OFF_HAND; }
             if (stack == null) continue;
 
-            int freqX10 = stack.getOrDefault(OmniTechDataComponents.RADIO_LOCATOR_FREQ.get(),
-                    RadioConstants.FREQ_MIN_X10);
+            int globalKey = stack.getOrDefault(OmniTechDataComponents.RADIO_LOCATOR_FREQ.get(),
+                    FrequencyBand.VHF.globalKey(0));
 
-            var positions = RadioManager.getTransmitterPositions(sp.level().dimension(), freqX10);
+            var positions = RadioManager.getTransmitterPositions(sp.level().dimension(), globalKey);
             float signal = 0f;
             double rangeSq = RadioLocatorItem.MAX_RANGE * RadioLocatorItem.MAX_RANGE;
             double px = sp.getX(), py = sp.getY(), pz = sp.getZ();

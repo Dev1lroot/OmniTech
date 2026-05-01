@@ -13,10 +13,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /**
- * Sent client → server when the player types a frequency directly into the
- * EditBox and confirms with Enter.  Handles both transmitter and receiver GUIs.
+ * Client → server: direct frequency entry confirmed with Enter.
+ * {@code globalKey} encodes band ordinal × 1000 + channel index (see {@link FrequencyBand}).
  */
-public record SetRadioFrequencyPacket(BlockPos pos, int freqX10) implements CustomPacketPayload {
+public record SetRadioFrequencyPacket(BlockPos pos, int globalKey) implements CustomPacketPayload {
 
     public static final Type<SetRadioFrequencyPacket> TYPE =
             new Type<>(Identifier.fromNamespaceAndPath(OmniTech.MODID, "set_radio_frequency"));
@@ -25,7 +25,7 @@ public record SetRadioFrequencyPacket(BlockPos pos, int freqX10) implements Cust
             StreamCodec.of(
                     (buf, pkt) -> {
                         buf.writeBlockPos(pkt.pos);
-                        buf.writeInt(pkt.freqX10);
+                        buf.writeInt(pkt.globalKey);
                     },
                     buf -> new SetRadioFrequencyPacket(buf.readBlockPos(), buf.readInt())
             );
@@ -38,9 +38,9 @@ public record SetRadioFrequencyPacket(BlockPos pos, int freqX10) implements Cust
             if (!(ctx.player() instanceof ServerPlayer sp)) return;
             BlockEntity be = sp.level().getBlockEntity(pkt.pos);
             if (be instanceof RadioTransmitterBlockEntity tx) {
-                tx.setFrequency(pkt.freqX10);
+                tx.setFrequency(pkt.globalKey);
             } else if (be instanceof RadioReceiverBlockEntity rx) {
-                rx.setFrequency(pkt.freqX10);
+                rx.setFrequency(pkt.globalKey);
             }
         });
     }

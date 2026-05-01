@@ -1,7 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.items;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
-import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioConstants;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
 import com.dev1lroot.mcmods.omnitech.gui.RadioLocatorScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
@@ -31,8 +31,8 @@ public class RadioLocatorItem extends Item {
     }
 
     private static void openScreen(ItemStack stack, InteractionHand hand) {
-        int freq = stack.getOrDefault(OmniTechDataComponents.RADIO_LOCATOR_FREQ.get(),
-                RadioConstants.FREQ_MIN_X10);
-        Minecraft.getInstance().setScreen(new RadioLocatorScreen(freq, hand));
+        int globalKey = stack.getOrDefault(OmniTechDataComponents.RADIO_LOCATOR_FREQ.get(),
+                FrequencyBand.VHF.globalKey(0));
+        Minecraft.getInstance().setScreen(new RadioLocatorScreen(globalKey, hand));
     }
 }

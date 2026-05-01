@@ -1,10 +1,12 @@
 package com.dev1lroot.mcmods.omnitech.gui;
 
 import com.dev1lroot.mcmods.omnitech.OmniTech;
+import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioConstants;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -13,43 +15,43 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 /**
- * Screen for the Radio Scanner — waterfall spectrogram display.
+ * Waterfall spectrogram for the Radio Scanner, with one tab per {@link FrequencyBand}.
  *
- * <p>Maintains a persistent {@link NativeImage} / {@link DynamicTexture} of size
- * {@value CANVAS_W}×{@value CANVAS_H}.  When a new row of signal data arrives:
- * <ol>
- *   <li>All existing pixel rows are shifted DOWN by one (y → y+1), iterating
- *       bottom-to-top to avoid aliasing.</li>
- *   <li>The new row is written at y=0 (top), including explicit black (0xFF000000)
- *       for every channel with no signal.</li>
- *   <li>The texture is uploaded to the GPU.</li>
- * </ol>
- * Nothing below y=0 is ever erased; the canvas accumulates history until rows
- * scroll off the bottom edge.
+ * <p>Each band has its own persistent {@link NativeImage} / {@link DynamicTexture}.
+ * Incoming rows are written to the band's image and the GPU texture is updated on
+ * the next frame.  The active band's texture is blitted; inactive bands accumulate
+ * history in the background.
  *
- * <p>The texture is rendered as a single blit — no per-pixel {@code fill()} calls
- * each frame.
+ * <p>Canvas width is fixed at {@value CANVAS_W} pixels.  For bands with fewer
+ * channels, each channel is scaled to {@code CANVAS_W / band.channels()} pixels wide.
  */
 public class RadioScannerScreen extends AbstractContainerScreen<RadioScannerMenu> {
 
-    // Canvas dimensions
-    private static final int CANVAS_W = RadioConstants.CHANNELS; // 300
-    private static final int CANVAS_H = RadioConstants.SCAN_HISTORY; // 100
-
-    // Panel-relative canvas origin
+    private static final int CANVAS_W = RadioConstants.SCANNER_CANVAS_W; // 270
+    private static final int CANVAS_H = RadioConstants.SCAN_HISTORY;     // 100
     private static final int CANVAS_X = 10;
-    private static final int CANVAS_Y = 14;
 
-    // Total panel size
-    private static final int W = CANVAS_X * 2 + CANVAS_W;  // 320
-    private static final int H = CANVAS_Y + CANVAS_H + 8;   // 122
+    private static final int TAB_Y = 14;
+    private static final int TAB_H = 12;
+    private static final int TAB_W = CANVAS_W / FrequencyBand.values().length; // 30
 
-    private static final Identifier TEXTURE_ID =
-            Identifier.fromNamespaceAndPath(OmniTech.MODID, "radio_scanner_display");
+    private static final int CANVAS_Y = TAB_Y + TAB_H + 2; // 28
+    private static final int W        = CANVAS_X * 2 + CANVAS_W;         // 290
+    private static final int H        = CANVAS_Y + CANVAS_H + 18;        // 146
 
-    private DynamicTexture texture;
-    private NativeImage image;
-    private boolean dirty = false;
+    private static final Identifier[] TEXTURE_IDS;
+    static {
+        FrequencyBand[] bands = FrequencyBand.values();
+        TEXTURE_IDS = new Identifier[bands.length];
+        for (FrequencyBand b : bands) {
+            TEXTURE_IDS[b.ordinal()] = Identifier.fromNamespaceAndPath(
+                    OmniTech.MODID, "radio_scanner_" + b.name().toLowerCase());
+        }
+    }
+
+    private final NativeImage[]    images   = new NativeImage[FrequencyBand.values().length];
+    private final DynamicTexture[] textures = new DynamicTexture[FrequencyBand.values().length];
+    private final boolean[]        dirty    = new boolean[FrequencyBand.values().length];
 
     public RadioScannerScreen(RadioScannerMenu menu, Inventory playerInventory,
             Component title) {
@@ -60,50 +62,73 @@ public class RadioScannerScreen extends AbstractContainerScreen<RadioScannerMenu
     protected void init() {
         super.init();
         this.titleLabelX     = (W - this.font.width(this.title)) / 2;
-        this.inventoryLabelY = 9999; // hide unused "Inventory" label
+        this.inventoryLabelY = 9999;
 
-        // Allocate canvas — zero = all black
-        this.image   = new NativeImage(CANVAS_W, CANVAS_H, true);
-        this.texture = new DynamicTexture(() -> "radio_scanner_display", this.image);
-        Minecraft.getInstance().getTextureManager().register(TEXTURE_ID, this.texture);
+        FrequencyBand[] bands = FrequencyBand.values();
+        Minecraft mc = Minecraft.getInstance();
+
+        for (FrequencyBand b : bands) {
+            NativeImage img = new NativeImage(CANVAS_W, CANVAS_H, true);
+            DynamicTexture tex = new DynamicTexture(
+                    () -> "radio_scanner_" + b.name().toLowerCase(), img);
+            mc.getTextureManager().register(TEXTURE_IDS[b.ordinal()], tex);
+            images[b.ordinal()]   = img;
+            textures[b.ordinal()] = tex;
+
+            final int bandOrd = b.ordinal();
+            addRenderableWidget(Button.builder(Component.literal(b.displayName()),
+                    btn -> Minecraft.getInstance().gameMode
+                            .handleInventoryButtonClick(menu.containerId, bandOrd))
+                    .bounds(this.leftPos + CANVAS_X + bandOrd * TAB_W,
+                            this.topPos + TAB_Y,
+                            TAB_W, TAB_H)
+                    .build());
+        }
     }
 
     @Override
     public void removed() {
         super.removed();
-        Minecraft.getInstance().getTextureManager().release(TEXTURE_ID);
-        // DynamicTexture.close() is called by TextureManager.release, which frees the
-        // NativeImage, so we don't double-free here.
-        this.texture = null;
-        this.image   = null;
+        Minecraft mc = Minecraft.getInstance();
+        for (int i = 0; i < FrequencyBand.values().length; i++) {
+            mc.getTextureManager().release(TEXTURE_IDS[i]);
+            textures[i] = null;
+            images[i]   = null;
+        }
     }
 
     /**
-     * Called by the packet handler when a new scanner row arrives from the server.
-     * Shifts all rows down by 1, then writes the new data at y=0 (top of canvas).
+     * Called by the packet handler when a new row arrives from the server.
+     * Updates the band's image (shifts all rows down, writes new data at y=0).
      */
-    public void receiveRow(float[] row) {
-        if (image == null) return;
+    public void receiveRow(int bandOrdinal, float[] row) {
+        if (bandOrdinal < 0 || bandOrdinal >= images.length) return;
+        NativeImage img = images[bandOrdinal];
+        if (img == null) return;
 
-        // Shift rows down: y=98 → y=99, y=97 → y=98, …, y=0 → y=1
-        // Iterate bottom-to-top to avoid overwriting source pixels before they're copied.
+        FrequencyBand band = FrequencyBand.values()[bandOrdinal];
+        int pxPerCh = Math.max(1, CANVAS_W / row.length);
+
+        // Shift existing rows down
         for (int y = CANVAS_H - 1; y > 0; y--) {
             for (int x = 0; x < CANVAS_W; x++) {
-                image.setPixel(x, y, image.getPixel(x, y - 1));
+                img.setPixel(x, y, img.getPixel(x, y - 1));
             }
         }
 
-        // Write new row at y=0 — black for no signal, white for full signal
-        int len = Math.min(row.length, CANVAS_W);
-        for (int x = 0; x < len; x++) {
-            image.setPixel(x, 0, toArgb(row[x]));
+        // Write new row at y=0
+        for (int ch = 0; ch < row.length; ch++) {
+            int color = bandColor(band, row[ch]);
+            for (int px = 0; px < pxPerCh; px++) {
+                int x = ch * pxPerCh + px;
+                if (x < CANVAS_W) img.setPixel(x, 0, color);
+            }
         }
-        // Fill remainder of row with black if row is shorter than CANVAS_W
-        for (int x = len; x < CANVAS_W; x++) {
-            image.setPixel(x, 0, 0xFF000000);
-        }
+        // Fill any remainder with black
+        int filled = row.length * pxPerCh;
+        for (int x = filled; x < CANVAS_W; x++) img.setPixel(x, 0, 0xFF000000);
 
-        dirty = true;
+        dirty[bandOrdinal] = true;
     }
 
     @Override
@@ -111,25 +136,34 @@ public class RadioScannerScreen extends AbstractContainerScreen<RadioScannerMenu
             float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
 
-        // Panel background
+        // Panel
         graphics.fill(this.leftPos, this.topPos,
                 this.leftPos + W, this.topPos + H, 0xFF1A1A1A);
+
+        // Active tab highlight
+        int activeOrd = menu.getActiveBand().ordinal();
+        graphics.fill(
+                this.leftPos + CANVAS_X + activeOrd * TAB_W,
+                this.topPos  + TAB_Y,
+                this.leftPos + CANVAS_X + activeOrd * TAB_W + TAB_W,
+                this.topPos  + TAB_Y + TAB_H,
+                0xFF333333);
 
         // Canvas border
         graphics.fill(this.leftPos + CANVAS_X - 1, this.topPos + CANVAS_Y - 1,
                 this.leftPos + CANVAS_X + CANVAS_W + 1,
-                this.topPos + CANVAS_Y + CANVAS_H + 1, 0xFF444444);
+                this.topPos  + CANVAS_Y + CANVAS_H + 1, 0xFF444444);
 
-        // Upload texture to GPU if new data arrived since last frame
-        if (dirty && texture != null) {
-            texture.upload();
-            dirty = false;
+        // Upload the active band's texture if dirty
+        if (dirty[activeOrd] && textures[activeOrd] != null) {
+            textures[activeOrd].upload();
+            dirty[activeOrd] = false;
         }
 
-        // Render the persistent waterfall texture — one blit for the whole canvas
-        if (texture != null) {
+        // Blit the active band's waterfall
+        if (textures[activeOrd] != null) {
             graphics.blit(RenderPipelines.GUI_TEXTURED,
-                    TEXTURE_ID,
+                    TEXTURE_IDS[activeOrd],
                     this.leftPos + CANVAS_X,
                     this.topPos  + CANVAS_Y,
                     0f, 0f,
@@ -137,10 +171,10 @@ public class RadioScannerScreen extends AbstractContainerScreen<RadioScannerMenu
                     CANVAS_W, CANVAS_H);
         }
 
-        // Axis tick marks every 10 channels (1 MHz)
+        // Frequency axis tick marks
         int cx = this.leftPos + CANVAS_X;
         int cy = this.topPos  + CANVAS_Y;
-        for (int t = 0; t <= CANVAS_W; t += 10) {
+        for (int t = 0; t <= CANVAS_W; t += CANVAS_W / 5) {
             graphics.fill(cx + t, cy + CANVAS_H, cx + t + 1, cy + CANVAS_H + 2, 0xFF888888);
         }
     }
@@ -149,22 +183,35 @@ public class RadioScannerScreen extends AbstractContainerScreen<RadioScannerMenu
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         graphics.text(this.font, this.title, this.titleLabelX, 3, 0xFFAAAAAA, false);
 
-        renderFreqLabel(graphics, 0,   "87.5");
-        renderFreqLabel(graphics, 125, "100.0");
-        renderFreqLabel(graphics, 250, "112.5");
-        renderFreqLabel(graphics, 299, "117.4");
+        FrequencyBand band = menu.getActiveBand();
+        renderBandLabel(graphics, band, 0,                    0);
+        renderBandLabel(graphics, band, band.channels() / 2,  CANVAS_W / 2);
+        renderBandLabel(graphics, band, band.channels() - 1,  CANVAS_W - 1);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    private static int toArgb(float signal) {
-        int b = Math.clamp((int)(signal / 15f * 255f), 0, 255);
-        return 0xFF000000 | (b << 16) | (b << 8) | b;
+    /** Map a signal level (0–15) to an ARGB pixel color specific to the given band. */
+    private static int bandColor(FrequencyBand band, float signal) {
+        int v = Math.clamp((int)(signal / 15f * 255f), 0, 255);
+        return switch (band) {
+            case ELF -> 0xFF000000 | ((v * 3 / 5) << 16)           | v;          // purple
+            case VLF -> 0xFF000000                                   | v;          // blue
+            case LF  -> 0xFF000000 | ((v * 3 / 5) << 8)            | v;          // cyan
+            case MF  -> 0xFF000000 | (v << 8);                                    // green
+            case HF  -> 0xFF000000 | ((v / 2) << 16) | (v << 8);                 // yellow-green
+            case VHF -> 0xFF000000 | (v << 16)        | (v << 8);                // yellow
+            case UHF -> 0xFF000000 | (v << 16)        | ((v / 2) << 8);          // orange
+            case SHF -> 0xFF000000 | (v << 16);                                   // red
+            case EHF -> 0xFF000000 | ((v * 4 / 5) << 16)           | (v / 5);    // dark crimson
+        };
     }
 
-    private void renderFreqLabel(GuiGraphicsExtractor graphics, int channel, String label) {
-        int lx = CANVAS_X + channel - this.font.width(label) / 2;
-        int ly = CANVAS_Y + CANVAS_H + 4;
+    private void renderBandLabel(GuiGraphicsExtractor graphics, FrequencyBand band,
+                                 int channelIndex, int canvasPixelX) {
+        String label = band.freqDisplay(channelIndex);
+        int lx = this.leftPos + CANVAS_X + canvasPixelX - this.font.width(label) / 2;
+        int ly = this.topPos  + CANVAS_Y + CANVAS_H + 4;
         graphics.text(this.font, label, lx, ly, 0xFF666666, false);
     }
 }

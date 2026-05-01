@@ -4,111 +4,137 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
- * Server-side in-memory store for the virtual FM radio spectrum.
- * Transmitters write their signal each tick; receivers and the scanner read it.
- * Cleared on every server start so stale values from a previous session don't persist.
+ * Server-side in-memory spectrum store for all RF bands.
+ *
+ * <p>Signals are dimension-scoped for ELF–UHF bands, and globally shared
+ * across all dimensions for SHF/EHF (interdimensional) bands.
+ * Transmitter positions are always stored per-dimension (used by the locator item).
  */
 public final class RadioManager {
 
-    /**
-     * A PCM audio frame stored per frequency channel.
-     * {@code frameTime} is the game-tick at which the frame was captured by the transmitter,
-     * used by receivers to detect new frames without replaying the same buffer.
-     */
     public record AudioFrame(byte[] samples, long frameTime) {}
 
-    private static final Map<Integer, Float>      SIGNALS = new HashMap<>();
-    private static final Map<Integer, AudioFrame> AUDIO   = new HashMap<>();
+    // ELF–UHF: signals and audio keyed by dimension
+    private static final Map<ResourceKey<Level>, Map<Integer, Float>>      SIGNALS_BY_DIM = new HashMap<>();
+    private static final Map<ResourceKey<Level>, Map<Integer, AudioFrame>> AUDIO_BY_DIM   = new HashMap<>();
+
+    // SHF/EHF: signals and audio shared across all dimensions
+    private static final Map<Integer, Float>      SIGNALS_GLOBAL = new HashMap<>();
+    private static final Map<Integer, AudioFrame> AUDIO_GLOBAL   = new HashMap<>();
+
+    // Transmitter positions — always per-dimension (for locator item)
     private static final Map<ResourceKey<Level>, Map<Integer, Set<BlockPos>>> TRANSMITTER_POSITIONS = new HashMap<>();
 
     private RadioManager() {}
 
-    /** Write a signal (0.0–15.0) at the given frequency (stored as freq × 10). */
-    public static void set(int freqX10, float value) {
-        if (value <= 0f) {
-            SIGNALS.remove(freqX10);
+    // ── Signal ────────────────────────────────────────────────────────────────
+
+    public static void set(ResourceKey<Level> dim, int key, float value, boolean interdim) {
+        if (interdim) {
+            if (value <= 0f) SIGNALS_GLOBAL.remove(key);
+            else             SIGNALS_GLOBAL.put(key, Math.min(15f, value));
         } else {
-            SIGNALS.put(freqX10, Math.min(15f, value));
+            Map<Integer, Float> m = SIGNALS_BY_DIM.computeIfAbsent(dim, k -> new HashMap<>());
+            if (value <= 0f) m.remove(key);
+            else             m.put(key, Math.min(15f, value));
         }
     }
 
-    /** Read the current signal at a frequency, or 0 if no transmitter is active there. */
-    public static float get(int freqX10) {
-        return SIGNALS.getOrDefault(freqX10, 0f);
+    public static float get(ResourceKey<Level> dim, int key, boolean interdim) {
+        if (interdim) return SIGNALS_GLOBAL.getOrDefault(key, 0f);
+        Map<Integer, Float> m = SIGNALS_BY_DIM.get(dim);
+        return m == null ? 0f : m.getOrDefault(key, 0f);
     }
 
-    /**
-     * Returns a snapshot row of all {@link RadioConstants#CHANNELS} channels,
-     * starting from {@link RadioConstants#FREQ_MIN_X10}.
-     */
-    public static float[] getRow() {
-        float[] row = new float[RadioConstants.CHANNELS];
-        for (int i = 0; i < RadioConstants.CHANNELS; i++) {
-            row[i] = SIGNALS.getOrDefault(RadioConstants.FREQ_MIN_X10 + i, 0f);
+    /** Snapshot of all channels in the given band, for the scanner. */
+    public static float[] getRow(ResourceKey<Level> dim, FrequencyBand band) {
+        float[] row = new float[band.channels()];
+        for (int i = 0; i < band.channels(); i++) {
+            int key = band.globalKey(i);
+            if (band.interdimensional()) {
+                row[i] = SIGNALS_GLOBAL.getOrDefault(key, 0f);
+            } else {
+                Map<Integer, Float> m = SIGNALS_BY_DIM.get(dim);
+                row[i] = m == null ? 0f : m.getOrDefault(key, 0f);
+            }
         }
         return row;
     }
 
-    /** Remove a transmitter's contribution when the block entity is removed or unloaded. */
-    public static void clear(int freqX10) {
-        SIGNALS.remove(freqX10);
-    }
-
-    /**
-     * Store a PCM audio frame at the given frequency.
-     * {@code frameTime} is the game-tick when the transmitter originally received this frame;
-     * receivers use it to detect new frames without re-pushing the same buffer.
-     */
-    public static void setAudio(int freqX10, byte[] samples, long frameTime) {
-        if (samples == null || samples.length == 0) {
-            AUDIO.remove(freqX10);
+    public static void clear(ResourceKey<Level> dim, int key, boolean interdim) {
+        if (interdim) {
+            SIGNALS_GLOBAL.remove(key);
         } else {
-            AUDIO.put(freqX10, new AudioFrame(samples, frameTime));
+            Map<Integer, Float> m = SIGNALS_BY_DIM.get(dim);
+            if (m != null) m.remove(key);
         }
     }
 
-    /** Return the current audio frame at a frequency, or {@code null} if none. */
-    public static AudioFrame getAudio(int freqX10) {
-        return AUDIO.get(freqX10);
+    // ── Audio ─────────────────────────────────────────────────────────────────
+
+    public static void setAudio(ResourceKey<Level> dim, int key, byte[] samples,
+                                long frameTime, boolean interdim) {
+        if (samples == null || samples.length == 0) {
+            clearAudio(dim, key, interdim);
+            return;
+        }
+        AudioFrame frame = new AudioFrame(samples, frameTime);
+        if (interdim) {
+            AUDIO_GLOBAL.put(key, frame);
+        } else {
+            AUDIO_BY_DIM.computeIfAbsent(dim, k -> new HashMap<>()).put(key, frame);
+        }
     }
 
-    /** Remove the audio contribution for a frequency. */
-    public static void clearAudio(int freqX10) {
-        AUDIO.remove(freqX10);
+    public static AudioFrame getAudio(ResourceKey<Level> dim, int key, boolean interdim) {
+        if (interdim) return AUDIO_GLOBAL.get(key);
+        Map<Integer, AudioFrame> m = AUDIO_BY_DIM.get(dim);
+        return m == null ? null : m.get(key);
     }
 
-    public static void registerTransmitter(ResourceKey<Level> dim, int freqX10, BlockPos pos) {
+    public static void clearAudio(ResourceKey<Level> dim, int key, boolean interdim) {
+        if (interdim) {
+            AUDIO_GLOBAL.remove(key);
+        } else {
+            Map<Integer, AudioFrame> m = AUDIO_BY_DIM.get(dim);
+            if (m != null) m.remove(key);
+        }
+    }
+
+    // ── Transmitter positions (per-dimension) ─────────────────────────────────
+
+    public static void registerTransmitter(ResourceKey<Level> dim, int key, BlockPos pos) {
         TRANSMITTER_POSITIONS.computeIfAbsent(dim, k -> new HashMap<>())
-                .computeIfAbsent(freqX10, k -> new HashSet<>()).add(pos.immutable());
+                .computeIfAbsent(key, k -> new HashSet<>()).add(pos.immutable());
     }
 
-    public static void unregisterTransmitter(ResourceKey<Level> dim, int freqX10, BlockPos pos) {
-        Map<Integer, Set<BlockPos>> byFreq = TRANSMITTER_POSITIONS.get(dim);
-        if (byFreq == null) return;
-        Set<BlockPos> set = byFreq.get(freqX10);
+    public static void unregisterTransmitter(ResourceKey<Level> dim, int key, BlockPos pos) {
+        Map<Integer, Set<BlockPos>> byKey = TRANSMITTER_POSITIONS.get(dim);
+        if (byKey == null) return;
+        Set<BlockPos> set = byKey.get(key);
         if (set == null) return;
         set.remove(pos);
-        if (set.isEmpty()) byFreq.remove(freqX10);
-        if (byFreq.isEmpty()) TRANSMITTER_POSITIONS.remove(dim);
+        if (set.isEmpty()) byKey.remove(key);
+        if (byKey.isEmpty()) TRANSMITTER_POSITIONS.remove(dim);
     }
 
-    public static Set<BlockPos> getTransmitterPositions(ResourceKey<Level> dim, int freqX10) {
-        Map<Integer, Set<BlockPos>> byFreq = TRANSMITTER_POSITIONS.get(dim);
-        if (byFreq == null) return Collections.emptySet();
-        return Collections.unmodifiableSet(byFreq.getOrDefault(freqX10, Collections.emptySet()));
+    public static Set<BlockPos> getTransmitterPositions(ResourceKey<Level> dim, int key) {
+        Map<Integer, Set<BlockPos>> byKey = TRANSMITTER_POSITIONS.get(dim);
+        if (byKey == null) return Collections.emptySet();
+        return Collections.unmodifiableSet(byKey.getOrDefault(key, Collections.emptySet()));
     }
 
-    /** Wipe the entire spectrum — called on server start to remove stale state. */
+    // ── Lifecycle ─────────────────────────────────────────────────────────────
+
+    /** Wipe all state — called on server start to remove stale data from a previous session. */
     public static void clearAll() {
-        SIGNALS.clear();
-        AUDIO.clear();
+        SIGNALS_BY_DIM.clear();
+        SIGNALS_GLOBAL.clear();
+        AUDIO_BY_DIM.clear();
+        AUDIO_GLOBAL.clear();
         TRANSMITTER_POSITIONS.clear();
     }
 }
