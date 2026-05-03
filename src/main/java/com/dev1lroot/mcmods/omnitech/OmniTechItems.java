@@ -1,9 +1,11 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.items.BoreItem;
+import com.dev1lroot.mcmods.omnitech.items.FloppyDiskItem;
 import com.dev1lroot.mcmods.omnitech.items.FluidCanisterItem;
 import com.dev1lroot.mcmods.omnitech.items.MicrocontrollerItem;
 import com.dev1lroot.mcmods.omnitech.items.RadioLocatorItem;
+import com.dev1lroot.mcmods.omnitech.items.RamCardItem;
 import com.dev1lroot.mcmods.omnitech.items.SpaceSuitItem;
 import com.google.common.collect.Maps;
 import java.util.Map;
@@ -186,6 +188,18 @@ public class OmniTechItems
 
     public static final DeferredItem<BlockItem> DISPLAY_ITEM =
             REGISTRY.registerSimpleBlockItem("display", OmniTechBlocks.DISPLAY);
+
+    public static final DeferredItem<BlockItem> FLOPPY_DRIVE_ITEM =
+            REGISTRY.registerSimpleBlockItem("floppy_drive", OmniTechBlocks.FLOPPY_DRIVE);
+
+    public static final DeferredItem<BlockItem> EXPANSION_SLOT_ITEM =
+            REGISTRY.registerSimpleBlockItem("expansion_slot", OmniTechBlocks.EXPANSION_SLOT);
+
+    public static final DeferredItem<FloppyDiskItem> FLOPPY_DISK =
+            REGISTRY.registerItem("floppy_disk", p -> new FloppyDiskItem(p.stacksTo(1)));
+
+    public static final DeferredItem<RamCardItem> RAM_CARD =
+            REGISTRY.registerItem("ram_card", p -> new RamCardItem(p.stacksTo(16)));
 
     public static final DeferredItem<MicrocontrollerItem> MICROCONTROLLER =
             REGISTRY.registerItem("microcontroller",

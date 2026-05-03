@@ -274,6 +274,18 @@ public class OmniTechBlockEntities {
                     () -> new BlockEntityType<>(DisplayBlockEntity::new,
                             OmniTechBlocks.DISPLAY.get()));
 
+    public static final Supplier<BlockEntityType<com.dev1lroot.mcmods.omnitech.blocks.logic.floppy_drive.FloppyDriveBlockEntity>> FLOPPY_DRIVE =
+            REGISTRY.register("floppy_drive",
+                    () -> new BlockEntityType<>(
+                            com.dev1lroot.mcmods.omnitech.blocks.logic.floppy_drive.FloppyDriveBlockEntity::new,
+                            OmniTechBlocks.FLOPPY_DRIVE.get()));
+
+    public static final Supplier<BlockEntityType<com.dev1lroot.mcmods.omnitech.blocks.logic.expansion_slot.ExpansionSlotBlockEntity>> EXPANSION_SLOT =
+            REGISTRY.register("expansion_slot",
+                    () -> new BlockEntityType<>(
+                            com.dev1lroot.mcmods.omnitech.blocks.logic.expansion_slot.ExpansionSlotBlockEntity::new,
+                            OmniTechBlocks.EXPANSION_SLOT.get()));
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }

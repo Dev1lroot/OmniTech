@@ -7,6 +7,8 @@ import com.dev1lroot.mcmods.omnitech.gui.RadioReceiverMenu;
 import com.dev1lroot.mcmods.omnitech.gui.RadioScannerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ProgrammingStationMenu;
 import com.dev1lroot.mcmods.omnitech.gui.LogicMachineMenu;
+import com.dev1lroot.mcmods.omnitech.gui.FloppyDriveMenu;
+import com.dev1lroot.mcmods.omnitech.gui.ExpansionSlotMenu;
 import com.dev1lroot.mcmods.omnitech.gui.GPIOPortMenu;
 import com.dev1lroot.mcmods.omnitech.gui.DisplayMenu;
 import com.dev1lroot.mcmods.omnitech.gui.CokeOvenMenu;
@@ -191,6 +193,14 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<DisplayMenu>> DISPLAY =
             REGISTRY.register("display",
                     () -> IMenuTypeExtension.create(DisplayMenu::new));
+
+    public static final Supplier<MenuType<FloppyDriveMenu>> FLOPPY_DRIVE =
+            REGISTRY.register("floppy_drive",
+                    () -> IMenuTypeExtension.create(FloppyDriveMenu::new));
+
+    public static final Supplier<MenuType<ExpansionSlotMenu>> EXPANSION_SLOT =
+            REGISTRY.register("expansion_slot",
+                    () -> IMenuTypeExtension.create(ExpansionSlotMenu::new));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

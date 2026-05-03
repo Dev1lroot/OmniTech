@@ -16,14 +16,14 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 public class ProgrammingStationScreen extends AbstractContainerScreen<ProgrammingStationMenu> {
 
-    private static final int W = 176;
-    private static final int H = 246;
+    private static final int W = 320;
+    private static final int H = 280;
 
     // Editor position (absolute offsets from leftPos/topPos)
     private static final int EDITOR_X = 8;
     private static final int EDITOR_Y = 40;
-    private static final int EDITOR_W = 160;
-    private static final int EDITOR_H = 108;   // 12 visible lines
+    private static final int EDITOR_W = 304;
+    private static final int EDITOR_H = 136;   // 15 visible lines
 
     private final CodeEditorWidget editor = new CodeEditorWidget();
     private Button uploadBtn;
@@ -79,8 +79,8 @@ public class ProgrammingStationScreen extends AbstractContainerScreen<Programmin
         g.fill(this.leftPos, this.topPos, this.leftPos + W, this.topPos + H, 0xFFC6C6C6);
 
         // MCU slot frame
-        g.fill(this.leftPos + 78, this.topPos + 16, this.leftPos + 98, this.topPos + 36, 0xFF000000);
-        g.fill(this.leftPos + 79, this.topPos + 17, this.leftPos + 97, this.topPos + 35, 0xFF8B8B8B);
+        g.fill(this.leftPos + 150, this.topPos + 16, this.leftPos + 170, this.topPos + 36, 0xFF000000);
+        g.fill(this.leftPos + 151, this.topPos + 17, this.leftPos + 169, this.topPos + 35, 0xFF8B8B8B);
 
         // Code editor
         editor.render(g, this.font, this.leftPos + EDITOR_X, this.topPos + EDITOR_Y, EDITOR_W, EDITOR_H);
@@ -89,7 +89,7 @@ public class ProgrammingStationScreen extends AbstractContainerScreen<Programmin
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         g.text(this.font, this.title, this.titleLabelX, 6, 0xFF404040, false);
-        g.text(this.font, Component.translatable("gui.omnitech.microcontroller_slot"), 8, 8, 0xFF404040, false);
+        g.text(this.font, Component.translatable("gui.omnitech.microcontroller_slot"), 120, 8, 0xFF404040, false);
         g.text(this.font, Component.translatable("gui.omnitech.program"), 8, 32, 0xFF606060, false);
 
         // Status right of upload button

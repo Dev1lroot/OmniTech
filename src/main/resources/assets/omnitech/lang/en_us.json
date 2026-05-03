@@ -682,12 +682,18 @@
   "block.omnitech.logic_cable": "Logic Cable",
   "block.omnitech.gpio_port": "GPIO Port",
   "block.omnitech.display": "Display",
+  "block.omnitech.floppy_drive": "Floppy Drive",
+  "block.omnitech.expansion_slot": "Expansion Slot",
   "item.omnitech.microcontroller": "Microcontroller",
+  "item.omnitech.floppy_disk": "Floppy Disk",
+  "item.omnitech.ram_card": "RAM Card",
 
   "container.omnitech.programming_station": "Programming Station",
   "container.omnitech.logic_machine": "Logic Machine",
   "container.omnitech.gpio_port": "GPIO Port",
   "container.omnitech.display": "Display",
+  "container.omnitech.floppy_drive": "Floppy Drive",
+  "container.omnitech.expansion_slot": "Expansion Slot",
 
   "gui.omnitech.upload": "Upload",
   "gui.omnitech.run": "Run",

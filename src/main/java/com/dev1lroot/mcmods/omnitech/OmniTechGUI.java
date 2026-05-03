@@ -8,6 +8,8 @@ import com.dev1lroot.mcmods.omnitech.gui.RadioScannerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ProgrammingStationScreen;
 import com.dev1lroot.mcmods.omnitech.gui.LogicMachineScreen;
 import com.dev1lroot.mcmods.omnitech.gui.DisplayScreen;
+import com.dev1lroot.mcmods.omnitech.gui.FloppyDriveScreen;
+import com.dev1lroot.mcmods.omnitech.gui.ExpansionSlotScreen;
 import com.dev1lroot.mcmods.omnitech.gui.GPIOPortScreen;
 import com.dev1lroot.mcmods.omnitech.gui.CokeOvenScreen;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceScreen;
@@ -91,6 +93,8 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.LOGIC_MACHINE.get(), LogicMachineScreen::new);
         event.register(OmniTechMenuTypes.GPIO_PORT.get(), GPIOPortScreen::new);
         event.register(OmniTechMenuTypes.DISPLAY.get(), DisplayScreen::new);
+        event.register(OmniTechMenuTypes.FLOPPY_DRIVE.get(), FloppyDriveScreen::new);
+        event.register(OmniTechMenuTypes.EXPANSION_SLOT.get(), ExpansionSlotScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)
@@ -108,6 +112,10 @@ public class OmniTechGUI {
             event.accept(OmniTechItems.GPIO_PORT_ITEM);
             event.accept(OmniTechItems.DISPLAY_ITEM);
             event.accept(OmniTechItems.MICROCONTROLLER);
+            event.accept(OmniTechItems.FLOPPY_DRIVE_ITEM);
+            event.accept(OmniTechItems.EXPANSION_SLOT_ITEM);
+            event.accept(OmniTechItems.FLOPPY_DISK);
+            event.accept(OmniTechItems.RAM_CARD);
         }
         if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
             BlockLoader.getBlockItem("tin_ore").ifPresent(event::accept);

@@ -11,10 +11,22 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.resource.ResourceStack;
 
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.function.Supplier;
+import java.util.Objects;
 
 
 public class OmniTechDataComponents {
+
+    /** Immutable byte-array wrapper satisfying the DataComponent equals/hashCode contract. */
+    public record ByteData(byte[] data) {
+        @Override public boolean equals(Object o) {
+            return o instanceof ByteData b && Arrays.equals(this.data, b.data);
+        }
+        @Override public int hashCode() { return Arrays.hashCode(data); }
+        @Override public String toString() { return "ByteData[" + data.length + " bytes]"; }
+    }
 
     public static final DeferredRegister<DataComponentType<?>> REGISTRY =
             DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, OmniTech.MODID);
@@ -75,12 +87,59 @@ public class OmniTechDataComponents {
                             .networkSynchronized(ByteBufCodecs.stringUtf8(1_048_576))
                             .build());
 
+    /** Number of general-purpose registers available on a Microcontroller. Default 4 (R0–R3). */
+    public static final Supplier<DataComponentType<Integer>> MCU_REGISTERS =
+            REGISTRY.register("mcu_registers", () ->
+                    DataComponentType.<Integer>builder()
+                            .persistent(Codec.INT)
+                            .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
+    /** Execution speed of a Microcontroller in Hz (instructions per second). Default 20 = 1 per tick. */
+    public static final Supplier<DataComponentType<Integer>> MCU_SPEED =
+            REGISTRY.register("mcu_speed", () ->
+                    DataComponentType.<Integer>builder()
+                            .persistent(Codec.INT)
+                            .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
     /** Selected frequency (freqX10) stored on a RadioLocator item. */
     public static final Supplier<DataComponentType<Integer>> RADIO_LOCATOR_FREQ =
             REGISTRY.register("radio_locator_freq", () ->
                     DataComponentType.<Integer>builder()
                             .persistent(Codec.INT)
                             .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
+    /**
+     * Codec for ByteData backed by NBT ByteArray. Not network-synced — floppy/RAM data stays server-side.
+     * Public so block entities can use store/read on ValueOutput/ValueInput directly.
+     */
+    public static final Codec<ByteData> BYTE_ARRAY_CODEC =
+            Codec.BYTE_BUFFER.xmap(
+                    buf -> { byte[] a = new byte[buf.remaining()]; buf.duplicate().get(a); return new ByteData(a); },
+                    bd -> ByteBuffer.wrap(bd.data()));
+
+    /** Raw data stored on a Floppy Disk item (up to 1 474 560 bytes = 1.44 MB). Not network-synced. */
+    public static final Supplier<DataComponentType<ByteData>> FLOPPY_DATA =
+            REGISTRY.register("floppy_data", () ->
+                    DataComponentType.<ByteData>builder()
+                            .persistent(BYTE_ARRAY_CODEC)
+                            .build());
+
+    /** Capacity of a RAM card in bytes (default 1024). Network-synced for display. */
+    public static final Supplier<DataComponentType<Integer>> RAM_CAPACITY =
+            REGISTRY.register("ram_capacity", () ->
+                    DataComponentType.<Integer>builder()
+                            .persistent(Codec.INT)
+                            .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
+    /** Data stored on a RAM card. Not network-synced. */
+    public static final Supplier<DataComponentType<ByteData>> RAM_DATA =
+            REGISTRY.register("ram_data", () ->
+                    DataComponentType.<ByteData>builder()
+                            .persistent(BYTE_ARRAY_CODEC)
                             .build());
 
     public static void register(IEventBus bus) {

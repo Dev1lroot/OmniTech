@@ -7,29 +7,29 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
 public class LogicMachineScreen extends AbstractContainerScreen<LogicMachineMenu> {
 
-    private static final int W = 176;
-    private static final int H = 218;
+    private static final int W = 320;
+    private static final int H = 256;
 
-    // Debug editor bounds (absolute offsets from leftPos/topPos)
     private static final int EDITOR_X = 4;
     private static final int EDITOR_Y = 26;
-    private static final int EDITOR_W = 168;
-    private static final int EDITOR_H = 104;   // 11 visible lines
+    private static final int EDITOR_W = 312;
+    private static final int EDITOR_H = 136;
 
     private Button runBtn, stopBtn, resetBtn;
-    private Button ctrlTabBtn, dbgTabBtn;
+    private Button ctrlTabBtn, dbgTabBtn, sysTabBtn;
 
     private final CodeEditorWidget debugEditor = new CodeEditorWidget();
-    private boolean inDebugTab = false;
+
+    private enum Tab { CTRL, DBG, SYS }
+    private Tab activeTab = Tab.CTRL;
+
     private ItemStack lastMCU = ItemStack.EMPTY;
     private boolean hadMCU = false;
 
@@ -41,45 +41,49 @@ public class LogicMachineScreen extends AbstractContainerScreen<LogicMachineMenu
     protected void init() {
         super.init();
         this.titleLabelX  = (W - this.font.width(this.title)) / 2;
-        this.inventoryLabelY = 132;
+        this.inventoryLabelY = 166;
 
         runBtn   = addRenderableWidget(Button.builder(
                 Component.translatable("gui.omnitech.run"),
                 b -> sendBtn(LogicMachineBlockEntity.BTN_RUN))
-                .bounds(this.leftPos + 8, this.topPos + 40, 48, 12).build());
+                .bounds(this.leftPos + 8, this.topPos + 40, 90, 12).build());
         stopBtn  = addRenderableWidget(Button.builder(
                 Component.translatable("gui.omnitech.stop"),
                 b -> sendBtn(LogicMachineBlockEntity.BTN_STOP))
-                .bounds(this.leftPos + 62, this.topPos + 40, 48, 12).build());
+                .bounds(this.leftPos + 106, this.topPos + 40, 90, 12).build());
         resetBtn = addRenderableWidget(Button.builder(
                 Component.translatable("gui.omnitech.reset"),
                 b -> sendBtn(LogicMachineBlockEntity.BTN_RESET))
-                .bounds(this.leftPos + 116, this.topPos + 40, 48, 12).build());
+                .bounds(this.leftPos + 204, this.topPos + 40, 90, 12).build());
 
         ctrlTabBtn = addRenderableWidget(Button.builder(
-                Component.literal("Ctrl"),
-                b -> switchTab(false))
-                .bounds(this.leftPos + 130, this.topPos + 4, 20, 10).build());
+                Component.literal("CTL"),
+                b -> switchTab(Tab.CTRL))
+                .bounds(this.leftPos + 230, this.topPos + 4, 20, 10).build());
         dbgTabBtn = addRenderableWidget(Button.builder(
-                Component.literal("Dbg"),
-                b -> switchTab(true))
-                .bounds(this.leftPos + 152, this.topPos + 4, 20, 10).build());
+                Component.literal("DBG"),
+                b -> switchTab(Tab.DBG))
+                .bounds(this.leftPos + 252, this.topPos + 4, 20, 10).build());
+        sysTabBtn = addRenderableWidget(Button.builder(
+                Component.literal("SYS"),
+                b -> switchTab(Tab.SYS))
+                .bounds(this.leftPos + 274, this.topPos + 4, 20, 10).build());
 
         debugEditor.setReadOnly(true);
         debugEditor.setText(menu.getProgram());
         updateTabVisibility();
     }
 
-    private void switchTab(boolean debug) {
-        inDebugTab = debug;
-        if (debug) debugEditor.setText(menu.getProgram());
+    private void switchTab(Tab tab) {
+        activeTab = tab;
+        if (tab == Tab.DBG) debugEditor.setText(menu.getProgram());
         updateTabVisibility();
     }
 
     private void updateTabVisibility() {
-        runBtn.visible   = !inDebugTab;
-        stopBtn.visible  = !inDebugTab;
-        resetBtn.visible = !inDebugTab;
+        runBtn.visible   = activeTab == Tab.CTRL;
+        stopBtn.visible  = activeTab == Tab.CTRL;
+        resetBtn.visible = activeTab == Tab.CTRL;
     }
 
     // ── Ticking ───────────────────────────────────────────────────────────────
@@ -94,19 +98,17 @@ public class LogicMachineScreen extends AbstractContainerScreen<LogicMachineMenu
         boolean mcuChanged = hasMCU != hadMCU ||
                 (hasMCU && !ItemStack.isSameItemSameComponents(mc, lastMCU));
 
-        if (mcuChanged && inDebugTab) debugEditor.setText(menu.getProgram());
+        if (mcuChanged && activeTab == Tab.DBG) debugEditor.setText(menu.getProgram());
         hadMCU = hasMCU;
         lastMCU = mc.copy();
 
-        // Controls tab button states
-        if (!inDebugTab) {
+        if (activeTab == Tab.CTRL) {
             runBtn.active   = hasMCU && !menu.isRunning() && !menu.hasError();
             stopBtn.active  = menu.isRunning();
             resetBtn.active = hasMCU;
         }
 
-        // Debug tab: track executing line
-        if (inDebugTab) {
+        if (activeTab == Tab.DBG) {
             int currentLine = menu.getCurrentLine();
             debugEditor.setHighlightLine(menu.isRunning() || menu.isHalted() ? currentLine : -1);
             if (menu.isRunning()) debugEditor.scrollToLine(currentLine, EDITOR_H);
@@ -118,27 +120,24 @@ public class LogicMachineScreen extends AbstractContainerScreen<LogicMachineMenu
     @Override
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
-
-        // Window background
         g.fill(this.leftPos, this.topPos, this.leftPos + W, this.topPos + H, 0xFFC6C6C6);
 
-        // MCU slot frame (top-right, always visible in both tabs)
-        g.fill(this.leftPos + 114, this.topPos + 2, this.leftPos + 134, this.topPos + 22, 0xFF000000);
-        g.fill(this.leftPos + 115, this.topPos + 3, this.leftPos + 133, this.topPos + 21, 0xFF8B8B8B);
+        // MCU slot frame (always visible)
+        g.fill(this.leftPos + 294, this.topPos + 2, this.leftPos + 316, this.topPos + 22, 0xFF000000);
+        g.fill(this.leftPos + 295, this.topPos + 3, this.leftPos + 315, this.topPos + 21, 0xFF8B8B8B);
 
-        if (inDebugTab) {
-            // Code editor covers the controls area
+        if (activeTab == Tab.DBG) {
             debugEditor.render(g, this.font, this.leftPos + EDITOR_X, this.topPos + EDITOR_Y, EDITOR_W, EDITOR_H);
         }
     }
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
-        if (!inDebugTab) {
-            // Controls tab
-            g.text(this.font, this.title, this.titleLabelX, 6, 0xFF404040, false);
-            g.text(this.font, Component.literal("MCU"), 88, 8, 0xFF404040, false);
+        // MCU label (always)
+        g.text(this.font, Component.literal("MCU"), 291, 8, 0xFF404040, false);
 
+        if (activeTab == Tab.CTRL) {
+            g.text(this.font, this.title, this.titleLabelX, 6, 0xFF404040, false);
             String status;
             int color;
             if (menu.hasError()) {
@@ -154,8 +153,8 @@ public class LogicMachineScreen extends AbstractContainerScreen<LogicMachineMenu
                 status = "Stopped"; color = 0xFFAAAAAA;
             }
             g.text(this.font, Component.literal(status), 8, 26, color, false);
-        } else {
-            // Debug tab
+
+        } else if (activeTab == Tab.DBG) {
             g.text(this.font, Component.literal("DEBUG"), 8, 6, 0xFF44FF44, false);
             if (menu.isRunning()) {
                 g.text(this.font,
@@ -167,13 +166,42 @@ public class LogicMachineScreen extends AbstractContainerScreen<LogicMachineMenu
             } else {
                 g.text(this.font, Component.literal("Stopped"), 8, 16, 0xFF888888, false);
             }
+
+        } else { // SYS tab
+            g.text(this.font, Component.literal("SYSTEM"), 8, 6, 0xFF44AAFF, false);
+            int y = 20;
+            int ram = menu.getTotalRamBytes();
+            int gpioN = menu.getGpioCount();
+            int floppyN = menu.getFloppyCount();
+            int ramCards = menu.getRamCardCount();
+
+            g.text(this.font, Component.literal(
+                    "RAM: " + ram + " B  (" + ramCards + " card" + (ramCards != 1 ? "s" : "") + ")"),
+                    8, y, 0xFF44FF88, false);
+            y += 10;
+            g.text(this.font, Component.literal("GPIO Ports: " + gpioN),
+                    8, y, 0xFFFFAA44, false);
+            y += 10;
+            g.text(this.font, Component.literal("Floppy Drives: " + floppyN),
+                    8, y, 0xFFFF88AA, false);
+            y += 10;
+
+            // Instruction guide
+            y += 4;
+            g.text(this.font, Component.literal("RAM Instructions:"), 8, y, 0xFFCCCCCC, false);
+            y += 10;
+            g.text(this.font, Component.literal("  PEEK Rx, addr  — Rx = RAM[addr]"), 8, y, 0xFF888888, false);
+            y += 9;
+            g.text(this.font, Component.literal("  POKE addr, val — RAM[addr] = val"), 8, y, 0xFF888888, false);
+            y += 9;
+            g.text(this.font, Component.literal("  LDSC id, sec, dst — load sector"), 8, y, 0xFF888888, false);
         }
 
-        // Player inventory label (always shown)
-        g.text(this.font, Component.translatable("container.inventory"), 8, 132, 0xFF404040, false);
+        // Player inventory label (always)
+        g.text(this.font, Component.translatable("container.inventory"), 8, 166, 0xFF404040, false);
     }
 
-    // ── Input (debug editor scroll/key) ───────────────────────────────────────
+    // ── Input ─────────────────────────────────────────────────────────────────
 
     @Override
     public boolean keyPressed(KeyEvent event) {
@@ -183,7 +211,7 @@ public class LogicMachineScreen extends AbstractContainerScreen<LogicMachineMenu
 
     @Override
     public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
-        if (inDebugTab) {
+        if (activeTab == Tab.DBG) {
             int ex = this.leftPos + EDITOR_X;
             int ey = this.topPos + EDITOR_Y;
             if (x >= ex && x < ex + EDITOR_W && y >= ey && y < ey + EDITOR_H) {

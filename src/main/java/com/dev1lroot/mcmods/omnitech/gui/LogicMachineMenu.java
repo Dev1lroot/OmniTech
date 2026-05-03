@@ -26,7 +26,7 @@ public class LogicMachineMenu extends AbstractContainerMenu {
     public LogicMachineMenu(int id, Inventory inv, FriendlyByteBuf buf) {
         this(id, inv,
                 inv.player.level().getBlockEntity(buf.readBlockPos()),
-                new SimpleContainerData(5));
+                new SimpleContainerData(9));
     }
 
     public LogicMachineMenu(int id, Inventory inv, BlockEntity be, ContainerData data) {
@@ -36,19 +36,18 @@ public class LogicMachineMenu extends AbstractContainerMenu {
         addDataSlots(data);
 
         if (be instanceof LogicMachineBlockEntity lm) {
-            addSlot(new Slot(lm, 0, 116, 4) {
+            addSlot(new Slot(lm, 0, 298, 4) {
                 @Override public boolean mayPlace(ItemStack s) {
                     return s.getItem() instanceof MicrocontrollerItem;
                 }
             });
         }
 
-        // Player inventory (moved down for debug tab space)
         for (int row = 0; row < 3; row++)
             for (int col = 0; col < 9; col++)
-                addSlot(new Slot(inv, col + row * 9 + 9, 8 + col * 18, 138 + row * 18));
+                addSlot(new Slot(inv, col + row * 9 + 9, 8 + col * 18, 172 + row * 18));
         for (int col = 0; col < 9; col++)
-            addSlot(new Slot(inv, col, 8 + col * 18, 196));
+            addSlot(new Slot(inv, col, 8 + col * 18, 230));
     }
 
     public boolean isRunning()          { return data.get(0) == 1; }
@@ -56,6 +55,10 @@ public class LogicMachineMenu extends AbstractContainerMenu {
     public int     getCurrentLine()     { return data.get(2); }
     public boolean hasMicrocontroller() { return data.get(3) == 1; }
     public boolean hasError()           { return data.get(4) == 1; }
+    public int     getTotalRamBytes()   { return data.get(5); }
+    public int     getGpioCount()       { return data.get(6); }
+    public int     getFloppyCount()     { return data.get(7); }
+    public int     getRamCardCount()    { return data.get(8); }
     public BlockPos getBlockPos()       { return pos; }
 
     /** Returns the program text stored on the Microcontroller in the slot, or "". */
