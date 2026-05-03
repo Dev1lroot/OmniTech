@@ -41,7 +41,7 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
 
     // GPIO port cache (refreshed every 20 ticks)
     private final Map<Integer, GPIOPortBlockEntity> gpioCache = new HashMap<>();
-    private long lastCacheRefresh = Long.MIN_VALUE;
+    private long lastCacheRefresh = -100L;
 
     protected final ContainerData dataAccess = new ContainerData() {
         @Override public int get(int i) {

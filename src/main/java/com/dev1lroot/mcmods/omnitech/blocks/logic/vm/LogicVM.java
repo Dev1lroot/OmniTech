@@ -4,6 +4,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 import java.util.*;
+import java.util.Locale;
 
 /**
  * Tiny assembler + virtual machine for the LogicMachine block.
@@ -35,16 +36,17 @@ public class LogicVM {
 
     // Runtime state
     public final int[] regs = new int[4];
-    public int  pc         = 0;
-    public int  sleepTicks = 0;
-    public int  cmpFlag    = 0;   // -1 / 0 / +1
-    public boolean halted  = false;
+    public int  pc           = 0;
+    public int  executingLine = 0;
+    public int  sleepTicks   = 0;
+    public int  cmpFlag      = 0;   // -1 / 0 / +1
+    public boolean halted    = false;
 
     private List<Instruction>    program = new ArrayList<>();
     private Map<String, Integer> labels  = new HashMap<>();
 
     public int lineCount()   { return program.size(); }
-    public int currentLine() { return pc; }
+    public int currentLine() { return executingLine; }
     public boolean isEmpty() { return program.isEmpty(); }
 
     /** Compile source text; returns error string or {@code null} on success. */
@@ -69,7 +71,7 @@ public class LogicVM {
 
             // Label definition
             if (line.endsWith(":") && line.indexOf(' ') < 0) {
-                newLabels.put(line.substring(0, line.length() - 1), newProg.size());
+                newLabels.put(line.substring(0, line.length() - 1).toLowerCase(Locale.ROOT), newProg.size());
                 continue;
             }
 
@@ -104,6 +106,7 @@ public class LogicVM {
 
         if (pc >= program.size()) { halted = true; return false; }
 
+        executingLine = pc;
         Instruction inst = program.get(pc++);
         switch (inst.op()) {
             case MOV  -> setReg(inst.a1(), val(inst.a2()));
@@ -128,7 +131,7 @@ public class LogicVM {
     }
 
     public void reset() {
-        pc = 0; sleepTicks = 0; cmpFlag = 0; halted = false;
+        pc = 0; executingLine = 0; sleepTicks = 0; cmpFlag = 0; halted = false;
         Arrays.fill(regs, 0);
     }
 
@@ -156,7 +159,7 @@ public class LogicVM {
     }
 
     private void jump(String label) {
-        Integer t = labels.get(label);
+        Integer t = labels.get(label.toLowerCase(Locale.ROOT));
         if (t != null) pc = t;
     }
 
@@ -164,6 +167,7 @@ public class LogicVM {
 
     public void saveState(ValueOutput out) {
         out.putInt("PC", pc);
+        out.putInt("ExecLine", executingLine);
         out.putInt("Sleep", sleepTicks);
         out.putInt("CmpFlag", cmpFlag);
         out.putBoolean("Halted", halted);
@@ -171,10 +175,11 @@ public class LogicVM {
     }
 
     public void loadState(ValueInput in) {
-        pc         = in.getIntOr("PC", 0);
-        sleepTicks = in.getIntOr("Sleep", 0);
-        cmpFlag    = in.getIntOr("CmpFlag", 0);
-        halted     = in.getBooleanOr("Halted", false);
+        pc            = in.getIntOr("PC", 0);
+        executingLine = in.getIntOr("ExecLine", 0);
+        sleepTicks    = in.getIntOr("Sleep", 0);
+        cmpFlag       = in.getIntOr("CmpFlag", 0);
+        halted        = in.getBooleanOr("Halted", false);
         for (int i = 0; i < 4; i++) regs[i] = in.getIntOr("R" + i, 0);
     }
 }
