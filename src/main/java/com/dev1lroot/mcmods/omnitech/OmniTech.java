@@ -19,6 +19,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import com.dev1lroot.mcmods.omnitech.datagen.OmniTechDatagen;
@@ -69,6 +70,8 @@ import com.dev1lroot.mcmods.omnitech.network.VoiceChatSendPacket;
 import com.dev1lroot.mcmods.omnitech.network.VoiceChatReceivePacket;
 import com.dev1lroot.mcmods.omnitech.network.SetRadioLocatorFreqPacket;
 import com.dev1lroot.mcmods.omnitech.network.RadioLocatorSignalPacket;
+import com.dev1lroot.mcmods.omnitech.network.UploadProgramPacket;
+import com.dev1lroot.mcmods.omnitech.network.SetGPIOIdPacket;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioManager;
 import com.dev1lroot.mcmods.omnitech.items.RadioLocatorItem;
@@ -127,6 +130,7 @@ public class OmniTech {
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.addListener(OmniTech::registerCommands);
         NeoForge.EVENT_BUS.addListener(OmniTech::onServerTick);
+        NeoForge.EVENT_BUS.addListener(OmniTech::onServerStopping);
         modEventBus.addListener(OmniTech::registerAttributes);
         modEventBus.addListener(OmniTechEntities::registerSpawnPlacements);
 
@@ -432,6 +436,14 @@ public class OmniTech {
                 RadioLocatorSignalPacket.TYPE,
                 RadioLocatorSignalPacket.CODEC,
                 RadioLocatorSignalPacket::handle);
+        event.registrar("1").playToServer(
+                UploadProgramPacket.TYPE,
+                UploadProgramPacket.CODEC,
+                UploadProgramPacket::handle);
+        event.registrar("1").playToServer(
+                SetGPIOIdPacket.TYPE,
+                SetGPIOIdPacket.CODEC,
+                SetGPIOIdPacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -514,6 +526,23 @@ public class OmniTech {
             }
             PacketDistributor.sendToPlayer(sp, new RadioLocatorSignalPacket(signal));
         }
+    }
+
+    public static void onServerStopping(ServerStoppingEvent event) {
+        LOGGER.info("[OmniTech/server] ServerStoppingEvent – server is shutting down, starting watchdog");
+        Thread watchdog = new Thread(() -> {
+            for (int attempt = 1; attempt <= 5; attempt++) {
+                try { Thread.sleep(10_000); } catch (InterruptedException e) { return; }
+                LOGGER.error("[OmniTech/server] *** SERVER SHUTDOWN HANGING ({}0 s elapsed) – dumping all thread stacks ***", attempt);
+                Thread.getAllStackTraces().forEach((t, stack) -> {
+                    LOGGER.error("  Thread '{}' daemon={} state={}", t.getName(), t.isDaemon(), t.getState());
+                    for (StackTraceElement frame : stack)
+                        LOGGER.error("    at {}", frame);
+                });
+            }
+        }, "omnitech-server-stop-watchdog");
+        watchdog.setDaemon(true);
+        watchdog.start();
     }
 
     @SubscribeEvent

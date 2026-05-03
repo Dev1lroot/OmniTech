@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "omnitech:block/logic_machine" },
+    "facing=south": { "model": "omnitech:block/logic_machine", "y": 180 },
+    "facing=west":  { "model": "omnitech:block/logic_machine", "y": 270 },
+    "facing=east":  { "model": "omnitech:block/logic_machine", "y": 90 }
+  }
+}

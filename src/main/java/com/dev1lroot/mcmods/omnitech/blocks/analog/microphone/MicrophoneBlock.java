@@ -1,9 +1,11 @@
 package com.dev1lroot.mcmods.omnitech.blocks.analog.microphone;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
+import com.dev1lroot.mcmods.omnitech.util.AnalogNetworkUtil;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -54,5 +56,23 @@ public class MicrophoneBlock extends BaseEntityBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+    }
+
+    /**
+     * Reset the analog signal to 0 on connected cable networks when this block
+     * is actually removed from the world (broken, replaced, exploded, etc.).
+     *
+     * This lives here rather than in BlockEntity.setRemoved() because setRemoved
+     * is also called during chunk unloading, which caused an infinite re-queuing
+     * loop: pushSignal accessed neighboring block entities via level.getBlockEntity(),
+     * re-registered them into NeoForge's pending-BE list, which called setRemoved
+     * on them again, endlessly preventing the world from saving.
+     * affectNeighborsAfterRemoval is only called on actual world-block replacement,
+     * never on chunk unload.
+     */
+    @Override
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level,
+                                               BlockPos pos, boolean movedByPiston) {
+        AnalogNetworkUtil.pushSignal(level, pos, 0f, Direction.values());
     }
 }

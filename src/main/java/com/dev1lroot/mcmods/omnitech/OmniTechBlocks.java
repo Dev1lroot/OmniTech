@@ -20,6 +20,10 @@ import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_scanner.RadioScannerBloc
 import com.dev1lroot.mcmods.omnitech.blocks.analog.AnalogCableBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.speaker.SpeakerBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.LogicCableBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station.ProgrammingStationBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.LogicMachineBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logistic.SorterBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.processing.macerator.ManualMaceratorBlock;
@@ -137,6 +141,12 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> ANALOG_CABLE;
     public static final DeferredBlock<Block> MICROPHONE;
     public static final DeferredBlock<Block> SPEAKER;
+
+    // ── Logic / GPIO ──────────────────────────────────────────────────────────
+    public static final DeferredBlock<Block> PROGRAMMING_STATION;
+    public static final DeferredBlock<Block> LOGIC_MACHINE;
+    public static final DeferredBlock<Block> LOGIC_CABLE;
+    public static final DeferredBlock<Block> GPIO_PORT;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -305,6 +315,20 @@ public class OmniTechBlocks {
                         .sound(SoundType.METAL)));
         SPEAKER = register("speaker",
                 p -> new SpeakerBlock(p.mapColor(MapColor.METAL).strength(2.5F)
+                        .sound(SoundType.METAL)));
+
+        PROGRAMMING_STATION = register("programming_station",
+                p -> new ProgrammingStationBlock(p.mapColor(MapColor.METAL).strength(3.0F)
+                        .sound(SoundType.METAL)));
+        LOGIC_MACHINE = register("logic_machine",
+                p -> new LogicMachineBlock(p.mapColor(MapColor.METAL).strength(3.0F)
+                        .sound(SoundType.METAL)));
+        LOGIC_CABLE = register("logic_cable",
+                p -> new LogicCableBlock(p.mapColor(MapColor.COLOR_GREEN).strength(1.0F)
+                        .sound(SoundType.METAL).noOcclusion()
+                        .pushReaction(net.minecraft.world.level.material.PushReaction.NORMAL)));
+        GPIO_PORT = register("gpio_port",
+                p -> new GPIOPortBlock(p.mapColor(MapColor.COLOR_BLUE).strength(2.0F)
                         .sound(SoundType.METAL)));
     }
 

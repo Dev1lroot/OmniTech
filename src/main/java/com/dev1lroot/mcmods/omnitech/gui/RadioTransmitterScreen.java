@@ -5,6 +5,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_transmitter.RadioTransmi
 import com.dev1lroot.mcmods.omnitech.network.SetRadioFrequencyPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -20,7 +21,7 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
  * <ul>
  *   <li>y=6   – title</li>
  *   <li>y=18  – band tabs [ELF][VLF][LF][MF][HF][VHF][UHF][SHF][EHF]</li>
- *   <li>y=34  – ±step frequency buttons + current frequency display</li>
+ *   <li>y=34  – [&lt;] frequency scrollbar [&gt;]</li>
  *   <li>y=50  – EditBox for direct frequency entry (Enter to confirm)</li>
  *   <li>y=66  – signal readout</li>
  * </ul>
@@ -30,25 +31,22 @@ public class RadioTransmitterScreen extends AbstractContainerScreen<RadioTransmi
     private static final int W = 200;
     private static final int H = 96;
 
-    // Band tab row
     private static final int TAB_Y = 18;
     private static final int TAB_H = 11;
-    private static final int TAB_W = 22; // 9 × 22 = 198 px, fits in W=200
+    private static final int TAB_W = 22;
 
-    // Frequency button row
-    private static final int BTN_W        = 16;
-    private static final int BTN_H        = 12;
-    private static final int BTN_Y        = 34;
-    private static final int BX_MINUS_100 = 6;
-    private static final int BX_MINUS_10  = 24;
-    private static final int BX_MINUS_1   = 42;
-    private static final int DISP_X       = 60;
-    private static final int DISP_W       = 62;
-    private static final int BX_PLUS_1    = 124;
-    private static final int BX_PLUS_10   = 142;
-    private static final int BX_PLUS_100  = 160;
+    private static final int BTN_Y      = 34;
+    private static final int BTN_H      = 12;
+    private static final int ARROW_W    = 14;
+    private static final int SLIDER_X   = 4 + ARROW_W + 2;   // 20
+    private static final int SLIDER_W   = W - 4 - ARROW_W - 2 - 2 - ARROW_W - 4; // 160
+    private static final int BTN_PREV_X = 4;
+    private static final int BTN_NEXT_X = SLIDER_X + SLIDER_W + 2; // 182
 
     private EditBox freqBox;
+    private FreqSlider freqSlider;
+    private int lastBandOrd      = -1;
+    private int lastChannelIndex = -1;
 
     public RadioTransmitterScreen(RadioTransmitterMenu menu, Inventory playerInventory,
             Component title) {
@@ -72,24 +70,17 @@ public class RadioTransmitterScreen extends AbstractContainerScreen<RadioTransmi
         }
 
         int by = this.topPos + BTN_Y;
-        addRenderableWidget(Button.builder(Component.literal("-100"),
-                b -> sendBtn(RadioTransmitterBlockEntity.BTN_FREQ_MINUS_100))
-                .bounds(this.leftPos + BX_MINUS_100, by, BTN_W, BTN_H).build());
-        addRenderableWidget(Button.builder(Component.literal("-10"),
-                b -> sendBtn(RadioTransmitterBlockEntity.BTN_FREQ_MINUS_10))
-                .bounds(this.leftPos + BX_MINUS_10, by, BTN_W, BTN_H).build());
-        addRenderableWidget(Button.builder(Component.literal("-1"),
+
+        addRenderableWidget(Button.builder(Component.literal("<"),
                 b -> sendBtn(RadioTransmitterBlockEntity.BTN_FREQ_MINUS_1))
-                .bounds(this.leftPos + BX_MINUS_1, by, BTN_W, BTN_H).build());
-        addRenderableWidget(Button.builder(Component.literal("+1"),
+                .bounds(this.leftPos + BTN_PREV_X, by, ARROW_W, BTN_H).build());
+
+        freqSlider = new FreqSlider(this.leftPos + SLIDER_X, by, SLIDER_W, BTN_H);
+        addRenderableWidget(freqSlider);
+
+        addRenderableWidget(Button.builder(Component.literal(">"),
                 b -> sendBtn(RadioTransmitterBlockEntity.BTN_FREQ_PLUS_1))
-                .bounds(this.leftPos + BX_PLUS_1, by, BTN_W, BTN_H).build());
-        addRenderableWidget(Button.builder(Component.literal("+10"),
-                b -> sendBtn(RadioTransmitterBlockEntity.BTN_FREQ_PLUS_10))
-                .bounds(this.leftPos + BX_PLUS_10, by, BTN_W, BTN_H).build());
-        addRenderableWidget(Button.builder(Component.literal("+100"),
-                b -> sendBtn(RadioTransmitterBlockEntity.BTN_FREQ_PLUS_100))
-                .bounds(this.leftPos + BX_PLUS_100, by, BTN_W, BTN_H).build());
+                .bounds(this.leftPos + BTN_NEXT_X, by, ARROW_W, BTN_H).build());
 
         this.freqBox = new EditBox(this.font,
                 this.leftPos + 40, this.topPos + 50, 120, 12,
@@ -99,6 +90,22 @@ public class RadioTransmitterScreen extends AbstractContainerScreen<RadioTransmi
         this.freqBox.setCanLoseFocus(true);
         this.freqBox.setValue(String.valueOf(menu.getFreqValue()));
         addRenderableWidget(this.freqBox);
+
+        lastBandOrd      = -1;
+        lastChannelIndex = -1;
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        int bandOrd      = menu.getBand().ordinal();
+        int channelIndex = menu.getChannelIndex();
+        if (bandOrd != lastBandOrd || channelIndex != lastChannelIndex) {
+            lastBandOrd      = bandOrd;
+            lastChannelIndex = channelIndex;
+            freqSlider.syncFromMenu();
+            syncFreqBox();
+        }
     }
 
     @Override
@@ -136,20 +143,13 @@ public class RadioTransmitterScreen extends AbstractContainerScreen<RadioTransmi
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         graphics.text(this.font, this.title, this.titleLabelX, 6, 0xFF404040, false);
 
-        // Band indicator + frequency display
-        FrequencyBand band = menu.getBand();
-        String freqStr = "[" + band.displayName() + "] " + menu.getFreqDisplay();
-        int fw = this.font.width(freqStr);
-        int fx = DISP_X + (DISP_W - fw) / 2;
-        graphics.text(this.font, freqStr, fx, BTN_Y + 2, 0xFF00AAFF, false);
-
         graphics.text(this.font, "Direct:", 6, 53, 0xFF888888, false);
 
+        FrequencyBand band = menu.getBand();
         float sig = menu.getCurrentSignal();
         String sigStr = String.format("Input RS: %.0f  (%.2f analog)", sig, sig);
         graphics.text(this.font, sigStr, 6, 68, signalColor(sig), false);
 
-        // Band capability note below signal
         String note = bandNote(band);
         graphics.text(this.font, note, 6, 78, 0xFF777777, false);
     }
@@ -158,6 +158,9 @@ public class RadioTransmitterScreen extends AbstractContainerScreen<RadioTransmi
 
     private void sendBtn(int btnId) {
         Minecraft.getInstance().gameMode.handleInventoryButtonClick(menu.containerId, btnId);
+    }
+
+    private void syncFreqBox() {
         FrequencyBand band = menu.getBand();
         float v = band.freqMin() + menu.getChannelIndex() * band.freqStep();
         freqBox.setValue(band.freqStep() < 1f ? String.format("%.1f", v) : String.format("%.0f", v));
@@ -172,9 +175,45 @@ public class RadioTransmitterScreen extends AbstractContainerScreen<RadioTransmi
             ClientPacketDistributor.sendToServer(
                     new SetRadioFrequencyPacket(menu.getBlockPos(), globalKey));
         } catch (NumberFormatException ignored) {
-            float v = menu.getFreqValue();
-            FrequencyBand b = menu.getBand();
-            freqBox.setValue(b.freqStep() < 1f ? String.format("%.1f", v) : String.format("%.0f", v));
+            syncFreqBox();
+        }
+    }
+
+    // ── Slider ────────────────────────────────────────────────────────────────
+
+    private class FreqSlider extends AbstractSliderButton {
+
+        FreqSlider(int x, int y, int w, int h) {
+            super(x, y, w, h, Component.empty(), 0.0);
+            syncFromMenu();
+        }
+
+        void syncFromMenu() {
+            FrequencyBand band = menu.getBand();
+            int channels = band.channels();
+            int ch = menu.getChannelIndex();
+            this.value = channels <= 1 ? 0.0 : (double) ch / (channels - 1);
+            updateMessage();
+        }
+
+        @Override
+        protected void updateMessage() {
+            FrequencyBand band = menu.getBand();
+            int channels = band.channels();
+            int ch = Math.clamp((int) Math.round(this.value * (channels - 1)), 0, channels - 1);
+            setMessage(Component.literal("[" + band.displayName() + "] " + band.freqDisplay(ch)));
+        }
+
+        @Override
+        protected void applyValue() {
+            FrequencyBand band = menu.getBand();
+            int channels = band.channels();
+            int ch = Math.clamp((int) Math.round(this.value * (channels - 1)), 0, channels - 1);
+            ClientPacketDistributor.sendToServer(
+                    new SetRadioFrequencyPacket(menu.getBlockPos(), band.globalKey(ch)));
+            float v = band.freqMin() + ch * band.freqStep();
+            freqBox.setValue(band.freqStep() < 1f ? String.format("%.1f", v) : String.format("%.0f", v));
+            lastChannelIndex = ch;
         }
     }
 

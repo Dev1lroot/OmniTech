@@ -5,6 +5,9 @@ import com.dev1lroot.mcmods.omnitech.gui.ElectricHeaterMenu;
 import com.dev1lroot.mcmods.omnitech.gui.RadioTransmitterMenu;
 import com.dev1lroot.mcmods.omnitech.gui.RadioReceiverMenu;
 import com.dev1lroot.mcmods.omnitech.gui.RadioScannerMenu;
+import com.dev1lroot.mcmods.omnitech.gui.ProgrammingStationMenu;
+import com.dev1lroot.mcmods.omnitech.gui.LogicMachineMenu;
+import com.dev1lroot.mcmods.omnitech.gui.GPIOPortMenu;
 import com.dev1lroot.mcmods.omnitech.gui.CokeOvenMenu;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricChargerMenu;
@@ -171,6 +174,18 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<RadioScannerMenu>> RADIO_SCANNER =
             REGISTRY.register("radio_scanner",
                     () -> IMenuTypeExtension.create(RadioScannerMenu::new));
+
+    public static final Supplier<MenuType<ProgrammingStationMenu>> PROGRAMMING_STATION =
+            REGISTRY.register("programming_station",
+                    () -> IMenuTypeExtension.create(ProgrammingStationMenu::new));
+
+    public static final Supplier<MenuType<LogicMachineMenu>> LOGIC_MACHINE =
+            REGISTRY.register("logic_machine",
+                    () -> IMenuTypeExtension.create(LogicMachineMenu::new));
+
+    public static final Supplier<MenuType<GPIOPortMenu>> GPIO_PORT =
+            REGISTRY.register("gpio_port",
+                    () -> IMenuTypeExtension.create(GPIOPortMenu::new));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

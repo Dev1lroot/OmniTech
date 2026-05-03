@@ -675,5 +675,23 @@
   "advancement.omnitech.radio.signal_sweep.description": "Deploy a Radio Scanner to visualize the full spectrum",
 
   "advancement.omnitech.radio.full_spectrum.title": "Full Spectrum",
-  "advancement.omnitech.radio.full_spectrum.description": "Assemble the complete radio toolkit: Transmitter, Receiver, Scanner, and Locator"
+  "advancement.omnitech.radio.full_spectrum.description": "Assemble the complete radio toolkit: Transmitter, Receiver, Scanner, and Locator",
+
+  "block.omnitech.programming_station": "Programming Station",
+  "block.omnitech.logic_machine": "Logic Machine",
+  "block.omnitech.logic_cable": "Logic Cable",
+  "block.omnitech.gpio_port": "GPIO Port",
+  "item.omnitech.microcontroller": "Microcontroller",
+
+  "container.omnitech.programming_station": "Programming Station",
+  "container.omnitech.logic_machine": "Logic Machine",
+  "container.omnitech.gpio_port": "GPIO Port",
+
+  "gui.omnitech.upload": "Upload",
+  "gui.omnitech.run": "Run",
+  "gui.omnitech.stop": "Stop",
+  "gui.omnitech.reset": "Reset",
+  "gui.omnitech.set": "Set",
+  "gui.omnitech.program": "Program:",
+  "gui.omnitech.microcontroller_slot": "MCU:"
 }

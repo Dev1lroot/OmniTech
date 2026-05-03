@@ -87,14 +87,6 @@ public class MicrophoneBlockEntity extends BlockEntity implements IAnalogOutput 
     }
 
     @Override
-    public void setRemoved() {
-        super.setRemoved();
-        if (level != null && !level.isClientSide()) {
-            AnalogNetworkUtil.pushSignal(level, worldPosition, 0f, Direction.values());
-        }
-    }
-
-    @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         signal = input.getFloatOr("Signal", 0f);

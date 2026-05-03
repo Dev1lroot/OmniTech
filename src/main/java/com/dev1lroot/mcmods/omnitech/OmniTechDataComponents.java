@@ -67,6 +67,14 @@ public class OmniTechDataComponents {
                             .networkSynchronized(ByteBufCodecs.STRING_UTF8)
                             .build());
 
+    /** Assembly program stored on a Microcontroller item (up to 1 MB). */
+    public static final Supplier<DataComponentType<String>> PROGRAM =
+            REGISTRY.register("program", () ->
+                    DataComponentType.<String>builder()
+                            .persistent(Codec.STRING)
+                            .networkSynchronized(ByteBufCodecs.stringUtf8(1_048_576))
+                            .build());
+
     /** Selected frequency (freqX10) stored on a RadioLocator item. */
     public static final Supplier<DataComponentType<Integer>> RADIO_LOCATOR_FREQ =
             REGISTRY.register("radio_locator_freq", () ->

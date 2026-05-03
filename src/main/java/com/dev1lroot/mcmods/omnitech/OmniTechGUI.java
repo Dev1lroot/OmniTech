@@ -5,6 +5,9 @@ import com.dev1lroot.mcmods.omnitech.gui.ElectricHeaterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.RadioTransmitterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.RadioReceiverScreen;
 import com.dev1lroot.mcmods.omnitech.gui.RadioScannerScreen;
+import com.dev1lroot.mcmods.omnitech.gui.ProgrammingStationScreen;
+import com.dev1lroot.mcmods.omnitech.gui.LogicMachineScreen;
+import com.dev1lroot.mcmods.omnitech.gui.GPIOPortScreen;
 import com.dev1lroot.mcmods.omnitech.gui.CokeOvenScreen;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricChargerScreen;
@@ -83,6 +86,9 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.RADIO_TRANSMITTER.get(), RadioTransmitterScreen::new);
         event.register(OmniTechMenuTypes.RADIO_RECEIVER.get(), RadioReceiverScreen::new);
         event.register(OmniTechMenuTypes.RADIO_SCANNER.get(), RadioScannerScreen::new);
+        event.register(OmniTechMenuTypes.PROGRAMMING_STATION.get(), ProgrammingStationScreen::new);
+        event.register(OmniTechMenuTypes.LOGIC_MACHINE.get(), LogicMachineScreen::new);
+        event.register(OmniTechMenuTypes.GPIO_PORT.get(), GPIOPortScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)
@@ -94,6 +100,11 @@ public class OmniTechGUI {
             event.accept(OmniTechItems.MANUAL_CENTRIFUGE_ITEM);
             event.accept(OmniTechItems.CRANK_ITEM);
             event.accept(OmniTechItems.ELECTRIC_CHARGER_ITEM);
+            event.accept(OmniTechItems.PROGRAMMING_STATION_ITEM);
+            event.accept(OmniTechItems.LOGIC_MACHINE_ITEM);
+            event.accept(OmniTechItems.LOGIC_CABLE_ITEM);
+            event.accept(OmniTechItems.GPIO_PORT_ITEM);
+            event.accept(OmniTechItems.MICROCONTROLLER);
         }
         if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
             BlockLoader.getBlockItem("tin_ore").ifPresent(event::accept);

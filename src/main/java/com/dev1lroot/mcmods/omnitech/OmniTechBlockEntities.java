@@ -27,6 +27,9 @@ import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_receiver.RadioReceiverBl
 import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_scanner.RadioScannerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.speaker.SpeakerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station.ProgrammingStationBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.LogicMachineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_engine.ElectricEngineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_furnace.ElectricFurnaceBlockEntity;
@@ -249,6 +252,21 @@ public class OmniTechBlockEntities {
             REGISTRY.register("speaker",
                     () -> new BlockEntityType<>(SpeakerBlockEntity::new,
                             OmniTechBlocks.SPEAKER.get()));
+
+    public static final Supplier<BlockEntityType<ProgrammingStationBlockEntity>> PROGRAMMING_STATION =
+            REGISTRY.register("programming_station",
+                    () -> new BlockEntityType<>(ProgrammingStationBlockEntity::new,
+                            OmniTechBlocks.PROGRAMMING_STATION.get()));
+
+    public static final Supplier<BlockEntityType<LogicMachineBlockEntity>> LOGIC_MACHINE =
+            REGISTRY.register("logic_machine",
+                    () -> new BlockEntityType<>(LogicMachineBlockEntity::new,
+                            OmniTechBlocks.LOGIC_MACHINE.get()));
+
+    public static final Supplier<BlockEntityType<GPIOPortBlockEntity>> GPIO_PORT =
+            REGISTRY.register("gpio_port",
+                    () -> new BlockEntityType<>(GPIOPortBlockEntity::new,
+                            OmniTechBlocks.GPIO_PORT.get()));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

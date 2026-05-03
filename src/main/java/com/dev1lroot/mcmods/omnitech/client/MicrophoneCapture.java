@@ -88,31 +88,17 @@ public final class MicrophoneCapture {
     }
 
     /**
-     * Opens the default (or configured) system microphone and starts the capture thread.
-     * No-op if already running.  Silently does nothing if no mic is available.
+     * Starts the capture thread.  Device acquisition ({@link AudioSystem#getLine} /
+     * {@link TargetDataLine#open}) happens inside the thread so this method never
+     * blocks the caller (the Minecraft main thread).
+     * No-op if already running.
      */
     public static void start() {
         if (running.getAndSet(true)) return;
         sampleQueue.clear();
-        try {
-            DataLine.Info info = new DataLine.Info(TargetDataLine.class, FORMAT);
-            TargetDataLine target;
-            if (selectedDevice.isEmpty()) {
-                if (!AudioSystem.isLineSupported(info)) { running.set(false); return; }
-                target = (TargetDataLine) AudioSystem.getLine(info);
-            } else {
-                target = openNamedDevice(selectedDevice, info);
-                if (target == null) { running.set(false); return; }
-            }
-            line = target;
-            line.open(FORMAT);
-            line.start();
-            captureThread = new Thread(MicrophoneCapture::captureLoop, "omnitech-mic-capture");
-            captureThread.setDaemon(true);
-            captureThread.start();
-        } catch (LineUnavailableException e) {
-            running.set(false);
-        }
+        captureThread = new Thread(MicrophoneCapture::captureLoop, "omnitech-mic-capture");
+        captureThread.setDaemon(true);
+        captureThread.start();
     }
 
     private static @Nullable TargetDataLine openNamedDevice(String name, DataLine.Info info) {
@@ -128,15 +114,34 @@ public final class MicrophoneCapture {
         return null;
     }
 
-    /** Stops capture and releases the microphone. No-op if not running. */
+    /**
+     * Signals the capture thread to stop and returns immediately.
+     *
+     * <p>{@link TargetDataLine#stop()} and {@link TargetDataLine#close()} are
+     * dispatched to a short-lived daemon thread so this method never blocks the
+     * caller.  On Linux (ALSA/PulseAudio) those calls can stall for seconds
+     * while the driver drains hardware buffers — blocking the Minecraft main
+     * thread or the world-save path would cause an infinite hang.
+     */
     public static void stop() {
         if (!running.getAndSet(false)) return;
-        TargetDataLine l = line;
-        if (l != null) { l.stop(); l.close(); line = null; }
         rmsLevel = 0f;
-        Thread t = captureThread;
-        if (t != null) { t.interrupt(); captureThread = null; }
         sampleQueue.clear();
+        TargetDataLine l = line;
+        line = null;
+        Thread t = captureThread;
+        captureThread = null;
+        Thread closer = new Thread(() -> {
+            // stop() unblocks any pending read(); close() releases the ALSA device.
+            // Split into two try-blocks so close() always runs even if stop() throws.
+            if (l != null) {
+                try { l.stop(); } catch (Exception ignored) {}
+                try { l.close(); } catch (Exception ignored) {}
+            }
+            if (t != null) t.interrupt();
+        }, "omnitech-mic-close");
+        closer.setDaemon(true);
+        closer.start();
     }
 
     /**
@@ -169,9 +174,38 @@ public final class MicrophoneCapture {
     // ── Background capture thread ─────────────────────────────────────────────
 
     private static void captureLoop() {
+        TargetDataLine myLine;
+        try {
+            DataLine.Info info = new DataLine.Info(TargetDataLine.class, FORMAT);
+            if (selectedDevice.isEmpty()) {
+                if (!AudioSystem.isLineSupported(info)) { running.set(false); return; }
+                myLine = (TargetDataLine) AudioSystem.getLine(info);
+            } else {
+                myLine = openNamedDevice(selectedDevice, info);
+                if (myLine == null) { running.set(false); return; }
+            }
+            myLine.open(FORMAT);
+            myLine.start();
+        } catch (LineUnavailableException e) {
+            running.set(false);
+            return;
+        }
+
+        // Publish the line.  If stop() fired while we were blocked in open(),
+        // stop()'s closer thread may have seen line==null — close locally and exit.
+        line = myLine;
+        if (!running.get()) {
+            try { myLine.stop(); } catch (Exception ignored) {}
+            try { myLine.close(); } catch (Exception ignored) {}
+            line = null;
+            return;
+        }
+
         byte[] buf = new byte[BUFFER_BYTES];
         while (running.get()) {
-            int read = line.read(buf, 0, buf.length);
+            TargetDataLine l = line;
+            if (l == null) break;
+            int read = l.read(buf, 0, buf.length);
             if (read <= 0) continue;
 
             rmsLevel = computeRms(buf, read);

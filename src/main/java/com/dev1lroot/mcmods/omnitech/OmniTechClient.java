@@ -49,6 +49,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
@@ -85,6 +86,7 @@ public class OmniTechClient
         modEventBus.addListener(this::registerItemModels);
         modEventBus.register(OmniTechClient.class);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onClientTick);
+        NeoForge.EVENT_BUS.addListener(OmniTechClient::onLevelUnload);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::registerClientCommands);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onSoundOptionsOpening);
         NeoForge.EVENT_BUS.addListener(SpaceSuitHudOverlay::onRenderGui);
@@ -179,42 +181,59 @@ public class OmniTechClient
         );
     }
 
+    /**
+     * Fires the instant the client level starts unloading (before the SoundEngine
+     * destroys the OpenAL context).  Releasing the TargetDataLine here avoids a
+     * deadlock where the OS refuses to hand the audio device to OpenAL while
+     * JavaSound still holds it.  All three stop/closeAll methods are idempotent.
+     */
+    public static void onLevelUnload(LevelEvent.Unload event) {
+        if (!event.getLevel().isClientSide()) return;
+        MicrophoneCapture.stop();
+        SpeakerAudioManager.closeAll();
+        VoiceAudioManager.closeAll();
+    }
+
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null) return;
+        // Guard covers both the "no world loaded" and "disconnecting" states.
+        // Audio cleanup is handled by onLevelUnload; this return just keeps the
+        // rest of the tick logic from running without a valid player/level.
+        if (mc.player == null || mc.level == null) return;
 
-        // Stop audio systems when disconnected from a level
-        if (mc.level == null) {
+        if (mc.screen != null) {
+            // Any open screen (pause menu, inventory, etc.) stops mic capture immediately.
+            // This releases the ALSA device well before the level unloads, avoiding a
+            // race where our closer daemon thread still holds the device when Minecraft's
+            // sound engine tries to destroy the OpenAL context.
             MicrophoneCapture.stop();
-            SpeakerAudioManager.closeAll();
-            VoiceAudioManager.closeAll();
+            return;
         }
 
-        if (mc.screen != null) return;
-
-        // Rocket inventory key — opens the rocket's container GUI.
-        // Handled server-side; only send while the player is mounted in the rocket
+        // Rocket inventory key — only send while the player is mounted in the rocket
         // and below orbit altitude (in ORBIT the space map is used instead).
-        if (mc.player.getVehicle() instanceof RocketEntity
-                && OPEN_ROCKET_GUI != null) {
+        if (mc.player.getVehicle() instanceof RocketEntity && OPEN_ROCKET_GUI != null) {
             while (OPEN_ROCKET_GUI.consumeClick()) {
                 ClientPacketDistributor.sendToServer(new OpenRocketGuiPacket());
             }
         }
 
-        if (mc.level != null) {
-            long gameTime = mc.level.getGameTime();
-            // Microphone block and voice chat capture — runs every 4 ticks
-            if (gameTime % 4 == 0) tickMicrophoneCapture(mc);
-            // Expire silent audio sources
-            SpeakerAudioManager.tick(gameTime);
-            VoiceAudioManager.tick(gameTime);
-        }
+        long gameTime = mc.level.getGameTime();
+        // Microphone block and voice chat capture — runs every 4 ticks
+        if (gameTime % 4 == 0) tickMicrophoneCapture(mc);
+        // Expire silent audio sources
+        SpeakerAudioManager.tick(gameTime);
+        VoiceAudioManager.tick(gameTime);
     }
 
     private static void tickMicrophoneCapture(Minecraft mc) {
         MicrophoneMode mode = MicrophoneConfig.getMode();
-        boolean captureActive = mode != MicrophoneMode.DISABLED
+        List<BlockPos> nearbyMics = findNearbyMicrophones(mc);
+
+        // Capture only while at least one Microphone block is loaded and in range.
+        // Walking away from all blocks (or chunk unloading) stops the audio device.
+        boolean captureActive = !nearbyMics.isEmpty()
+                && mode != MicrophoneMode.DISABLED
                 && (mode != MicrophoneMode.PUSH_TO_TALK || (PUSH_TO_TALK != null && PUSH_TO_TALK.isDown()));
 
         if (!captureActive) {
@@ -227,12 +246,10 @@ public class OmniTechClient
         byte[] samples = MicrophoneCapture.drainSamples();
         if (samples.length == 0) return;
 
-        // Feed nearby microphone blocks (radio/cable network path)
-        for (BlockPos micPos : findNearbyMicrophones(mc)) {
+        for (BlockPos micPos : nearbyMics) {
             ClientPacketDistributor.sendToServer(new MicrophoneAudioPacket(micPos, samples));
         }
 
-        // Feed voice chat (direct player-to-player path)
         ClientPacketDistributor.sendToServer(new VoiceChatSendPacket(samples));
     }
 

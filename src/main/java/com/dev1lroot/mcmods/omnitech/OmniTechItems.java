@@ -2,6 +2,7 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.items.BoreItem;
 import com.dev1lroot.mcmods.omnitech.items.FluidCanisterItem;
+import com.dev1lroot.mcmods.omnitech.items.MicrocontrollerItem;
 import com.dev1lroot.mcmods.omnitech.items.RadioLocatorItem;
 import com.dev1lroot.mcmods.omnitech.items.SpaceSuitItem;
 import com.google.common.collect.Maps;
@@ -172,6 +173,20 @@ public class OmniTechItems
 
     public static final DeferredItem<BlockItem> SPEAKER_ITEM =
             REGISTRY.registerSimpleBlockItem("speaker", OmniTechBlocks.SPEAKER);
+
+    // ── Logic / GPIO ──────────────────────────────────────────────────────────
+    public static final DeferredItem<BlockItem> PROGRAMMING_STATION_ITEM =
+            REGISTRY.registerSimpleBlockItem("programming_station", OmniTechBlocks.PROGRAMMING_STATION);
+    public static final DeferredItem<BlockItem> LOGIC_MACHINE_ITEM =
+            REGISTRY.registerSimpleBlockItem("logic_machine", OmniTechBlocks.LOGIC_MACHINE);
+    public static final DeferredItem<BlockItem> LOGIC_CABLE_ITEM =
+            REGISTRY.registerSimpleBlockItem("logic_cable", OmniTechBlocks.LOGIC_CABLE);
+    public static final DeferredItem<BlockItem> GPIO_PORT_ITEM =
+            REGISTRY.registerSimpleBlockItem("gpio_port", OmniTechBlocks.GPIO_PORT);
+
+    public static final DeferredItem<MicrocontrollerItem> MICROCONTROLLER =
+            REGISTRY.registerItem("microcontroller",
+                    p -> new MicrocontrollerItem(p.stacksTo(1)));
 
     public static final DeferredItem<RadioLocatorItem> RADIO_LOCATOR =
             REGISTRY.registerItem("radio_locator", RadioLocatorItem::new);

@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "omnitech:block/programming_station" },
+    "facing=south": { "model": "omnitech:block/programming_station", "y": 180 },
+    "facing=west":  { "model": "omnitech:block/programming_station", "y": 270 },
+    "facing=east":  { "model": "omnitech:block/programming_station", "y": 90 }
+  }
+}
