@@ -10,11 +10,26 @@ import java.util.Locale;
  * Tiny assembler + virtual machine for the LogicMachine block.
  *
  * Instruction set:
- *   MOV  Rx, Ry|imm      — Rx = value
- *   SLP  Rx|imm          — sleep N ticks
- *   IN   Rx, portId      — Rx = GPIO input signal (0‑15)
- *   OUT  portId, Rx|imm  — GPIO output signal = value (0‑15)
- *   CMP  Rx, Ry|imm      — set flags
+ *   MOV  Rx, Ry|imm           — Rx = value
+ *   SLP  Rx|imm               — sleep N ticks
+ *   IN   Rx, portId           — Rx = GPIO input signal (0‑15)
+ *   OUT  portId, Rx|imm       — GPIO output signal = value (0‑15)
+ *   SET  dispId, x, y, color  — set display pixel (x,y) to 0xRRGGBB color
+ *   RST  dispId               — clear all display pixels to black
+ *   ADD  Rx, Ry|imm           — Rx = Rx + value
+ *   SUB  Rx, Ry|imm           — Rx = Rx - value
+ *   MUL  Rx, Ry|imm           — Rx = Rx * value
+ *   DIV  Rx, Ry|imm           — Rx = Rx / value  (integer; ignored if value = 0)
+ *   MOD  Rx, Ry|imm           — Rx = Rx % value  (ignored if value = 0)
+ *   AND  Rx, Ry|imm           — Rx = Rx & value
+ *   OR   Rx, Ry|imm           — Rx = Rx | value
+ *   XOR  Rx, Ry|imm           — Rx = Rx ^ value
+ *   NOT  Rx                   — Rx = ~Rx
+ *   SHL  Rx, Ry|imm           — Rx = Rx << value
+ *   SHR  Rx, Ry|imm           — Rx = Rx >> value  (arithmetic)
+ *   INC  Rx                   — Rx = Rx + 1
+ *   DEC  Rx                   — Rx = Rx - 1
+ *   CMP  Rx, Ry|imm           — set flags
  *   JEQ/JNE/JGT/JLT label
  *   JMP  label
  *   HALT
@@ -30,9 +45,18 @@ public class LogicVM {
         void write(int portId, int value);
     }
 
-    public enum Op { MOV, SLP, IN, OUT, CMP, JEQ, JNE, JGT, JLT, JMP, HALT }
+    public interface DisplayAccess {
+        void setPixel(int displayId, int x, int y, int color);
+        void reset(int displayId);
+    }
 
-    public record Instruction(Op op, String a1, String a2) {}
+    public enum Op { MOV, SLP, IN, OUT, SET, RST,
+                     ADD, SUB, MUL, DIV, MOD, AND, OR, XOR, NOT, SHL, SHR, INC, DEC,
+                     CMP, JEQ, JNE, JGT, JLT, JMP, HALT }
+
+    public record Instruction(Op op, String a1, String a2, String a3, String a4) {
+        public Instruction(Op op, String a1, String a2) { this(op, a1, a2, "", ""); }
+    }
 
     // Runtime state
     public final int[] regs = new int[4];
@@ -86,7 +110,9 @@ public class LogicVM {
 
             String a1 = tok.length > 1 ? tok[1] : "";
             String a2 = tok.length > 2 ? tok[2] : "";
-            newProg.add(new Instruction(op, a1, a2));
+            String a3 = tok.length > 3 ? tok[3] : "";
+            String a4 = tok.length > 4 ? tok[4] : "";
+            newProg.add(new Instruction(op, a1, a2, a3, a4));
         }
 
         program = newProg;
@@ -99,7 +125,9 @@ public class LogicVM {
      * Execute one tick. Returns {@code true} if execution is ongoing,
      * {@code false} if halted.
      */
-    public boolean tick(GPIOAccess gpio) {
+    public boolean tick(GPIOAccess gpio) { return tick(gpio, null); }
+
+    public boolean tick(GPIOAccess gpio, DisplayAccess display) {
         if (halted || program.isEmpty()) return false;
 
         if (sleepTicks > 0) { sleepTicks--; return true; }
@@ -119,6 +147,31 @@ public class LogicVM {
                 if (gpio != null)
                     gpio.write(parseId(inst.a1()), Math.clamp(val(inst.a2()), 0, 15));
             }
+            case SET  -> {
+                if (display != null) {
+                    int dispId = parseId(inst.a1());
+                    int x      = Math.clamp(val(inst.a2()), 0, 15);
+                    int y      = Math.clamp(val(inst.a3()), 0, 15);
+                    int color  = valHex(inst.a4()) & 0xFFFFFF;
+                    display.setPixel(dispId, x, y, color);
+                }
+            }
+            case RST  -> {
+                if (display != null) display.reset(parseId(inst.a1()));
+            }
+            case ADD  -> setReg(inst.a1(), val(inst.a1()) + val(inst.a2()));
+            case SUB  -> setReg(inst.a1(), val(inst.a1()) - val(inst.a2()));
+            case MUL  -> setReg(inst.a1(), val(inst.a1()) * val(inst.a2()));
+            case DIV  -> { int d = val(inst.a2()); if (d != 0) setReg(inst.a1(), val(inst.a1()) / d); }
+            case MOD  -> { int m = val(inst.a2()); if (m != 0) setReg(inst.a1(), val(inst.a1()) % m); }
+            case AND  -> setReg(inst.a1(), val(inst.a1()) & val(inst.a2()));
+            case OR   -> setReg(inst.a1(), val(inst.a1()) | val(inst.a2()));
+            case XOR  -> setReg(inst.a1(), val(inst.a1()) ^ val(inst.a2()));
+            case NOT  -> setReg(inst.a1(), ~val(inst.a1()));
+            case SHL  -> setReg(inst.a1(), val(inst.a1()) << val(inst.a2()));
+            case SHR  -> setReg(inst.a1(), val(inst.a1()) >> val(inst.a2()));
+            case INC  -> setReg(inst.a1(), val(inst.a1()) + 1);
+            case DEC  -> setReg(inst.a1(), val(inst.a1()) - 1);
             case CMP  -> cmpFlag = Integer.compare(val(inst.a1()), val(inst.a2()));
             case JEQ  -> { if (cmpFlag == 0) jump(inst.a1()); }
             case JNE  -> { if (cmpFlag != 0) jump(inst.a1()); }
@@ -143,7 +196,24 @@ public class LogicVM {
             int i = s.charAt(1) - '0';
             return (i >= 0 && i < 4) ? regs[i] : 0;
         }
-        try { return Integer.parseInt(s); } catch (NumberFormatException e) { return 0; }
+        try {
+            if (s.startsWith("0x") || s.startsWith("0X"))
+                return (int) Long.parseLong(s.substring(2), 16);
+            return Integer.parseInt(s);
+        } catch (NumberFormatException e) { return 0; }
+    }
+
+    private int valHex(String s) {
+        if (s == null || s.isEmpty()) return 0;
+        if (Character.toUpperCase(s.charAt(0)) == 'R' && s.length() == 2) {
+            int i = s.charAt(1) - '0';
+            return (i >= 0 && i < 4) ? regs[i] : 0;
+        }
+        try {
+            if (s.startsWith("0x") || s.startsWith("0X"))
+                return (int) Long.parseLong(s.substring(2), 16);
+            return Integer.parseInt(s);
+        } catch (NumberFormatException e) { return 0; }
     }
 
     private void setReg(String s, int v) {

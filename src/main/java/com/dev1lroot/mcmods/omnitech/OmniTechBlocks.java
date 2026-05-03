@@ -21,6 +21,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.analog.AnalogCableBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.speaker.SpeakerBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.LogicCableBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station.ProgrammingStationBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.LogicMachineBlock;
@@ -142,11 +143,12 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> MICROPHONE;
     public static final DeferredBlock<Block> SPEAKER;
 
-    // ── Logic / GPIO ──────────────────────────────────────────────────────────
+    // ── Logic / GPIO / Display ────────────────────────────────────────────────
     public static final DeferredBlock<Block> PROGRAMMING_STATION;
     public static final DeferredBlock<Block> LOGIC_MACHINE;
     public static final DeferredBlock<Block> LOGIC_CABLE;
     public static final DeferredBlock<Block> GPIO_PORT;
+    public static final DeferredBlock<Block> DISPLAY;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -330,6 +332,9 @@ public class OmniTechBlocks {
         GPIO_PORT = register("gpio_port",
                 p -> new GPIOPortBlock(p.mapColor(MapColor.COLOR_BLUE).strength(2.0F)
                         .sound(SoundType.METAL)));
+        DISPLAY = register("display",
+                p -> new DisplayBlock(p.mapColor(MapColor.COLOR_BLACK).strength(2.0F)
+                        .sound(SoundType.METAL).noOcclusion()));
     }
 
     // ── Registration helpers ───────────────────────────────────────────────

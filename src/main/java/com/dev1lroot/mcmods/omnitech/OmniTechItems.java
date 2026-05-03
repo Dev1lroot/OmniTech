@@ -184,6 +184,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> GPIO_PORT_ITEM =
             REGISTRY.registerSimpleBlockItem("gpio_port", OmniTechBlocks.GPIO_PORT);
 
+    public static final DeferredItem<BlockItem> DISPLAY_ITEM =
+            REGISTRY.registerSimpleBlockItem("display", OmniTechBlocks.DISPLAY);
+
     public static final DeferredItem<MicrocontrollerItem> MICROCONTROLLER =
             REGISTRY.registerItem("microcontroller",
                     p -> new MicrocontrollerItem(p.stacksTo(1)));

@@ -8,6 +8,7 @@ import com.dev1lroot.mcmods.omnitech.gui.RadioScannerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ProgrammingStationMenu;
 import com.dev1lroot.mcmods.omnitech.gui.LogicMachineMenu;
 import com.dev1lroot.mcmods.omnitech.gui.GPIOPortMenu;
+import com.dev1lroot.mcmods.omnitech.gui.DisplayMenu;
 import com.dev1lroot.mcmods.omnitech.gui.CokeOvenMenu;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricChargerMenu;
@@ -186,6 +187,10 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<GPIOPortMenu>> GPIO_PORT =
             REGISTRY.register("gpio_port",
                     () -> IMenuTypeExtension.create(GPIOPortMenu::new));
+
+    public static final Supplier<MenuType<DisplayMenu>> DISPLAY =
+            REGISTRY.register("display",
+                    () -> IMenuTypeExtension.create(DisplayMenu::new));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

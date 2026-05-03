@@ -9,6 +9,7 @@ import com.dev1lroot.mcmods.omnitech.client.FluidPipeRenderer;
 import com.dev1lroot.mcmods.omnitech.client.FluidTankRenderer;
 import com.dev1lroot.mcmods.omnitech.client.FoundryRenderer;
 import com.dev1lroot.mcmods.omnitech.client.KineticPipeRenderer;
+import com.dev1lroot.mcmods.omnitech.client.DisplayBlockEntityRenderer;
 import com.dev1lroot.mcmods.omnitech.client.RadiatorBER;
 import com.dev1lroot.mcmods.omnitech.client.ThermalConductorBER;
 import com.dev1lroot.mcmods.omnitech.client.ValveRenderer;
@@ -114,6 +115,7 @@ public class OmniTechClient
         event.registerBlockEntityRenderer(OmniTechBlockEntities.VALVE.get(), ValveRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.THERMAL_CONDUCTOR.get(), ThermalConductorBER::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.RADIATOR.get(), RadiatorBER::new);
+        event.registerBlockEntityRenderer(OmniTechBlockEntities.DISPLAY.get(), DisplayBlockEntityRenderer::new);
         event.registerEntityRenderer(OmniTechEntities.ROCKET.get(), RocketEntityRenderer::new);
         event.registerEntityRenderer(OmniTechEntities.ABYSSAL_EEL.get(), AbyssalEelRenderer::new);
         event.registerEntityRenderer(OmniTechEntities.COKE_OVEN.get(), CokeOvenEntityRenderer::new);
@@ -192,6 +194,7 @@ public class OmniTechClient
         MicrophoneCapture.stop();
         SpeakerAudioManager.closeAll();
         VoiceAudioManager.closeAll();
+        DisplayBlockEntityRenderer.cleanupAll();
     }
 
     public static void onClientTick(ClientTickEvent.Post event) {

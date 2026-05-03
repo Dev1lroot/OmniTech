@@ -7,6 +7,7 @@ import com.dev1lroot.mcmods.omnitech.gui.RadioReceiverScreen;
 import com.dev1lroot.mcmods.omnitech.gui.RadioScannerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ProgrammingStationScreen;
 import com.dev1lroot.mcmods.omnitech.gui.LogicMachineScreen;
+import com.dev1lroot.mcmods.omnitech.gui.DisplayScreen;
 import com.dev1lroot.mcmods.omnitech.gui.GPIOPortScreen;
 import com.dev1lroot.mcmods.omnitech.gui.CokeOvenScreen;
 import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceScreen;
@@ -89,6 +90,7 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.PROGRAMMING_STATION.get(), ProgrammingStationScreen::new);
         event.register(OmniTechMenuTypes.LOGIC_MACHINE.get(), LogicMachineScreen::new);
         event.register(OmniTechMenuTypes.GPIO_PORT.get(), GPIOPortScreen::new);
+        event.register(OmniTechMenuTypes.DISPLAY.get(), DisplayScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)
@@ -104,6 +106,7 @@ public class OmniTechGUI {
             event.accept(OmniTechItems.LOGIC_MACHINE_ITEM);
             event.accept(OmniTechItems.LOGIC_CABLE_ITEM);
             event.accept(OmniTechItems.GPIO_PORT_ITEM);
+            event.accept(OmniTechItems.DISPLAY_ITEM);
             event.accept(OmniTechItems.MICROCONTROLLER);
         }
         if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {

@@ -681,11 +681,13 @@
   "block.omnitech.logic_machine": "Logic Machine",
   "block.omnitech.logic_cable": "Logic Cable",
   "block.omnitech.gpio_port": "GPIO Port",
+  "block.omnitech.display": "Display",
   "item.omnitech.microcontroller": "Microcontroller",
 
   "container.omnitech.programming_station": "Programming Station",
   "container.omnitech.logic_machine": "Logic Machine",
   "container.omnitech.gpio_port": "GPIO Port",
+  "container.omnitech.display": "Display",
 
   "gui.omnitech.upload": "Upload",
   "gui.omnitech.run": "Run",

@@ -3,6 +3,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.LogicCableBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.vm.LogicVM;
 import com.dev1lroot.mcmods.omnitech.gui.LogicMachineMenu;
@@ -39,8 +40,9 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
     private boolean running = false;
     private String  compileError = null;
 
-    // GPIO port cache (refreshed every 20 ticks)
-    private final Map<Integer, GPIOPortBlockEntity> gpioCache = new HashMap<>();
+    // GPIO port and Display cache (refreshed every 20 ticks)
+    private final Map<Integer, GPIOPortBlockEntity> gpioCache    = new HashMap<>();
+    private final Map<Integer, DisplayBlockEntity>  displayCache = new HashMap<>();
     private long lastCacheRefresh = -100L;
 
     protected final ContainerData dataAccess = new ContainerData() {
@@ -68,9 +70,9 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
             LogicMachineBlockEntity be) {
         if (!be.running || be.vm.isEmpty()) return;
 
-        // Refresh GPIO cache periodically
+        // Refresh GPIO/Display cache periodically
         if (level.getGameTime() - be.lastCacheRefresh > 20) {
-            be.rebuildGPIOCache(level, pos);
+            be.rebuildNetworkCache(level, pos);
             be.lastCacheRefresh = level.getGameTime();
         }
 
@@ -83,14 +85,24 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
                 GPIOPortBlockEntity g = be.gpioCache.get(portId);
                 if (g != null) g.setOutputSignal(value);
             }
+        }, new LogicVM.DisplayAccess() {
+            @Override public void setPixel(int displayId, int x, int y, int color) {
+                DisplayBlockEntity d = be.displayCache.get(displayId);
+                if (d != null) d.setPixel(x, y, color);
+            }
+            @Override public void reset(int displayId) {
+                DisplayBlockEntity d = be.displayCache.get(displayId);
+                if (d != null) d.resetPixels();
+            }
         });
 
         if (be.vm.halted) be.running = false;
         be.setChanged();
     }
 
-    private void rebuildGPIOCache(Level level, BlockPos origin) {
+    private void rebuildNetworkCache(Level level, BlockPos origin) {
         gpioCache.clear();
+        displayCache.clear();
         Set<BlockPos> visited = new HashSet<>();
         Queue<BlockPos> queue = new ArrayDeque<>();
         queue.add(origin);
@@ -108,6 +120,8 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
                     BlockEntity be = level.getBlockEntity(nb);
                     if (be instanceof GPIOPortBlockEntity g) {
                         gpioCache.put(g.getPortId(), g);
+                    } else if (be instanceof DisplayBlockEntity d) {
+                        displayCache.put(d.getPortId(), d);
                     }
                 }
             }

@@ -72,6 +72,7 @@ import com.dev1lroot.mcmods.omnitech.network.SetRadioLocatorFreqPacket;
 import com.dev1lroot.mcmods.omnitech.network.RadioLocatorSignalPacket;
 import com.dev1lroot.mcmods.omnitech.network.UploadProgramPacket;
 import com.dev1lroot.mcmods.omnitech.network.SetGPIOIdPacket;
+import com.dev1lroot.mcmods.omnitech.network.SetDisplayIdPacket;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioManager;
 import com.dev1lroot.mcmods.omnitech.items.RadioLocatorItem;
@@ -444,6 +445,10 @@ public class OmniTech {
                 SetGPIOIdPacket.TYPE,
                 SetGPIOIdPacket.CODEC,
                 SetGPIOIdPacket::handle);
+        event.registrar("1").playToServer(
+                SetDisplayIdPacket.TYPE,
+                SetDisplayIdPacket.CODEC,
+                SetDisplayIdPacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

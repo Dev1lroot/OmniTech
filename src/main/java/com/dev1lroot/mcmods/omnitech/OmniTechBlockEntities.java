@@ -27,6 +27,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_receiver.RadioReceiverBl
 import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_scanner.RadioScannerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.speaker.SpeakerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station.ProgrammingStationBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.LogicMachineBlockEntity;
@@ -267,6 +268,11 @@ public class OmniTechBlockEntities {
             REGISTRY.register("gpio_port",
                     () -> new BlockEntityType<>(GPIOPortBlockEntity::new,
                             OmniTechBlocks.GPIO_PORT.get()));
+
+    public static final Supplier<BlockEntityType<DisplayBlockEntity>> DISPLAY =
+            REGISTRY.register("display",
+                    () -> new BlockEntityType<>(DisplayBlockEntity::new,
+                            OmniTechBlocks.DISPLAY.get()));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
