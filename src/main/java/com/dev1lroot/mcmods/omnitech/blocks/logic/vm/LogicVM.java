@@ -86,7 +86,7 @@ public class LogicVM {
     public enum Op { MOV, SLP, IN, OUT, SET, RST, GDIM, LINE, RECT, BLIT,
                      ADD, SUB, MUL, DIV, MOD, AND, OR, XOR, NOT, SHL, SHR, INC, DEC,
                      CMP, JEQ, JNE, JGT, JLT, JMP, HALT,
-                     PEEK, POKE, LDSC }
+                     PEEK, POKE, LDSC, RND }
 
     public record Instruction(Op op, String a1, String a2, String a3, String a4, String a5, String a6) {
         public Instruction(Op op, String a1, String a2) { this(op, a1, a2, "", "", "", ""); }
@@ -189,15 +189,6 @@ public class LogicVM {
                 if (gpio != null)
                     gpio.write(parseId(inst.a1()), Math.clamp(val(inst.a2()), 0, 15));
             }
-            case SET  -> {
-                if (display != null) {
-                    int dispId = parseId(inst.a1());
-                    int x      = val(inst.a2());
-                    int y      = val(inst.a3());
-                    int color  = valHex(inst.a4()) & 0xFFFFFF;
-                    display.setPixel(dispId, x, y, color);
-                }
-            }
             case RST  -> {
                 if (display != null) display.reset(parseId(inst.a1()));
             }
@@ -208,22 +199,36 @@ public class LogicVM {
                     setReg(inst.a3(), display.getHeight(dispId));
                 }
             }
+            case SET -> {
+                if (display != null) {
+                    int dispId = parseId(inst.a1());
+                    int x      = val(inst.a2());
+                    int y      = val(inst.a3());
+                    // Используем val(), чтобы R11 превратился в значение регистра
+                    int color  = val(inst.a4()) & 0xFFFFFF;
+                    display.setPixel(dispId, x, y, color);
+                }
+            }
             case LINE -> {
                 if (display != null) {
                     int dispId = parseId(inst.a1());
-                    display.drawLine(dispId,
-                            val(inst.a2()), val(inst.a3()),
-                            val(inst.a4()), val(inst.a5()),
-                            val(inst.a6()) & 0xFFFFFF);
+                    int x1 = val(inst.a2());
+                    int y1 = val(inst.a3());
+                    int x2 = val(inst.a4());
+                    int y2 = val(inst.a5());
+                    int color = val(inst.a6()) & 0xFFFFFF; // Цвет в a6
+                    display.drawLine(dispId, x1, y1, x2, y2, color);
                 }
             }
             case RECT -> {
                 if (display != null) {
                     int dispId = parseId(inst.a1());
-                    display.fillRect(dispId,
-                            val(inst.a2()), val(inst.a3()),
-                            val(inst.a4()), val(inst.a5()),
-                            val(inst.a6()) & 0xFFFFFF);
+                    int x = val(inst.a2());
+                    int y = val(inst.a3());
+                    int w = val(inst.a4());
+                    int h = val(inst.a5());
+                    int color = val(inst.a6()) & 0xFFFFFF; // Цвет в a6
+                    display.fillRect(dispId, x, y, w, h, color);
                 }
             }
             case BLIT -> {
@@ -279,6 +284,12 @@ public class LogicVM {
                 int sector  = val(inst.a2());
                 int dstAddr = val(inst.a3());
                 if (floppy != null) floppy.loadSector(driveId, sector, dstAddr);
+            }
+            case RND -> {
+                int min = val(inst.a2());
+                int max = val(inst.a3());
+                int result = min + (int)(Math.random() * ((max - min) + 1));
+                setReg(inst.a1(), result);
             }
         }
         return !halted;
