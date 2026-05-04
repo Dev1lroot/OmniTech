@@ -124,6 +124,26 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
                 DisplayBlockEntity d = be.displayCache.get(displayId);
                 if (d != null) d.resetPixels();
             }
+            @Override public int getWidth(int displayId) {
+                DisplayBlockEntity d = be.displayCache.get(displayId);
+                return d != null ? d.getDisplayWidth() : 0;
+            }
+            @Override public int getHeight(int displayId) {
+                DisplayBlockEntity d = be.displayCache.get(displayId);
+                return d != null ? d.getDisplayHeight() : 0;
+            }
+            @Override public void drawLine(int displayId, int x1, int y1, int x2, int y2, int color) {
+                DisplayBlockEntity d = be.displayCache.get(displayId);
+                if (d != null) d.drawLine(x1, y1, x2, y2, color);
+            }
+            @Override public void fillRect(int displayId, int x, int y, int w, int h, int color) {
+                DisplayBlockEntity d = be.displayCache.get(displayId);
+                if (d != null) d.fillRect(x, y, w, h, color);
+            }
+            @Override public void blit(int displayId, int x, int y, int w, int h, int[] pixels) {
+                DisplayBlockEntity d = be.displayCache.get(displayId);
+                if (d != null) d.blit(x, y, w, h, pixels);
+            }
         };
         LogicVM.RAMAccess ram = new LogicVM.RAMAccess() {
             @Override public int read(int addr) {

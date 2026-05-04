@@ -12,6 +12,7 @@
 | [materials.md](materials.md) | All 12 metals: item forms, processing chain, worldgen |
 | [planets.md](planets.md) | Dimensions, rocket, navigation GUI, sky renderer, fuel system |
 | [space_map_api.md](space_map_api.md) | `space_map.json` schema and authoring guide |
+| [display_programming.md](display_programming.md) | Logic VM display instructions, BLIT/VRAM reference, 10 example programs |
 
 ---
 

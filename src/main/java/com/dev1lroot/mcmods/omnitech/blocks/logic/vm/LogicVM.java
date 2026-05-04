@@ -10,32 +10,37 @@ import java.util.Locale;
  * Tiny assembler + virtual machine for the LogicMachine block.
  *
  * Instruction set:
- *   MOV  Rx, Ry|imm           — Rx = value
- *   SLP  Rx|imm               — sleep N ticks
- *   IN   Rx, portId           — Rx = GPIO input signal (0‑15)
- *   OUT  portId, Rx|imm       — GPIO output signal = value (0‑15)
- *   SET  dispId, x, y, color  — set display pixel (x,y) to 0xRRGGBB color
- *   RST  dispId               — clear all display pixels to black
- *   ADD  Rx, Ry|imm           — Rx = Rx + value
- *   SUB  Rx, Ry|imm           — Rx = Rx - value
- *   MUL  Rx, Ry|imm           — Rx = Rx * value
- *   DIV  Rx, Ry|imm           — Rx = Rx / value  (integer; ignored if value = 0)
- *   MOD  Rx, Ry|imm           — Rx = Rx % value  (ignored if value = 0)
- *   AND  Rx, Ry|imm           — Rx = Rx & value
- *   OR   Rx, Ry|imm           — Rx = Rx | value
- *   XOR  Rx, Ry|imm           — Rx = Rx ^ value
- *   NOT  Rx                   — Rx = ~Rx
- *   SHL  Rx, Ry|imm           — Rx = Rx << value
- *   SHR  Rx, Ry|imm           — Rx = Rx >> value  (arithmetic)
- *   INC  Rx                   — Rx = Rx + 1
- *   DEC  Rx                   — Rx = Rx - 1
- *   CMP  Rx, Ry|imm           — set flags
+ *   MOV  Rx, Ry|imm                   — Rx = value
+ *   SLP  Rx|imm                       — sleep N ticks
+ *   IN   Rx, portId                   — Rx = GPIO input signal (0-15)
+ *   OUT  portId, Rx|imm               — GPIO output signal = value (0-15)
+ *   SET  dispId, x, y, color          — set pixel (x,y) to 0xRRGGBB; coords span full cluster
+ *   RST  dispId                       — clear all display pixels to black
+ *   GDIM dispId, Rx, Ry               — Rx = display width (px), Ry = display height (px)
+ *   LINE dispId, x1, y1, x2, y2, color — draw a line (Bresenham); color = 0xRRGGBB
+ *   RECT dispId, x, y, w, h, color    — fill solid rectangle; color = 0xRRGGBB
+ *   BLIT dispId, x, y, w, h, addr     — copy w×h pixels from RAM[addr] to display
+ *                                        pixel format: 3 bytes per pixel, R then G then B
+ *   ADD  Rx, Ry|imm                   — Rx = Rx + value
+ *   SUB  Rx, Ry|imm                   — Rx = Rx - value
+ *   MUL  Rx, Ry|imm                   — Rx = Rx * value
+ *   DIV  Rx, Ry|imm                   — Rx = Rx / value  (integer; ignored if value = 0)
+ *   MOD  Rx, Ry|imm                   — Rx = Rx % value  (ignored if value = 0)
+ *   AND  Rx, Ry|imm                   — Rx = Rx & value
+ *   OR   Rx, Ry|imm                   — Rx = Rx | value
+ *   XOR  Rx, Ry|imm                   — Rx = Rx ^ value
+ *   NOT  Rx                           — Rx = ~Rx
+ *   SHL  Rx, Ry|imm                   — Rx = Rx << value
+ *   SHR  Rx, Ry|imm                   — Rx = Rx >> value  (arithmetic)
+ *   INC  Rx                           — Rx = Rx + 1
+ *   DEC  Rx                           — Rx = Rx - 1
+ *   CMP  Rx, Ry|imm                   — set flags
  *   JEQ/JNE/JGT/JLT label
  *   JMP  label
  *   HALT
- *   PEEK Rx, Ry|imm           — Rx = RAM[address]  (byte read)
- *   POKE Rx|imm, Ry|imm       — RAM[address] = value & 0xFF  (byte write)
- *   LDSC driveId, sector, dst — Load 512-byte sector from floppy drive into RAM at dst
+ *   PEEK Rx, Ry|imm                   — Rx = RAM[address]  (byte read)
+ *   POKE Rx|imm, Ry|imm               — RAM[address] = value & 0xFF  (byte write)
+ *   LDSC driveId, sector, dst         — load 512-byte sector from floppy into RAM at dst
  *
  * Labels:  name:   (standalone token ending with colon)
  * Comments: ;
@@ -51,6 +56,12 @@ public class LogicVM {
     public interface DisplayAccess {
         void setPixel(int displayId, int x, int y, int color);
         void reset(int displayId);
+        int  getWidth(int displayId);
+        int  getHeight(int displayId);
+        void drawLine(int displayId, int x1, int y1, int x2, int y2, int color);
+        void fillRect(int displayId, int x, int y, int w, int h, int color);
+        /** pixels[row*w+col] = 0x00RRGGBB */
+        void blit(int displayId, int x, int y, int w, int h, int[] pixels);
     }
 
     /** Flat byte-addressable RAM backed by connected RAM cards. */
@@ -72,13 +83,13 @@ public class LogicVM {
         boolean loadSector(int driveId, int sector, int dstAddr);
     }
 
-    public enum Op { MOV, SLP, IN, OUT, SET, RST,
+    public enum Op { MOV, SLP, IN, OUT, SET, RST, GDIM, LINE, RECT, BLIT,
                      ADD, SUB, MUL, DIV, MOD, AND, OR, XOR, NOT, SHL, SHR, INC, DEC,
                      CMP, JEQ, JNE, JGT, JLT, JMP, HALT,
                      PEEK, POKE, LDSC }
 
-    public record Instruction(Op op, String a1, String a2, String a3, String a4) {
-        public Instruction(Op op, String a1, String a2) { this(op, a1, a2, "", ""); }
+    public record Instruction(Op op, String a1, String a2, String a3, String a4, String a5, String a6) {
+        public Instruction(Op op, String a1, String a2) { this(op, a1, a2, "", "", "", ""); }
     }
 
     // Runtime state
@@ -141,7 +152,9 @@ public class LogicVM {
             String a2 = tok.length > 2 ? tok[2] : "";
             String a3 = tok.length > 3 ? tok[3] : "";
             String a4 = tok.length > 4 ? tok[4] : "";
-            newProg.add(new Instruction(op, a1, a2, a3, a4));
+            String a5 = tok.length > 5 ? tok[5] : "";
+            String a6 = tok.length > 6 ? tok[6] : "";
+            newProg.add(new Instruction(op, a1, a2, a3, a4, a5, a6));
         }
 
         program = newProg;
@@ -187,6 +200,50 @@ public class LogicVM {
             }
             case RST  -> {
                 if (display != null) display.reset(parseId(inst.a1()));
+            }
+            case GDIM -> {
+                if (display != null) {
+                    int dispId = parseId(inst.a1());
+                    setReg(inst.a2(), display.getWidth(dispId));
+                    setReg(inst.a3(), display.getHeight(dispId));
+                }
+            }
+            case LINE -> {
+                if (display != null) {
+                    int dispId = parseId(inst.a1());
+                    display.drawLine(dispId,
+                            val(inst.a2()), val(inst.a3()),
+                            val(inst.a4()), val(inst.a5()),
+                            val(inst.a6()) & 0xFFFFFF);
+                }
+            }
+            case RECT -> {
+                if (display != null) {
+                    int dispId = parseId(inst.a1());
+                    display.fillRect(dispId,
+                            val(inst.a2()), val(inst.a3()),
+                            val(inst.a4()), val(inst.a5()),
+                            val(inst.a6()) & 0xFFFFFF);
+                }
+            }
+            case BLIT -> {
+                if (display != null && ram != null) {
+                    int dispId = parseId(inst.a1());
+                    int bx = val(inst.a2()), by = val(inst.a3());
+                    int bw = val(inst.a4()), bh = val(inst.a5());
+                    int addr = val(inst.a6());
+                    int total = bw * bh;
+                    if (total > 0) {
+                        int[] px = new int[total];
+                        for (int i = 0; i < total; i++) {
+                            int base = addr + i * 3;
+                            px[i] = ((ram.read(base) & 0xFF) << 16)
+                                  | ((ram.read(base + 1) & 0xFF) << 8)
+                                  |  (ram.read(base + 2) & 0xFF);
+                        }
+                        display.blit(dispId, bx, by, bw, bh, px);
+                    }
+                }
             }
             case ADD  -> setReg(inst.a1(), val(inst.a1()) + val(inst.a2()));
             case SUB  -> setReg(inst.a1(), val(inst.a1()) - val(inst.a2()));

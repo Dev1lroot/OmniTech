@@ -141,6 +141,75 @@ public class DisplayBlockEntity extends BlockEntity implements MenuProvider {
         if (changed) { setChanged(); sync(); }
     }
 
+    // ── Display dimensions ────────────────────────────────────────────────────
+
+    public int getDisplayWidth()  { return clusterCols * SIZE; }
+    public int getDisplayHeight() { return clusterRows * SIZE; }
+
+    // ── Batch drawing (GDIM / LINE / RECT / BLIT) ─────────────────────────────
+
+    /** Bresenham line across the full cluster canvas. */
+    public void drawLine(int x1, int y1, int x2, int y2, int color) {
+        Set<DisplayBlockEntity> dirty = new HashSet<>();
+        int dx = Math.abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
+        int dy = -Math.abs(y2 - y1), sy = y1 < y2 ? 1 : -1;
+        int err = dx + dy;
+        for (;;) {
+            writePixelBatched(x1, y1, color, dirty);
+            if (x1 == x2 && y1 == y2) break;
+            int e2 = 2 * err;
+            if (e2 >= dy) { if (x1 == x2) break; err += dy; x1 += sx; }
+            if (e2 <= dx) { if (y1 == y2) break; err += dx; y1 += sy; }
+        }
+        flushDirty(dirty);
+    }
+
+    /** Fill a solid rectangle on the cluster canvas. */
+    public void fillRect(int x, int y, int w, int h, int color) {
+        Set<DisplayBlockEntity> dirty = new HashSet<>();
+        for (int dy = 0; dy < h; dy++)
+            for (int dx = 0; dx < w; dx++)
+                writePixelBatched(x + dx, y + dy, color, dirty);
+        flushDirty(dirty);
+    }
+
+    /**
+     * Copy a w×h region from a packed pixel array to the cluster canvas at (x, y).
+     * pixels[row * w + col] = 0x00RRGGBB.
+     */
+    public void blit(int x, int y, int w, int h, int[] pixels) {
+        Set<DisplayBlockEntity> dirty = new HashSet<>();
+        for (int row = 0; row < h; row++)
+            for (int col = 0; col < w; col++)
+                writePixelBatched(x + col, y + row, pixels[row * w + col], dirty);
+        flushDirty(dirty);
+    }
+
+    // Write pixel without per-pixel sync; collect touched block entities.
+    private void writePixelBatched(int x, int y, int color, Set<DisplayBlockEntity> dirty) {
+        if (x < 0 || x >= clusterCols * SIZE || y < 0 || y >= clusterRows * SIZE) return;
+        DisplayBlockEntity target = resolveTarget(x / SIZE, y / SIZE);
+        if (target == null) return;
+        int lx = x % SIZE, ly = y % SIZE;
+        int c = color & 0xFFFFFF;
+        if (target.pixels[ly * SIZE + lx] == c) return;
+        target.pixels[ly * SIZE + lx] = c;
+        dirty.add(target);
+    }
+
+    private DisplayBlockEntity resolveTarget(int blockCol, int blockRow) {
+        if (blockCol == 0 && blockRow == 0) return this;
+        if (level == null) return null;
+        Direction facing = getBlockState().getValue(DisplayBlock.FACING);
+        BlockPos p = clusterMemberPos(facing, worldPosition, blockCol, blockRow);
+        BlockEntity be = level.getBlockEntity(p);
+        return be instanceof DisplayBlockEntity d ? d : null;
+    }
+
+    private static void flushDirty(Set<DisplayBlockEntity> dirty) {
+        for (DisplayBlockEntity be : dirty) { be.setChanged(); be.sync(); }
+    }
+
     // ── Cluster coordinate helpers ────────────────────────────────────────────
 
     /**
