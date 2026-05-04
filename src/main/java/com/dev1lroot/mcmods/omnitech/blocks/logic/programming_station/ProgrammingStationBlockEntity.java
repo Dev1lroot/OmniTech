@@ -10,6 +10,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
@@ -77,12 +78,14 @@ public class ProgrammingStationBlockEntity extends BaseContainerBlockEntity {
     @Override
     protected void saveAdditional(ValueOutput out) {
         super.saveAdditional(out);
+        ContainerHelper.saveAllItems(out, items);
         out.putString("Program", programText);
     }
 
     @Override
     protected void loadAdditional(ValueInput in) {
         super.loadAdditional(in);
+        ContainerHelper.loadAllItems(in, items);
         programText = in.getStringOr("Program", "");
     }
 }

@@ -199,7 +199,7 @@ public class OmniTechItems
             REGISTRY.registerItem("floppy_disk", p -> new FloppyDiskItem(p.stacksTo(1)));
 
     public static final DeferredItem<RamCardItem> RAM_CARD =
-            REGISTRY.registerItem("ram_card", p -> new RamCardItem(p.stacksTo(16)));
+            REGISTRY.registerItem("ram_card", p -> new RamCardItem(p.stacksTo(1)));
 
     public static final DeferredItem<MicrocontrollerItem> MICROCONTROLLER =
             REGISTRY.registerItem("microcontroller",

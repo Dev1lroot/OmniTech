@@ -142,6 +142,22 @@ public class OmniTechDataComponents {
                             .persistent(BYTE_ARRAY_CODEC)
                             .build());
 
+    /** First byte address of this RAM card within the logic machine's address space. */
+    public static final Supplier<DataComponentType<Integer>> RAM_ADDR_START =
+            REGISTRY.register("ram_addr_start", () ->
+                    DataComponentType.<Integer>builder()
+                            .persistent(Codec.INT)
+                            .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
+    /** Last byte address (inclusive) of this RAM card within the logic machine's address space. */
+    public static final Supplier<DataComponentType<Integer>> RAM_ADDR_END =
+            REGISTRY.register("ram_addr_end", () ->
+                    DataComponentType.<Integer>builder()
+                            .persistent(Codec.INT)
+                            .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
     public static void register(IEventBus bus) {
         REGISTRY.register(bus);
     }

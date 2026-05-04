@@ -9,6 +9,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -218,6 +219,7 @@ public class ElectricHeaterBlockEntity extends BaseContainerBlockEntity
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+        ContainerHelper.loadAllItems(input, items);
         energyStored  = input.getFloatOr("EnergyStored",  0f);
         currentTemp   = input.getFloatOr("CurrentTemp",   AMBIENT_TEMP);
         targetTemp    = input.getIntOr  ("TargetTemp",    (int) AMBIENT_TEMP);
@@ -227,6 +229,7 @@ public class ElectricHeaterBlockEntity extends BaseContainerBlockEntity
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
+        ContainerHelper.saveAllItems(output, items);
         output.putFloat("EnergyStored",  energyStored);
         output.putFloat("CurrentTemp",   currentTemp);
         output.putInt  ("TargetTemp",    targetTemp);

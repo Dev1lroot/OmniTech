@@ -7,12 +7,15 @@ import com.dev1lroot.mcmods.omnitech.items.RamCardItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class ExpansionSlotBlockEntity extends BaseContainerBlockEntity {
 
@@ -67,5 +70,38 @@ public class ExpansionSlotBlockEntity extends BaseContainerBlockEntity {
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
         return stack.getItem() instanceof RamCardItem;
+    }
+
+    @Override
+    public ItemStack removeItem(int slot, int amount) {
+        ItemStack result = super.removeItem(slot, amount);
+        clearAddressComponents(result);
+        return result;
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int slot) {
+        ItemStack result = super.removeItemNoUpdate(slot);
+        clearAddressComponents(result);
+        return result;
+    }
+
+    private static void clearAddressComponents(ItemStack stack) {
+        if (!stack.isEmpty() && stack.getItem() instanceof RamCardItem) {
+            stack.remove(OmniTechDataComponents.RAM_ADDR_START.get());
+            stack.remove(OmniTechDataComponents.RAM_ADDR_END.get());
+        }
+    }
+
+    @Override
+    protected void saveAdditional(ValueOutput out) {
+        super.saveAdditional(out);
+        ContainerHelper.saveAllItems(out, items);
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput in) {
+        super.loadAdditional(in);
+        ContainerHelper.loadAllItems(in, items);
     }
 }

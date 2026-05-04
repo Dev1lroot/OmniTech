@@ -19,6 +19,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -246,8 +247,19 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
                 ItemStack stack = es.getItem(i);
                 if (!stack.isEmpty() && stack.getItem() instanceof RamCardItem) {
                     int cap = stack.getOrDefault(OmniTechDataComponents.RAM_CAPACITY.get(), 1024);
+                    int addrStart = totalBytes;
+                    int addrEnd   = totalBytes + cap - 1;
                     ramSlots.add(new RamSlot(es, i, totalBytes, cap));
                     totalBytes += cap;
+                    // Stamp address range onto the card if it changed
+                    Integer curStart = stack.get(OmniTechDataComponents.RAM_ADDR_START.get());
+                    Integer curEnd   = stack.get(OmniTechDataComponents.RAM_ADDR_END.get());
+                    if (!Integer.valueOf(addrStart).equals(curStart) || !Integer.valueOf(addrEnd).equals(curEnd)) {
+                        stack.set(OmniTechDataComponents.RAM_ADDR_START.get(), addrStart);
+                        stack.set(OmniTechDataComponents.RAM_ADDR_END.get(), addrEnd);
+                        es.setItem(i, stack);
+                        es.setChanged();
+                    }
                 }
             }
         }
@@ -340,6 +352,7 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
     @Override
     protected void saveAdditional(ValueOutput out) {
         super.saveAdditional(out);
+        ContainerHelper.saveAllItems(out, items);
         out.putBoolean("Running", running);
         vm.saveState(out);
         // Flush RAM to items before save so RAM card items are portable
@@ -353,6 +366,7 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
     @Override
     protected void loadAdditional(ValueInput in) {
         super.loadAdditional(in);
+        ContainerHelper.loadAllItems(in, items);
         running = in.getBooleanOr("Running", false);
         ItemStack stack = items.get(0);
         if (!stack.isEmpty() && stack.getItem() instanceof MicrocontrollerItem) {
