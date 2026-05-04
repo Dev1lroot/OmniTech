@@ -203,7 +203,9 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
                     if (be instanceof GPIOPortBlockEntity g) {
                         gpioCache.put(g.getPortId(), g);
                     } else if (be instanceof DisplayBlockEntity d) {
-                        displayCache.put(d.getPortId(), d);
+                        // Any block in a cluster (even a slave) registers the master
+                        DisplayBlockEntity master = d.isMaster() ? d : d.getMasterEntity(level);
+                        if (master != null) displayCache.put(master.getPortId(), master);
                     } else if (be instanceof FloppyDriveBlockEntity fd) {
                         floppyCache.put(fd.getDriveId(), fd);
                     } else if (be instanceof ExpansionSlotBlockEntity es) {

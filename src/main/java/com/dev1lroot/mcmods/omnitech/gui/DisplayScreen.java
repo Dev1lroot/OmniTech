@@ -13,7 +13,7 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 public class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
 
     private static final int W = 176;
-    private static final int H = 80;
+    private static final int H = 96;
 
     private EditBox idBox;
 
@@ -28,7 +28,7 @@ public class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
         this.titleLabelX = (W - this.font.width(this.title)) / 2;
 
         idBox = new EditBox(this.font,
-                this.leftPos + 60, this.topPos + 30, 56, 12,
+                this.leftPos + 60, this.topPos + 36, 56, 12,
                 Component.literal("Display ID"));
         idBox.setMaxLength(5);
         idBox.setBordered(true);
@@ -39,7 +39,7 @@ public class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
         addRenderableWidget(Button.builder(
                 Component.translatable("gui.omnitech.set"),
                 b -> applyId())
-                .bounds(this.leftPos + 62, this.topPos + 46, 52, 12).build());
+                .bounds(this.leftPos + 62, this.topPos + 52, 52, 12).build());
     }
 
     @Override
@@ -58,7 +58,26 @@ public class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         g.text(this.font, this.title, this.titleLabelX, 6, 0xFF404040, false);
-        g.text(this.font, Component.literal("Display ID (0-65535):"), 8, 33, 0xFF404040, false);
+        g.text(this.font, Component.literal("Display ID (0-65535):"), 8, 39, 0xFF404040, false);
+
+        // Cluster info
+        int cols = menu.getClusterCols();
+        int rows = menu.getClusterRows();
+        int totalBlocks = cols * rows;
+        int resW = cols * 16;
+        int resH = rows * 16;
+
+        Component infoLine;
+        if (totalBlocks == 1) {
+            infoLine = Component.literal("Single block – 16×16 px");
+        } else {
+            infoLine = Component.literal(
+                    totalBlocks + " blocks (" + cols + "×" + rows + ")"
+                    + " – " + resW + "×" + resH + " px");
+        }
+
+        int infoX = (W - this.font.width(infoLine)) / 2;
+        g.text(this.font, infoLine, infoX, 72, totalBlocks > 1 ? 0xFF1A6E1A : 0xFF606060, false);
     }
 
     private void applyId() {

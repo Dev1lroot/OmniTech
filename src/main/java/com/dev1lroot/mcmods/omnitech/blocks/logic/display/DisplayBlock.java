@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,9 +55,14 @@ public class DisplayBlock extends BaseEntityBlock {
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof DisplayBlockEntity d) {
-                ((ServerPlayer) player).openMenu(d, buf -> {
-                    buf.writeBlockPos(pos);
-                    buf.writeInt(d.getPortId());
+                DisplayBlockEntity master = d.isMaster() ? d : d.getMasterEntity(level);
+                if (master == null) master = d;
+                DisplayBlockEntity m = master;
+                ((ServerPlayer) player).openMenu(m, buf -> {
+                    buf.writeBlockPos(m.getBlockPos());
+                    buf.writeInt(m.getPortId());
+                    buf.writeInt(m.getClusterCols());
+                    buf.writeInt(m.getClusterRows());
                 });
             }
         }
@@ -71,5 +77,23 @@ public class DisplayBlock extends BaseEntityBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         return defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
+    }
+
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos,
+            BlockState oldState, boolean movedByPiston) {
+        super.onPlace(state, level, pos, oldState, movedByPiston);
+        if (!level.isClientSide()) {
+            DisplayBlockEntity.detectAndUpdateCluster(level, pos, true);
+        }
+    }
+
+    @Override
+    public void neighborChanged(BlockState state, Level level, BlockPos pos,
+            Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {
+        super.neighborChanged(state, level, pos, neighborBlock, orientation, movedByPiston);
+        if (!level.isClientSide()) {
+            DisplayBlockEntity.detectAndUpdateCluster(level, pos);
+        }
     }
 }

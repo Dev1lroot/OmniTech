@@ -29,7 +29,8 @@ public record SetDisplayIdPacket(BlockPos pos, int displayId) implements CustomP
         ctx.enqueueWork(() -> {
             if (!(ctx.player() instanceof ServerPlayer sp)) return;
             if (sp.level().getBlockEntity(pkt.pos) instanceof DisplayBlockEntity d) {
-                d.setPortId(pkt.displayId);
+                DisplayBlockEntity master = d.isMaster() ? d : d.getMasterEntity(sp.level());
+                if (master != null) master.setPortId(pkt.displayId);
             }
         });
     }

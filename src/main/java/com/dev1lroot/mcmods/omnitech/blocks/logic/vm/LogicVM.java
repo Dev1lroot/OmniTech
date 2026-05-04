@@ -179,8 +179,8 @@ public class LogicVM {
             case SET  -> {
                 if (display != null) {
                     int dispId = parseId(inst.a1());
-                    int x      = Math.clamp(val(inst.a2()), 0, 15);
-                    int y      = Math.clamp(val(inst.a3()), 0, 15);
+                    int x      = val(inst.a2());
+                    int y      = val(inst.a3());
                     int color  = valHex(inst.a4()) & 0xFFFFFF;
                     display.setPixel(dispId, x, y, color);
                 }
