@@ -186,15 +186,19 @@ public class LogicMachineScreen extends AbstractContainerScreen<LogicMachineMenu
                     8, y, 0xFFFF88AA, false);
             y += 10;
 
-            // Instruction guide
+            // RISC-V quick reference
             y += 4;
-            g.text(this.font, Component.literal("RAM Instructions:"), 8, y, 0xFFCCCCCC, false);
+            g.text(this.font, Component.literal("RISC-V RV32I — 32 regs (x0-x31 / ABI)"), 8, y, 0xFFCCCCCC, false);
             y += 10;
-            g.text(this.font, Component.literal("  PEEK Rx, addr  — Rx = RAM[addr]"), 8, y, 0xFF888888, false);
+            g.text(this.font, Component.literal("  lw/sw rd,off(rs)  lb/sb  lh/sh"), 8, y, 0xFF888888, false);
             y += 9;
-            g.text(this.font, Component.literal("  POKE addr, val — RAM[addr] = val"), 8, y, 0xFF888888, false);
+            g.text(this.font, Component.literal("  GPIO MMIO: sw rs, 0xF0000000(portId*4)"), 8, y, 0xFF888888, false);
             y += 9;
-            g.text(this.font, Component.literal("  LDSC id, sec, dst — load sector"), 8, y, 0xFF888888, false);
+            g.text(this.font, Component.literal("  ECALL: a7=sys, args a0-a5, ret a0"), 8, y, 0xFF888888, false);
+            y += 9;
+            g.text(this.font, Component.literal("  0:halt 1:slp 2:rnd 10/11:gpio"), 8, y, 0xFF888888, false);
+            y += 9;
+            g.text(this.font, Component.literal("  20-25:display  30:floppy"), 8, y, 0xFF888888, false);
         }
 
         // Player inventory label (always)
