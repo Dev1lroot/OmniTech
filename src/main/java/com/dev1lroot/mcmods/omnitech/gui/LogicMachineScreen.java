@@ -188,7 +188,7 @@ public class LogicMachineScreen extends AbstractContainerScreen<LogicMachineMenu
 
             // RISC-V quick reference
             y += 4;
-            g.text(this.font, Component.literal("RISC-V RV32IMAFC — 32i + 32f regs"), 8, y, 0xFFCCCCCC, false);
+            g.text(this.font, Component.literal("RISC-V RV32GC — 32i + 32f regs"), 8, y, 0xFFCCCCCC, false);
             y += 9;
             g.text(this.font, Component.literal("  I: lw/sw/lb/sb/lh/sh/jal/beq/…"), 8, y, 0xFF888888, false);
             y += 9;
@@ -196,7 +196,9 @@ public class LogicMachineScreen extends AbstractContainerScreen<LogicMachineMenu
             y += 9;
             g.text(this.font, Component.literal("  F: flw/fsw/fadd.s/fmul.s/fcvt.w.s/…"), 8, y, 0xFF888888, false);
             y += 9;
-            g.text(this.font, Component.literal("  C: c.add/c.mv/c.lw/c.jal/c.beqz/…"), 8, y, 0xFF888888, false);
+            g.text(this.font, Component.literal("  D: fld/fsd/fadd.d/fmul.d/fcvt.w.d/…"), 8, y, 0xFF888888, false);
+            y += 9;
+            g.text(this.font, Component.literal("  C: c.add/c.mv/c.lw/c.fld/c.beqz/…"), 8, y, 0xFF888888, false);
             y += 9;
             g.text(this.font, Component.literal("  CSR: fcsr/frm/fflags  GPIO: 0xF0000000"), 8, y, 0xFF888888, false);
             y += 9;

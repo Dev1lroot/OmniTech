@@ -6,15 +6,19 @@ import net.minecraft.world.level.storage.ValueOutput;
 import java.util.*;
 
 /**
- * RISC-V RV32IMAFC virtual machine for the LogicMachine block.
+ * RISC-V RV32GC virtual machine for the LogicMachine block.
  * Extensions: I (base integer), M (multiply/divide), A (atomics),
- *             F (single-precision float), C (compressed aliases).
+ *             F (single-precision float), D (double-precision float),
+ *             C (compressed aliases), Zicsr.
  *
  * Integer registers: x0 (zero, hardwired 0) … x31, ABI aliases.
  *   zero ra sp gp tp t0-t2 s0/fp s1 a0-a7 s2-s11 t3-t6
  *
- * Float registers: f0-f31, ABI aliases.
+ * Float/double registers: f0-f31, ABI aliases.
  *   ft0-ft7, fs0-fs11, fa0-fa7, ft8-ft11
+ *   Stored as 64-bit doubles. Single-precision values are NaN-boxed
+ *   (upper 32 bits = 0xFFFFFFFF); F instructions that read a register
+ *   whose upper 32 bits are not all-ones return the canonical float NaN.
  *
  * CSRs (Zicsr): fflags=0x001  frm=0x002  fcsr=0x003
  *
@@ -35,13 +39,13 @@ import java.util.*;
  *  25  DISP_BLIT  a0=id, a1=x, a2=y, a3=w, a4=h, a5=ramAddr
  *  30  FLOPPY     a0=driveId, a1=sector, a2=dstAddr  →  a0=1 on success
  *
- * Assembly syntax: standard RV32I/M/A/F mnemonics + ABI names.
- * C extension: c.add, c.mv, c.lw, c.jal, c.beqz, … aliases compile to base ops.
+ * Assembly syntax: standard RV32I/M/A/F/D mnemonics + ABI names.
+ * C extension: c.add c.mv c.lw c.jal c.beqz c.fld c.fsd … aliases.
  * Pseudo-instructions: nop mv neg not seqz snez sltz sgtz li la
  *   beqz bnez blez bgez bltz bgtz j jr ret call tail halt
- *   fmv.s fabs.s fneg.s
+ *   fmv.s fabs.s fneg.s  fmv.d fabs.d fneg.d
  *   frcsr fscsr frrm fsrm frflags fsflags fsrmi
- * AMO ordering suffixes (.aq .rl .aqrl) are accepted and ignored.
+ * AMO ordering suffixes (.aq .rl .aqrl) accepted and ignored.
  * Comments: # or ;   Labels: name:
  */
 public class LogicVM {
@@ -97,50 +101,69 @@ public class LogicVM {
         LUI, AUIPC,
         // RV32I — System
         ECALL, EBREAK, FENCE,
-        // RV32A — Atomics (rs3 unused; for LR rs2=0, for AMO rs1=addr rs2=src)
+        // RV32A — Atomics
         LR_W, SC_W,
         AMOSWAP_W, AMOADD_W, AMOXOR_W, AMOAND_W, AMOOR_W,
         AMOMIN_W,  AMOMAX_W,  AMOMINU_W, AMOMAXU_W,
-        // RV32F — Float load/store  (rd/rs2=float reg, rs1=int base, imm=offset)
+        // RV32F — Float load/store  (rd/rs2=freg index, rs1=int base, imm=offset)
         FLW, FSW,
-        // RV32F — FMA  (rd/rs1/rs2=float regs, imm=rs3 float reg index)
+        // RV32F — FMA  (rd/rs1/rs2=freg, imm=rs3 freg index)
         FMADD_S, FMSUB_S, FNMSUB_S, FNMADD_S,
-        // RV32F — Arithmetic  (all float)
+        // RV32F — Arithmetic
         FADD_S, FSUB_S, FMUL_S, FDIV_S, FSQRT_S,
-        // RV32F — Sign injection  (all float)
+        // RV32F — Sign injection
         FSGNJ_S, FSGNJN_S, FSGNJX_S,
-        // RV32F — Min/max  (all float)
+        // RV32F — Min/max
         FMIN_S, FMAX_S,
-        // RV32F — Conversions  (W.S: rd=int rs1=float; S.W: rd=float rs1=int)
+        // RV32F — Conversions  (W.S: rd=int rs1=freg; S.W: rd=freg rs1=int)
         FCVT_W_S, FCVT_WU_S, FCVT_S_W, FCVT_S_WU,
-        // RV32F — Move  (X.W: rd=int rs1=float; W.X: rd=float rs1=int)
+        // RV32F — Move  (X.W: rd=int rs1=freg; W.X: rd=freg rs1=int)
         FMV_X_W, FMV_W_X,
-        // RV32F — Compare  (rd=int, rs1/rs2=float)
+        // RV32F — Compare  (rd=int, rs1/rs2=freg)
         FEQ_S, FLT_S, FLE_S,
-        // RV32F — Classify  (rd=int, rs1=float)
+        // RV32F — Classify  (rd=int, rs1=freg)
         FCLASS_S,
-        // Zicsr  (imm=CSR addr; for imm-forms rs2=uimm5)
+        // RV32D — Double load/store  (rd/rs2=freg, rs1=int base, imm=offset)
+        FLD, FSD,
+        // RV32D — FMA  (rd/rs1/rs2=freg, imm=rs3 freg index)
+        FMADD_D, FMSUB_D, FNMSUB_D, FNMADD_D,
+        // RV32D — Arithmetic
+        FADD_D, FSUB_D, FMUL_D, FDIV_D, FSQRT_D,
+        // RV32D — Sign injection
+        FSGNJ_D, FSGNJN_D, FSGNJX_D,
+        // RV32D — Min/max
+        FMIN_D, FMAX_D,
+        // RV32D — Conversions
+        FCVT_W_D, FCVT_WU_D,   // double→int  (rd=int, rs1=freg)
+        FCVT_D_W, FCVT_D_WU,   // int→double  (rd=freg, rs1=int)
+        FCVT_S_D,               // double→single NaN-boxed  (rd=freg, rs1=freg)
+        FCVT_D_S,               // NaN-unboxed single→double (rd=freg, rs1=freg)
+        // RV32D — Compare  (rd=int, rs1/rs2=freg)
+        FEQ_D, FLT_D, FLE_D,
+        // RV32D — Classify  (rd=int, rs1=freg)
+        FCLASS_D,
+        // Zicsr  (imm=CSR addr; for *I forms rs2=uimm5)
         CSRRW, CSRRS, CSRRC, CSRRWI, CSRRSI, CSRRCI
     }
 
     /**
      * Compiled instruction. imm stores:
-     *   - For FMA ops: float rs3 register index.
-     *   - For CSR ops: CSR address; for *I variants rs2 holds uimm5.
-     *   - For branches/JAL: absolute target instruction index.
+     *   - FMA ops: rs3 freg index.
+     *   - CSR ops: CSR address; *I forms use rs2 for uimm5.
+     *   - Branches/JAL: absolute target instruction index.
      *   - Otherwise: sign-extended immediate.
      */
     private record Instruction(Op op, int rd, int rs1, int rs2, int imm, int srcLine) {}
 
     // ── Register files ────────────────────────────────────────────────────────
 
-    public int[]   regs          = new int[32];   // x0 hardwired to 0
-    public float[] fregs         = new float[32]; // f0-f31, no hardwired zero
-    public int     fcsr          = 0;             // bits 0-4: fflags, bits 5-7: frm
-    public int     pc            = 0;
-    public int     executingLine = 0;
-    public int     sleepTicks    = 0;
-    public boolean halted        = false;
+    public int[]    regs          = new int[32];    // x0 hardwired to 0
+    public double[] fregs         = new double[32]; // f0-f31, 64-bit; F ops use NaN-boxing
+    public int      fcsr          = 0;              // bits 0-4: fflags, bits 5-7: frm
+    public int      pc            = 0;
+    public int      executingLine = 0;
+    public int      sleepTicks    = 0;
+    public boolean  halted        = false;
 
     private int lrReservation = -1; // LR/SC reservation address (-1 = none)
 
@@ -183,13 +206,30 @@ public class LogicVM {
         CSR_MAP.put("instret", 0xC02);
     }
 
+    // ── NaN-boxing helpers (F ops on the shared 64-bit register file) ─────────
+
+    /** Read a single-precision value from a 64-bit register (NaN-unbox). */
+    private float fread(int r) {
+        long bits = Double.doubleToRawLongBits(fregs[r]);
+        // Upper 32 bits must all be 1s for a valid NaN-boxed float
+        return (bits >>> 32) == 0xFFFFFFFFL
+            ? Float.intBitsToFloat((int) bits)
+            : Float.intBitsToFloat(0x7FC00000); // canonical quiet NaN
+    }
+
+    /** Write a single-precision value into a 64-bit register (NaN-box it). */
+    private void fwrite(int r, float f) {
+        fregs[r] = Double.longBitsToDouble(
+            0xFFFFFFFF00000000L | Integer.toUnsignedLong(Float.floatToRawIntBits(f)));
+    }
+
     // ── Public API ────────────────────────────────────────────────────────────
 
     public int     lineCount()     { return program.size(); }
     public int     currentLine()   { return executingLine; }
     public boolean isEmpty()       { return program.isEmpty(); }
     public int     registerCount() { return 32; }
-    /** No-op — RISC-V always has 32 integer + 32 float registers. */
+    /** No-op — RISC-V always has 32 integer + 32 float/double registers. */
     public void    setRegisterCount(int n) {}
 
     // ── Assembler ─────────────────────────────────────────────────────────────
@@ -374,8 +414,7 @@ public class LogicVM {
             case "tail" -> new Instruction(Op.JAL,  0, 0, 0, resolveLabel(tok[1],labels,srcLine), srcLine);
             case "halt" -> new Instruction(Op.EBREAK, 0, 0, 0, 0, srcLine);
 
-            // ── RV32A — Atomics ───────────────────────────────────────────────
-            // Ordering suffixes (.aq/.rl/.aqrl) already stripped above.
+            // ── RV32A — Atomics (ordering suffixes already stripped) ──────────
             case "lr.w" -> {
                 int[] ob = parseOffsetBase(tok[2], srcLine);
                 yield new Instruction(Op.LR_W, reg(tok[1],srcLine), ob[1], 0, 0, srcLine);
@@ -406,7 +445,7 @@ public class LogicVM {
                 yield new Instruction(Op.FSW, 0, ob[1], fs2, ob[0], srcLine);
             }
 
-            // ── RV32F — FMA (4-register; optional rounding-mode token ignored) ─
+            // ── RV32F — FMA (optional 5th rm token ignored) ───────────────────
             case "fmadd.s"  -> fma(Op.FMADD_S,  tok, srcLine);
             case "fmsub.s"  -> fma(Op.FMSUB_S,  tok, srcLine);
             case "fnmsub.s" -> fma(Op.FNMSUB_S, tok, srcLine);
@@ -446,10 +485,65 @@ public class LogicVM {
             // ── RV32F — Classify ──────────────────────────────────────────────
             case "fclass.s" -> new Instruction(Op.FCLASS_S, reg(tok[1],srcLine), freg(tok[2],srcLine), 0, 0, srcLine);
 
-            // ── RV32F Pseudo-instructions ─────────────────────────────────────
+            // ── RV32F — Pseudo-instructions ───────────────────────────────────
             case "fmv.s"  -> new Instruction(Op.FSGNJ_S,  freg(tok[1],srcLine), freg(tok[2],srcLine), freg(tok[2],srcLine), 0, srcLine);
             case "fabs.s" -> new Instruction(Op.FSGNJX_S, freg(tok[1],srcLine), freg(tok[2],srcLine), freg(tok[2],srcLine), 0, srcLine);
             case "fneg.s" -> new Instruction(Op.FSGNJN_S, freg(tok[1],srcLine), freg(tok[2],srcLine), freg(tok[2],srcLine), 0, srcLine);
+
+            // ── RV32D — Double load/store ─────────────────────────────────────
+            case "fld" -> {
+                int fd = freg(tok[1], srcLine);
+                int[] ob = parseOffsetBase(tok[2], srcLine);
+                yield new Instruction(Op.FLD, fd, ob[1], 0, ob[0], srcLine);
+            }
+            case "fsd" -> {
+                int fs2 = freg(tok[1], srcLine);
+                int[] ob = parseOffsetBase(tok[2], srcLine);
+                yield new Instruction(Op.FSD, 0, ob[1], fs2, ob[0], srcLine);
+            }
+
+            // ── RV32D — FMA ───────────────────────────────────────────────────
+            case "fmadd.d"  -> fma(Op.FMADD_D,  tok, srcLine);
+            case "fmsub.d"  -> fma(Op.FMSUB_D,  tok, srcLine);
+            case "fnmsub.d" -> fma(Op.FNMSUB_D, tok, srcLine);
+            case "fnmadd.d" -> fma(Op.FNMADD_D, tok, srcLine);
+
+            // ── RV32D — Arithmetic ────────────────────────────────────────────
+            case "fadd.d"  -> frrr(Op.FADD_D,  tok, srcLine);
+            case "fsub.d"  -> frrr(Op.FSUB_D,  tok, srcLine);
+            case "fmul.d"  -> frrr(Op.FMUL_D,  tok, srcLine);
+            case "fdiv.d"  -> frrr(Op.FDIV_D,  tok, srcLine);
+            case "fsqrt.d" -> new Instruction(Op.FSQRT_D, freg(tok[1],srcLine), freg(tok[2],srcLine), 0, 0, srcLine);
+
+            // ── RV32D — Sign injection ────────────────────────────────────────
+            case "fsgnj.d"  -> frrr(Op.FSGNJ_D,  tok, srcLine);
+            case "fsgnjn.d" -> frrr(Op.FSGNJN_D, tok, srcLine);
+            case "fsgnjx.d" -> frrr(Op.FSGNJX_D, tok, srcLine);
+
+            // ── RV32D — Min/max ───────────────────────────────────────────────
+            case "fmin.d" -> frrr(Op.FMIN_D, tok, srcLine);
+            case "fmax.d" -> frrr(Op.FMAX_D, tok, srcLine);
+
+            // ── RV32D — Conversions ───────────────────────────────────────────
+            case "fcvt.w.d"  -> new Instruction(Op.FCVT_W_D,  reg(tok[1],srcLine),  freg(tok[2],srcLine), 0, 0, srcLine);
+            case "fcvt.wu.d" -> new Instruction(Op.FCVT_WU_D, reg(tok[1],srcLine),  freg(tok[2],srcLine), 0, 0, srcLine);
+            case "fcvt.d.w"  -> new Instruction(Op.FCVT_D_W,  freg(tok[1],srcLine), reg(tok[2],srcLine),  0, 0, srcLine);
+            case "fcvt.d.wu" -> new Instruction(Op.FCVT_D_WU, freg(tok[1],srcLine), reg(tok[2],srcLine),  0, 0, srcLine);
+            case "fcvt.s.d"  -> new Instruction(Op.FCVT_S_D,  freg(tok[1],srcLine), freg(tok[2],srcLine), 0, 0, srcLine);
+            case "fcvt.d.s"  -> new Instruction(Op.FCVT_D_S,  freg(tok[1],srcLine), freg(tok[2],srcLine), 0, 0, srcLine);
+
+            // ── RV32D — Compare ───────────────────────────────────────────────
+            case "feq.d" -> new Instruction(Op.FEQ_D, reg(tok[1],srcLine), freg(tok[2],srcLine), freg(tok[3],srcLine), 0, srcLine);
+            case "flt.d" -> new Instruction(Op.FLT_D, reg(tok[1],srcLine), freg(tok[2],srcLine), freg(tok[3],srcLine), 0, srcLine);
+            case "fle.d" -> new Instruction(Op.FLE_D, reg(tok[1],srcLine), freg(tok[2],srcLine), freg(tok[3],srcLine), 0, srcLine);
+
+            // ── RV32D — Classify ──────────────────────────────────────────────
+            case "fclass.d" -> new Instruction(Op.FCLASS_D, reg(tok[1],srcLine), freg(tok[2],srcLine), 0, 0, srcLine);
+
+            // ── RV32D — Pseudo-instructions ───────────────────────────────────
+            case "fmv.d"  -> new Instruction(Op.FSGNJ_D,  freg(tok[1],srcLine), freg(tok[2],srcLine), freg(tok[2],srcLine), 0, srcLine);
+            case "fabs.d" -> new Instruction(Op.FSGNJX_D, freg(tok[1],srcLine), freg(tok[2],srcLine), freg(tok[2],srcLine), 0, srcLine);
+            case "fneg.d" -> new Instruction(Op.FSGNJN_D, freg(tok[1],srcLine), freg(tok[2],srcLine), freg(tok[2],srcLine), 0, srcLine);
 
             // ── Zicsr ─────────────────────────────────────────────────────────
             case "csrrw"  -> new Instruction(Op.CSRRW,  reg(tok[1],srcLine), reg(tok[3],srcLine), 0, parseCsr(tok[2],srcLine), srcLine);
@@ -459,28 +553,24 @@ public class LogicVM {
             case "csrrsi" -> new Instruction(Op.CSRRSI, reg(tok[1],srcLine), 0, parseImm(tok[3],srcLine) & 0x1F, parseCsr(tok[2],srcLine), srcLine);
             case "csrrci" -> new Instruction(Op.CSRRCI, reg(tok[1],srcLine), 0, parseImm(tok[3],srcLine) & 0x1F, parseCsr(tok[2],srcLine), srcLine);
 
-            // ── CSR / float pseudo-instructions ──────────────────────────────
+            // ── CSR / float pseudo-instructions ───────────────────────────────
             case "frcsr"   -> new Instruction(Op.CSRRS, reg(tok[1],srcLine), 0, 0, 0x003, srcLine);
             case "fscsr"   -> {
-                if (tok.length >= 3)
-                    yield new Instruction(Op.CSRRW, reg(tok[1],srcLine), reg(tok[2],srcLine), 0, 0x003, srcLine);
+                if (tok.length >= 3) yield new Instruction(Op.CSRRW, reg(tok[1],srcLine), reg(tok[2],srcLine), 0, 0x003, srcLine);
                 yield new Instruction(Op.CSRRW, 0, reg(tok[1],srcLine), 0, 0x003, srcLine);
             }
             case "frrm"    -> new Instruction(Op.CSRRS, reg(tok[1],srcLine), 0, 0, 0x002, srcLine);
             case "fsrm"    -> {
-                if (tok.length >= 3)
-                    yield new Instruction(Op.CSRRW, reg(tok[1],srcLine), reg(tok[2],srcLine), 0, 0x002, srcLine);
+                if (tok.length >= 3) yield new Instruction(Op.CSRRW, reg(tok[1],srcLine), reg(tok[2],srcLine), 0, 0x002, srcLine);
                 yield new Instruction(Op.CSRRW, 0, reg(tok[1],srcLine), 0, 0x002, srcLine);
             }
             case "frflags" -> new Instruction(Op.CSRRS, reg(tok[1],srcLine), 0, 0, 0x001, srcLine);
             case "fsflags" -> {
-                if (tok.length >= 3)
-                    yield new Instruction(Op.CSRRW, reg(tok[1],srcLine), reg(tok[2],srcLine), 0, 0x001, srcLine);
+                if (tok.length >= 3) yield new Instruction(Op.CSRRW, reg(tok[1],srcLine), reg(tok[2],srcLine), 0, 0x001, srcLine);
                 yield new Instruction(Op.CSRRW, 0, reg(tok[1],srcLine), 0, 0x001, srcLine);
             }
             case "fsrmi" -> {
-                if (tok.length >= 3)
-                    yield new Instruction(Op.CSRRWI, reg(tok[1],srcLine), 0, parseImm(tok[2],srcLine) & 0x1F, 0x002, srcLine);
+                if (tok.length >= 3) yield new Instruction(Op.CSRRWI, reg(tok[1],srcLine), 0, parseImm(tok[2],srcLine) & 0x1F, 0x002, srcLine);
                 yield new Instruction(Op.CSRRWI, 0, 0, parseImm(tok[1],srcLine) & 0x1F, 0x002, srcLine);
             }
 
@@ -497,6 +587,16 @@ public class LogicVM {
                 int fs2 = freg(tok[1], srcLine);
                 int[] ob = parseOffsetBase(tok[2], srcLine);
                 yield new Instruction(Op.FSW, 0, ob[1], fs2, ob[0], srcLine);
+            }
+            case "c.fld" -> {
+                int fd = freg(tok[1], srcLine);
+                int[] ob = parseOffsetBase(tok[2], srcLine);
+                yield new Instruction(Op.FLD, fd, ob[1], 0, ob[0], srcLine);
+            }
+            case "c.fsd" -> {
+                int fs2 = freg(tok[1], srcLine);
+                int[] ob = parseOffsetBase(tok[2], srcLine);
+                yield new Instruction(Op.FSD, 0, ob[1], fs2, ob[0], srcLine);
             }
 
             // ── RV32C — Compressed aliases (Quadrant 1) ───────────────────────
@@ -521,13 +621,18 @@ public class LogicVM {
             case "c.slli"  -> new Instruction(Op.SLLI, reg(tok[1],srcLine), reg(tok[1],srcLine), 0, parseImm(tok[2],srcLine), srcLine);
             case "c.lwsp"  -> {
                 int rd2 = reg(tok[1], srcLine);
-                if (tok[2].contains("(")) { int[] ob = parseOffsetBase(tok[2],srcLine); yield new Instruction(Op.LW,  rd2,  ob[1], 0, ob[0], srcLine); }
+                if (tok[2].contains("(")) { int[] ob = parseOffsetBase(tok[2],srcLine); yield new Instruction(Op.LW, rd2, ob[1], 0, ob[0], srcLine); }
                 yield new Instruction(Op.LW, rd2, 2, 0, parseImm(tok[2],srcLine), srcLine);
             }
             case "c.flwsp" -> {
                 int fd = freg(tok[1], srcLine);
                 if (tok[2].contains("(")) { int[] ob = parseOffsetBase(tok[2],srcLine); yield new Instruction(Op.FLW, fd, ob[1], 0, ob[0], srcLine); }
                 yield new Instruction(Op.FLW, fd, 2, 0, parseImm(tok[2],srcLine), srcLine);
+            }
+            case "c.fldsp" -> {
+                int fd = freg(tok[1], srcLine);
+                if (tok[2].contains("(")) { int[] ob = parseOffsetBase(tok[2],srcLine); yield new Instruction(Op.FLD, fd, ob[1], 0, ob[0], srcLine); }
+                yield new Instruction(Op.FLD, fd, 2, 0, parseImm(tok[2],srcLine), srcLine);
             }
             case "c.jr"    -> new Instruction(Op.JALR, 0, reg(tok[1],srcLine), 0, 0, srcLine);
             case "c.mv"    -> new Instruction(Op.ADDI, reg(tok[1],srcLine), reg(tok[2],srcLine), 0, 0, srcLine);
@@ -536,13 +641,18 @@ public class LogicVM {
             case "c.add"   -> new Instruction(Op.ADD,  reg(tok[1],srcLine), reg(tok[1],srcLine), reg(tok[2],srcLine), 0, srcLine);
             case "c.swsp"  -> {
                 int rs2v = reg(tok[1], srcLine);
-                if (tok[2].contains("(")) { int[] ob = parseOffsetBase(tok[2],srcLine); yield new Instruction(Op.SW,  0, ob[1], rs2v, ob[0], srcLine); }
+                if (tok[2].contains("(")) { int[] ob = parseOffsetBase(tok[2],srcLine); yield new Instruction(Op.SW, 0, ob[1], rs2v, ob[0], srcLine); }
                 yield new Instruction(Op.SW, 0, 2, rs2v, parseImm(tok[2],srcLine), srcLine);
             }
             case "c.fswsp" -> {
                 int fs2v = freg(tok[1], srcLine);
                 if (tok[2].contains("(")) { int[] ob = parseOffsetBase(tok[2],srcLine); yield new Instruction(Op.FSW, 0, ob[1], fs2v, ob[0], srcLine); }
                 yield new Instruction(Op.FSW, 0, 2, fs2v, parseImm(tok[2],srcLine), srcLine);
+            }
+            case "c.fsdsp" -> {
+                int fs2v = freg(tok[1], srcLine);
+                if (tok[2].contains("(")) { int[] ob = parseOffsetBase(tok[2],srcLine); yield new Instruction(Op.FSD, 0, ob[1], fs2v, ob[0], srcLine); }
+                yield new Instruction(Op.FSD, 0, 2, fs2v, parseImm(tok[2],srcLine), srcLine);
             }
 
             default -> throw new AsmException("unknown instruction '" + tok[0] + "'");
@@ -578,11 +688,11 @@ public class LogicVM {
         int[] ob = parseOffsetBase(tok[3], src);
         return new Instruction(op, rd, ob[1], rs2, 0, src);
     }
-    /** fmadd.s fd, fs1, fs2, fs3  (optional 5th rm token ignored) */
+    /** fmadd.x fd, fs1, fs2, fs3  (optional 5th rm token ignored) */
     private Instruction fma(Op op, String[] tok, int src) throws AsmException {
         return new Instruction(op, freg(tok[1],src), freg(tok[2],src), freg(tok[3],src), freg(tok[4],src), src);
     }
-    /** 3-register float instruction */
+    /** 3-register float/double instruction */
     private Instruction frrr(Op op, String[] tok, int src) throws AsmException {
         return new Instruction(op, freg(tok[1],src), freg(tok[2],src), freg(tok[3],src), 0, src);
     }
@@ -602,7 +712,6 @@ public class LogicVM {
         if (c != null) return c;
         return parseImm(s, srcLine);
     }
-
     private int parseImm(String s, int srcLine) throws AsmException {
         try {
             if (s.startsWith("0x") || s.startsWith("0X"))
@@ -614,7 +723,6 @@ public class LogicVM {
             throw new AsmException("invalid immediate '" + s + "'");
         }
     }
-
     /** Parse "offset(base)" or "(base)" or plain number. Returns {offset, baseReg}. */
     private int[] parseOffsetBase(String s, int srcLine) throws AsmException {
         int paren = s.indexOf('(');
@@ -624,7 +732,6 @@ public class LogicVM {
         int base   = reg(s.substring(paren + 1, s.length() - 1), srcLine);
         return new int[]{ offset, base };
     }
-
     private int resolveLabel(String s, Map<String,Integer> labels, int srcLine) throws AsmException {
         Integer t = labels.get(s.toLowerCase(Locale.ROOT));
         if (t != null) return t;
@@ -718,18 +825,10 @@ public class LogicVM {
             case FENCE  -> { /* NOP */ }
 
             // ── RV32A — Atomics ───────────────────────────────────────────────
-            case LR_W -> {
-                int addr = regs[rs1];
-                wr(rd, memRdWord(addr, gpio, ram));
-                lrReservation = addr;
-            }
+            case LR_W -> { int addr = regs[rs1]; wr(rd, memRdWord(addr,gpio,ram)); lrReservation = addr; }
             case SC_W -> {
-                if (lrReservation == regs[rs1]) {
-                    memWrWord(regs[rs1], regs[rs2], gpio, ram);
-                    wr(rd, 0);
-                } else {
-                    wr(rd, 1);
-                }
+                if (lrReservation == regs[rs1]) { memWrWord(regs[rs1], regs[rs2], gpio, ram); wr(rd, 0); }
+                else                            { wr(rd, 1); }
                 lrReservation = -1;
             }
             case AMOSWAP_W -> { int a=regs[rs1]; int t=memRdWord(a,gpio,ram); memWrWord(a,regs[rs2],gpio,ram); wr(rd,t); }
@@ -742,71 +841,135 @@ public class LogicVM {
             case AMOMINU_W -> { int a=regs[rs1]; int t=memRdWord(a,gpio,ram); int v=Integer.compareUnsigned(t,regs[rs2])<0?t:regs[rs2]; memWrWord(a,v,gpio,ram); wr(rd,t); }
             case AMOMAXU_W -> { int a=regs[rs1]; int t=memRdWord(a,gpio,ram); int v=Integer.compareUnsigned(t,regs[rs2])>0?t:regs[rs2]; memWrWord(a,v,gpio,ram); wr(rd,t); }
 
-            // ── RV32F — Float load/store ──────────────────────────────────────
-            case FLW -> fregs[rd] = Float.intBitsToFloat(memRdWord(regs[rs1]+imm, gpio, ram));
-            case FSW -> memWrWord(regs[rs1]+imm, Float.floatToRawIntBits(fregs[rs2]), gpio, ram);
+            // ── RV32F — Float load/store (NaN-boxing) ─────────────────────────
+            case FLW -> fwrite(rd, Float.intBitsToFloat(memRdWord(regs[rs1]+imm, gpio, ram)));
+            case FSW -> memWrWord(regs[rs1]+imm, Float.floatToRawIntBits(fread(rs2)), gpio, ram);
 
             // ── RV32F — FMA ───────────────────────────────────────────────────
-            case FMADD_S  -> fregs[rd] = Math.fma( fregs[rs1],  fregs[rs2],  fregs[imm]);
-            case FMSUB_S  -> fregs[rd] = Math.fma( fregs[rs1],  fregs[rs2], -fregs[imm]);
-            case FNMSUB_S -> fregs[rd] = Math.fma(-fregs[rs1],  fregs[rs2],  fregs[imm]);
-            case FNMADD_S -> fregs[rd] = Math.fma(-fregs[rs1],  fregs[rs2], -fregs[imm]);
+            case FMADD_S  -> fwrite(rd, Math.fma( fread(rs1),  fread(rs2),  fread(imm)));
+            case FMSUB_S  -> fwrite(rd, Math.fma( fread(rs1),  fread(rs2), -fread(imm)));
+            case FNMSUB_S -> fwrite(rd, Math.fma(-fread(rs1),  fread(rs2),  fread(imm)));
+            case FNMADD_S -> fwrite(rd, Math.fma(-fread(rs1),  fread(rs2), -fread(imm)));
 
             // ── RV32F — Arithmetic ────────────────────────────────────────────
-            case FADD_S  -> fregs[rd] = fregs[rs1] + fregs[rs2];
-            case FSUB_S  -> fregs[rd] = fregs[rs1] - fregs[rs2];
-            case FMUL_S  -> fregs[rd] = fregs[rs1] * fregs[rs2];
-            case FDIV_S  -> fregs[rd] = fregs[rs1] / fregs[rs2];
-            case FSQRT_S -> fregs[rd] = (float) Math.sqrt(fregs[rs1]);
+            case FADD_S  -> fwrite(rd, fread(rs1) + fread(rs2));
+            case FSUB_S  -> fwrite(rd, fread(rs1) - fread(rs2));
+            case FMUL_S  -> fwrite(rd, fread(rs1) * fread(rs2));
+            case FDIV_S  -> fwrite(rd, fread(rs1) / fread(rs2));
+            case FSQRT_S -> fwrite(rd, (float) Math.sqrt(fread(rs1)));
 
             // ── RV32F — Sign injection ────────────────────────────────────────
             case FSGNJ_S -> {
-                int b1 = Float.floatToRawIntBits(fregs[rs1]);
-                int b2 = Float.floatToRawIntBits(fregs[rs2]);
-                fregs[rd] = Float.intBitsToFloat((b1 & 0x7FFFFFFF) | (b2 & 0x80000000));
+                int b1 = Float.floatToRawIntBits(fread(rs1));
+                int b2 = Float.floatToRawIntBits(fread(rs2));
+                fwrite(rd, Float.intBitsToFloat((b1 & 0x7FFFFFFF) | (b2 & 0x80000000)));
             }
             case FSGNJN_S -> {
-                int b1 = Float.floatToRawIntBits(fregs[rs1]);
-                int b2 = Float.floatToRawIntBits(fregs[rs2]);
-                fregs[rd] = Float.intBitsToFloat((b1 & 0x7FFFFFFF) | (~b2 & 0x80000000));
+                int b1 = Float.floatToRawIntBits(fread(rs1));
+                int b2 = Float.floatToRawIntBits(fread(rs2));
+                fwrite(rd, Float.intBitsToFloat((b1 & 0x7FFFFFFF) | (~b2 & 0x80000000)));
             }
             case FSGNJX_S -> {
-                int b1 = Float.floatToRawIntBits(fregs[rs1]);
-                int b2 = Float.floatToRawIntBits(fregs[rs2]);
-                fregs[rd] = Float.intBitsToFloat((b1 & 0x7FFFFFFF) | ((b1 ^ b2) & 0x80000000));
+                int b1 = Float.floatToRawIntBits(fread(rs1));
+                int b2 = Float.floatToRawIntBits(fread(rs2));
+                fwrite(rd, Float.intBitsToFloat((b1 & 0x7FFFFFFF) | ((b1 ^ b2) & 0x80000000)));
             }
 
             // ── RV32F — Min/max ───────────────────────────────────────────────
-            case FMIN_S -> fregs[rd] = Float.isNaN(fregs[rs1]) ? fregs[rs2] : Float.isNaN(fregs[rs2]) ? fregs[rs1] : Math.min(fregs[rs1], fregs[rs2]);
-            case FMAX_S -> fregs[rd] = Float.isNaN(fregs[rs1]) ? fregs[rs2] : Float.isNaN(fregs[rs2]) ? fregs[rs1] : Math.max(fregs[rs1], fregs[rs2]);
+            case FMIN_S -> { float a=fread(rs1),b=fread(rs2); fwrite(rd, Float.isNaN(a)?b : Float.isNaN(b)?a : Math.min(a,b)); }
+            case FMAX_S -> { float a=fread(rs1),b=fread(rs2); fwrite(rd, Float.isNaN(a)?b : Float.isNaN(b)?a : Math.max(a,b)); }
 
             // ── RV32F — Conversions ───────────────────────────────────────────
             case FCVT_W_S -> {
-                float fv = fregs[rs1];
+                float fv = fread(rs1);
                 if (Float.isNaN(fv) || fv >= 2147483648.0f) wr(rd, Integer.MAX_VALUE);
                 else if (fv < -2147483648.0f)               wr(rd, Integer.MIN_VALUE);
                 else                                         wr(rd, (int) fv);
             }
             case FCVT_WU_S -> {
-                float fv = fregs[rs1];
+                float fv = fread(rs1);
                 if (Float.isNaN(fv) || fv >= 4294967296.0f) wr(rd, 0xFFFFFFFF);
                 else if (fv <= 0.0f)                         wr(rd, 0);
                 else                                         wr(rd, (int)(long) fv);
             }
-            case FCVT_S_W  -> fregs[rd] = (float) regs[rs1];
-            case FCVT_S_WU -> fregs[rd] = (float) Integer.toUnsignedLong(regs[rs1]);
+            case FCVT_S_W  -> fwrite(rd, (float) regs[rs1]);
+            case FCVT_S_WU -> fwrite(rd, (float) Integer.toUnsignedLong(regs[rs1]));
 
             // ── RV32F — Move ──────────────────────────────────────────────────
-            case FMV_X_W -> wr(rd, Float.floatToRawIntBits(fregs[rs1]));
-            case FMV_W_X -> fregs[rd] = Float.intBitsToFloat(regs[rs1]);
+            case FMV_X_W -> wr(rd, Float.floatToRawIntBits(fread(rs1)));
+            case FMV_W_X -> fwrite(rd, Float.intBitsToFloat(regs[rs1]));
 
             // ── RV32F — Compare ───────────────────────────────────────────────
-            case FEQ_S -> wr(rd, !Float.isNaN(fregs[rs1]) && !Float.isNaN(fregs[rs2]) && fregs[rs1] == fregs[rs2] ? 1 : 0);
-            case FLT_S -> wr(rd, !Float.isNaN(fregs[rs1]) && !Float.isNaN(fregs[rs2]) && fregs[rs1] <  fregs[rs2] ? 1 : 0);
-            case FLE_S -> wr(rd, !Float.isNaN(fregs[rs1]) && !Float.isNaN(fregs[rs2]) && fregs[rs1] <= fregs[rs2] ? 1 : 0);
+            case FEQ_S -> { float a=fread(rs1),b=fread(rs2); wr(rd, !Float.isNaN(a)&&!Float.isNaN(b)&&a==b ? 1:0); }
+            case FLT_S -> { float a=fread(rs1),b=fread(rs2); wr(rd, !Float.isNaN(a)&&!Float.isNaN(b)&&a< b ? 1:0); }
+            case FLE_S -> { float a=fread(rs1),b=fread(rs2); wr(rd, !Float.isNaN(a)&&!Float.isNaN(b)&&a<=b ? 1:0); }
 
             // ── RV32F — Classify ──────────────────────────────────────────────
-            case FCLASS_S -> wr(rd, fclass(fregs[rs1]));
+            case FCLASS_S -> wr(rd, fclassF(fread(rs1)));
+
+            // ── RV32D — Double load/store ─────────────────────────────────────
+            case FLD -> fregs[rd] = Double.longBitsToDouble(memRdLong(regs[rs1]+imm, gpio, ram));
+            case FSD -> memWrLong(regs[rs1]+imm, Double.doubleToRawLongBits(fregs[rs2]), gpio, ram);
+
+            // ── RV32D — FMA ───────────────────────────────────────────────────
+            case FMADD_D  -> fregs[rd] = Math.fma( fregs[rs1],  fregs[rs2],  fregs[imm]);
+            case FMSUB_D  -> fregs[rd] = Math.fma( fregs[rs1],  fregs[rs2], -fregs[imm]);
+            case FNMSUB_D -> fregs[rd] = Math.fma(-fregs[rs1],  fregs[rs2],  fregs[imm]);
+            case FNMADD_D -> fregs[rd] = Math.fma(-fregs[rs1],  fregs[rs2], -fregs[imm]);
+
+            // ── RV32D — Arithmetic ────────────────────────────────────────────
+            case FADD_D  -> fregs[rd] = fregs[rs1] + fregs[rs2];
+            case FSUB_D  -> fregs[rd] = fregs[rs1] - fregs[rs2];
+            case FMUL_D  -> fregs[rd] = fregs[rs1] * fregs[rs2];
+            case FDIV_D  -> fregs[rd] = fregs[rs1] / fregs[rs2];
+            case FSQRT_D -> fregs[rd] = Math.sqrt(fregs[rs1]);
+
+            // ── RV32D — Sign injection ────────────────────────────────────────
+            case FSGNJ_D -> {
+                long b1 = Double.doubleToRawLongBits(fregs[rs1]);
+                long b2 = Double.doubleToRawLongBits(fregs[rs2]);
+                fregs[rd] = Double.longBitsToDouble((b1 & 0x7FFFFFFFFFFFFFFFL) | (b2 & 0x8000000000000000L));
+            }
+            case FSGNJN_D -> {
+                long b1 = Double.doubleToRawLongBits(fregs[rs1]);
+                long b2 = Double.doubleToRawLongBits(fregs[rs2]);
+                fregs[rd] = Double.longBitsToDouble((b1 & 0x7FFFFFFFFFFFFFFFL) | (~b2 & 0x8000000000000000L));
+            }
+            case FSGNJX_D -> {
+                long b1 = Double.doubleToRawLongBits(fregs[rs1]);
+                long b2 = Double.doubleToRawLongBits(fregs[rs2]);
+                fregs[rd] = Double.longBitsToDouble((b1 & 0x7FFFFFFFFFFFFFFFL) | ((b1 ^ b2) & 0x8000000000000000L));
+            }
+
+            // ── RV32D — Min/max ───────────────────────────────────────────────
+            case FMIN_D -> fregs[rd] = Double.isNaN(fregs[rs1]) ? fregs[rs2] : Double.isNaN(fregs[rs2]) ? fregs[rs1] : Math.min(fregs[rs1], fregs[rs2]);
+            case FMAX_D -> fregs[rd] = Double.isNaN(fregs[rs1]) ? fregs[rs2] : Double.isNaN(fregs[rs2]) ? fregs[rs1] : Math.max(fregs[rs1], fregs[rs2]);
+
+            // ── RV32D — Conversions ───────────────────────────────────────────
+            case FCVT_W_D -> {
+                double dv = fregs[rs1];
+                if (Double.isNaN(dv) || dv >= 2147483648.0) wr(rd, Integer.MAX_VALUE);
+                else if (dv < -2147483648.0)                 wr(rd, Integer.MIN_VALUE);
+                else                                          wr(rd, (int) dv);
+            }
+            case FCVT_WU_D -> {
+                double dv = fregs[rs1];
+                if (Double.isNaN(dv) || dv >= 4294967296.0) wr(rd, 0xFFFFFFFF);
+                else if (dv <= 0.0)                          wr(rd, 0);
+                else                                         wr(rd, (int)(long) dv);
+            }
+            case FCVT_D_W  -> fregs[rd] = (double) regs[rs1];
+            case FCVT_D_WU -> fregs[rd] = (double) Integer.toUnsignedLong(regs[rs1]);
+            case FCVT_S_D  -> fwrite(rd, (float) fregs[rs1]);    // double → NaN-boxed single
+            case FCVT_D_S  -> fregs[rd] = (double) fread(rs1);   // NaN-unboxed single → double
+
+            // ── RV32D — Compare ───────────────────────────────────────────────
+            case FEQ_D -> wr(rd, !Double.isNaN(fregs[rs1])&&!Double.isNaN(fregs[rs2])&&fregs[rs1]==fregs[rs2] ? 1:0);
+            case FLT_D -> wr(rd, !Double.isNaN(fregs[rs1])&&!Double.isNaN(fregs[rs2])&&fregs[rs1]< fregs[rs2] ? 1:0);
+            case FLE_D -> wr(rd, !Double.isNaN(fregs[rs1])&&!Double.isNaN(fregs[rs2])&&fregs[rs1]<=fregs[rs2] ? 1:0);
+
+            // ── RV32D — Classify ──────────────────────────────────────────────
+            case FCLASS_D -> wr(rd, fclassD(fregs[rs1]));
 
             // ── Zicsr ─────────────────────────────────────────────────────────
             case CSRRW  -> { int old = csrRead(imm); csrWrite(imm, regs[rs1]); wr(rd, old); }
@@ -834,7 +997,6 @@ public class LogicVM {
             default    -> 0;
         };
     }
-
     private void csrWrite(int csr, int val) {
         switch (csr) {
             case 0x001 -> fcsr = (fcsr & ~0x1F) | (val & 0x1F);
@@ -843,22 +1005,38 @@ public class LogicVM {
         }
     }
 
-    // ── FCLASS helper ─────────────────────────────────────────────────────────
+    // ── FCLASS helpers ────────────────────────────────────────────────────────
 
-    private static int fclass(float f) {
+    private static int fclassF(float f) {
         int bits = Float.floatToRawIntBits(f);
         boolean neg = (bits & 0x80000000) != 0;
         int exp = (bits >>> 23) & 0xFF;
         int man =  bits & 0x7FFFFF;
         if (exp == 0xFF) {
-            if (man == 0) return neg ? 1 : 1 << 7;                        // ±inf
-            return (man & 0x400000) != 0 ? 1 << 9 : 1 << 8;              // qNaN / sNaN
+            if (man == 0) return neg ? 1 : 1 << 7;
+            return (man & 0x400000) != 0 ? 1 << 9 : 1 << 8;
         }
         if (exp == 0) {
-            if (man == 0) return neg ? 1 << 3 : 1 << 4;                   // ±zero
-            return neg ? 1 << 2 : 1 << 5;                                 // ±subnormal
+            if (man == 0) return neg ? 1 << 3 : 1 << 4;
+            return neg ? 1 << 2 : 1 << 5;
         }
-        return neg ? 1 << 1 : 1 << 6;                                     // ±normal
+        return neg ? 1 << 1 : 1 << 6;
+    }
+
+    private static int fclassD(double d) {
+        long bits = Double.doubleToRawLongBits(d);
+        boolean neg = (bits & 0x8000000000000000L) != 0;
+        int  exp = (int)((bits >>> 52) & 0x7FFL);
+        long man =       bits & 0x000FFFFFFFFFFFFFL;
+        if (exp == 0x7FF) {
+            if (man == 0) return neg ? 1 : 1 << 7;
+            return (man & (1L << 51)) != 0 ? 1 << 9 : 1 << 8;
+        }
+        if (exp == 0) {
+            if (man == 0) return neg ? 1 << 3 : 1 << 4;
+            return neg ? 1 << 2 : 1 << 5;
+        }
+        return neg ? 1 << 1 : 1 << 6;
     }
 
     // ── ECALL dispatcher ──────────────────────────────────────────────────────
@@ -926,6 +1104,10 @@ public class LogicVM {
              | (memRdByte(addr+2, gpio, ram) << 16)
              | (memRdByte(addr+3, gpio, ram) << 24);
     }
+    private long memRdLong(int addr, GPIOAccess gpio, RAMAccess ram) {
+        return Integer.toUnsignedLong(memRdWord(addr,   gpio, ram))
+             | (Integer.toUnsignedLong(memRdWord(addr+4, gpio, ram)) << 32);
+    }
     private void memWrByte(int addr, int val, GPIOAccess gpio, RAMAccess ram) {
         if (isGpio(addr)) { if (gpio != null) gpio.write((addr - GPIO_BASE) / 4, Math.clamp(val & 0xFF, 0, 15)); }
         else              { if (ram  != null) ram.write(addr, val & 0xFF); }
@@ -940,13 +1122,19 @@ public class LogicVM {
         memWrByte(addr+2, val >>> 16, gpio, ram);
         memWrByte(addr+3, val >>> 24, gpio, ram);
     }
+    private void memWrLong(int addr, long val, GPIOAccess gpio, RAMAccess ram) {
+        memWrWord(addr,   (int)  val,        gpio, ram);
+        memWrWord(addr+4, (int) (val >>> 32), gpio, ram);
+    }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     public void reset() {
         pc = 0; executingLine = 0; sleepTicks = 0; halted = false;
-        Arrays.fill(regs,  0);
-        Arrays.fill(fregs, 0f);
+        Arrays.fill(regs, 0);
+        // Initialise float regs as NaN-boxed +0.0f so F ops see 0 and D ops see NaN
+        long nanBoxedZero = 0xFFFFFFFF00000000L;
+        for (int i = 0; i < 32; i++) fregs[i] = Double.longBitsToDouble(nanBoxedZero);
         fcsr = 0;
         lrReservation = -1;
     }
@@ -959,7 +1147,12 @@ public class LogicVM {
         out.putInt("Sleep", sleepTicks);
         out.putBoolean("Halted", halted);
         for (int i = 1; i < 32; i++) out.putInt("x" + i, regs[i]);
-        for (int i = 0; i < 32; i++) out.putInt("f" + i, Float.floatToRawIntBits(fregs[i]));
+        // Store each 64-bit float register as two 32-bit ints (little-endian)
+        for (int i = 0; i < 32; i++) {
+            long bits = Double.doubleToRawLongBits(fregs[i]);
+            out.putInt("f" + i + "lo", (int)  bits);
+            out.putInt("f" + i + "hi", (int) (bits >>> 32));
+        }
         out.putInt("FCSR", fcsr);
     }
 
@@ -969,8 +1162,13 @@ public class LogicVM {
         sleepTicks    = in.getIntOr("Sleep", 0);
         halted        = in.getBooleanOr("Halted", false);
         regs[0] = 0;
-        for (int i = 1; i < 32; i++) regs[i]  = in.getIntOr("x" + i, 0);
-        for (int i = 0; i < 32; i++) fregs[i] = Float.intBitsToFloat(in.getIntOr("f" + i, 0));
+        for (int i = 1; i < 32; i++) regs[i] = in.getIntOr("x" + i, 0);
+        long nanBoxedZero = 0xFFFFFFFF00000000L;
+        for (int i = 0; i < 32; i++) {
+            long lo = Integer.toUnsignedLong(in.getIntOr("f" + i + "lo", 0));
+            long hi = Integer.toUnsignedLong(in.getIntOr("f" + i + "hi", (int)(nanBoxedZero >>> 32)));
+            fregs[i] = Double.longBitsToDouble((hi << 32) | lo);
+        }
         fcsr          = in.getIntOr("FCSR", 0);
         lrReservation = -1;
     }
