@@ -158,6 +158,14 @@ public class OmniTechDataComponents {
                             .networkSynchronized(ByteBufCodecs.INT)
                             .build());
 
+    /** Packed truth table state for the Truth Table item (12 bits, one per cell). */
+    public static final Supplier<DataComponentType<Integer>> TRUTH_TABLE_BITS =
+            REGISTRY.register("truth_table_bits", () ->
+                    DataComponentType.<Integer>builder()
+                            .persistent(Codec.INT)
+                            .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
     public static void register(IEventBus bus) {
         REGISTRY.register(bus);
     }

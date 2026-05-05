@@ -66,5 +66,44 @@
   "advancement.omnitech.radio.signal_sweep.description": "Разверните Радиосканер для визуализации всего спектра",
 
   "advancement.omnitech.radio.full_spectrum.title": "Полный спектр",
-  "advancement.omnitech.radio.full_spectrum.description": "Соберите полный радионабор: Передатчик, Приёмник, Сканер и Локатор"
+  "advancement.omnitech.radio.full_spectrum.description": "Соберите полный радионабор: Передатчик, Приёмник, Сканер и Локатор",
+
+  "item.omnitech.guidebook": "Руководство OmniTech",
+
+  "item.omnitech.truth_table": "Таблица истинности",
+  "item.omnitech.gate_template_and": "Шаблон вентиля И",
+  "item.omnitech.gate_template_or": "Шаблон вентиля ИЛИ",
+  "item.omnitech.gate_template_nand": "Шаблон вентиля И-НЕ",
+  "item.omnitech.gate_template_nor": "Шаблон вентиля ИЛИ-НЕ",
+  "item.omnitech.gate_template_xor": "Шаблон вентиля ИСКЛ. ИЛИ",
+  "item.omnitech.gate_template_xnor": "Шаблон вентиля ИСКЛ. ИЛИ-НЕ",
+  "item.omnitech.gate_template_buffer_a": "Шаблон буфера A",
+  "item.omnitech.gate_template_not_a": "Шаблон инвертора A",
+  "item.omnitech.gate_template_buffer_b": "Шаблон буфера B",
+  "item.omnitech.gate_template_not_b": "Шаблон инвертора B",
+  "item.omnitech.gate_template_always_on": "Шаблон вентиля ВСЕГДА 1",
+  "item.omnitech.gate_template_always_off": "Шаблон вентиля ВСЕГДА 0",
+
+  "item.omnitech.gate_template_and.desc": "Выход равен 1 только когда оба входа A и B равны 1.",
+  "item.omnitech.gate_template_or.desc": "Выход равен 1 когда хотя бы один из входов A или B равен 1.",
+  "item.omnitech.gate_template_nand.desc": "Выход равен 0 только когда оба входа A и B равны 1.",
+  "item.omnitech.gate_template_nor.desc": "Выход равен 1 только когда оба входа A и B равны 0.",
+  "item.omnitech.gate_template_xor.desc": "Выход равен 1 когда входы A и B различаются.",
+  "item.omnitech.gate_template_xnor.desc": "Выход равен 1 когда входы A и B одинаковы.",
+  "item.omnitech.gate_template_buffer_a.desc": "Выход повторяет вход A, вход B игнорируется.",
+  "item.omnitech.gate_template_not_a.desc": "Выход — инверсия входа A, вход B игнорируется.",
+  "item.omnitech.gate_template_buffer_b.desc": "Выход повторяет вход B, вход A игнорируется.",
+  "item.omnitech.gate_template_not_b.desc": "Выход — инверсия входа B, вход A игнорируется.",
+  "item.omnitech.gate_template_always_on.desc": "Выход всегда равен 1, независимо от входов.",
+  "item.omnitech.gate_template_always_off.desc": "Выход всегда равен 0, независимо от входов.",
+  "item.omnitech.gate_template.tooltip.hint": "Используется в сборке логических цепей",
+
+  "gui.omnitech.truth_table": "Таблица истинности",
+  "gui.omnitech.truth_table.hint1": "Переключайте ячейки. A и B — входы, OUT — выход.",
+  "gui.omnitech.truth_table.hint2": "Порядок строк свободный — каждая пара входов должна встретиться один раз.",
+  "gui.omnitech.truth_table.legend1": "Совпадение с известным вентилем создаёт Шаблон вентиля.",
+  "gui.omnitech.truth_table.legend2": "12 вентилей: И, ИЛИ, И-НЕ, ИЛИ-НЕ, XOR, XNOR, BUF, NOT и др.",
+  "gui.omnitech.truth_table.assemble": "Собрать",
+  "gui.omnitech.truth_table.no_match": "Вентиль не найден — проверьте таблицу истинности.",
+  "gui.omnitech.truth_table.assembled": "Собрано: %s"
 }

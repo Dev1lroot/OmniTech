@@ -4,7 +4,7 @@
     "model": "omnitech:item/floppy_disk",
     "tints": [
       { "type": "minecraft:constant", "value": 16777215 },
-      { "type": "minecraft:dye", "default": 11748352 }
+      { "type": "minecraft:dye", "default": 0 }
     ]
   }
 }

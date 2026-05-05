@@ -73,11 +73,13 @@ import com.dev1lroot.mcmods.omnitech.network.RadioLocatorSignalPacket;
 import com.dev1lroot.mcmods.omnitech.network.UploadProgramPacket;
 import com.dev1lroot.mcmods.omnitech.network.SetGPIOIdPacket;
 import com.dev1lroot.mcmods.omnitech.network.SetDisplayIdPacket;
+import com.dev1lroot.mcmods.omnitech.network.AssembleTruthTablePacket;
 import com.dev1lroot.mcmods.omnitech.network.SetFloppyDriveIdPacket;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioManager;
 import com.dev1lroot.mcmods.omnitech.items.RadioLocatorItem;
 import com.dev1lroot.mcmods.omnitech.entities.AbyssalEelEntity;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechCarvers;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechFeatures;
 import net.minecraft.commands.Commands;
@@ -128,11 +130,13 @@ public class OmniTech {
         CreativeTabLoader.loadAll();     // reads data/omnitech/creative_tab/*.json
         OmniTechGUI.register(modEventBus);
         OmniTechDataComponents.register(modEventBus);
+        OmniTechAttachments.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.addListener(OmniTech::registerCommands);
         NeoForge.EVENT_BUS.addListener(OmniTech::onServerTick);
         NeoForge.EVENT_BUS.addListener(OmniTech::onServerStopping);
+        NeoForge.EVENT_BUS.addListener(OmniTech::onPlayerLoggedIn);
         modEventBus.addListener(OmniTech::registerAttributes);
         modEventBus.addListener(OmniTechEntities::registerSpawnPlacements);
 
@@ -454,6 +458,10 @@ public class OmniTech {
                 SetFloppyDriveIdPacket.TYPE,
                 SetFloppyDriveIdPacket.CODEC,
                 SetFloppyDriveIdPacket::handle);
+        event.registrar("1").playToServer(
+                AssembleTruthTablePacket.TYPE,
+                AssembleTruthTablePacket.CODEC,
+                AssembleTruthTablePacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -535,6 +543,14 @@ public class OmniTech {
                 signal = Math.max(signal, s);
             }
             PacketDistributor.sendToPlayer(sp, new RadioLocatorSignalPacket(signal));
+        }
+    }
+
+    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer sp)) return;
+        if (!sp.getData(OmniTechAttachments.GUIDEBOOK_GIVEN)) {
+            sp.getInventory().add(new ItemStack(OmniTechItems.GUIDEBOOK.get()));
+            sp.setData(OmniTechAttachments.GUIDEBOOK_GIVEN, true);
         }
     }
 

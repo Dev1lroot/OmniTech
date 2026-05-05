@@ -2,13 +2,18 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.items.BoreItem;
 import com.dev1lroot.mcmods.omnitech.items.FloppyDiskItem;
+import com.dev1lroot.mcmods.omnitech.items.GuidebookItem;
 import com.dev1lroot.mcmods.omnitech.items.FluidCanisterItem;
+import com.dev1lroot.mcmods.omnitech.items.LogicGateTemplateItem;
 import com.dev1lroot.mcmods.omnitech.items.MicrocontrollerItem;
 import com.dev1lroot.mcmods.omnitech.items.RadioLocatorItem;
 import com.dev1lroot.mcmods.omnitech.items.RamCardItem;
 import com.dev1lroot.mcmods.omnitech.items.SpaceSuitItem;
+import com.dev1lroot.mcmods.omnitech.items.TruthTableItem;
+import com.dev1lroot.mcmods.omnitech.util.LogicGate;
 import com.google.common.collect.Maps;
 import java.util.Map;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
@@ -23,6 +28,8 @@ import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.EquipmentAssets;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -196,7 +203,9 @@ public class OmniTechItems
             REGISTRY.registerSimpleBlockItem("expansion_slot", OmniTechBlocks.EXPANSION_SLOT);
 
     public static final DeferredItem<FloppyDiskItem> FLOPPY_DISK =
-            REGISTRY.registerItem("floppy_disk", p -> new FloppyDiskItem(p.stacksTo(1)));
+            REGISTRY.registerItem("floppy_disk", p -> new FloppyDiskItem(
+                    p.stacksTo(1).component(DataComponents.DYED_COLOR,
+                            new DyedItemColor(FloppyDiskItem.DEFAULT_COLOR))));
 
     public static final DeferredItem<RamCardItem> RAM_CARD =
             REGISTRY.registerItem("ram_card", p -> new RamCardItem(p.stacksTo(1)));
@@ -207,6 +216,69 @@ public class OmniTechItems
 
     public static final DeferredItem<RadioLocatorItem> RADIO_LOCATOR =
             REGISTRY.registerItem("radio_locator", RadioLocatorItem::new);
+
+    public static final DeferredItem<GuidebookItem> GUIDEBOOK =
+            REGISTRY.registerItem("guidebook", p -> new GuidebookItem(p.stacksTo(1)));
+
+    // ── Truth Table & Logic Gate Templates ────────────────────────────────────
+
+    public static final DeferredItem<TruthTableItem> TRUTH_TABLE =
+            REGISTRY.registerItem("truth_table", p -> new TruthTableItem(p.stacksTo(1)));
+
+    public static final DeferredItem<LogicGateTemplateItem> GATE_TEMPLATE_AND =
+            REGISTRY.registerItem("gate_template_and",
+                    p -> new LogicGateTemplateItem("and", p.stacksTo(1)));
+    public static final DeferredItem<LogicGateTemplateItem> GATE_TEMPLATE_OR =
+            REGISTRY.registerItem("gate_template_or",
+                    p -> new LogicGateTemplateItem("or", p.stacksTo(1)));
+    public static final DeferredItem<LogicGateTemplateItem> GATE_TEMPLATE_NAND =
+            REGISTRY.registerItem("gate_template_nand",
+                    p -> new LogicGateTemplateItem("nand", p.stacksTo(1)));
+    public static final DeferredItem<LogicGateTemplateItem> GATE_TEMPLATE_NOR =
+            REGISTRY.registerItem("gate_template_nor",
+                    p -> new LogicGateTemplateItem("nor", p.stacksTo(1)));
+    public static final DeferredItem<LogicGateTemplateItem> GATE_TEMPLATE_XOR =
+            REGISTRY.registerItem("gate_template_xor",
+                    p -> new LogicGateTemplateItem("xor", p.stacksTo(1)));
+    public static final DeferredItem<LogicGateTemplateItem> GATE_TEMPLATE_XNOR =
+            REGISTRY.registerItem("gate_template_xnor",
+                    p -> new LogicGateTemplateItem("xnor", p.stacksTo(1)));
+    public static final DeferredItem<LogicGateTemplateItem> GATE_TEMPLATE_BUFFER_A =
+            REGISTRY.registerItem("gate_template_buffer_a",
+                    p -> new LogicGateTemplateItem("buffer_a", p.stacksTo(1)));
+    public static final DeferredItem<LogicGateTemplateItem> GATE_TEMPLATE_NOT_A =
+            REGISTRY.registerItem("gate_template_not_a",
+                    p -> new LogicGateTemplateItem("not_a", p.stacksTo(1)));
+    public static final DeferredItem<LogicGateTemplateItem> GATE_TEMPLATE_BUFFER_B =
+            REGISTRY.registerItem("gate_template_buffer_b",
+                    p -> new LogicGateTemplateItem("buffer_b", p.stacksTo(1)));
+    public static final DeferredItem<LogicGateTemplateItem> GATE_TEMPLATE_NOT_B =
+            REGISTRY.registerItem("gate_template_not_b",
+                    p -> new LogicGateTemplateItem("not_b", p.stacksTo(1)));
+    public static final DeferredItem<LogicGateTemplateItem> GATE_TEMPLATE_ALWAYS_ON =
+            REGISTRY.registerItem("gate_template_always_on",
+                    p -> new LogicGateTemplateItem("always_on", p.stacksTo(1)));
+    public static final DeferredItem<LogicGateTemplateItem> GATE_TEMPLATE_ALWAYS_OFF =
+            REGISTRY.registerItem("gate_template_always_off",
+                    p -> new LogicGateTemplateItem("always_off", p.stacksTo(1)));
+
+    /** Returns a new ItemStack for the gate template matching the given gate, or empty if unrecognised. */
+    public static ItemStack gateTemplateFor(LogicGate gate) {
+        return new ItemStack(switch (gate) {
+            case AND        -> GATE_TEMPLATE_AND.get();
+            case OR         -> GATE_TEMPLATE_OR.get();
+            case NAND       -> GATE_TEMPLATE_NAND.get();
+            case NOR        -> GATE_TEMPLATE_NOR.get();
+            case XOR        -> GATE_TEMPLATE_XOR.get();
+            case XNOR       -> GATE_TEMPLATE_XNOR.get();
+            case BUFFER_A   -> GATE_TEMPLATE_BUFFER_A.get();
+            case NOT_A      -> GATE_TEMPLATE_NOT_A.get();
+            case BUFFER_B   -> GATE_TEMPLATE_BUFFER_B.get();
+            case NOT_B      -> GATE_TEMPLATE_NOT_B.get();
+            case ALWAYS_ON  -> GATE_TEMPLATE_ALWAYS_ON.get();
+            case ALWAYS_OFF -> GATE_TEMPLATE_ALWAYS_OFF.get();
+        });
+    }
 
     // ── Bore Tools ────────────────────────────────────────────────────────────
 

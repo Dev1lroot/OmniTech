@@ -1,6 +1,7 @@
 {
   "type": "minecraft:crafting_dye",
-  "ingredients": [
-    { "item": "omnitech:floppy_disk" }
-  ]
+  "category": "misc",
+  "dye": "#minecraft:dyes",
+  "result": { "id": "omnitech:floppy_disk" },
+  "target": "omnitech:floppy_disk"
 }

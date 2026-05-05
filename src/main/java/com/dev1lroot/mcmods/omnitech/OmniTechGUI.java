@@ -100,6 +100,19 @@ public class OmniTechGUI {
     private static void addCreative(BuildCreativeModeTabContentsEvent event)
     {
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+            event.accept(OmniTechItems.TRUTH_TABLE);
+            event.accept(OmniTechItems.GATE_TEMPLATE_AND);
+            event.accept(OmniTechItems.GATE_TEMPLATE_OR);
+            event.accept(OmniTechItems.GATE_TEMPLATE_NAND);
+            event.accept(OmniTechItems.GATE_TEMPLATE_NOR);
+            event.accept(OmniTechItems.GATE_TEMPLATE_XOR);
+            event.accept(OmniTechItems.GATE_TEMPLATE_XNOR);
+            event.accept(OmniTechItems.GATE_TEMPLATE_BUFFER_A);
+            event.accept(OmniTechItems.GATE_TEMPLATE_NOT_A);
+            event.accept(OmniTechItems.GATE_TEMPLATE_BUFFER_B);
+            event.accept(OmniTechItems.GATE_TEMPLATE_NOT_B);
+            event.accept(OmniTechItems.GATE_TEMPLATE_ALWAYS_ON);
+            event.accept(OmniTechItems.GATE_TEMPLATE_ALWAYS_OFF);
             event.accept(OmniTechItems.COKE_BRICK_ITEM);
             event.accept(OmniTechItems.ALLOY_FURNACE_ITEM);
             event.accept(OmniTechItems.MANUAL_MACERATOR_ITEM);

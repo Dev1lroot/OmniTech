@@ -35,7 +35,9 @@ import com.dev1lroot.mcmods.omnitech.entities.RocketEntity;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntityRenderer;
 import com.dev1lroot.mcmods.omnitech.models.RocketModel;
 import com.dev1lroot.mcmods.omnitech.gui.SpaceNavigationScreen;
+import com.dev1lroot.mcmods.omnitech.gui.guidebook.GuidebookLoader;
 import com.dev1lroot.mcmods.omnitech.network.OpenRocketGuiPacket;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.options.SoundOptionsScreen;
@@ -83,6 +85,7 @@ public class OmniTechClient
         modEventBus.addListener(this::registerCustomEnvironmentRenderers);
         modEventBus.addListener(this::registerRenderPipelines);
         modEventBus.addListener(this::registerKeys);
+        modEventBus.addListener(this::onAddClientReloadListeners);
         modEventBus.addListener(this::registerItemColors);
         modEventBus.addListener(this::registerItemModels);
         modEventBus.register(OmniTechClient.class);
@@ -284,6 +287,11 @@ public class OmniTechClient
             event.getToolTip().add(
                     Component.literal(formula).withStyle(ChatFormatting.DARK_GRAY));
         }
+    }
+
+    private void onAddClientReloadListeners(AddClientReloadListenersEvent event) {
+        event.addListener(Identifier.fromNamespaceAndPath(OmniTech.MODID, "guidebook"),
+                new GuidebookLoader());
     }
 
     @SubscribeEvent
