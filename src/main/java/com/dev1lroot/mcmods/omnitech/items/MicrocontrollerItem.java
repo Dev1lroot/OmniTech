@@ -19,7 +19,7 @@ public class MicrocontrollerItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext ctx,
             TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         int hz = stack.getOrDefault(OmniTechDataComponents.MCU_SPEED.get(), 20);
-        tooltip.accept(Component.literal("Speed: " + hz + " Hz  |  RISC-V RV32I (32 regs)")
+        tooltip.accept(Component.literal("Speed: " + hz + " Hz  |  RISC-V RV32IMAFC (32i+32f regs)")
                 .withStyle(s -> s.withColor(0xFF4488FF)));
         String prog = stack.get(OmniTechDataComponents.PROGRAM.get());
         if (prog == null || prog.isBlank()) {

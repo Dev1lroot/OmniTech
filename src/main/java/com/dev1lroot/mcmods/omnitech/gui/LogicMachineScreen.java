@@ -188,15 +188,19 @@ public class LogicMachineScreen extends AbstractContainerScreen<LogicMachineMenu
 
             // RISC-V quick reference
             y += 4;
-            g.text(this.font, Component.literal("RISC-V RV32I — 32 regs (x0-x31 / ABI)"), 8, y, 0xFFCCCCCC, false);
-            y += 10;
-            g.text(this.font, Component.literal("  lw/sw rd,off(rs)  lb/sb  lh/sh"), 8, y, 0xFF888888, false);
+            g.text(this.font, Component.literal("RISC-V RV32IMAFC — 32i + 32f regs"), 8, y, 0xFFCCCCCC, false);
             y += 9;
-            g.text(this.font, Component.literal("  GPIO MMIO: sw rs, 0xF0000000(portId*4)"), 8, y, 0xFF888888, false);
+            g.text(this.font, Component.literal("  I: lw/sw/lb/sb/lh/sh/jal/beq/…"), 8, y, 0xFF888888, false);
             y += 9;
-            g.text(this.font, Component.literal("  ECALL: a7=sys, args a0-a5, ret a0"), 8, y, 0xFF888888, false);
+            g.text(this.font, Component.literal("  M: mul/div/rem  A: lr.w/sc.w/amo*.w"), 8, y, 0xFF888888, false);
             y += 9;
-            g.text(this.font, Component.literal("  0:halt 1:slp 2:rnd 10/11:gpio"), 8, y, 0xFF888888, false);
+            g.text(this.font, Component.literal("  F: flw/fsw/fadd.s/fmul.s/fcvt.w.s/…"), 8, y, 0xFF888888, false);
+            y += 9;
+            g.text(this.font, Component.literal("  C: c.add/c.mv/c.lw/c.jal/c.beqz/…"), 8, y, 0xFF888888, false);
+            y += 9;
+            g.text(this.font, Component.literal("  CSR: fcsr/frm/fflags  GPIO: 0xF0000000"), 8, y, 0xFF888888, false);
+            y += 9;
+            g.text(this.font, Component.literal("  ECALL a7: 0:halt 1:slp 2:rnd 10/11:gpio"), 8, y, 0xFF888888, false);
             y += 9;
             g.text(this.font, Component.literal("  20-25:display  30:floppy"), 8, y, 0xFF888888, false);
         }
