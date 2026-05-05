@@ -17,7 +17,7 @@ public class FloppyDiskItem extends Item {
     public static final int SECTOR_SIZE = 512;
     public static final int SECTOR_COUNT = CAPACITY / SECTOR_SIZE; // 2880
 
-    public static final int DEFAULT_COLOR = 0xB34400;
+    public static final int DEFAULT_COLOR = 0x222222;
 
     public FloppyDiskItem(Properties props) {
         super(props);
@@ -30,10 +30,10 @@ public class FloppyDiskItem extends Item {
         int used = data != null ? data.data().length : 0;
         tooltip.accept(Component.literal(String.format("%.1f KB / 1440 KB", used / 1024.0))
                 .withStyle(s -> s.withColor(0xFF88AAFF)));
-        if (flag.isAdvanced()) {
-            int color = DyedItemColor.getOrDefault(stack, DEFAULT_COLOR);
-            tooltip.accept(Component.literal(String.format("Color: #%06X", color & 0xFFFFFF))
-                    .withStyle(s -> s.withColor(0xFFAAAAAA)));
-        }
+//        if (flag.isAdvanced()) {
+//            int color = DyedItemColor.getOrDefault(stack, DEFAULT_COLOR);
+//            tooltip.accept(Component.literal(String.format("Color: #%06X", color & 0xFFFFFF))
+//                    .withStyle(s -> s.withColor(0xFFAAAAAA)));
+//        }
     }
 }

@@ -22,6 +22,8 @@ import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.speaker.SpeakerBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.LogicCableBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockMk2;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockMk3;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.floppy_drive.FloppyDriveBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.expansion_slot.ExpansionSlotBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlock;
@@ -151,6 +153,8 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> LOGIC_CABLE;
     public static final DeferredBlock<Block> GPIO_PORT;
     public static final DeferredBlock<Block> DISPLAY;
+    public static final DeferredBlock<Block> DISPLAY_MK2;
+    public static final DeferredBlock<Block> DISPLAY_MK3;
     public static final DeferredBlock<Block> FLOPPY_DRIVE;
     public static final DeferredBlock<Block> EXPANSION_SLOT;
 
@@ -338,6 +342,12 @@ public class OmniTechBlocks {
                         .sound(SoundType.METAL)));
         DISPLAY = register("display",
                 p -> new DisplayBlock(p.mapColor(MapColor.COLOR_BLACK).strength(2.0F)
+                        .sound(SoundType.METAL).noOcclusion()));
+        DISPLAY_MK2 = register("display_mk2",
+                p -> new DisplayBlockMk2(p.mapColor(MapColor.COLOR_BLACK).strength(2.5F)
+                        .sound(SoundType.METAL).noOcclusion()));
+        DISPLAY_MK3 = register("display_mk3",
+                p -> new DisplayBlockMk3(p.mapColor(MapColor.COLOR_BLACK).strength(3.0F)
                         .sound(SoundType.METAL).noOcclusion()));
         FLOPPY_DRIVE = register("floppy_drive",
                 p -> new FloppyDriveBlock(p.mapColor(MapColor.COLOR_GRAY).strength(2.5F)

@@ -124,6 +124,8 @@ public class OmniTechGUI {
             event.accept(OmniTechItems.LOGIC_CABLE_ITEM);
             event.accept(OmniTechItems.GPIO_PORT_ITEM);
             event.accept(OmniTechItems.DISPLAY_ITEM);
+            event.accept(OmniTechItems.DISPLAY_MK2_ITEM);
+            event.accept(OmniTechItems.DISPLAY_MK3_ITEM);
             event.accept(OmniTechItems.MICROCONTROLLER);
             event.accept(OmniTechItems.FLOPPY_DRIVE_ITEM);
             event.accept(OmniTechItems.EXPANSION_SLOT_ITEM);

@@ -64,8 +64,8 @@ public class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
         int cols = menu.getClusterCols();
         int rows = menu.getClusterRows();
         int totalBlocks = cols * rows;
-        int resW = cols * 16;
-        int resH = rows * 16;
+        int resW = cols * menu.getSize();
+        int resH = rows * menu.getSize();
 
         Component infoLine;
         if (totalBlocks == 1) {

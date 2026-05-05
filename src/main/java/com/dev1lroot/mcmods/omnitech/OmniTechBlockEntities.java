@@ -28,6 +28,8 @@ import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_scanner.RadioScannerBloc
 import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.speaker.SpeakerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockEntityMk2;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockEntityMk3;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station.ProgrammingStationBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.LogicMachineBlockEntity;
@@ -273,6 +275,16 @@ public class OmniTechBlockEntities {
             REGISTRY.register("display",
                     () -> new BlockEntityType<>(DisplayBlockEntity::new,
                             OmniTechBlocks.DISPLAY.get()));
+
+    public static final Supplier<BlockEntityType<DisplayBlockEntityMk2>> DISPLAY_MK2 =
+            REGISTRY.register("display_mk2",
+                    () -> new BlockEntityType<>(DisplayBlockEntityMk2::new,
+                            OmniTechBlocks.DISPLAY_MK2.get()));
+
+    public static final Supplier<BlockEntityType<DisplayBlockEntityMk3>> DISPLAY_MK3 =
+            REGISTRY.register("display_mk3",
+                    () -> new BlockEntityType<>(DisplayBlockEntityMk3::new,
+                            OmniTechBlocks.DISPLAY_MK3.get()));
 
     public static final Supplier<BlockEntityType<com.dev1lroot.mcmods.omnitech.blocks.logic.floppy_drive.FloppyDriveBlockEntity>> FLOPPY_DRIVE =
             REGISTRY.register("floppy_drive",

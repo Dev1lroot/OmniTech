@@ -18,6 +18,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -29,10 +30,9 @@ import java.util.Set;
 
 public class DisplayBlockEntity extends BlockEntity implements MenuProvider {
 
-    public static final int SIZE = 16;
-
+    protected final int size;
     private int portId = 0;
-    public final int[] pixels = new int[SIZE * SIZE]; // 0x00RRGGBB per pixel
+    public final int[] pixels; // 0x00RRGGBB per pixel, row-major
 
     // Cluster state — null masterPos means this block is the master (or standalone)
     @Nullable private BlockPos masterPos = null;
@@ -40,8 +40,16 @@ public class DisplayBlockEntity extends BlockEntity implements MenuProvider {
     private int clusterRows = 1;
 
     public DisplayBlockEntity(BlockPos pos, BlockState state) {
-        super(OmniTechBlockEntities.DISPLAY.get(), pos, state);
+        this(OmniTechBlockEntities.DISPLAY.get(), pos, state, 16);
     }
+
+    protected DisplayBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int size) {
+        super(type, pos, state);
+        this.size = size;
+        this.pixels = new int[size * size];
+    }
+
+    public int getSize() { return size; }
 
     public int getPortId() { return portId; }
 
@@ -88,11 +96,11 @@ public class DisplayBlockEntity extends BlockEntity implements MenuProvider {
      * Call only on the master block.
      */
     public void setPixel(int x, int y, int color) {
-        if (x < 0 || x >= clusterCols * SIZE || y < 0 || y >= clusterRows * SIZE) return;
-        int blockCol = x / SIZE;
-        int blockRow = y / SIZE;
-        int localX   = x % SIZE;
-        int localY   = y % SIZE;
+        if (x < 0 || x >= clusterCols * size || y < 0 || y >= clusterRows * size) return;
+        int blockCol = x / size;
+        int blockRow = y / size;
+        int localX   = x % size;
+        int localY   = y % size;
 
         if (blockCol == 0 && blockRow == 0) {
             setLocalPixel(localX, localY, color);
@@ -106,11 +114,11 @@ public class DisplayBlockEntity extends BlockEntity implements MenuProvider {
         }
     }
 
-    /** Write a single pixel into this block's own 16×16 buffer. */
+    /** Write a single pixel into this block's own size×size buffer. */
     public void setLocalPixel(int x, int y, int color) {
         int c = color & 0xFFFFFF;
-        if (pixels[y * SIZE + x] == c) return;
-        pixels[y * SIZE + x] = c;
+        if (pixels[y * size + x] == c) return;
+        pixels[y * size + x] = c;
         setChanged();
         sync();
     }
@@ -118,7 +126,7 @@ public class DisplayBlockEntity extends BlockEntity implements MenuProvider {
     /** Clear all pixels in the entire cluster. Call only on the master block. */
     public void resetPixels() {
         resetLocalPixels();
-        if ((clusterCols == 1 && clusterRows == 1) || level == null) return;
+        if (clusterCols == 1 && clusterRows == 1 || level == null) return;
         Direction facing = getBlockState().getValue(DisplayBlock.FACING);
         for (int col = 0; col < clusterCols; col++) {
             for (int row = 0; row < clusterRows; row++) {
@@ -143,8 +151,8 @@ public class DisplayBlockEntity extends BlockEntity implements MenuProvider {
 
     // ── Display dimensions ────────────────────────────────────────────────────
 
-    public int getDisplayWidth()  { return clusterCols * SIZE; }
-    public int getDisplayHeight() { return clusterRows * SIZE; }
+    public int getDisplayWidth()  { return clusterCols * size; }
+    public int getDisplayHeight() { return clusterRows * size; }
 
     // ── Batch drawing (GDIM / LINE / RECT / BLIT) ─────────────────────────────
 
@@ -187,13 +195,13 @@ public class DisplayBlockEntity extends BlockEntity implements MenuProvider {
 
     // Write pixel without per-pixel sync; collect touched block entities.
     private void writePixelBatched(int x, int y, int color, Set<DisplayBlockEntity> dirty) {
-        if (x < 0 || x >= clusterCols * SIZE || y < 0 || y >= clusterRows * SIZE) return;
-        DisplayBlockEntity target = resolveTarget(x / SIZE, y / SIZE);
+        if (x < 0 || x >= clusterCols * size || y < 0 || y >= clusterRows * size) return;
+        DisplayBlockEntity target = resolveTarget(x / size, y / size);
         if (target == null) return;
-        int lx = x % SIZE, ly = y % SIZE;
+        int lx = x % size, ly = y % size;
         int c = color & 0xFFFFFF;
-        if (target.pixels[ly * SIZE + lx] == c) return;
-        target.pixels[ly * SIZE + lx] = c;
+        if (target.pixels[ly * size + lx] == c) return;
+        target.pixels[ly * size + lx] = c;
         dirty.add(target);
     }
 
@@ -250,11 +258,12 @@ public class DisplayBlockEntity extends BlockEntity implements MenuProvider {
 
         Direction facing = d.getBlockState().getValue(DisplayBlock.FACING);
         int portId       = d.portId;
+        int size         = d.size;
         int orthogonal   = getOrthogonalCoord(pos, facing);
 
         // Flood-fill in the display plane (same Z for N/S, same X for E/W)
         Set<BlockPos> cluster = new HashSet<>();
-        floodFill(level, pos, facing, portId, orthogonal, cluster);
+        floodFill(level, pos, facing, portId, size, orthogonal, cluster);
 
         if (cluster.size() <= 1) {
             d.setCluster(null, 1, 1);
@@ -309,17 +318,18 @@ public class DisplayBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private static void floodFill(Level level, BlockPos pos, Direction facing,
-            int portId, int orthogonal, Set<BlockPos> visited) {
+            int portId, int size, int orthogonal, Set<BlockPos> visited) {
         if (visited.contains(pos)) return;
         if (getOrthogonalCoord(pos, facing) != orthogonal) return;
         BlockEntity be = level.getBlockEntity(pos);
         if (!(be instanceof DisplayBlockEntity d)) return;
         if (d.getBlockState().getValue(DisplayBlock.FACING) != facing) return;
         if (d.portId != portId) return;
+        if (d.size != size) return;
 
         visited.add(pos);
         for (BlockPos nb : getFacingPlaneNeighbors(pos, facing)) {
-            floodFill(level, nb, facing, portId, orthogonal, visited);
+            floodFill(level, nb, facing, portId, size, orthogonal, visited);
         }
     }
 
@@ -382,13 +392,15 @@ public class DisplayBlockEntity extends BlockEntity implements MenuProvider {
 
     @Override
     public Component getDisplayName() {
-        return Component.translatable("container.omnitech.display");
+        return Component.translatable(getContainerName());
     }
+
+    protected String getContainerName() { return "container.omnitech.display"; }
 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int containerId,
             Inventory inv, Player player) {
-        return new DisplayMenu(containerId, inv, worldPosition, portId, clusterCols, clusterRows);
+        return new DisplayMenu(containerId, inv, worldPosition, portId, clusterCols, clusterRows, size);
     }
 
     // ── Client sync ───────────────────────────────────────────────────────────

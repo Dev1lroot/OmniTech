@@ -373,6 +373,142 @@ no_wrap:
 
 ---
 
+### 11 — Bouncing sprite with GPIO trigger and color cycling
+
+A 6×6 bitmap bounces around the canvas.  On every wall-bounce it fires a 1-tick
+redstone pulse on GPIO port 0 and advances through a table of 8 colors.  Works on
+any display size — canvas bounds are read with `DISP_DIM` at startup.
+
+**Sprite pattern** (bit N in each byte = column N):
+
+```
+row 0: ██..██  110011  0x33
+row 1: ██..██  110011  0x33
+row 2: ..██..  001100  0x0C
+row 3: .████.  011110  0x1E
+row 4: .████.  011110  0x1E
+row 5: .█..█.  010010  0x12
+```
+
+**RAM layout:**
+
+| Address | Content |
+|---------|---------|
+| `[0..5]` | Sprite row bitmasks (1 byte each) |
+| `[8..39]` | Color table (8 × 4-byte words) |
+
+```asm
+# =====================================================================
+# Bouncing sprite — bitmap, GPIO trigger, color cycling
+#
+# Registers:
+#   s0=spriteX  s1=spriteY  s2=dx  s3=dy
+#   s4=maxX     s5=maxY     s6=color  s7=colorIdx
+# =====================================================================
+
+# ── Store sprite bitmap in RAM[0..5] ─────────────────────────────────
+    li   t0, 0x33 ; sb t0, 0(zero)    # row 0: ██..██
+    li   t0, 0x33 ; sb t0, 1(zero)    # row 1: ██..██
+    li   t0, 0x0C ; sb t0, 2(zero)    # row 2: ..██..
+    li   t0, 0x1E ; sb t0, 3(zero)    # row 3: .████.
+    li   t0, 0x1E ; sb t0, 4(zero)    # row 4: .████.
+    li   t0, 0x12 ; sb t0, 5(zero)    # row 5: .█..█.
+
+# ── Store color table in RAM[8..39] ──────────────────────────────────
+    li   t0, 0xFFFFFF ; sw t0,  8(zero)    # 0: white
+    li   t0, 0xFF4444 ; sw t0, 12(zero)    # 1: red
+    li   t0, 0x44FF44 ; sw t0, 16(zero)    # 2: green
+    li   t0, 0x4444FF ; sw t0, 20(zero)    # 3: blue
+    li   t0, 0xFFFF00 ; sw t0, 24(zero)    # 4: yellow
+    li   t0, 0xFF44FF ; sw t0, 28(zero)    # 5: magenta
+    li   t0, 0x00FFFF ; sw t0, 32(zero)    # 6: cyan
+    li   t0, 0xFF8800 ; sw t0, 36(zero)    # 7: orange
+
+# ── Initialize ────────────────────────────────────────────────────────
+    li   s0, 4 ; li s1, 4
+    li   s2, 1 ; li s3, 1
+    li   s6, 0xFFFFFF            # starting color: white
+    li   s7, 1                   # next color index (0 = white, already set)
+
+    li   a7, 22 ; li a0, 0 ; ecall     # DISP_DIM → a0=width, a1=height
+    addi s4, a0, -6                    # maxX = width  - spriteW
+    addi s5, a1, -6                    # maxY = height - spriteH
+
+# ─────────────────────────────────────────────────────────────────────
+frame:
+    li   a7, 21 ; li a0, 0 ; ecall     # clear
+
+    # ── Draw sprite ──────────────────────────────────────────────────
+    li   t0, 0                          # row = 0
+draw_row:
+    lbu  t2, 0(t0)                      # load row bitmask; bit N = col N
+    li   t1, 0                          # col = 0
+draw_col:
+    andi t3, t2, 1                      # test column bit
+    beqz t3, skip_px
+    li   a7, 20 ; li a0, 0
+    add  a1, s0, t1 ; add a2, s1, t0 ; mv a3, s6 ; ecall
+skip_px:
+    srli t2, t2, 1                      # shift to next column
+    addi t1, t1, 1 ; li t3, 6 ; blt t1, t3, draw_col
+    addi t0, t0, 1 ; li t3, 6 ; blt t0, t3, draw_row
+
+    # ── Move ─────────────────────────────────────────────────────────
+    add  s0, s0, s2
+    add  s1, s1, s3
+    li   t6, 0                          # bounce flag = false
+
+    # ── Bounce X ─────────────────────────────────────────────────────
+    blt  s0, s4, chk_xlo
+    mv   s0, s4 ; li s2, -1 ; li t6, 1 ; j chk_y
+chk_xlo:
+    bgtz s0, chk_y
+    li   s0, 0 ; li s2, 1 ; li t6, 1
+
+    # ── Bounce Y ─────────────────────────────────────────────────────
+chk_y:
+    blt  s1, s5, chk_ylo
+    mv   s1, s5 ; li s3, -1 ; li t6, 1 ; j do_gpio
+chk_ylo:
+    bgtz s1, do_gpio
+    li   s1, 0 ; li s3, 1 ; li t6, 1
+
+    # ── GPIO pulse + color advance on every bounce ────────────────────
+do_gpio:
+    beqz t6, next_frame
+
+    li   a7, 10 ; li a0, 0 ; li a1, 15 ; ecall    # GPIO port 0 → power 15
+    li   a7, 1  ; li a0, 1 ; ecall                 # sleep 1 tick
+    li   a7, 10 ; li a0, 0 ; li a1, 0  ; ecall     # GPIO port 0 → power 0
+
+    slli t0, s7, 2                      # byte offset = colorIdx × 4
+    addi t0, t0, 8                      # RAM address  = 8 + offset
+    lw   s6, 0(t0)                      # load next color word
+    addi s7, s7, 1
+    li   t0, 8 ; blt s7, t0, next_frame
+    li   s7, 0                          # wrap: 8 → 0
+
+next_frame:
+    li   a7, 1 ; li a0, 2 ; ecall
+    j    frame
+```
+
+**How it works:**
+
+- The 6 row bitmasks are written to RAM once at startup (`sb`).  Inside `draw_row`,
+  `lbu` fetches the bitmask for the current row using the row counter as the address.
+  `srli t2, t2, 1` shifts the mask one bit right each column iteration so bit 0
+  always holds the current column's state.
+- `maxX = width − 6` and `maxY = height − 6` keep the sprite fully inside the canvas
+  on any display size.
+- A corner bounce (X and Y both flip in one step) fires the GPIO exactly once because
+  `t6` is a simple flag — the X and Y paths both set it to 1, but `do_gpio` runs once.
+- The color table in RAM is indexed by `s7`.  After 8 bounces the index wraps to 0
+  (white) and the cycle repeats: white → red → green → blue → yellow → magenta →
+  cyan → orange → white → …
+
+---
+
 ## VRAM sizing reference
 
 | Canvas | Blocks | Pixels | RAM needed |

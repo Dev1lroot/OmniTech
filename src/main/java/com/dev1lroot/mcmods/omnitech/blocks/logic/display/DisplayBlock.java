@@ -33,7 +33,7 @@ public class DisplayBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
+    protected MapCodec<? extends DisplayBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }
@@ -63,6 +63,7 @@ public class DisplayBlock extends BaseEntityBlock {
                     buf.writeInt(m.getPortId());
                     buf.writeInt(m.getClusterCols());
                     buf.writeInt(m.getClusterRows());
+                    buf.writeInt(m.getSize());
                 });
             }
         }

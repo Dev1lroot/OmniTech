@@ -68,6 +68,16 @@
   "advancement.omnitech.radio.full_spectrum.title": "Полный спектр",
   "advancement.omnitech.radio.full_spectrum.description": "Соберите полный радионабор: Передатчик, Приёмник, Сканер и Локатор",
 
+  "block.omnitech.display": "Дисплей МкI",
+  "item.omnitech.display": "Дисплей МкI",
+  "block.omnitech.display_mk2": "Дисплей МкII",
+  "item.omnitech.display_mk2": "Дисплей МкII",
+  "block.omnitech.display_mk3": "Дисплей МкIII",
+  "item.omnitech.display_mk3": "Дисплей МкIII",
+  "container.omnitech.display": "Дисплей МкI",
+  "container.omnitech.display_mk2": "Дисплей МкII",
+  "container.omnitech.display_mk3": "Дисплей МкIII",
+
   "item.omnitech.guidebook": "Руководство OmniTech",
 
   "item.omnitech.truth_table": "Таблица истинности",

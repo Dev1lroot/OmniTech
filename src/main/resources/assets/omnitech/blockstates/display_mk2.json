@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "omnitech:block/display_mk2" },
+    "facing=south": { "model": "omnitech:block/display_mk2", "y": 180 },
+    "facing=east":  { "model": "omnitech:block/display_mk2", "y":  90 },
+    "facing=west":  { "model": "omnitech:block/display_mk2", "y": 270 }
+  }
+}
