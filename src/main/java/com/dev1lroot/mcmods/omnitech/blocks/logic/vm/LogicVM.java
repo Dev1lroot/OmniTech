@@ -141,7 +141,7 @@ public class LogicVM {
             return null;
         }
 
-        String[] lines = source.split("\n");
+        String[] lines = source.replace(';', '\n').split("\n");
 
         // Pass 1 – collect label → instruction-index mapping.
         // Every non-empty, non-comment, non-label line emits exactly 1 instruction.
@@ -182,8 +182,7 @@ public class LogicVM {
 
     private static String stripComment(String line) {
         for (int i = 0; i < line.length(); i++) {
-            char c = line.charAt(i);
-            if (c == ';' || c == '#') return line.substring(0, i);
+            if (line.charAt(i) == '#') return line.substring(0, i);
         }
         return line;
     }
