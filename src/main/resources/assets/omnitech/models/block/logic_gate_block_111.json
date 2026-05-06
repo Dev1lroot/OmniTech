@@ -1,0 +1,8 @@
+{
+  "parent": "omnitech:block/logic_gate_block",
+  "textures": {
+    "0": "omnitech:block/logic_gate",
+    "particle": "omnitech:block/logic_gate",
+    "glow": "omnitech:block/logic_gate_111"
+  }
+}

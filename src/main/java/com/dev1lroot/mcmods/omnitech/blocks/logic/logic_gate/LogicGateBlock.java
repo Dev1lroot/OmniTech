@@ -25,23 +25,45 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class LogicGateBlock extends BaseEntityBlock {
-
+public class LogicGateBlock extends BaseEntityBlock
+{
     public static final MapCodec<LogicGateBlock> CODEC = simpleCodec(LogicGateBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty INPUT_A = BooleanProperty.create("a");
     public static final BooleanProperty INPUT_B = BooleanProperty.create("b");
-    public static final BooleanProperty OUTPUT   = BooleanProperty.create("output");
+    public static final BooleanProperty OUTPUT  = BooleanProperty.create("output");
+
+    private static final VoxelShape BASE      = Block.box( 0,  0,  0, 16, 2, 16);
+    private static final VoxelShape PORT_WE      = Block.box( 6,  2,  4, 10, 14, 12);
+    private static final VoxelShape PORT_NS      = Block.box( 4,  2,  6, 12, 14, 10);
 
     public LogicGateBlock(Properties properties) {
         super(properties.noOcclusion());
         this.registerDefaultState(this.stateDefinition.any()
-                .setValue(FACING, Direction.NORTH)
+                .setValue(FACING, Direction.SOUTH)
                 .setValue(INPUT_A, false)
                 .setValue(INPUT_B, false)
                 .setValue(OUTPUT, false));
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos,
+                               CollisionContext context) {
+        VoxelShape shape = BASE;
+        if(state.getValue(FACING) == Direction.NORTH ||  state.getValue(FACING) == Direction.SOUTH)
+        {
+            shape = Shapes.or(shape, PORT_NS);
+        }
+        else if(state.getValue(FACING) == Direction.WEST ||  state.getValue(FACING) == Direction.EAST)
+        {
+            shape = Shapes.or(shape, PORT_WE);
+        }
+        return shape;
     }
 
     @Override
