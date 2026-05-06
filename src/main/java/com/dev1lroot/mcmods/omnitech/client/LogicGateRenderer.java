@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.client;
 
+import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_gate.LogicGateBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_gate.LogicGateBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -14,6 +15,7 @@ import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -52,6 +54,8 @@ public class LogicGateRenderer
             return;
         }
 
+        state.facing = entity.getBlockState().getValue(LogicGateBlock.FACING);
+
         ItemStack templateStack = entity.getTemplate();
         if (!templateStack.isEmpty()) {
             ItemStackRenderState itemState = new ItemStackRenderState();
@@ -70,15 +74,25 @@ public class LogicGateRenderer
     public void submit(LogicGateRenderState state, PoseStack poseStack,
                        SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         if (state.templateItemState != null) {
+            float yRot = facingToYRot(state.facing);
             poseStack.pushPose();
             poseStack.translate(0.5f, Y_TEMPLATE, 0.5f);
-            poseStack.mulPose(Axis.YP.rotationDegrees(-90f));
-            //poseStack.mulPose(Axis.XP.rotationDegrees(-90f));
+            poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
             poseStack.scale(TEMPLATE_SCALE, TEMPLATE_SCALE, TEMPLATE_SCALE);
             state.templateItemState.submit(
                     poseStack, submitNodeCollector,
                     state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
         }
+    }
+
+    private static float facingToYRot(Direction facing) {
+        return switch (facing) {
+            case NORTH ->   180f;
+            case EAST  ->  90f;
+            case SOUTH ->   0f;
+            case WEST  -> -90f;
+            default    ->   0f;
+        };
     }
 }

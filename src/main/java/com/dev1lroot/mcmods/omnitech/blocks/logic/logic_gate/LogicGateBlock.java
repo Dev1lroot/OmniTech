@@ -31,13 +31,17 @@ public class LogicGateBlock extends BaseEntityBlock {
 
     public static final MapCodec<LogicGateBlock> CODEC = simpleCodec(LogicGateBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+    public static final BooleanProperty INPUT_A = BooleanProperty.create("a");
+    public static final BooleanProperty INPUT_B = BooleanProperty.create("b");
+    public static final BooleanProperty OUTPUT   = BooleanProperty.create("output");
 
     public LogicGateBlock(Properties properties) {
         super(properties.noOcclusion());
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
-                .setValue(POWERED, false));
+                .setValue(INPUT_A, false)
+                .setValue(INPUT_B, false)
+                .setValue(OUTPUT, false));
     }
 
     @Override
@@ -48,7 +52,7 @@ public class LogicGateBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, POWERED);
+        builder.add(FACING, INPUT_A, INPUT_B, OUTPUT);
     }
 
     @Override
@@ -75,8 +79,7 @@ public class LogicGateBlock extends BaseEntityBlock {
 
     @Override
     protected int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction dir) {
-        if (!state.getValue(POWERED)) return 0;
-        // Emit only from the back face (opposite of where the block faces)
+        if (!state.getValue(OUTPUT)) return 0;
         return dir == state.getValue(FACING).getOpposite() ? 15 : 0;
     }
 
@@ -99,25 +102,31 @@ public class LogicGateBlock extends BaseEntityBlock {
     }
 
     private void updateOutput(BlockState state, Level level, BlockPos pos) {
-        boolean newPowered = false;
+        Direction facing = state.getValue(FACING);
+        Direction dirA = facing.getClockWise();
+        Direction dirB = facing.getCounterClockWise();
 
+        boolean a = level.getSignal(pos.relative(dirA), dirA) > 0;
+        boolean b = level.getSignal(pos.relative(dirB), dirB) > 0;
+
+        boolean output = false;
         if (level.getBlockEntity(pos) instanceof LogicGateBlockEntity be) {
             ItemStack template = be.getTemplate();
             if (!template.isEmpty() && template.getItem() instanceof LogicGateTemplateItem ti) {
                 LogicGate gate = LogicGate.byId(ti.getGateId());
                 if (gate != null) {
-                    Direction facing = state.getValue(FACING);
-                    Direction inputA = facing.getCounterClockWise();
-                    Direction inputB = facing.getClockWise();
-                    boolean a = level.getSignal(pos.relative(inputA), inputA) > 0;
-                    boolean b = level.getSignal(pos.relative(inputB), inputB) > 0;
-                    newPowered = gate.evaluate(a, b);
+                    output = gate.evaluate(a, b);
                 }
             }
         }
 
-        if (state.getValue(POWERED) != newPowered) {
-            level.setBlock(pos, state.setValue(POWERED, newPowered), 2);
+        BlockState newState = state
+                .setValue(INPUT_A, a)
+                .setValue(INPUT_B, b)
+                .setValue(OUTPUT, output);
+
+        if (!newState.equals(state)) {
+            level.setBlock(pos, newState, 2);
             level.updateNeighborsAt(pos, this);
         }
     }

@@ -1,12 +1,8 @@
 {
   "variants": {
-    "facing=north,powered=false": { "model": "omnitech:block/logic_gate_block" },
-    "facing=north,powered=true":  { "model": "omnitech:block/logic_gate_block" },
-    "facing=south,powered=false": { "model": "omnitech:block/logic_gate_block", "y": 180 },
-    "facing=south,powered=true":  { "model": "omnitech:block/logic_gate_block", "y": 180 },
-    "facing=west,powered=false":  { "model": "omnitech:block/logic_gate_block", "y": 270 },
-    "facing=west,powered=true":   { "model": "omnitech:block/logic_gate_block", "y": 270 },
-    "facing=east,powered=false":  { "model": "omnitech:block/logic_gate_block", "y": 90 },
-    "facing=east,powered=true":   { "model": "omnitech:block/logic_gate_block", "y": 90 }
+    "facing=north": { "model": "omnitech:block/logic_gate_block" },
+    "facing=south": { "model": "omnitech:block/logic_gate_block", "y": 180 },
+    "facing=west":  { "model": "omnitech:block/logic_gate_block", "y": 270 },
+    "facing=east":  { "model": "omnitech:block/logic_gate_block", "y": 90 }
   }
 }
