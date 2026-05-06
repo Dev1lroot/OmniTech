@@ -1,22 +1,38 @@
 {
-  "parent": "minecraft:block/block",
-  "textures": {
-    "0": "omnitech:block/machine_side",
-    "particle": "omnitech:block/machine_side"
-  },
-  "elements": [
-    {
-      "name": "base",
-      "from": [0, 0, 0],
-      "to": [16, 2, 16],
-      "faces": {
-        "north": {"uv": [0, 14, 16, 16], "texture": "#0", "cullface": "north"},
-        "east":  {"uv": [0, 14, 16, 16], "texture": "#0", "cullface": "east"},
-        "south": {"uv": [0, 14, 16, 16], "texture": "#0", "cullface": "south"},
-        "west":  {"uv": [0, 14, 16, 16], "texture": "#0", "cullface": "west"},
-        "up":    {"uv": [0, 0, 16, 16],  "texture": "#0"},
-        "down":  {"uv": [0, 0, 16, 16],  "texture": "#0", "cullface": "down"}
-      }
-    }
-  ]
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:block/block",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "omnitech:block/logic_gate",
+		"particle": "omnitech:block/logic_gate"
+	},
+	"elements": [
+		{
+			"name": "base",
+			"from": [0, 0, 0],
+			"to": [16, 2, 16],
+			"faces": {
+				"north": {"uv": [8, 0, 16, 1], "texture": "#0", "cullface": "north"},
+				"east": {"uv": [8, 1, 16, 2], "texture": "#0", "cullface": "east"},
+				"south": {"uv": [8, 2, 16, 3], "texture": "#0", "cullface": "south"},
+				"west": {"uv": [8, 3, 16, 4], "texture": "#0", "cullface": "west"},
+				"up": {"uv": [8, 8, 0, 0], "texture": "#0"},
+				"down": {"uv": [8, 8, 0, 16], "texture": "#0", "cullface": "down"}
+			}
+		},
+		{
+			"from": [4, 2, 7],
+			"to": [12, 3, 9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4, 2, 7]},
+			"faces": {
+				"north": {"uv": [8, 6, 12, 6.5], "texture": "#0"},
+				"east": {"uv": [8, 7, 9, 7.5], "texture": "#0"},
+				"south": {"uv": [8, 6.5, 12, 7], "texture": "#0"},
+				"west": {"uv": [8, 7.5, 9, 8], "texture": "#0"},
+				"up": {"uv": [12, 5, 8, 4], "texture": "#0"},
+				"down": {"uv": [12, 5, 8, 6], "texture": "#0"}
+			}
+		}
+	]
 }

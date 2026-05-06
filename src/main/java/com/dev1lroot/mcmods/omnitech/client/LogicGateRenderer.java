@@ -22,8 +22,8 @@ import org.jetbrains.annotations.Nullable;
 public class LogicGateRenderer
         implements BlockEntityRenderer<LogicGateBlockEntity, LogicGateRenderState> {
 
-    private static final float Y_TEMPLATE    = 2.5f / 16f;
-    private static final float TEMPLATE_SCALE = 2f;
+    private static final float Y_TEMPLATE    = 5f / 16f;
+    private static final float TEMPLATE_SCALE = 1.7f;
 
     private final ItemModelResolver itemModelResolver;
 
@@ -71,9 +71,9 @@ public class LogicGateRenderer
                        SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         if (state.templateItemState != null) {
             poseStack.pushPose();
-            poseStack.translate(0.25f, Y_TEMPLATE, 0.5f);
+            poseStack.translate(0.5f, Y_TEMPLATE, 0.5f);
             poseStack.mulPose(Axis.YP.rotationDegrees(-90f));
-            poseStack.mulPose(Axis.XP.rotationDegrees(-90f));
+            //poseStack.mulPose(Axis.XP.rotationDegrees(-90f));
             poseStack.scale(TEMPLATE_SCALE, TEMPLATE_SCALE, TEMPLATE_SCALE);
             state.templateItemState.submit(
                     poseStack, submitNodeCollector,
