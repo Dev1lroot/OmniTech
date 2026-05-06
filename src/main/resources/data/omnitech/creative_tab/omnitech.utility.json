@@ -4,6 +4,24 @@
   "data": [
     "omnitech:cog_template",
     "omnitech:rod_template",
-    "omnitech:ingot_template"
+    "omnitech:ingot_template",
+    "omnitech:truth_table",
+    "omnitech:gate_template_and",
+    "omnitech:gate_template_or",
+    "omnitech:gate_template_nand",
+    "omnitech:gate_template_nor",
+    "omnitech:gate_template_xor",
+    "omnitech:gate_template_xnor",
+    "omnitech:gate_template_buffer_a",
+    "omnitech:gate_template_not_a",
+    "omnitech:gate_template_buffer_b",
+    "omnitech:gate_template_not_b",
+    "omnitech:gate_template_always_on",
+    "omnitech:gate_template_always_off",
+    "omnitech:gate_template_imply",
+    "omnitech:gate_template_nimply",
+    "omnitech:microcontroller",
+    "omnitech:floppy_disk",
+    "omnitech:ram_card"
   ]
 }

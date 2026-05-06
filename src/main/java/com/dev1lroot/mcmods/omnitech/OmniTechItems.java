@@ -269,6 +269,12 @@ public class OmniTechItems
     public static final DeferredItem<LogicGateTemplateItem> GATE_TEMPLATE_ALWAYS_OFF =
             REGISTRY.registerItem("gate_template_always_off",
                     p -> new LogicGateTemplateItem("always_off", p.stacksTo(1)));
+    public static final DeferredItem<LogicGateTemplateItem> GATE_TEMPLATE_IMPLY =
+            REGISTRY.registerItem("gate_template_imply",
+                    p -> new LogicGateTemplateItem("imply", p.stacksTo(1)));
+    public static final DeferredItem<LogicGateTemplateItem> GATE_TEMPLATE_NIMPLY =
+            REGISTRY.registerItem("gate_template_nimply",
+                    p -> new LogicGateTemplateItem("nimply", p.stacksTo(1)));
 
     /** Returns a new ItemStack for the gate template matching the given gate, or empty if unrecognised. */
     public static ItemStack gateTemplateFor(LogicGate gate) {
@@ -285,8 +291,13 @@ public class OmniTechItems
             case NOT_B      -> GATE_TEMPLATE_NOT_B.get();
             case ALWAYS_ON  -> GATE_TEMPLATE_ALWAYS_ON.get();
             case ALWAYS_OFF -> GATE_TEMPLATE_ALWAYS_OFF.get();
+            case IMPLY      -> GATE_TEMPLATE_IMPLY.get();
+            case NIMPLY     -> GATE_TEMPLATE_NIMPLY.get();
         });
     }
+
+    public static final DeferredItem<BlockItem> REDSTONE_INTERSECTION_BLOCK_ITEM =
+            REGISTRY.registerSimpleBlockItem("redstone_intersection_block", OmniTechBlocks.REDSTONE_INTERSECTION);
 
     // ── Bore Tools ────────────────────────────────────────────────────────────
 

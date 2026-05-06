@@ -21,6 +21,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.analog.AnalogCableBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.speaker.SpeakerBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.LogicCableBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.RedstoneIntersectionBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_gate.LogicGateBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockMk2;
@@ -159,6 +160,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> DISPLAY_MK3;
     public static final DeferredBlock<Block> FLOPPY_DRIVE;
     public static final DeferredBlock<Block> EXPANSION_SLOT;
+    public static final DeferredBlock<Block> REDSTONE_INTERSECTION;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -341,7 +343,8 @@ public class OmniTechBlocks {
                         .pushReaction(net.minecraft.world.level.material.PushReaction.NORMAL)));
         LOGIC_GATE_BLOCK = register("logic_gate_block",
                 p -> new LogicGateBlock(p.mapColor(MapColor.METAL).strength(2.5F)
-                        .sound(SoundType.METAL)));
+                        .sound(SoundType.METAL)
+                        .isRedstoneConductor((s, l, pos2) -> false)));
         GPIO_PORT = register("gpio_port",
                 p -> new GPIOPortBlock(p.mapColor(MapColor.COLOR_BLUE).strength(2.0F)
                         .sound(SoundType.METAL)));
@@ -360,6 +363,10 @@ public class OmniTechBlocks {
         EXPANSION_SLOT = register("expansion_slot",
                 p -> new ExpansionSlotBlock(p.mapColor(MapColor.COLOR_GRAY).strength(2.5F)
                         .sound(SoundType.METAL)));
+        REDSTONE_INTERSECTION = register("redstone_intersection_block",
+                p -> new RedstoneIntersectionBlock(p.mapColor(MapColor.METAL).strength(2.5F)
+                        .sound(SoundType.METAL)
+                        .isRedstoneConductor((s, l, pos2) -> false)));
     }
 
     // ── Registration helpers ───────────────────────────────────────────────

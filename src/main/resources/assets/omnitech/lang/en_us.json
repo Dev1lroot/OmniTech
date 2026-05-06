@@ -727,6 +727,11 @@
   "item.omnitech.gate_template_not_b": "NOT B Gate Template",
   "item.omnitech.gate_template_always_on": "ALWAYS ON Gate Template",
   "item.omnitech.gate_template_always_off": "ALWAYS OFF Gate Template",
+  "item.omnitech.gate_template_imply": "IMPLY Gate Template",
+  "item.omnitech.gate_template_nimply": "NIMPLY Gate Template",
+
+  "block.omnitech.redstone_intersection_block": "Redstone Intersection",
+  "item.omnitech.redstone_intersection_block": "Redstone Intersection",
 
   "item.omnitech.gate_template_and.desc": "Output is 1 only when both A and B are 1.",
   "item.omnitech.gate_template_or.desc": "Output is 1 when at least one of A or B is 1.",
@@ -740,6 +745,8 @@
   "item.omnitech.gate_template_not_b.desc": "Output is the inverse of input B, ignores A.",
   "item.omnitech.gate_template_always_on.desc": "Output is always 1, regardless of inputs.",
   "item.omnitech.gate_template_always_off.desc": "Output is always 0, regardless of inputs.",
+  "item.omnitech.gate_template_imply.desc": "Output is 0 only when A is 1 and B is 0 (A implies B).",
+  "item.omnitech.gate_template_nimply.desc": "Output is 1 only when A is 1 and B is 0.",
   "item.omnitech.gate_template.tooltip.hint": "Use in logic circuit assembly",
 
   "gui.omnitech.truth_table": "Truth Table",

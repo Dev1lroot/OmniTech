@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "a=false,b=false": { "model": "omnitech:block/redstone_intersection_block" },
+    "a=false,b=true":  { "model": "omnitech:block/redstone_intersection_block" },
+    "a=true,b=false":  { "model": "omnitech:block/redstone_intersection_block" },
+    "a=true,b=true":   { "model": "omnitech:block/redstone_intersection_block" }
+  }
+}

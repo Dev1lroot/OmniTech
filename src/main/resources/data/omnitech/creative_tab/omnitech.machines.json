@@ -46,6 +46,17 @@
     "omnitech:analog_cable",
     "omnitech:microphone",
     "omnitech:speaker",
-    "omnitech:radio_locator"
+    "omnitech:radio_locator",
+    "omnitech:programming_station",
+    "omnitech:logic_cable",
+    "omnitech:logic_machine",
+    "omnitech:floppy_drive",
+    "omnitech:expansion_slot",
+    "omnitech:gpio_port",
+    "omnitech:display",
+    "omnitech:display_mk2",
+    "omnitech:display_mk3",
+    "omnitech:logic_gate_block",
+    "omnitech:redstone_intersection_block"
   ]
 }

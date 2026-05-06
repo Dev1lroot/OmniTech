@@ -15,7 +15,9 @@ public enum LogicGate {
     BUFFER_B("buffer_b", new int[]{0, 1, 0, 1}),
     NOT_B("not_b",     new int[]{1, 0, 1, 0}),
     ALWAYS_ON("always_on",   new int[]{1, 1, 1, 1}),
-    ALWAYS_OFF("always_off", new int[]{0, 0, 0, 0});
+    ALWAYS_OFF("always_off", new int[]{0, 0, 0, 0}),
+    IMPLY("imply",           new int[]{1, 1, 0, 1}),  // A→B: false only when A=1,B=0
+    NIMPLY("nimply",         new int[]{0, 0, 1, 0});   // NOT(A→B): true only when A=1,B=0
 
     public final String id;
     // Output values for canonical inputs: A=0/B=0, A=0/B=1, A=1/B=0, A=1/B=1
