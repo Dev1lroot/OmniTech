@@ -22,6 +22,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.speaker.SpeakerBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.LogicCableBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_gate.LogicGateBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockMk2;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockMk3;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.floppy_drive.FloppyDriveBlock;
@@ -151,6 +152,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> PROGRAMMING_STATION;
     public static final DeferredBlock<Block> LOGIC_MACHINE;
     public static final DeferredBlock<Block> LOGIC_CABLE;
+    public static final DeferredBlock<Block> LOGIC_GATE_BLOCK;
     public static final DeferredBlock<Block> GPIO_PORT;
     public static final DeferredBlock<Block> DISPLAY;
     public static final DeferredBlock<Block> DISPLAY_MK2;
@@ -337,6 +339,9 @@ public class OmniTechBlocks {
                 p -> new LogicCableBlock(p.mapColor(MapColor.COLOR_GREEN).strength(1.0F)
                         .sound(SoundType.METAL).noOcclusion()
                         .pushReaction(net.minecraft.world.level.material.PushReaction.NORMAL)));
+        LOGIC_GATE_BLOCK = register("logic_gate_block",
+                p -> new LogicGateBlock(p.mapColor(MapColor.METAL).strength(2.5F)
+                        .sound(SoundType.METAL)));
         GPIO_PORT = register("gpio_port",
                 p -> new GPIOPortBlock(p.mapColor(MapColor.COLOR_BLUE).strength(2.0F)
                         .sound(SoundType.METAL)));

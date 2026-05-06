@@ -680,6 +680,8 @@
   "block.omnitech.programming_station": "Programming Station",
   "block.omnitech.logic_machine": "Logic Machine",
   "block.omnitech.logic_cable": "Logic Cable",
+  "block.omnitech.logic_gate_block": "Logic Gate",
+  "item.omnitech.logic_gate_block": "Logic Gate",
   "block.omnitech.gpio_port": "GPIO Port",
   "block.omnitech.display": "Display MkI",
   "item.omnitech.display": "Display MkI",

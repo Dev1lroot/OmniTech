@@ -32,6 +32,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockEntityMk2;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockEntityMk3;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station.ProgrammingStationBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_gate.LogicGateBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.LogicMachineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_engine.ElectricEngineBlockEntity;
@@ -265,6 +266,11 @@ public class OmniTechBlockEntities {
             REGISTRY.register("logic_machine",
                     () -> new BlockEntityType<>(LogicMachineBlockEntity::new,
                             OmniTechBlocks.LOGIC_MACHINE.get()));
+
+    public static final Supplier<BlockEntityType<LogicGateBlockEntity>> LOGIC_GATE_BLOCK =
+            REGISTRY.register("logic_gate_block",
+                    () -> new BlockEntityType<>(LogicGateBlockEntity::new,
+                            OmniTechBlocks.LOGIC_GATE_BLOCK.get()));
 
     public static final Supplier<BlockEntityType<GPIOPortBlockEntity>> GPIO_PORT =
             REGISTRY.register("gpio_port",

@@ -190,6 +190,8 @@ public class OmniTechItems
             REGISTRY.registerSimpleBlockItem("logic_machine", OmniTechBlocks.LOGIC_MACHINE);
     public static final DeferredItem<BlockItem> LOGIC_CABLE_ITEM =
             REGISTRY.registerSimpleBlockItem("logic_cable", OmniTechBlocks.LOGIC_CABLE);
+    public static final DeferredItem<BlockItem> LOGIC_GATE_BLOCK_ITEM =
+            REGISTRY.registerSimpleBlockItem("logic_gate_block", OmniTechBlocks.LOGIC_GATE_BLOCK);
     public static final DeferredItem<BlockItem> GPIO_PORT_ITEM =
             REGISTRY.registerSimpleBlockItem("gpio_port", OmniTechBlocks.GPIO_PORT);
 

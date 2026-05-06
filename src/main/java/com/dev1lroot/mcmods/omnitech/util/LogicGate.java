@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.util;
 
 import java.util.Arrays;
+import org.jetbrains.annotations.Nullable;
 
 public enum LogicGate {
     AND("and",         new int[]{0, 0, 0, 1}),
@@ -23,6 +24,19 @@ public enum LogicGate {
     LogicGate(String id, int[] pattern) {
         this.id = id;
         this.pattern = pattern;
+    }
+
+    /** Evaluates the gate output for the given input pair. */
+    public boolean evaluate(boolean a, boolean b) {
+        return pattern[(a ? 2 : 0) | (b ? 1 : 0)] != 0;
+    }
+
+    /** Returns the gate whose id matches, or null if not found. */
+    public static @Nullable LogicGate byId(String id) {
+        for (LogicGate g : values()) {
+            if (g.id.equals(id)) return g;
+        }
+        return null;
     }
 
     /**

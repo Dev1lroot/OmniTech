@@ -9,6 +9,7 @@ import com.dev1lroot.mcmods.omnitech.client.FluidPipeRenderer;
 import com.dev1lroot.mcmods.omnitech.client.FluidTankRenderer;
 import com.dev1lroot.mcmods.omnitech.client.FoundryRenderer;
 import com.dev1lroot.mcmods.omnitech.client.KineticPipeRenderer;
+import com.dev1lroot.mcmods.omnitech.client.LogicGateRenderer;
 import com.dev1lroot.mcmods.omnitech.client.DisplayBlockEntityRenderer;
 import com.dev1lroot.mcmods.omnitech.client.RadiatorBER;
 import com.dev1lroot.mcmods.omnitech.client.ThermalConductorBER;
@@ -114,6 +115,7 @@ public class OmniTechClient
         event.registerBlockEntityRenderer(OmniTechBlockEntities.CONVEYOR_BELT.get(), ConveyorBeltRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.FLUID_TANK.get(), FluidTankRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.FOUNDRY.get(), FoundryRenderer::new);
+        event.registerBlockEntityRenderer(OmniTechBlockEntities.LOGIC_GATE_BLOCK.get(), LogicGateRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.FLUID_PIPE.get(), FluidPipeRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.VALVE.get(), ValveRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.THERMAL_CONDUCTOR.get(), ThermalConductorBER::new);
