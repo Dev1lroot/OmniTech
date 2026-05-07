@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine;
 
+import com.dev1lroot.mcmods.omnitech.BinStorage;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.LogicCableBlock;
@@ -7,6 +8,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.expansion_slot.ExpansionSlotBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.floppy_drive.FloppyDriveBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.vm.DtbBuilder;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.vm.LogicVM;
 import com.dev1lroot.mcmods.omnitech.gui.LogicMachineMenu;
 import com.dev1lroot.mcmods.omnitech.items.FloppyDiskItem;
@@ -32,6 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.UUID;
 
 public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
 
@@ -43,11 +46,26 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
 
     private final LogicVM vm = new LogicVM();
     private boolean running = false;
-    private String  compileError = null;
+    private String  compileError = null; // kept for GUI compat; always null now
+    private byte[]  loadedBinary       = null; // re-applied after RAM cache rebuild
+    private int     loadedBinaryOffset = 0;    // text_offset from RISC-V Image header
+    private int     loadedDtbAddr      = 0;    // physical address of DTB in RAM
+    private UUID    loadedBinaryId     = null; // UUID of the binary file in BinStorage
+
+    // Console output buffer — flushed to MCU item CONSOLE_OUTPUT each tick when dirty
+    private final StringBuilder consoleBuf = new StringBuilder(65536);
+    private boolean consoleDirty = false;
+
+    // Framebuffer pixels (320×240 XRGB, LE: bytes [B,G,R,A]) — blitted to display[0] when dirty
+    private final byte[] fbPixels = new byte[320 * 240 * 4];
+    private boolean fbDirty = false;
 
     private final Map<Integer, GPIOPortBlockEntity>  gpioCache    = new HashMap<>();
     private final Map<Integer, DisplayBlockEntity>   displayCache = new HashMap<>();
     private final Map<Integer, FloppyDriveBlockEntity> floppyCache = new HashMap<>();
+    // Cached floppy contents keyed by drive ID — populated during network cache rebuild.
+    // Avoids a file-read on every sector access (called thousands of times per tick).
+    private final Map<Integer, byte[]> floppyDataCache = new HashMap<>();
     private final List<ExpansionSlotBlockEntity>     expansionSlotCache = new ArrayList<>();
     private long lastCacheRefresh = -100L;
 
@@ -56,6 +74,8 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
     private record RamSlot(ExpansionSlotBlockEntity be, int slotIndex, int offset, int capacity) {}
     private List<RamSlot>   ramSlots       = new ArrayList<>();
     private boolean[]       ramSlotsDirty  = new boolean[0];
+    // Cache of UUID → RAM bytes so buildRamAddressSpace() doesn't re-read files every tick.
+    private final Map<UUID, byte[]> ramFileCache = new HashMap<>();
 
     private int tickAccum = 0;
 
@@ -82,6 +102,16 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
         super(OmniTechBlockEntities.LOGIC_MACHINE.get(), pos, state);
     }
 
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        // level is now set — safe to read from BinStorage
+        if (loadedBinaryId != null && level != null && !level.isClientSide()) {
+            byte[] data = BinStorage.read(level.getServer(), loadedBinaryId);
+            if (data != null && data.length > 0) loadedBinary = data;
+        }
+    }
+
     // ── Ticking ───────────────────────────────────────────────────────────────
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
@@ -105,6 +135,28 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
         be.tickAccum += speed;
         int instrsThisTick = be.tickAccum / 20;
         be.tickAccum %= 20;
+
+        // Advance CLINT timer (50 000 mtime ticks per game tick = 1 MHz timebase at 20 TPS)
+        be.vm.advanceClock();
+
+        // Wire console putchar → consoleBuf
+        be.vm.console = ch -> {
+            if (be.consoleBuf.length() >= 131_072) {
+                // Trim oldest half to cap memory usage
+                be.consoleBuf.delete(0, 65_536);
+            }
+            be.consoleBuf.appendCodePoint(ch);
+            be.consoleDirty = true;
+        };
+
+        // Wire framebuffer → fbPixels array
+        be.vm.framebuffer = new LogicVM.FramebufferAccess() {
+            @Override public int  fbRdByte(int off) { return be.fbPixels[off] & 0xFF; }
+            @Override public void fbWrByte(int off, int val) {
+                be.fbPixels[off] = (byte)(val & 0xFF);
+                be.fbDirty = true;
+            }
+        };
 
         LogicVM.GPIOAccess gpio = new LogicVM.GPIOAccess() {
             @Override public int read(int portId) {
@@ -165,20 +217,14 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
             @Override public int capacity() { return be.ramBuffer.length; }
         };
         LogicVM.FloppyAccess floppy = (driveId, sector, dstAddr) -> {
-            FloppyDriveBlockEntity fd = be.floppyCache.get(driveId);
-            if (fd == null) return false;
-            ItemStack disk = fd.getDisk();
-            if (disk.isEmpty() || !(disk.getItem() instanceof FloppyDiskItem)) return false;
-            OmniTechDataComponents.ByteData floppyData = disk.get(OmniTechDataComponents.FLOPPY_DATA.get());
-            if (floppyData == null) return false;
-            byte[] data = floppyData.data();
+            byte[] data = be.floppyDataCache.get(driveId);
+            if (data == null) return false;
             int srcOffset = sector * FloppyDiskItem.SECTOR_SIZE;
             if (srcOffset < 0 || srcOffset >= data.length) return false;
             int copyLen = Math.min(FloppyDiskItem.SECTOR_SIZE,
                     Math.min(data.length - srcOffset, be.ramBuffer.length - dstAddr));
             if (copyLen <= 0) return false;
             System.arraycopy(data, srcOffset, be.ramBuffer, dstAddr, copyLen);
-            // Mark dirty RAM slots in the destination range
             for (int i = 0; i < be.ramSlots.size(); i++) {
                 RamSlot rs = be.ramSlots.get(i);
                 int end = rs.offset() + rs.capacity();
@@ -195,6 +241,37 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
         }
 
         if (be.vm.halted) be.running = false;
+
+        // Flush console text to MCU item so the client can display it
+        if (be.consoleDirty) {
+            ItemStack mcu = be.items.get(0);
+            if (!mcu.isEmpty()) {
+                mcu.set(OmniTechDataComponents.CONSOLE_OUTPUT.get(), be.consoleBuf.toString());
+            }
+            be.consoleDirty = false;
+        }
+
+        // Blit framebuffer to the display connected on port 0 (if any)
+        if (be.fbDirty) {
+            DisplayBlockEntity disp = be.displayCache.get(0);
+            if (disp != null) {
+                int dw = disp.getDisplayWidth(), dh = disp.getDisplayHeight();
+                int bw = Math.min(dw, 320), bh = Math.min(dh, 240);
+                int[] px = new int[bw * bh];
+                for (int row = 0; row < bh; row++) {
+                    for (int col = 0; col < bw; col++) {
+                        int off = (row * 320 + col) * 4;
+                        int b = be.fbPixels[off]     & 0xFF;
+                        int g = be.fbPixels[off + 1] & 0xFF;
+                        int r = be.fbPixels[off + 2] & 0xFF;
+                        px[row * bw + col] = (r << 16) | (g << 8) | b;
+                    }
+                }
+                disp.blit(0, 0, bw, bh, px);
+            }
+            be.fbDirty = false;
+        }
+
         be.setChanged();
     }
 
@@ -204,6 +281,7 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
         gpioCache.clear();
         displayCache.clear();
         floppyCache.clear();
+        floppyDataCache.clear();
         expansionSlotCache.clear();
 
         Set<BlockPos> visited = new HashSet<>();
@@ -236,6 +314,18 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
             }
         }
 
+        // Cache floppy contents so the sector-read lambda doesn't hit disk every access
+        if (!level.isClientSide()) {
+            for (Map.Entry<Integer, FloppyDriveBlockEntity> e : floppyCache.entrySet()) {
+                ItemStack disk = e.getValue().getDisk();
+                if (disk.isEmpty() || !(disk.getItem() instanceof FloppyDiskItem)) continue;
+                UUID fid = disk.get(OmniTechDataComponents.FLOPPY_DATA.get());
+                if (fid == null) continue;
+                byte[] data = BinStorage.read(level.getServer(), fid);
+                if (data != null) floppyDataCache.put(e.getKey(), data);
+            }
+        }
+
         buildRamAddressSpace();
     }
 
@@ -265,27 +355,46 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
         }
 
         byte[] newBuffer = new byte[totalBytes];
-        for (RamSlot rs : ramSlots) {
-            OmniTechDataComponents.ByteData ramData = rs.be().getItem(rs.slotIndex()).get(OmniTechDataComponents.RAM_DATA.get());
-            if (ramData != null) {
-                byte[] data = ramData.data();
+        if (level != null && !level.isClientSide()) {
+            for (RamSlot rs : ramSlots) {
+                UUID ramId = rs.be().getItem(rs.slotIndex()).get(OmniTechDataComponents.RAM_DATA.get());
+                if (ramId == null) continue;
+                byte[] data = ramFileCache.computeIfAbsent(ramId,
+                        id -> BinStorage.read(level.getServer(), id));
+                if (data == null) continue;
                 int len = Math.min(data.length, rs.capacity());
                 System.arraycopy(data, 0, newBuffer, rs.offset(), len);
             }
         }
         ramBuffer = newBuffer;
         ramSlotsDirty = new boolean[ramSlots.size()];
+        // NOTE: do NOT re-apply loadedBinary here.
+        // flushDirtyRamSlots() runs before every rebuild and writes the live kernel state
+        // (page tables, heap, etc.) to BinStorage.  Reading it back gives the correct state.
+        // Re-applying the original binary would overwrite those runtime modifications and
+        // corrupt the running kernel.
     }
 
     private void flushDirtyRamSlots() {
+        if (level == null || level.isClientSide()) return;
         for (int i = 0; i < ramSlots.size(); i++) {
             if (!ramSlotsDirty[i]) continue;
             RamSlot rs = ramSlots.get(i);
             byte[] data = Arrays.copyOfRange(ramBuffer, rs.offset(), rs.offset() + rs.capacity());
-            ItemStack stack = rs.be().getItem(rs.slotIndex()).copy();
-            stack.set(OmniTechDataComponents.RAM_DATA.get(), new OmniTechDataComponents.ByteData(data));
-            rs.be().setItem(rs.slotIndex(), stack);
-            rs.be().setChanged();
+
+            ItemStack stack = rs.be().getItem(rs.slotIndex());
+            UUID ramId = stack.get(OmniTechDataComponents.RAM_DATA.get());
+            if (ramId == null) {
+                // First write — assign a UUID and stamp it on the item
+                ramId = BinStorage.allocate();
+                ItemStack copy = stack.copy();
+                copy.set(OmniTechDataComponents.RAM_DATA.get(), ramId);
+                rs.be().setItem(rs.slotIndex(), copy);
+                rs.be().setChanged();
+            }
+
+            BinStorage.write(level.getServer(), ramId, data);
+            ramFileCache.put(ramId, data); // keep in-memory cache current
             ramSlotsDirty[i] = false;
         }
     }
@@ -294,21 +403,126 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
 
     public boolean handleButton(int id) {
         return switch (id) {
-            case BTN_RUN   -> { loadAndRun(); yield true; }
+            case BTN_RUN   -> {
+                // Ensure RAM/peripheral cache is populated before loading the binary
+                if (level != null && !level.isClientSide()) {
+                    rebuildNetworkCache(level, getBlockPos());
+                    lastCacheRefresh = level.getGameTime();
+                }
+                loadAndRun();
+                yield true;
+            }
             case BTN_STOP  -> { running = false; setChanged(); yield true; }
-            case BTN_RESET -> { running = false; vm.reset(); compileError = null; setChanged(); yield true; }
+            case BTN_RESET -> {
+                running = false;
+                compileError = null;
+                consoleBuf.setLength(0);
+                consoleDirty = false;
+                Arrays.fill(fbPixels, (byte) 0);
+                fbDirty = false;
+                if (loadedBinary != null &&
+                        loadedBinaryOffset + loadedBinary.length <= ramBuffer.length) {
+                    System.arraycopy(loadedBinary, 0, ramBuffer, loadedBinaryOffset, loadedBinary.length);
+                    // Re-apply DTB so the VM sees it after reset
+                    if (loadedDtbAddr != 0) {
+                        byte[] dtb = DtbBuilder.build(ramBuffer.length);
+                        if (loadedDtbAddr + dtb.length <= ramBuffer.length) {
+                            System.arraycopy(dtb, 0, ramBuffer, loadedDtbAddr, dtb.length);
+                        }
+                    }
+                    // Mark all slots dirty so the clean binary is flushed to BinStorage
+                    Arrays.fill(ramSlotsDirty, true);
+                    vm.reset();
+                    vm.loaded   = true;
+                    vm.pc       = loadedBinaryOffset;
+                    vm.regs[10] = 0;
+                    vm.regs[11] = loadedDtbAddr;
+                } else {
+                    loadedBinary       = null;
+                    loadedBinaryOffset = 0;
+                    loadedDtbAddr      = 0;
+                    vm.unload();
+                }
+                setChanged();
+                yield true;
+            }
             default -> false;
         };
     }
 
     private void loadAndRun() {
+        if (level == null || level.isClientSide()) return;
         ItemStack stack = items.get(0);
         if (stack.isEmpty() || !(stack.getItem() instanceof MicrocontrollerItem)) return;
-        int regCount = Math.clamp(stack.getOrDefault(OmniTechDataComponents.MCU_REGISTERS.get(), 4), 1, 256);
-        vm.setRegisterCount(regCount);
-        String prog = stack.getOrDefault(OmniTechDataComponents.PROGRAM.get(), "");
-        compileError = vm.compile(prog);
-        if (compileError == null && !vm.isEmpty()) running = true;
+
+        UUID binId = stack.get(OmniTechDataComponents.PROGRAM_BINARY.get());
+        if (binId == null) {
+            compileError = "No binary on MCU — use /loadbin";
+            setChanged();
+            return;
+        }
+        byte[] binary = BinStorage.read(level.getServer(), binId);
+        if (binary == null || binary.length == 0) {
+            compileError = "Binary file missing — re-run /loadbin";
+            setChanged();
+            return;
+        }
+
+        loadedBinaryId = binId;
+
+        // Parse RISC-V Linux Image header to find text_offset.
+        // Header: [0..7] code, [8..15] text_offset (LE u64), [48..55] magic "RISCV\0\0\0"
+        int textOffset = 0;
+        if (binary.length >= 64 &&
+                binary[48] == 'R' && binary[49] == 'I' && binary[50] == 'S' &&
+                binary[51] == 'C' && binary[52] == 'V') {
+            textOffset = (binary[8] & 0xFF)
+                    | ((binary[9]  & 0xFF) << 8)
+                    | ((binary[10] & 0xFF) << 16)
+                    | ((binary[11] & 0xFF) << 24);
+        }
+
+        if (textOffset + binary.length > ramBuffer.length) {
+            compileError = "Not enough RAM: need " + (textOffset + binary.length)
+                    + " bytes, have " + ramBuffer.length;
+            setChanged();
+            return;
+        }
+
+        loadedBinary       = binary;
+        loadedBinaryOffset = textOffset;
+        System.arraycopy(binary, 0, ramBuffer, textOffset, binary.length);
+
+        // Build DTB and place 4 KB-aligned after the kernel image
+        byte[] dtb  = DtbBuilder.build(ramBuffer.length);
+        int dtbAddr = (textOffset + binary.length + 0xFFF) & ~0xFFF;
+        if (dtbAddr + dtb.length <= ramBuffer.length) {
+            System.arraycopy(dtb, 0, ramBuffer, dtbAddr, dtb.length);
+        } else {
+            dtbAddr = 0; // fallback: no DTB (bare-metal programs don't need it)
+        }
+        loadedDtbAddr = dtbAddr;
+
+        // Mark all RAM slots covering the written region as dirty
+        int written = Math.max(textOffset + binary.length, dtbAddr == 0 ? 0 : dtbAddr + dtb.length);
+        for (int i = 0; i < ramSlots.size(); i++) {
+            RamSlot rs = ramSlots.get(i);
+            if (rs.offset() < written) ramSlotsDirty[i] = true;
+        }
+
+        compileError = null;
+        // Clear console buffer for new run
+        consoleBuf.setLength(0);
+        consoleDirty = false;
+        Arrays.fill(fbPixels, (byte) 0);
+        fbDirty = false;
+
+        vm.reset();
+        vm.loaded = true;
+        vm.pc        = textOffset; // entry point per RISC-V boot protocol
+        vm.regs[10]  = 0;          // a0 = hart ID
+        vm.regs[11]  = dtbAddr;    // a1 = DTB physical address
+        running = true;
         setChanged();
     }
 
@@ -318,7 +532,9 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
     public void setItem(int slot, ItemStack stack) {
         super.setItem(slot, stack);
         running = false;
-        vm.reset();
+        loadedBinary = null;
+        loadedBinaryId = null;
+        vm.unload();
         compileError = null;
         setChanged();
     }
@@ -368,17 +584,16 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
         super.loadAdditional(in);
         ContainerHelper.loadAllItems(in, items);
         running = in.getBooleanOr("Running", false);
+        vm.loadState(in);
+        // Restore the flat RAM buffer (includes any loaded binary)
+        in.read("RAMBuffer", OmniTechDataComponents.BYTE_ARRAY_CODEC)
+          .ifPresent(b -> { if (b.data().length > 0) ramBuffer = b.data(); });
+        // Remember the binary UUID so onLoad() can read the file once level is available
         ItemStack stack = items.get(0);
         if (!stack.isEmpty() && stack.getItem() instanceof MicrocontrollerItem) {
-            int regCount = Math.clamp(
-                    stack.getOrDefault(OmniTechDataComponents.MCU_REGISTERS.get(), 4), 1, 256);
-            vm.setRegisterCount(regCount);
-            String prog = stack.getOrDefault(OmniTechDataComponents.PROGRAM.get(), "");
-            compileError = vm.compile(prog);
+            UUID id = stack.get(OmniTechDataComponents.PROGRAM_BINARY.get());
+            if (id != null) loadedBinaryId = id;
         }
-        vm.loadState(in);
-        // Restore RAM buffer if stored (expansion slots may not be loaded yet)
-        in.read("RAMBuffer", OmniTechDataComponents.BYTE_ARRAY_CODEC).ifPresent(b -> { if (b.data().length > 0) ramBuffer = b.data(); });
     }
 
     // ── Accessors for System tab ──────────────────────────────────────────────

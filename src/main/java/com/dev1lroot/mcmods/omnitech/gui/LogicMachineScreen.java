@@ -76,8 +76,18 @@ public class LogicMachineScreen extends AbstractContainerScreen<LogicMachineMenu
 
     private void switchTab(Tab tab) {
         activeTab = tab;
-        if (tab == Tab.DBG) debugEditor.setText(menu.getProgram());
+        if (tab == Tab.DBG) refreshConsole();
         updateTabVisibility();
+    }
+
+    private void refreshConsole() {
+        String console = menu.getConsole();
+        if (console.isEmpty()) {
+            String src = menu.getProgram();
+            debugEditor.setText(src.isEmpty() ? "(no output yet)" : src);
+        } else {
+            debugEditor.setText(console);
+        }
     }
 
     private void updateTabVisibility() {
@@ -98,7 +108,7 @@ public class LogicMachineScreen extends AbstractContainerScreen<LogicMachineMenu
         boolean mcuChanged = hasMCU != hadMCU ||
                 (hasMCU && !ItemStack.isSameItemSameComponents(mc, lastMCU));
 
-        if (mcuChanged && activeTab == Tab.DBG) debugEditor.setText(menu.getProgram());
+        if (mcuChanged && activeTab == Tab.DBG) refreshConsole();
         hadMCU = hasMCU;
         lastMCU = mc.copy();
 
@@ -109,9 +119,11 @@ public class LogicMachineScreen extends AbstractContainerScreen<LogicMachineMenu
         }
 
         if (activeTab == Tab.DBG) {
-            int currentLine = menu.getCurrentLine();
-            debugEditor.setHighlightLine(menu.isRunning() || menu.isHalted() ? currentLine : -1);
-            if (menu.isRunning()) debugEditor.scrollToLine(currentLine, EDITOR_H);
+            // Refresh console text every tick while running
+            if (menu.isRunning()) refreshConsole();
+            debugEditor.setHighlightLine(-1); // no line highlight for console view
+            // Auto-scroll to bottom
+            debugEditor.scrollToLine(Integer.MAX_VALUE, EDITOR_H);
         }
     }
 
@@ -140,32 +152,26 @@ public class LogicMachineScreen extends AbstractContainerScreen<LogicMachineMenu
             g.text(this.font, this.title, this.titleLabelX, 6, 0xFF404040, false);
             String status;
             int color;
-            if (menu.hasError()) {
-                status = "Compile Error"; color = 0xFFFF4444;
-            } else if (!menu.hasMicrocontroller()) {
+            if (!menu.hasMicrocontroller()) {
                 status = "No Microcontroller"; color = 0xFF888888;
             } else if (menu.isRunning()) {
-                status = "Running  (line " + (menu.getCurrentLine() + 1) + ")";
+                status = String.format("Running  PC:0x%08X", menu.getCurrentLine() << 2);
                 color  = 0xFF44FF44;
             } else if (menu.isHalted()) {
-                status = "Halted"; color = 0xFFFFAA00;
+                status = String.format("Halted  PC:0x%08X", menu.getCurrentLine() << 2);
+                color = 0xFFFFAA00;
             } else {
                 status = "Stopped"; color = 0xFFAAAAAA;
             }
             g.text(this.font, Component.literal(status), 8, 26, color, false);
 
         } else if (activeTab == Tab.DBG) {
-            g.text(this.font, Component.literal("DEBUG"), 8, 6, 0xFF44FF44, false);
-            if (menu.isRunning()) {
-                g.text(this.font,
-                        Component.literal("Executing line " + (menu.getCurrentLine() + 1)),
-                        8, 16, 0xFF88FF88, false);
-            } else if (menu.isHalted()) {
-                g.text(this.font, Component.literal("Halted at line " + (menu.getCurrentLine() + 1)),
-                        8, 16, 0xFFFFAA00, false);
-            } else {
-                g.text(this.font, Component.literal("Stopped"), 8, 16, 0xFF888888, false);
-            }
+            g.text(this.font, Component.literal("CONSOLE"), 8, 6, 0xFF44FF44, false);
+            String status;
+            if (menu.isRunning())     status = String.format("Running  PC:0x%08X", menu.getCurrentLine() << 2);
+            else if (menu.isHalted()) status = String.format("Halted   PC:0x%08X", menu.getCurrentLine() << 2);
+            else                      status = "Stopped";
+            g.text(this.font, Component.literal(status), 64, 6, 0xFF888888, false);
 
         } else { // SYS tab
             g.text(this.font, Component.literal("SYSTEM"), 8, 6, 0xFF44AAFF, false);

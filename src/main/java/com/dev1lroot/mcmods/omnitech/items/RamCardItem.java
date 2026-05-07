@@ -29,10 +29,9 @@ public class RamCardItem extends Item {
                     .withStyle(s -> s.withColor(0xFF88CCFF)));
         }
         if (flag.isAdvanced()) {
-            OmniTechDataComponents.ByteData data = stack.get(OmniTechDataComponents.RAM_DATA.get());
-            int used = data != null ? data.data().length : 0;
-            if (used > 0) {
-                tooltip.accept(Component.literal(used + " bytes stored")
+            boolean hasData = stack.get(OmniTechDataComponents.RAM_DATA.get()) != null;
+            if (hasData) {
+                tooltip.accept(Component.literal("Data present")
                         .withStyle(s -> s.withColor(0xFF888888)));
             }
         }

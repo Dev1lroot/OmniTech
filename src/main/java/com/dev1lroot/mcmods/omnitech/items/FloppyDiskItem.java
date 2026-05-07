@@ -26,9 +26,8 @@ public class FloppyDiskItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext ctx,
             TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
-        OmniTechDataComponents.ByteData data = stack.get(OmniTechDataComponents.FLOPPY_DATA.get());
-        int used = data != null ? data.data().length : 0;
-        tooltip.accept(Component.literal(String.format("%.1f KB / 1440 KB", used / 1024.0))
+        boolean hasData = stack.get(OmniTechDataComponents.FLOPPY_DATA.get()) != null;
+        tooltip.accept(Component.literal(hasData ? "Data present" : "Empty")
                 .withStyle(s -> s.withColor(0xFF88AAFF)));
 //        if (flag.isAdvanced()) {
 //            int color = DyedItemColor.getOrDefault(stack, DEFAULT_COLOR);

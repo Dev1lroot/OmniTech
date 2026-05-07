@@ -6,6 +6,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.core.UUIDUtil;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
@@ -13,6 +14,7 @@ import net.neoforged.neoforge.transfer.resource.ResourceStack;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.Objects;
 
@@ -120,11 +122,22 @@ public class OmniTechDataComponents {
                     buf -> { byte[] a = new byte[buf.remaining()]; buf.duplicate().get(a); return new ByteData(a); },
                     bd -> ByteBuffer.wrap(bd.data()));
 
-    /** Raw data stored on a Floppy Disk item (up to 1 474 560 bytes = 1.44 MB). Not network-synced. */
-    public static final Supplier<DataComponentType<ByteData>> FLOPPY_DATA =
+    /** UUID identifying the kernel binary for this Microcontroller.
+     *  Actual bytes live in {@code <world>/omnitech/<uuid>.bin}. */
+    public static final Supplier<DataComponentType<UUID>> PROGRAM_BINARY =
+            REGISTRY.register("program_binary", () ->
+                    DataComponentType.<UUID>builder()
+                            .persistent(UUIDUtil.CODEC)
+                            .networkSynchronized(UUIDUtil.STREAM_CODEC)
+                            .build());
+
+    /** UUID identifying the data image for this Floppy Disk.
+     *  Actual bytes live in {@code <world>/omnitech/<uuid>.bin}. */
+    public static final Supplier<DataComponentType<UUID>> FLOPPY_DATA =
             REGISTRY.register("floppy_data", () ->
-                    DataComponentType.<ByteData>builder()
-                            .persistent(BYTE_ARRAY_CODEC)
+                    DataComponentType.<UUID>builder()
+                            .persistent(UUIDUtil.CODEC)
+                            .networkSynchronized(UUIDUtil.STREAM_CODEC)
                             .build());
 
     /** Capacity of a RAM card in bytes (default 1024). Network-synced for display. */
@@ -135,11 +148,13 @@ public class OmniTechDataComponents {
                             .networkSynchronized(ByteBufCodecs.INT)
                             .build());
 
-    /** Data stored on a RAM card. Not network-synced. */
-    public static final Supplier<DataComponentType<ByteData>> RAM_DATA =
+    /** UUID identifying the saved contents of this RAM card.
+     *  Actual bytes live in {@code <world>/omnitech/<uuid>.bin}. */
+    public static final Supplier<DataComponentType<UUID>> RAM_DATA =
             REGISTRY.register("ram_data", () ->
-                    DataComponentType.<ByteData>builder()
-                            .persistent(BYTE_ARRAY_CODEC)
+                    DataComponentType.<UUID>builder()
+                            .persistent(UUIDUtil.CODEC)
+                            .networkSynchronized(UUIDUtil.STREAM_CODEC)
                             .build());
 
     /** First byte address of this RAM card within the logic machine's address space. */
@@ -164,6 +179,14 @@ public class OmniTechDataComponents {
                     DataComponentType.<Integer>builder()
                             .persistent(Codec.INT)
                             .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
+    /** Console output buffer for a running Microcontroller (up to 128 KB). Network-synced for client display. */
+    public static final Supplier<DataComponentType<String>> CONSOLE_OUTPUT =
+            REGISTRY.register("console_output", () ->
+                    DataComponentType.<String>builder()
+                            .persistent(Codec.STRING)
+                            .networkSynchronized(ByteBufCodecs.stringUtf8(131_072))
                             .build());
 
     public static void register(IEventBus bus) {

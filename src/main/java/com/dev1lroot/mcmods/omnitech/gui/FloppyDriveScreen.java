@@ -69,9 +69,8 @@ public class FloppyDriveScreen extends AbstractContainerScreen<FloppyDriveMenu> 
 
         ItemStack disk = menu.getSlot(0).getItem();
         if (!disk.isEmpty() && disk.getItem() instanceof FloppyDiskItem) {
-            com.dev1lroot.mcmods.omnitech.OmniTechDataComponents.ByteData data = disk.get(com.dev1lroot.mcmods.omnitech.OmniTechDataComponents.FLOPPY_DATA.get());
-            int used = data != null ? data.data().length : 0;
-            g.text(this.font, Component.literal(String.format("%.1f / 1440 KB", used / 1024.0)),
+            boolean hasData = disk.get(com.dev1lroot.mcmods.omnitech.OmniTechDataComponents.FLOPPY_DATA.get()) != null;
+            g.text(this.font, Component.literal(hasData ? "Data present" : "Empty"),
                     8, 55, 0xFF4488FF, false);
         } else {
             g.text(this.font, Component.literal("No disk"), 8, 55, 0xFF888888, false);

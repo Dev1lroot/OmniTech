@@ -1,6 +1,8 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.boiler.BoilerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.commands.HxdCommand;
+import com.dev1lroot.mcmods.omnitech.commands.LoadBinCommand;
 import net.minecraft.core.Direction;
 import org.slf4j.Logger;
 
@@ -490,6 +492,8 @@ public class OmniTech {
     }
 
     public static void registerCommands(RegisterCommandsEvent event) {
+        HxdCommand.register(event.getDispatcher());
+        LoadBinCommand.register(event.getDispatcher());
         event.getDispatcher().register(
             Commands.literal("warpjump")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))

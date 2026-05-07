@@ -68,6 +68,13 @@ public class LogicMachineMenu extends AbstractContainerMenu {
         return mc.getOrDefault(OmniTechDataComponents.PROGRAM.get(), "");
     }
 
+    /** Returns the console output buffer stored on the Microcontroller, or "". */
+    public String getConsole() {
+        ItemStack mc = getSlot(0).getItem();
+        if (mc.isEmpty() || !(mc.getItem() instanceof MicrocontrollerItem)) return "";
+        return mc.getOrDefault(OmniTechDataComponents.CONSOLE_OUTPUT.get(), "");
+    }
+
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (player.level().getBlockEntity(pos) instanceof LogicMachineBlockEntity lm)
