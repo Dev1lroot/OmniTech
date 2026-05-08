@@ -36,6 +36,11 @@ public class FloppyDriveBlockEntity extends BaseContainerBlockEntity {
 
     public ItemStack getDisk() { return items.get(0); }
 
+    public void setDisk(ItemStack stack) {
+        items.set(0, stack);
+    }
+
+
     @Override
     protected Component getDefaultName() {
         return Component.translatable("container.omnitech.floppy_drive");

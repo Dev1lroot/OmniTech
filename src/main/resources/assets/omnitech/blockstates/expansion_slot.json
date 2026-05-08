@@ -1,5 +1,8 @@
 {
   "variants": {
-    "": { "model": "omnitech:block/expansion_slot" }
+    "facing=north": { "model": "omnitech:block/expansion_slot" },
+    "facing=south": { "model": "omnitech:block/expansion_slot", "y": 180 },
+    "facing=east":  { "model": "omnitech:block/expansion_slot", "y":  90 },
+    "facing=west":  { "model": "omnitech:block/expansion_slot", "y": 270 }
   }
 }

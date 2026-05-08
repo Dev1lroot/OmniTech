@@ -45,7 +45,7 @@ public class LogicGateBlock extends BaseEntityBlock
     public LogicGateBlock(Properties properties) {
         super(properties.noOcclusion());
         this.registerDefaultState(this.stateDefinition.any()
-                .setValue(FACING, Direction.SOUTH)
+                .setValue(FACING, Direction.NORTH)
                 .setValue(INPUT_A, false)
                 .setValue(INPUT_B, false)
                 .setValue(OUTPUT, false));
@@ -80,7 +80,7 @@ public class LogicGateBlock extends BaseEntityBlock
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState()
-                .setValue(FACING, context.getHorizontalDirection().getOpposite());
+                .setValue(FACING, context.getHorizontalDirection()); // its been made to place the block facing towards our point of view
     }
 
     @Override

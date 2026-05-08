@@ -1,5 +1,8 @@
 {
   "variants": {
-    "": { "model": "omnitech:block/floppy_drive" }
+    "facing=north": { "model": "omnitech:block/floppy_drive" },
+    "facing=south": { "model": "omnitech:block/floppy_drive", "y": 180 },
+    "facing=east":  { "model": "omnitech:block/floppy_drive", "y":  90 },
+    "facing=west":  { "model": "omnitech:block/floppy_drive", "y": 270 }
   }
 }
