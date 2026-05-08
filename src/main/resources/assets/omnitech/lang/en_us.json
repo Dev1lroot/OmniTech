@@ -750,11 +750,18 @@
   "item.omnitech.gate_template.tooltip.hint": "Use in logic circuit assembly",
 
   "gui.omnitech.truth_table": "Truth Table",
-  "gui.omnitech.truth_table.hint1": "Toggle each cell. A & B are inputs, OUT is output.",
-  "gui.omnitech.truth_table.hint2": "Row order is free — all 4 input pairs must appear once.",
-  "gui.omnitech.truth_table.legend1": "Matching a known gate pattern produces a Gate Template.",
-  "gui.omnitech.truth_table.legend2": "12 gates: AND OR NAND NOR XOR XNOR BUF NOT and more.",
+  "gui.omnitech.truth_table.hint1": "A & B are inputs, OUT is output.",
+  "gui.omnitech.truth_table.hint2": "All 4 input pairs must appear once.",
+  "gui.omnitech.truth_table.legend1": "Match a known gate pattern",
+  "gui.omnitech.truth_table.legend2": "AND OR NAND NOR XOR XNOR and more.",
   "gui.omnitech.truth_table.assemble": "Assemble",
   "gui.omnitech.truth_table.no_match": "No matching gate — check your truth table.",
-  "gui.omnitech.truth_table.assembled": "Assembled: %s"
+  "gui.omnitech.truth_table.assembled": "Assembled: %s",
+
+  "block.omnitech.fluid_filler": "Fluid Filler",
+  "block.omnitech.chemical_reactor": "Chemical Reactor",
+  "block.omnitech.speaker": "Speaker",
+  "block.omnitech.microphone": "Microphone",
+  "block.omnitech.analog_cable": "Analog Cable",
+  "block.omnitech.valve": "Valve"
 }
