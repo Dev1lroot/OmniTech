@@ -2,6 +2,8 @@
   "itemGroup.omnitech": "OmniTech",
   "itemGroup.omnitech.materials": "OmniTech: Materials",
   "itemGroup.omnitech.machines": "OmniTech: Machines",
+  "itemGroup.omnitech.utility": "OmniTech: Utility",
+  "itemGroup.omnitech.minerals": "OmniTech: Minerals",
   "block.omnitech.example_block": "Example Block",
   "block.omnitech.alloy_furnace": "Alloy Furnace",
   "item.omnitech.example_item": "Example Item",

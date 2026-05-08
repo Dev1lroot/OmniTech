@@ -1,5 +1,9 @@
 {
   "itemGroup.omnitech": "OmniTech",
+  "itemGroup.omnitech.materials": "OmniTech: Материаловедение",
+  "itemGroup.omnitech.machines": "OmniTech: Машиностроение",
+  "itemGroup.omnitech.utility": "OmniTech: Предметы",
+  "itemGroup.omnitech.minerals": "OmniTech: Минераловедение",
   "item.omnitech.alloy_furnace": "Доменная Печь",
   "item.omnitech.aluminium_block": "Блок Алюминия",
   "item.omnitech.aluminium_cog": "Алюминиевая Шестерня",
