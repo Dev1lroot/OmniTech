@@ -27,6 +27,11 @@ public class ExpansionSlotBlockEntity extends BaseContainerBlockEntity {
         super(OmniTechBlockEntities.EXPANSION_SLOT.get(), pos, state);
     }
 
+    public NonNullList<ItemStack> getItemList()
+    {
+        return items;
+    }
+
     public int getTotalCapacity() {
         int total = 0;
         for (ItemStack stack : items) {

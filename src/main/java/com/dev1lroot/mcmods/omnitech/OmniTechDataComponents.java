@@ -127,6 +127,14 @@ public class OmniTechDataComponents {
                             .persistent(BYTE_ARRAY_CODEC)
                             .build());
 
+    /** Boolean Flag to determine READ-ONLY state of any data storage component */
+    public static final Supplier<DataComponentType<Integer>> READ_ONLY =
+            REGISTRY.register("read_only", () ->
+                    DataComponentType.<Integer>builder()
+                            .persistent(Codec.INT)
+                            .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
     /** Capacity of a RAM card in bytes (default 1024). Network-synced for display. */
     public static final Supplier<DataComponentType<Integer>> RAM_CAPACITY =
             REGISTRY.register("ram_capacity", () ->

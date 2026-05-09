@@ -361,7 +361,7 @@ public class OmniTechBlocks {
                 p -> new FloppyDriveBlock(p.mapColor(MapColor.COLOR_GRAY).strength(2.5F)
                         .sound(SoundType.METAL)));
         EXPANSION_SLOT = register("expansion_slot",
-                p -> new ExpansionSlotBlock(p.mapColor(MapColor.COLOR_GRAY).strength(2.5F)
+                p -> new ExpansionSlotBlock(p.mapColor(MapColor.COLOR_GRAY).strength(2.5F).noOcclusion()
                         .sound(SoundType.METAL)));
         REDSTONE_INTERSECTION = register("redstone_intersection_block",
                 p -> new RedstoneIntersectionBlock(p.mapColor(MapColor.METAL).strength(2.5F)
