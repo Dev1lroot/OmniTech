@@ -1,14 +1,11 @@
 package com.dev1lroot.mcmods.omnitech.network;
 
 import com.dev1lroot.mcmods.omnitech.OmniTech;
-import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.LogicMachineBlockEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /** Server → Client: full terminal cell snapshot so the client can reconstruct the display. */
@@ -41,13 +38,6 @@ public record TerminalSyncPacket(BlockPos pos, int[] cells, int cursorRow, int c
     @Override
     public Type<? extends CustomPacketPayload> type() { return TYPE; }
 
-    public static void handle(TerminalSyncPacket pkt, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            if (Minecraft.getInstance().level == null) return;
-            BlockEntity be = Minecraft.getInstance().level.getBlockEntity(pkt.pos);
-            if (be instanceof LogicMachineBlockEntity lm) {
-                lm.handleTerminalSync(pkt.cells, pkt.cursorRow, pkt.cursorCol);
-            }
-        });
-    }
+    // Terminal sync is handled by the Display block now; this packet is no longer sent.
+    public static void handle(TerminalSyncPacket pkt, IPayloadContext ctx) { }
 }

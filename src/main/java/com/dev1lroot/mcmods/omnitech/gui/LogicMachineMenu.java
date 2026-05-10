@@ -3,14 +3,17 @@ package com.dev1lroot.mcmods.omnitech.gui;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.LogicMachineBlockEntity;
+import com.dev1lroot.mcmods.omnitech.items.MicrocontrollerItem;
+import com.dev1lroot.mcmods.omnitech.items.RomItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import javax.annotation.Nullable;
@@ -20,8 +23,6 @@ public class LogicMachineMenu extends AbstractContainerMenu {
     private final BlockPos pos;
     @Nullable private final LogicMachineBlockEntity blockEntity;
 
-    // Synced server→client every tick via the container system.
-    // Slot 0: 1 = running, 0 = not running.
     private int syncedRunning = 0;
 
     /** Client-side constructor (opened from network). */
@@ -34,15 +35,34 @@ public class LogicMachineMenu extends AbstractContainerMenu {
         this.pos = be != null ? be.getBlockPos() : BlockPos.ZERO;
         this.blockEntity = be instanceof LogicMachineBlockEntity lm ? lm : null;
 
+        // Slot 0 = CPU (Microcontroller), Slot 1 = ROM
+        // Positions are in menu coordinate space (leftPos + x, topPos + y)
+        if (blockEntity != null) {
+            var slots = blockEntity.getItemSlots();
+            addSlot(new Slot(slots, 0, 44, 36) {
+                @Override public boolean mayPlace(ItemStack stack) {
+                    return stack.getItem() instanceof MicrocontrollerItem;
+                }
+            });
+            addSlot(new Slot(slots, 1, 100, 36) {
+                @Override public boolean mayPlace(ItemStack stack) {
+                    return stack.getItem() instanceof RomItem;
+                }
+            });
+        }
+
+        // Player inventory (3 rows at y=58, 76, 94; hotbar at y=102)
+        for (int row = 0; row < 3; row++)
+            for (int col = 0; col < 9; col++)
+                addSlot(new Slot(inv, col + row * 9 + 9, 39 + col * 18, 58 + row * 18));
+        for (int col = 0; col < 9; col++)
+            addSlot(new Slot(inv, col, 39 + col * 18, 102));
+
         addDataSlots(new ContainerData() {
             @Override public int get(int i) {
-                // Server: read live state from BE. Client: never called.
                 return (blockEntity != null && blockEntity.isRunning()) ? 1 : 0;
             }
-            @Override public void set(int i, int v) {
-                // Client: called by the container sync mechanism with the server value.
-                syncedRunning = v;
-            }
+            @Override public void set(int i, int v) { syncedRunning = v; }
             @Override public int getCount() { return 1; }
         });
     }
@@ -52,7 +72,6 @@ public class LogicMachineMenu extends AbstractContainerMenu {
     @Nullable
     public LogicMachineBlockEntity getBlockEntity() { return blockEntity; }
 
-    /** True when the server reports the VM is running. Accurate on both sides. */
     public boolean isRunning() { return syncedRunning != 0; }
 
     @Override
@@ -64,16 +83,34 @@ public class LogicMachineMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void removed(Player player) {
-        super.removed(player);
-        if (blockEntity != null && player instanceof ServerPlayer sp) {
-            blockEntity.removeViewer(sp);
-        }
-    }
+    public ItemStack quickMoveStack(Player player, int index) {
+        if (index >= 0 && index < slots.size()) {
+            Slot slot = slots.get(index);
+            if (!slot.hasItem()) return ItemStack.EMPTY;
+            ItemStack stack = slot.getItem().copy();
+            ItemStack orig  = stack.copy();
 
-    @Override
-    public net.minecraft.world.item.ItemStack quickMoveStack(Player player, int index) {
-        return net.minecraft.world.item.ItemStack.EMPTY;
+            if (index == 0) { // CPU slot → try to move to inventory
+                if (!moveItemStackTo(stack, 2, slots.size(), true)) return ItemStack.EMPTY;
+            } else if (index == 1) { // ROM slot → try to move to inventory
+                if (!moveItemStackTo(stack, 2, slots.size(), true)) return ItemStack.EMPTY;
+            } else { // from inventory → try machine slots
+                if (stack.getItem() instanceof MicrocontrollerItem) {
+                    if (!moveItemStackTo(stack, 0, 1, false)) return ItemStack.EMPTY;
+                } else if (stack.getItem() instanceof RomItem) {
+                    if (!moveItemStackTo(stack, 1, 2, false)) return ItemStack.EMPTY;
+                } else {
+                    return ItemStack.EMPTY;
+                }
+            }
+
+            slot.set(stack);
+            if (stack.isEmpty()) slot.set(ItemStack.EMPTY);
+            if (stack.getCount() == orig.getCount()) return ItemStack.EMPTY;
+            slot.onTake(player, stack);
+            return orig;
+        }
+        return ItemStack.EMPTY;
     }
 
     @Override

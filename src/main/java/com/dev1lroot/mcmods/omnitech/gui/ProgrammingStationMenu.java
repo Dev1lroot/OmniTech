@@ -3,7 +3,8 @@ package com.dev1lroot.mcmods.omnitech.gui;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station.ProgrammingStationBlockEntity;
-import com.dev1lroot.mcmods.omnitech.items.MicrocontrollerItem;
+import com.dev1lroot.mcmods.omnitech.items.RomItem;
+import com.dev1lroot.mcmods.omnitech.network.FlashRomPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -17,42 +18,42 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 public class ProgrammingStationMenu extends AbstractContainerMenu {
 
     private final BlockPos pos;
-    private final String initialProgram;
+    private final byte[] initialRomData;
 
     /** Client-side constructor. */
     public ProgrammingStationMenu(int id, Inventory inv, FriendlyByteBuf buf) {
         this(id, inv,
                 inv.player.level().getBlockEntity(buf.readBlockPos()),
-                buf.readUtf(ProgrammingStationBlockEntity.MAX_PROGRAM_LEN));
+                buf.readByteArray(FlashRomPacket.MAX_SIZE));
     }
 
-    /** Used internally when screen supplies typed data directly. */
-    public ProgrammingStationMenu(int id, Inventory inv, BlockEntity be, String program) {
+    public ProgrammingStationMenu(int id, Inventory inv, BlockEntity be, byte[] romData) {
         super(OmniTechMenuTypes.PROGRAMMING_STATION.get(), id);
-        this.pos            = be != null ? be.getBlockPos() : BlockPos.ZERO;
-        this.initialProgram = program;
+        this.pos           = be != null ? be.getBlockPos() : BlockPos.ZERO;
+        this.initialRomData = romData;
 
-        // Machine slot (Microcontroller only)
+        // ROM slot — only accepts writable Firmware ROM items, not read-only Linux ROM
         if (be instanceof ProgrammingStationBlockEntity ps) {
             addSlot(new Slot(ps, 0, 152, 18) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return stack.getItem() instanceof MicrocontrollerItem;
+                    return stack.getItem() instanceof RomItem r
+                            && RomItem.TYPE_FIRMWARE.equals(r.getRomType());
                 }
             });
         }
 
-        // Player inventory
+        // Player inventory (3 rows)
         for (int row = 0; row < 3; row++)
             for (int col = 0; col < 9; col++)
-                addSlot(new Slot(inv, col + row * 9 + 9, 8 + col * 18, 200 + row * 18));
+                addSlot(new Slot(inv, col + row * 9 + 9, 8 + col * 18, 152 + row * 18));
         // Hotbar
         for (int col = 0; col < 9; col++)
-            addSlot(new Slot(inv, col, 8 + col * 18, 258));
+            addSlot(new Slot(inv, col, 8 + col * 18, 210));
     }
 
     public BlockPos getBlockPos()      { return pos; }
-    public String   getInitialProgram() { return initialProgram; }
+    public byte[]   getInitialRomData() { return initialRomData; }
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
@@ -63,7 +64,7 @@ public class ProgrammingStationMenu extends AbstractContainerMenu {
         if (index == 0) {
             if (!moveItemStackTo(stack, 1, 37, true)) return ItemStack.EMPTY;
         } else {
-            if (stack.getItem() instanceof MicrocontrollerItem) {
+            if (stack.getItem() instanceof RomItem r && RomItem.TYPE_FIRMWARE.equals(r.getRomType())) {
                 if (!moveItemStackTo(stack, 0, 1, false)) return ItemStack.EMPTY;
             } else {
                 return ItemStack.EMPTY;

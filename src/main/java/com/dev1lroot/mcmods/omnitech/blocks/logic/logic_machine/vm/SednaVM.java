@@ -179,8 +179,8 @@ public final class SednaVM {
     // 1.44 MB standard floppy capacity; matches FloppyDiskItem.CAPACITY
     private static final int FLOPPY_CAPACITY   = 1_474_560;
 
-    public static final int DEFAULT_RAM_SIZE = 32 * 1024 * 1024;
-    private static final int STEPS_PER_ITER  = 50_000;
+    public static final int DEFAULT_RAM_SIZE    = 32 * 1024 * 1024;
+    private static final int STEPS_PER_ITER    = 50_000;
 
     // ----- Sedna board + devices -----
     private final R5Board board;
@@ -197,6 +197,9 @@ public final class SednaVM {
 
     // ----- Terminal -----
     private final VMTerminal terminal = new VMTerminal();
+
+    // ----- Configurable runtime params -----
+    private byte[] customFirmware = null; // null = use Buildroot Linux
 
     // ----- Thread state -----
     private volatile boolean running   = false;
@@ -258,18 +261,26 @@ public final class SednaVM {
     // Lifecycle
     // -----------------------------------------------------------------------
 
+    public void setCustomFirmware(byte[] firmware) { this.customFirmware = firmware; }
+
     public void start() {
         if (running) return;
         try {
-            MemoryMaps.store(board.getMemoryMap(),
-                    board.getDefaultProgramStart(), Buildroot.getFirmware());
-            MemoryMaps.store(board.getMemoryMap(),
-                    board.getDefaultProgramStart() + 0x200000L, Buildroot.getLinuxImage());
+            if (customFirmware != null && customFirmware.length > 0) {
+                MemoryMaps.store(board.getMemoryMap(), board.getDefaultProgramStart(),
+                        new java.io.ByteArrayInputStream(customFirmware));
+                board.setBootArguments("");
+            } else {
+                MemoryMaps.store(board.getMemoryMap(),
+                        board.getDefaultProgramStart(), Buildroot.getFirmware());
+                MemoryMaps.store(board.getMemoryMap(),
+                        board.getDefaultProgramStart() + 0x200000L, Buildroot.getLinuxImage());
+                board.setBootArguments("root=/dev/vda rw earlycon console=ttyS0 loglevel=8");
+            }
         } catch (IOException e) {
-            LOGGER.error("Failed to load Buildroot firmware/kernel", e);
+            LOGGER.error("Failed to load firmware/kernel", e);
             return;
         }
-        board.setBootArguments("root=/dev/vda rw earlycon console=ttyS0 loglevel=8");
         try {
             board.reset();
             board.initialize();

@@ -6,6 +6,7 @@ import com.dev1lroot.mcmods.omnitech.items.GuidebookItem;
 import com.dev1lroot.mcmods.omnitech.items.FluidCanisterItem;
 import com.dev1lroot.mcmods.omnitech.items.LogicGateTemplateItem;
 import com.dev1lroot.mcmods.omnitech.items.MicrocontrollerItem;
+import com.dev1lroot.mcmods.omnitech.items.RomItem;
 import com.dev1lroot.mcmods.omnitech.items.RadioLocatorItem;
 import com.dev1lroot.mcmods.omnitech.items.RamCardItem;
 import com.dev1lroot.mcmods.omnitech.items.SpaceSuitItem;
@@ -224,6 +225,14 @@ public class OmniTechItems
     public static final DeferredItem<MicrocontrollerItem> MICROCONTROLLER =
             REGISTRY.registerItem("microcontroller",
                     p -> new MicrocontrollerItem(p.stacksTo(1)));
+
+    public static final DeferredItem<RomItem> LINUX_ROM =
+            REGISTRY.registerItem("linux_rom",
+                    p -> new RomItem(RomItem.TYPE_LINUX, p.stacksTo(1)));
+
+    public static final DeferredItem<RomItem> FIRMWARE_ROM =
+            REGISTRY.registerItem("firmware_rom",
+                    p -> new RomItem(RomItem.TYPE_FIRMWARE, p.stacksTo(1)));
 
     public static final DeferredItem<RadioLocatorItem> RADIO_LOCATOR =
             REGISTRY.registerItem("radio_locator", RadioLocatorItem::new);

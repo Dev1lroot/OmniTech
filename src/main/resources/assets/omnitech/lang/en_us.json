@@ -713,6 +713,13 @@
   "gui.omnitech.set": "Set",
   "gui.omnitech.program": "Program:",
   "gui.omnitech.microcontroller_slot": "MCU:",
+  "gui.omnitech.cpu_slot": "CPU",
+  "gui.omnitech.rom_slot": "ROM",
+  "gui.omnitech.hex_editor": "Hex Editor",
+  "gui.omnitech.flash_rom": "Flash ROM",
+
+  "item.omnitech.linux_rom": "Linux ROM",
+  "item.omnitech.firmware_rom": "Firmware ROM",
 
   "item.omnitech.guidebook": "OmniTech Guide",
 

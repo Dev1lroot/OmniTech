@@ -44,8 +44,10 @@ public final class TerminalDisplay {
         int renderW = charCols * TerminalFont.CHAR_W;
         int renderH = charRows * TerminalFont.CHAR_H;
 
-        int[] cells  = terminal.getCellSnapshot();
-        int[] canvas = new int[renderW * renderH];
+        int[] cells     = terminal.getCellSnapshot();
+        int   cursorRow = terminal.getCursorRow();
+        int   cursorCol = terminal.getCursorCol();
+        int[] canvas    = new int[renderW * renderH];
 
         for (int row = 0; row < charRows; row++) {
             for (int col = 0; col < charCols; col++) {
@@ -53,7 +55,12 @@ public final class TerminalDisplay {
                 int fg   = ansiRgb((cell >> 24) & 0x07);
                 int bg   = ansiRgb((cell >> 16) & 0x07);
                 int ch   = cell & 0xFFFF;
-                drawGlyph(canvas, renderW, col * TerminalFont.CHAR_W, row * TerminalFont.CHAR_H, ch, fg, bg);
+                // Draw cursor as inverted cell
+                if (row == cursorRow && col == cursorCol) {
+                    drawGlyph(canvas, renderW, col * TerminalFont.CHAR_W, row * TerminalFont.CHAR_H, ch, bg, fg);
+                } else {
+                    drawGlyph(canvas, renderW, col * TerminalFont.CHAR_W, row * TerminalFont.CHAR_H, ch, fg, bg);
+                }
             }
         }
 

@@ -71,13 +71,12 @@ import com.dev1lroot.mcmods.omnitech.network.VoiceChatReceivePacket;
 import com.dev1lroot.mcmods.omnitech.network.SetRadioLocatorFreqPacket;
 import com.dev1lroot.mcmods.omnitech.network.RadioLocatorSignalPacket;
 import com.dev1lroot.mcmods.omnitech.network.UploadProgramPacket;
+import com.dev1lroot.mcmods.omnitech.network.FlashRomPacket;
 import com.dev1lroot.mcmods.omnitech.network.SetGPIOIdPacket;
 import com.dev1lroot.mcmods.omnitech.network.SetDisplayIdPacket;
 import com.dev1lroot.mcmods.omnitech.network.AssembleTruthTablePacket;
 import com.dev1lroot.mcmods.omnitech.network.SetFloppyDriveIdPacket;
 import com.dev1lroot.mcmods.omnitech.network.TerminalInputPacket;
-import com.dev1lroot.mcmods.omnitech.network.TerminalOutputPacket;
-import com.dev1lroot.mcmods.omnitech.network.TerminalSyncPacket;
 import com.dev1lroot.mcmods.omnitech.network.KeyboardModePacket;
 import com.dev1lroot.mcmods.omnitech.network.KeyboardReleasePacket;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.keyboard.KeyboardBlock;
@@ -473,14 +472,10 @@ public class OmniTech {
                 TerminalInputPacket.TYPE,
                 TerminalInputPacket.CODEC,
                 TerminalInputPacket::handle);
-        event.registrar("1").playToClient(
-                TerminalOutputPacket.TYPE,
-                TerminalOutputPacket.CODEC,
-                TerminalOutputPacket::handle);
-        event.registrar("1").playToClient(
-                TerminalSyncPacket.TYPE,
-                TerminalSyncPacket.CODEC,
-                TerminalSyncPacket::handle);
+        event.registrar("1").playToServer(
+                FlashRomPacket.TYPE,
+                FlashRomPacket.CODEC,
+                FlashRomPacket::handle);
         event.registrar("1").playToClient(
                 KeyboardModePacket.TYPE,
                 KeyboardModePacket.CODEC,

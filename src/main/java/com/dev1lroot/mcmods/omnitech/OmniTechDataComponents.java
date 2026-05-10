@@ -95,14 +95,6 @@ public class OmniTechDataComponents {
                             .networkSynchronized(ByteBufCodecs.INT)
                             .build());
 
-    /** Execution speed of a Microcontroller in Hz (instructions per second). Default 20 = 1 per tick. */
-    public static final Supplier<DataComponentType<Integer>> MCU_SPEED =
-            REGISTRY.register("mcu_speed", () ->
-                    DataComponentType.<Integer>builder()
-                            .persistent(Codec.INT)
-                            .networkSynchronized(ByteBufCodecs.INT)
-                            .build());
-
     /** Selected frequency (freqX10) stored on a RadioLocator item. */
     public static final Supplier<DataComponentType<Integer>> RADIO_LOCATOR_FREQ =
             REGISTRY.register("radio_locator_freq", () ->
@@ -172,6 +164,13 @@ public class OmniTechDataComponents {
                     DataComponentType.<Integer>builder()
                             .persistent(Codec.INT)
                             .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
+    /** Raw firmware binary stored on a Firmware ROM item (up to 1 MB). Not network-synced. */
+    public static final Supplier<DataComponentType<ByteData>> ROM_DATA =
+            REGISTRY.register("rom_data", () ->
+                    DataComponentType.<ByteData>builder()
+                            .persistent(BYTE_ARRAY_CODEC)
                             .build());
 
     public static void register(IEventBus bus) {

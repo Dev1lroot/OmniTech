@@ -56,10 +56,10 @@ public class ProgrammingStationBlock extends BaseEntityBlock {
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof ProgrammingStationBlockEntity ps) {
-                String program = ps.getProgramText();
+                byte[] romData = ps.getRomData();
                 ((ServerPlayer) player).openMenu(ps, buf -> {
                     buf.writeBlockPos(pos);
-                    buf.writeUtf(program, ProgrammingStationBlockEntity.MAX_PROGRAM_LEN);
+                    buf.writeByteArray(romData);
                 });
             }
         }

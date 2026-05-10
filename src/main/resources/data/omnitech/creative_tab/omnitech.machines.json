@@ -54,6 +54,8 @@
     "omnitech:keyboard",
     "omnitech:expansion_slot",
     "omnitech:gpio_port",
+    "omnitech:linux_rom",
+    "omnitech:firmware_rom",
     "omnitech:display",
     "omnitech:display_mk2",
     "omnitech:display_mk3",

@@ -1,6 +1,5 @@
 package com.dev1lroot.mcmods.omnitech.items;
 
-import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -18,15 +17,7 @@ public class MicrocontrollerItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext ctx,
             TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
-        int hz = stack.getOrDefault(OmniTechDataComponents.MCU_SPEED.get(), 20);
-        tooltip.accept(Component.literal("Speed: " + hz + " Hz  |  RISC-V RV32GC (32i+32f regs)")
+        tooltip.accept(Component.literal("RISC-V RV32GC")
                 .withStyle(s -> s.withColor(0xFF4488FF)));
-        String prog = stack.get(OmniTechDataComponents.PROGRAM.get());
-        if (prog == null || prog.isBlank()) {
-            tooltip.accept(Component.literal("No program").withStyle(s -> s.withColor(0xFF888888)));
-        } else {
-            int count = prog.split("\n").length;
-            tooltip.accept(Component.literal(count + " line(s) of code").withStyle(s -> s.withColor(0xFF44AA44)));
-        }
     }
 }

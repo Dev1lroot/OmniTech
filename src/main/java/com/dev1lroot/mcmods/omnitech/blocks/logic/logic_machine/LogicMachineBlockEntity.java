@@ -4,7 +4,6 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.gui.LogicMachineMenu;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.LogicCableBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.logic.expansion_slot.ExpansionSlotBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.floppy_drive.FloppyDriveBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlockEntity;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
@@ -12,17 +11,18 @@ import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.vm.OmniTechBusDe
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.vm.SednaVM;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.vm.TerminalDisplay;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.vm.VMTerminal;
-import com.dev1lroot.mcmods.omnitech.network.TerminalOutputPacket;
-import com.dev1lroot.mcmods.omnitech.network.TerminalSyncPacket;
+import com.dev1lroot.mcmods.omnitech.items.RomItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -33,7 +33,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +40,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.Arrays;
 
 public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider {
 
@@ -57,31 +54,34 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
     @Nullable private SednaVM vm = null;
     private boolean shouldBeRunning = false;
 
-    /** Stable identity for this machine's save directory under VMs/. */
     private UUID vmId = UUID.randomUUID();
-
-    /** Set in loadAdditional(); cleared once setLevel() fires and we restore from disk. */
     private boolean pendingLoad = false;
 
-    // Client-side terminal mirror
-    private final VMTerminal clientTerminal = new VMTerminal();
+    // ── Item slots: 0=CPU (Microcontroller), 1=ROM ────────────────────────────
+
+    private final SimpleContainer itemSlots = new SimpleContainer(2) {
+        @Override
+        public void setItem(int slot, ItemStack stack) {
+            ItemStack current = getItem(slot);
+            super.setItem(slot, stack);
+            if (!current.isEmpty() && stack.isEmpty()) {
+                resetVM();
+            }
+        }
+        @Override
+        public void setChanged() {
+            super.setChanged();
+            LogicMachineBlockEntity.this.setChanged();
+        }
+    };
 
     // ── Peripheral cache ──────────────────────────────────────────────────────
 
     private final Map<Integer, GPIOPortBlockEntity>    gpioCache      = new HashMap<>();
     private final Map<Integer, DisplayBlockEntity>     displayCache   = new HashMap<>();
     private final Map<Integer, FloppyDriveBlockEntity> floppyCache    = new HashMap<>();
-    // Tracks which ByteData object is currently loaded per driveId — object identity detects disk swaps
     private final Map<Integer, OmniTechDataComponents.ByteData> floppySnapshot = new HashMap<>();
     private long lastCacheRefresh = -100L;
-
-    // ── Viewers (players with GUI open) ───────────────────────────────────────
-
-    private final Set<ServerPlayer> viewers = new HashSet<>();
-
-    // ── Pending terminal output ──────────────────────────────────────────────
-
-    private final ConcurrentLinkedQueue<byte[]> pendingOutput = new ConcurrentLinkedQueue<>();
 
     // -----------------------------------------------------------------------
 
@@ -112,31 +112,13 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
         be.vm.getBusDevice().flushPendingDisplays();
         be.vm.tick();
 
-        byte[] newOut = be.vm.drainOutput();
-        if (newOut.length > 0) {
-            LOGGER.info("[tick] drainOutput returned {} bytes, viewers={}", newOut.length, be.viewers.size());
-            be.enqueueTerminalOutput(newOut);
-        }
+        // Drain output queue to prevent memory buildup — terminal is written in VM thread
+        be.vm.drainOutput();
 
-        // Render terminal text to the display block at portId=0 whenever there is new output.
-        // Other portIds are unaffected — they remain purely pixel-art displays.
         VMTerminal term = be.vm.getTerminal();
         if (term.isDirty()) {
             DisplayBlockEntity display = be.displayCache.get(0);
             if (display != null) TerminalDisplay.render(term, display);
-        }
-
-        byte[] chunk;
-        while ((chunk = be.pendingOutput.poll()) != null) {
-            if (!be.viewers.isEmpty()) {
-                LOGGER.info("[tick] sending {} bytes to {} viewer(s)", chunk.length, be.viewers.size());
-                TerminalOutputPacket pkt = new TerminalOutputPacket(pos, chunk);
-                for (ServerPlayer viewer : new ArrayList<>(be.viewers)) {
-                    PacketDistributor.sendToPlayer(viewer, pkt);
-                }
-            } else {
-                LOGGER.warn("[tick] output discarded — no viewers! {} bytes lost", chunk.length);
-            }
         }
 
         if (be.shouldBeRunning && be.vm.isPoweredOff()) {
@@ -176,17 +158,6 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
 
     // ── Floppy drive wiring ───────────────────────────────────────────────────
 
-    /**
-     * Called every 20 ticks alongside the cache rebuild.
-     *
-     * Change detection uses two independent checks:
-     *   1. Whether the slot has a disk at all (ItemStack.isEmpty).
-     *   2. Object identity of ByteData — a different reference means the disk was swapped.
-     *
-     * A blank disk (no FLOPPY_DATA component yet) has currentData == null but the slot
-     * is NOT empty, so it is inserted with a freshly zeroed 1.44 MB buffer rather than
-     * being treated as an ejection.
-     */
     private void syncFloppyDrives() {
         if (vm == null) return;
 
@@ -207,21 +178,18 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
                 continue;
             }
 
-            // Disk is physically present (may be blank — no FLOPPY_DATA yet)
             OmniTechDataComponents.ByteData currentData = disk.get(OmniTechDataComponents.FLOPPY_DATA.get());
             boolean alreadyInserted = floppySnapshot.containsKey(driveId);
-            OmniTechDataComponents.ByteData prevData = floppySnapshot.get(driveId); // null if blank or not inserted
+            OmniTechDataComponents.ByteData prevData = floppySnapshot.get(driveId);
 
-            if (alreadyInserted && currentData == prevData) continue; // no change
+            if (alreadyInserted && currentData == prevData) continue;
 
-            // Insert or swap: blank disk (null) gets a zeroed buffer in setFloppyDisk
             byte[] bytes = currentData != null ? currentData.data() : new byte[0];
             boolean readOnly = disk.getOrDefault(OmniTechDataComponents.READ_ONLY.get(), 0) == 1;
             vm.setFloppyDisk(driveId, bytes, readOnly);
-            floppySnapshot.put(driveId, currentData); // null OK — marks "blank disk inserted"
+            floppySnapshot.put(driveId, currentData);
         }
 
-        // Eject drives that have left the cable network
         Iterator<Map.Entry<Integer, OmniTechDataComponents.ByteData>> it = floppySnapshot.entrySet().iterator();
         while (it.hasNext()) {
             int driveId = it.next().getKey();
@@ -232,18 +200,12 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
         }
     }
 
-    /**
-     * Copies the VM's live floppy backing data back into each ItemStack so writes
-     * survive after the world is saved. Also updates floppySnapshot to the new
-     * ByteData reference so the next syncFloppyDrives() doesn't mistake the
-     * write-back for a disk swap.
-     */
     private void floppyWriteBack() {
         if (vm == null) return;
         for (Map.Entry<Integer, FloppyDriveBlockEntity> e : floppyCache.entrySet()) {
             int driveId = e.getKey();
             if (driveId < 0 || driveId >= SednaVM.MAX_FLOPPY_DRIVES) continue;
-            byte[] live = vm.getFloppyData(driveId); // null if empty or read-only
+            byte[] live = vm.getFloppyData(driveId);
             if (live == null) continue;
             FloppyDriveBlockEntity drive = e.getValue();
             ItemStack disk = drive.getDisk();
@@ -252,7 +214,7 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
                     new OmniTechDataComponents.ByteData(Arrays.copyOf(live, live.length));
             disk.set(OmniTechDataComponents.FLOPPY_DATA.get(), saved);
             drive.setChanged();
-            floppySnapshot.put(driveId, saved); // keep snapshot in sync to avoid spurious re-insert
+            floppySnapshot.put(driveId, saved);
         }
     }
 
@@ -304,8 +266,28 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
 
     private void startVM() {
         if (vm != null && vm.isRunning()) return;
+
+        ItemStack romStack = itemSlots.getItem(1);
+        if (romStack.isEmpty() || !(romStack.getItem() instanceof RomItem rom)) {
+            LOGGER.warn("LogicMachine: cannot start — no ROM inserted");
+            return;
+        }
+
         try {
             if (vm == null) vm = new SednaVM();
+
+            if (RomItem.TYPE_FIRMWARE.equals(rom.getRomType())) {
+                OmniTechDataComponents.ByteData romData = romStack.get(OmniTechDataComponents.ROM_DATA.get());
+                if (romData != null && romData.data().length > 0) {
+                    vm.setCustomFirmware(romData.data());
+                } else {
+                    LOGGER.warn("LogicMachine: firmware ROM is empty");
+                    vm = null;
+                    return;
+                }
+            }
+            // TYPE_LINUX: customFirmware stays null → SednaVM uses Buildroot
+
             vm.start();
             shouldBeRunning = true;
             setChanged();
@@ -332,11 +314,12 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
         clearAllDisplays();
     }
 
+
     private void clearAllDisplays() {
         for (DisplayBlockEntity master : displayCache.values()) master.resetPixels();
     }
 
-    // ── Terminal I/O ─────────────────────────────────────────────────────────
+    // ── Terminal I/O (from Keyboard block) ───────────────────────────────────
 
     public void handleTerminalInput(byte[] data) {
         if (vm == null || !vm.isRunning()) return;
@@ -344,49 +327,14 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
         for (byte b : data) t.putInput(b);
     }
 
-    public void handleTerminalOutput(byte[] data) {
-        for (byte b : data) clientTerminal.write(b);
-    }
+    // ── Item slot accessor for menu ──────────────────────────────────────────
 
-    public void handleTerminalSync(int[] cells, int cursorRow, int cursorCol) {
-        clientTerminal.setSnapshot(cells, cursorRow, cursorCol);
-    }
-
-    public void enqueueTerminalOutput(byte[] data) {
-        if (data.length == 0) return;
-        // Split into ≤8192-byte chunks so the packet codec never overflows.
-        for (int i = 0; i < data.length; i += 8192) {
-            int end = Math.min(i + 8192, data.length);
-            byte[] chunk = new byte[end - i];
-            System.arraycopy(data, i, chunk, 0, chunk.length);
-            pendingOutput.add(chunk);
-        }
-    }
-
-    // ── Viewer tracking ───────────────────────────────────────────────────────
-
-    public void addViewer(ServerPlayer player) {
-        viewers.add(player);
-        // Send the current terminal state so the player sees what's already on screen.
-        if (vm != null && vm.isRunning()) {
-            VMTerminal t = vm.getTerminal();
-            PacketDistributor.sendToPlayer(player,
-                    new TerminalSyncPacket(worldPosition,
-                            t.getCellSnapshot(), t.getCursorRow(), t.getCursorCol()));
-        }
-    }
-
-    public void removeViewer(ServerPlayer player) { viewers.remove(player); }
+    public SimpleContainer getItemSlots() { return itemSlots; }
 
     // ── Accessors for GUI ─────────────────────────────────────────────────────
 
     public boolean isRunning()    { return vm != null && vm.isRunning(); }
     public boolean isPoweredOff() { return vm != null && vm.isPoweredOff(); }
-
-    public VMTerminal getTerminal() {
-        if (level != null && level.isClientSide()) return clientTerminal;
-        return vm != null ? vm.getTerminal() : clientTerminal;
-    }
 
     public int getGpioCount()     { return gpioCache.size(); }
     public int getFloppyCount()   { return floppyCache.size(); }
@@ -401,7 +349,6 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
 
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
-        if (player instanceof ServerPlayer sp) addViewer(sp);
         return new LogicMachineMenu(id, inv, this);
     }
 
@@ -418,7 +365,6 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
 
     // ── VM file persistence ───────────────────────────────────────────────────
 
-    /** Absolute path: <world>/VMs/<vmId>/ */
     private Path getVMDir() {
         return ((ServerLevel) level).getServer()
                 .getWorldPath(LevelResource.ROOT)
@@ -437,12 +383,23 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
 
     private void restoreVMFromDisk() {
         if (!shouldBeRunning) return;
+
+        ItemStack romStack = itemSlots.getItem(1);
+
         try {
             if (vm == null) vm = new SednaVM();
+
+            if (!romStack.isEmpty() && romStack.getItem() instanceof RomItem rom
+                    && RomItem.TYPE_FIRMWARE.equals(rom.getRomType())) {
+                OmniTechDataComponents.ByteData romData = romStack.get(OmniTechDataComponents.ROM_DATA.get());
+                if (romData != null && romData.data().length > 0) {
+                    vm.setCustomFirmware(romData.data());
+                }
+            }
+
             if (vm.loadFromDirectory(getVMDir())) {
                 vm.resume();
             } else {
-                // No saved state — boot fresh
                 vm.start();
             }
         } catch (IOException e) {
@@ -462,22 +419,21 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
     public void setRemoved() {
         super.setRemoved();
         if (vm != null) {
-            vm.stop();          // stop the thread first so state is consistent
-            saveVMToDisk();     // then write files (no resume needed, BE is gone)
+            vm.stop();
+            saveVMToDisk();
         }
     }
 
     // ── Serialization ────────────────────────────────────────────────────────
-    // Only the UUID and the running-intent flag go into NBT.
-    // All VM binary state lives in <world>/VMs/<vmId>/.
 
     @Override
     protected void saveAdditional(ValueOutput out) {
         super.saveAdditional(out);
         out.putString("VmId",       vmId.toString());
         out.putBoolean("ShouldRun", shouldBeRunning);
-        // VM binary state is flushed to disk in setRemoved() only.
-        // Writing 32MB+ on every autosave would block the server thread.
+        NonNullList<ItemStack> temp = NonNullList.withSize(2, ItemStack.EMPTY);
+        for (int i = 0; i < 2; i++) temp.set(i, itemSlots.getItem(i));
+        ContainerHelper.saveAllItems(out, temp);
     }
 
     @Override
@@ -488,8 +444,10 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
         vmId = idStr.isEmpty() ? UUID.randomUUID() : UUID.fromString(idStr);
         shouldBeRunning = in.getBooleanOr("ShouldRun", false);
 
-        // We can't load VM files yet — level may be null at this point.
-        // setLevel() will fire shortly and trigger restoreVMFromDisk().
+        NonNullList<ItemStack> temp = NonNullList.withSize(2, ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(in, temp);
+        for (int i = 0; i < 2; i++) itemSlots.setItem(i, temp.get(i));
+
         if (shouldBeRunning) pendingLoad = true;
     }
 

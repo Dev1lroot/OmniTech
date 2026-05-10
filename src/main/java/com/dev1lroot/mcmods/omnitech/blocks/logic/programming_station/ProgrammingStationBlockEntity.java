@@ -3,7 +3,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.gui.ProgrammingStationMenu;
-import com.dev1lroot.mcmods.omnitech.items.MicrocontrollerItem;
+import com.dev1lroot.mcmods.omnitech.items.RomItem;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -21,25 +21,33 @@ import org.jetbrains.annotations.Nullable;
 
 public class ProgrammingStationBlockEntity extends BaseContainerBlockEntity {
 
-    public static final int MAX_PROGRAM_LEN = 1_048_576;
+    public static final int MAX_ROM_SIZE = 1_048_576;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
-    private String programText = "";
 
     public ProgrammingStationBlockEntity(BlockPos pos, BlockState state) {
         super(OmniTechBlockEntities.PROGRAMMING_STATION.get(), pos, state);
     }
 
-    public String getProgramText() { return programText; }
-
-    /** Called by the server when the player uploads a program from the GUI. */
-    public void uploadProgram(String text) {
-        programText = text;
-        ItemStack mc = items.get(0);
-        if (!mc.isEmpty() && mc.getItem() instanceof MicrocontrollerItem) {
-            mc.set(OmniTechDataComponents.PROGRAM.get(), text);
+    /** Returns the binary data from the currently inserted ROM, or an empty array if none. */
+    public byte[] getRomData() {
+        ItemStack rom = items.get(0);
+        if (!rom.isEmpty() && rom.getItem() instanceof RomItem) {
+            OmniTechDataComponents.ByteData data = rom.get(OmniTechDataComponents.ROM_DATA.get());
+            if (data != null) return data.data();
         }
-        setChanged();
+        return new byte[0];
+    }
+
+    /** Called by the server when the player flashes edited data from the GUI. */
+    public void flashRom(byte[] data) {
+        ItemStack rom = items.get(0);
+        if (!rom.isEmpty() && rom.getItem() instanceof RomItem r
+                && RomItem.TYPE_FIRMWARE.equals(r.getRomType())) {
+            rom.set(OmniTechDataComponents.ROM_DATA.get(),
+                    new OmniTechDataComponents.ByteData(data.clone()));
+            setChanged();
+        }
     }
 
     // ── BaseContainerBlockEntity ──────────────────────────────────────────────
@@ -57,14 +65,7 @@ public class ProgrammingStationBlockEntity extends BaseContainerBlockEntity {
 
     @Override
     protected AbstractContainerMenu createMenu(int containerId, Inventory playerInventory) {
-        // Prefer the chip's stored program so the player can re-edit it after reinsertion
-        ItemStack mc = items.get(0);
-        String prog = programText;
-        if (!mc.isEmpty() && mc.getItem() instanceof MicrocontrollerItem) {
-            String mcProg = mc.getOrDefault(OmniTechDataComponents.PROGRAM.get(), "");
-            if (!mcProg.isEmpty()) prog = mcProg;
-        }
-        return new ProgrammingStationMenu(containerId, playerInventory, this, prog);
+        return new ProgrammingStationMenu(containerId, playerInventory, this, getRomData());
     }
 
     @Override
@@ -79,13 +80,11 @@ public class ProgrammingStationBlockEntity extends BaseContainerBlockEntity {
     protected void saveAdditional(ValueOutput out) {
         super.saveAdditional(out);
         ContainerHelper.saveAllItems(out, items);
-        out.putString("Program", programText);
     }
 
     @Override
     protected void loadAdditional(ValueInput in) {
         super.loadAdditional(in);
         ContainerHelper.loadAllItems(in, items);
-        programText = in.getStringOr("Program", "");
     }
 }

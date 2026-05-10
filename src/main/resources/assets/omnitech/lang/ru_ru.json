@@ -127,5 +127,13 @@
   "block.omnitech.microphone": "Микрофон",
   "block.omnitech.analog_cable": "Аналоговый Кабель",
   "block.omnitech.valve": "Клапан",
-  "block.omnitech.keyboard": "Клавиатура"
+  "block.omnitech.keyboard": "Клавиатура",
+
+  "gui.omnitech.cpu_slot": "ЦПУ",
+  "gui.omnitech.rom_slot": "ПЗУ",
+  "gui.omnitech.hex_editor": "Hex-редактор",
+  "gui.omnitech.flash_rom": "Прошить ПЗУ",
+
+  "item.omnitech.linux_rom": "Linux ПЗУ",
+  "item.omnitech.firmware_rom": "Прошивочное ПЗУ"
 }

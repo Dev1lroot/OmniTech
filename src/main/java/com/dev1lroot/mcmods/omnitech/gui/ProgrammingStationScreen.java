@@ -1,8 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.gui;
 
-import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
-import com.dev1lroot.mcmods.omnitech.items.MicrocontrollerItem;
-import com.dev1lroot.mcmods.omnitech.network.UploadProgramPacket;
+import com.dev1lroot.mcmods.omnitech.items.RomItem;
+import com.dev1lroot.mcmods.omnitech.network.FlashRomPacket;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -14,28 +13,31 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
+import java.util.Arrays;
+
 public class ProgrammingStationScreen extends AbstractContainerScreen<ProgrammingStationMenu> {
 
     private static final int W = 320;
-    private static final int H = 280;
+    private static final int H = 240;
 
-    // Editor position (absolute offsets from leftPos/topPos)
+    // Hex editor area (offset from leftPos/topPos)
     private static final int EDITOR_X = 8;
     private static final int EDITOR_Y = 40;
     private static final int EDITOR_W = 304;
-    private static final int EDITOR_H = 136;   // 15 visible lines
+    private static final int EDITOR_H = 104;  // ~11 visible rows at 9px each
 
-    private final CodeEditorWidget editor = new CodeEditorWidget();
-    private Button uploadBtn;
+    private final HexEditorWidget hexEditor;
+    private Button flashBtn;
+    private Button fillZeroBtn;
 
-    // MCU reinsertion tracking
-    private ItemStack lastMCU = ItemStack.EMPTY;
-    private boolean hadMCU = false;
+    // Track ROM reinsertion
+    private ItemStack lastRomStack = ItemStack.EMPTY;
+    private boolean hadRom = false;
 
     public ProgrammingStationScreen(ProgrammingStationMenu menu, Inventory inv, Component title) {
         super(menu, inv, title, W, H);
-        this.inventoryLabelY = 9999; // hide default "Inventory" label
-        editor.setText(menu.getInitialProgram());
+        this.inventoryLabelY = 9999;
+        hexEditor = new HexEditorWidget(menu.getInitialRomData().clone());
     }
 
     @Override
@@ -43,10 +45,16 @@ public class ProgrammingStationScreen extends AbstractContainerScreen<Programmin
         super.init();
         this.titleLabelX = (W - this.font.width(this.title)) / 2;
 
-        uploadBtn = addRenderableWidget(Button.builder(
-                Component.translatable("gui.omnitech.upload"),
-                b -> doUpload())
-                .bounds(this.leftPos + EDITOR_X, this.topPos + EDITOR_Y + EDITOR_H + 4, 88, 12)
+        flashBtn = addRenderableWidget(Button.builder(
+                Component.translatable("gui.omnitech.flash_rom"),
+                b -> doFlash())
+                .bounds(this.leftPos + EDITOR_X, this.topPos + EDITOR_Y + EDITOR_H + 4, 80, 12)
+                .build());
+
+        fillZeroBtn = addRenderableWidget(Button.builder(
+                Component.literal("Fill 0x00"),
+                b -> fillZero())
+                .bounds(this.leftPos + EDITOR_X + 84, this.topPos + EDITOR_Y + EDITOR_H + 4, 70, 12)
                 .build());
     }
 
@@ -55,47 +63,69 @@ public class ProgrammingStationScreen extends AbstractContainerScreen<Programmin
     @Override
     protected void containerTick() {
         super.containerTick();
-        ItemStack mc = menu.getSlot(0).getItem();
-        boolean hasMCU = !mc.isEmpty() && mc.getItem() instanceof MicrocontrollerItem;
+        ItemStack rom = menu.getSlot(0).getItem();
+        boolean hasRom = !rom.isEmpty() && rom.getItem() instanceof RomItem r
+                && RomItem.TYPE_FIRMWARE.equals(r.getRomType());
 
-        // Reload program when MCU is inserted and carries a program
-        if (hasMCU && !hadMCU) {
-            String prog = mc.getOrDefault(OmniTechDataComponents.PROGRAM.get(), "");
-            if (!prog.isEmpty()) editor.setText(prog);
+        // Reload hex data when a new ROM is inserted
+        if (hasRom && !hadRom) {
+            hexEditor.setData(menu.getInitialRomData().clone());
         }
-        hadMCU = hasMCU;
-        lastMCU = mc.copy();
+        hadRom      = hasRom;
+        lastRomStack = rom.copy();
 
-        uploadBtn.active = hasMCU;
+        flashBtn.active   = hasRom;
+        fillZeroBtn.active = hasRom;
     }
 
     // ── Rendering ─────────────────────────────────────────────────────────────
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
-        super.extractBackground(g, mouseX, mouseY, partialTick);
+    public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float pt) {
+        super.extractBackground(g, mouseX, mouseY, pt);
 
         // Window background
         g.fill(this.leftPos, this.topPos, this.leftPos + W, this.topPos + H, 0xFFC6C6C6);
 
-        // MCU slot frame
+        // ROM slot frame
         g.fill(this.leftPos + 150, this.topPos + 16, this.leftPos + 170, this.topPos + 36, 0xFF000000);
         g.fill(this.leftPos + 151, this.topPos + 17, this.leftPos + 169, this.topPos + 35, 0xFF8B8B8B);
 
-        // Code editor
-        editor.render(g, this.font, this.leftPos + EDITOR_X, this.topPos + EDITOR_Y, EDITOR_W, EDITOR_H);
+        // Hex editor
+        hexEditor.render(g, this.font,
+                this.leftPos + EDITOR_X, this.topPos + EDITOR_Y, EDITOR_W, EDITOR_H);
+
+        // Player inventory background rows
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 9; col++) {
+                int sx = this.leftPos + 8 + col * 18;
+                int sy = this.topPos  + 152 + row * 18;
+                g.fill(sx - 1, sy - 1, sx + 17, sy + 17, 0xFF8B8B8B);
+                g.fill(sx, sy, sx + 16, sy + 16, 0xFFC6C6C6);
+            }
+        }
+        // Hotbar row
+        for (int col = 0; col < 9; col++) {
+            int sx = this.leftPos + 8 + col * 18;
+            int sy = this.topPos  + 210;
+            g.fill(sx - 1, sy - 1, sx + 17, sy + 17, 0xFF8B8B8B);
+            g.fill(sx, sy, sx + 16, sy + 16, 0xFFC6C6C6);
+        }
     }
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         g.text(this.font, this.title, this.titleLabelX, 6, 0xFF404040, false);
-        g.text(this.font, Component.translatable("gui.omnitech.microcontroller_slot"), 120, 8, 0xFF404040, false);
-        g.text(this.font, Component.translatable("gui.omnitech.program"), 8, 32, 0xFF606060, false);
+        g.text(this.font, Component.translatable("gui.omnitech.rom_slot"), 120, 8, 0xFF404040, false);
+        g.text(this.font, Component.translatable("gui.omnitech.hex_editor"), EDITOR_X, 32, 0xFF606060, false);
 
-        // Status right of upload button
-        boolean hasMCU = !menu.getSlot(0).getItem().isEmpty();
-        String status = hasMCU ? "§aReady" : "§7No Microcontroller";
-        g.text(this.font, Component.literal(status), EDITOR_X + 92, EDITOR_Y + EDITOR_H + 6, 0xFFFFFFFF, false);
+        boolean hasRom = !menu.getSlot(0).getItem().isEmpty();
+        byte[] data = hexEditor.getData();
+        String info = hasRom
+                ? (data.length > 0 ? data.length + " bytes" : "Empty ROM")
+                : "§7No ROM";
+        g.text(this.font, Component.literal(info),
+                EDITOR_X + 160, EDITOR_Y + EDITOR_H + 7, 0xFFCCCCCC, false);
     }
 
     // ── Input ─────────────────────────────────────────────────────────────────
@@ -103,14 +133,14 @@ public class ProgrammingStationScreen extends AbstractContainerScreen<Programmin
     @Override
     public boolean keyPressed(KeyEvent event) {
         if (event.isEscape()) { this.minecraft.player.closeContainer(); return true; }
-        if (editor.keyPressed(event, EDITOR_H)) return true;
+        if (hexEditor.keyPressed(event.key(), EDITOR_H)) return true;
         return super.keyPressed(event);
     }
 
     @Override
     public boolean charTyped(CharacterEvent event) {
         int cp = event.codepoint();
-        if (cp > 0 && cp < 65536 && editor.charTyped((char) cp, EDITOR_H)) return true;
+        if (cp > 0 && cp < 65536 && hexEditor.charTyped((char) cp)) return true;
         return super.charTyped(event);
     }
 
@@ -119,9 +149,9 @@ public class ProgrammingStationScreen extends AbstractContainerScreen<Programmin
         if (event.button() == 0) {
             double mx = event.x(), my = event.y();
             int ex = this.leftPos + EDITOR_X;
-            int ey = this.topPos + EDITOR_Y;
+            int ey = this.topPos  + EDITOR_Y;
             if (mx >= ex && mx < ex + EDITOR_W && my >= ey && my < ey + EDITOR_H) {
-                editor.mouseClicked(mx, my, ex, ey, EDITOR_H);
+                hexEditor.mouseClicked(mx, my, ex, ey, EDITOR_H);
                 return true;
             }
         }
@@ -131,18 +161,27 @@ public class ProgrammingStationScreen extends AbstractContainerScreen<Programmin
     @Override
     public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
         int ex = this.leftPos + EDITOR_X;
-        int ey = this.topPos + EDITOR_Y;
+        int ey = this.topPos  + EDITOR_Y;
         if (x >= ex && x < ex + EDITOR_W && y >= ey && y < ey + EDITOR_H) {
-            editor.mouseScrolled(scrollY, EDITOR_H);
+            hexEditor.mouseScrolled(scrollY, EDITOR_H);
             return true;
         }
         return super.mouseScrolled(x, y, scrollX, scrollY);
     }
 
-    // ── Upload ────────────────────────────────────────────────────────────────
+    // ── Actions ───────────────────────────────────────────────────────────────
 
-    private void doUpload() {
+    private void doFlash() {
         ClientPacketDistributor.sendToServer(
-                new UploadProgramPacket(menu.getBlockPos(), editor.getText()));
+                new FlashRomPacket(menu.getBlockPos(), hexEditor.getData().clone()));
+    }
+
+    private void fillZero() {
+        byte[] data = hexEditor.getData();
+        if (data.length > 0) {
+            Arrays.fill(data, (byte) 0);
+        } else {
+            hexEditor.setData(new byte[65536]); // default 64 KB blank ROM
+        }
     }
 }
