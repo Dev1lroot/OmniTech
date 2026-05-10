@@ -12,7 +12,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 public class ProgrammingStationScreen extends AbstractContainerScreen<ProgrammingStationMenu> {
@@ -29,6 +35,7 @@ public class ProgrammingStationScreen extends AbstractContainerScreen<Programmin
     private final HexEditorWidget hexEditor;
     private Button flashBtn;
     private Button fillZeroBtn;
+    private Button loadBinBtn;
 
     // Track ROM reinsertion
     private ItemStack lastRomStack = ItemStack.EMPTY;
@@ -56,6 +63,12 @@ public class ProgrammingStationScreen extends AbstractContainerScreen<Programmin
                 b -> fillZero())
                 .bounds(this.leftPos + EDITOR_X + 84, this.topPos + EDITOR_Y + EDITOR_H + 4, 70, 12)
                 .build());
+
+        loadBinBtn = addRenderableWidget(Button.builder(
+                Component.literal("Load .bin"),
+                b -> loadBinFile())
+                .bounds(this.leftPos + EDITOR_X + 158, this.topPos + EDITOR_Y + EDITOR_H + 4, 70, 12)
+                .build());
     }
 
     // ── Ticking ───────────────────────────────────────────────────────────────
@@ -74,8 +87,9 @@ public class ProgrammingStationScreen extends AbstractContainerScreen<Programmin
         hadRom      = hasRom;
         lastRomStack = rom.copy();
 
-        flashBtn.active   = hasRom;
+        flashBtn.active    = hasRom;
         fillZeroBtn.active = hasRom;
+        loadBinBtn.active  = true;
     }
 
     // ── Rendering ─────────────────────────────────────────────────────────────
@@ -182,6 +196,20 @@ public class ProgrammingStationScreen extends AbstractContainerScreen<Programmin
             Arrays.fill(data, (byte) 0);
         } else {
             hexEditor.setData(new byte[65536]); // default 64 KB blank ROM
+        }
+    }
+
+    private void loadBinFile() {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            PointerBuffer filters = stack.mallocPointer(2);
+            filters.put(stack.UTF8("*.bin")).put(stack.UTF8("*.img")).flip();
+            String path = TinyFileDialogs.tinyfd_openFileDialog(
+                    "Load Firmware Binary", "", filters, "Firmware binary (*.bin, *.img)", false);
+            if (path == null) return;
+            try {
+                byte[] data = Files.readAllBytes(Path.of(path));
+                hexEditor.setData(data);
+            } catch (IOException ignored) {}
         }
     }
 }

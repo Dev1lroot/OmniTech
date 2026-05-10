@@ -6,6 +6,7 @@ import com.dev1lroot.mcmods.omnitech.gui.RadioTransmitterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.RadioReceiverScreen;
 import com.dev1lroot.mcmods.omnitech.gui.RadioScannerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ProgrammingStationScreen;
+import com.dev1lroot.mcmods.omnitech.gui.ResearchTableScreen;
 import com.dev1lroot.mcmods.omnitech.gui.LogicMachineScreen;
 import com.dev1lroot.mcmods.omnitech.gui.DisplayScreen;
 import com.dev1lroot.mcmods.omnitech.gui.FloppyDriveScreen;
@@ -90,6 +91,7 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.RADIO_RECEIVER.get(), RadioReceiverScreen::new);
         event.register(OmniTechMenuTypes.RADIO_SCANNER.get(), RadioScannerScreen::new);
         event.register(OmniTechMenuTypes.PROGRAMMING_STATION.get(), ProgrammingStationScreen::new);
+        event.register(OmniTechMenuTypes.RESEARCH_TABLE.get(), ResearchTableScreen::new);
         event.register(OmniTechMenuTypes.LOGIC_MACHINE.get(), LogicMachineScreen::new);
         event.register(OmniTechMenuTypes.GPIO_PORT.get(), GPIOPortScreen::new);
         event.register(OmniTechMenuTypes.DISPLAY.get(), DisplayScreen::new);
@@ -119,6 +121,8 @@ public class OmniTechGUI {
             event.accept(OmniTechItems.MANUAL_CENTRIFUGE_ITEM);
             event.accept(OmniTechItems.CRANK_ITEM);
             event.accept(OmniTechItems.ELECTRIC_CHARGER_ITEM);
+            event.accept(OmniTechItems.RESEARCH_TABLE_ITEM);
+            event.accept(OmniTechItems.BLUEPRINT);
             event.accept(OmniTechItems.PROGRAMMING_STATION_ITEM);
             event.accept(OmniTechItems.LOGIC_MACHINE_ITEM);
             event.accept(OmniTechItems.LOGIC_CABLE_ITEM);

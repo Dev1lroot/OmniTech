@@ -6,6 +6,7 @@ import com.dev1lroot.mcmods.omnitech.gui.RadioTransmitterMenu;
 import com.dev1lroot.mcmods.omnitech.gui.RadioReceiverMenu;
 import com.dev1lroot.mcmods.omnitech.gui.RadioScannerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ProgrammingStationMenu;
+import com.dev1lroot.mcmods.omnitech.gui.ResearchTableMenu;
 import com.dev1lroot.mcmods.omnitech.gui.LogicMachineMenu;
 import com.dev1lroot.mcmods.omnitech.gui.FloppyDriveMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ExpansionSlotMenu;
@@ -181,6 +182,10 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<ProgrammingStationMenu>> PROGRAMMING_STATION =
             REGISTRY.register("programming_station",
                     () -> IMenuTypeExtension.create(ProgrammingStationMenu::new));
+
+    public static final Supplier<MenuType<ResearchTableMenu>> RESEARCH_TABLE =
+            REGISTRY.register("research_table",
+                    () -> IMenuTypeExtension.create(ResearchTableMenu::new));
 
     public static final Supplier<MenuType<LogicMachineMenu>> LOGIC_MACHINE =
             REGISTRY.register("logic_machine",

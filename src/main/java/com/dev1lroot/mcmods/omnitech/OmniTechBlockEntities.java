@@ -32,6 +32,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockEntityMk2;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockEntityMk3;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station.ProgrammingStationBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.research_table.ResearchTableBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_gate.LogicGateBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.LogicMachineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlockEntity;
@@ -261,6 +262,11 @@ public class OmniTechBlockEntities {
             REGISTRY.register("programming_station",
                     () -> new BlockEntityType<>(ProgrammingStationBlockEntity::new,
                             OmniTechBlocks.PROGRAMMING_STATION.get()));
+
+    public static final Supplier<BlockEntityType<ResearchTableBlockEntity>> RESEARCH_TABLE =
+            REGISTRY.register("research_table",
+                    () -> new BlockEntityType<>(ResearchTableBlockEntity::new,
+                            OmniTechBlocks.RESEARCH_TABLE.get()));
 
     public static final Supplier<BlockEntityType<LogicMachineBlockEntity>> LOGIC_MACHINE =
             REGISTRY.register("logic_machine",

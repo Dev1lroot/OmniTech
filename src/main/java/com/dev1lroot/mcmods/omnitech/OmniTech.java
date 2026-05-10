@@ -79,6 +79,7 @@ import com.dev1lroot.mcmods.omnitech.network.SetFloppyDriveIdPacket;
 import com.dev1lroot.mcmods.omnitech.network.TerminalInputPacket;
 import com.dev1lroot.mcmods.omnitech.network.KeyboardModePacket;
 import com.dev1lroot.mcmods.omnitech.network.KeyboardReleasePacket;
+import com.dev1lroot.mcmods.omnitech.network.MinesweeperResultPacket;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.keyboard.KeyboardBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioManager;
@@ -121,6 +122,7 @@ public class OmniTech {
         OreSpawnLoader.loadAll();   // must run after BlockLoader
         ToolSetLoader.loadAll();
         ArmorSetLoader.loadAll();
+        ResearchLoader.loadAll();   // reads data/omnitech/research/*.json
 
         FluidLoader.loadAll();           // reads data/omnitech/fluid/*.json
         OmniTechFluids.register(modEventBus);
@@ -484,6 +486,10 @@ public class OmniTech {
                 KeyboardReleasePacket.TYPE,
                 KeyboardReleasePacket.CODEC,
                 KeyboardReleasePacket::handle);
+        event.registrar("1").playToServer(
+                MinesweeperResultPacket.TYPE,
+                MinesweeperResultPacket.CODEC,
+                MinesweeperResultPacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

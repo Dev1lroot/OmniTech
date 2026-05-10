@@ -30,6 +30,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.logic.floppy_drive.FloppyDriveBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.expansion_slot.ExpansionSlotBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station.ProgrammingStationBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.research_table.ResearchTableBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.keyboard.KeyboardBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.LogicMachineBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlock;
@@ -152,6 +153,7 @@ public class OmniTechBlocks {
 
     // ── Logic / GPIO / Display ────────────────────────────────────────────────
     public static final DeferredBlock<Block> PROGRAMMING_STATION;
+    public static final DeferredBlock<Block> RESEARCH_TABLE;
     public static final DeferredBlock<Block> LOGIC_MACHINE;
     public static final DeferredBlock<Block> LOGIC_CABLE;
     public static final DeferredBlock<Block> LOGIC_GATE_BLOCK;
@@ -336,6 +338,9 @@ public class OmniTechBlocks {
         PROGRAMMING_STATION = register("programming_station",
                 p -> new ProgrammingStationBlock(p.mapColor(MapColor.METAL).strength(3.0F)
                         .sound(SoundType.METAL)));
+        RESEARCH_TABLE = register("research_table",
+                p -> new ResearchTableBlock(p.mapColor(MapColor.WOOD).strength(2.5F)
+                        .sound(SoundType.WOOD)));
         LOGIC_MACHINE = register("logic_machine",
                 p -> new LogicMachineBlock(p.mapColor(MapColor.METAL).strength(3.0F)
                         .sound(SoundType.METAL)));

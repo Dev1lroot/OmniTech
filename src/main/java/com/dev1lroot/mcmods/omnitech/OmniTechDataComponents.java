@@ -173,6 +173,14 @@ public class OmniTechDataComponents {
                             .persistent(BYTE_ARRAY_CODEC)
                             .build());
 
+    /** Research id stored on a Blueprint item (e.g. "d_flip_flop"). Network-synced for tooltip display. */
+    public static final Supplier<DataComponentType<String>> RESEARCH_NAME =
+            REGISTRY.register("research_name", () ->
+                    DataComponentType.<String>builder()
+                            .persistent(Codec.STRING)
+                            .networkSynchronized(ByteBufCodecs.STRING_UTF8)
+                            .build());
+
     public static void register(IEventBus bus) {
         REGISTRY.register(bus);
     }

@@ -773,5 +773,10 @@
   "block.omnitech.microphone": "Microphone",
   "block.omnitech.analog_cable": "Analog Cable",
   "block.omnitech.valve": "Valve",
-  "block.omnitech.keyboard": "Keyboard"
+  "block.omnitech.keyboard": "Keyboard",
+
+  "block.omnitech.research_table": "Research Table",
+  "container.omnitech.research_table": "Research Table",
+  "item.omnitech.blueprint": "Blueprint",
+  "item.omnitech.research_table": "Research Table"
 }

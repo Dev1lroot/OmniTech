@@ -1,0 +1,10 @@
+{
+  "research": "8bit_register",
+  "display_name": "8-Bit Register",
+  "inputs": [
+    {"item": "omnitech:blueprint", "count": 1, "research_tag": "d_flip_flop"},
+    {"item": "minecraft:redstone", "count": 1},
+    {"item": "minecraft:paper", "count": 1}
+  ],
+  "wins_required": 4
+}

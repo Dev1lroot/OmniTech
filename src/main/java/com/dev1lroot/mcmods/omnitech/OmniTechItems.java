@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech;
 
+import com.dev1lroot.mcmods.omnitech.items.BlueprintItem;
 import com.dev1lroot.mcmods.omnitech.items.BoreItem;
 import com.dev1lroot.mcmods.omnitech.items.FloppyDiskItem;
 import com.dev1lroot.mcmods.omnitech.items.GuidebookItem;
@@ -183,6 +184,12 @@ public class OmniTechItems
 
     public static final DeferredItem<BlockItem> SPEAKER_ITEM =
             REGISTRY.registerSimpleBlockItem("speaker", OmniTechBlocks.SPEAKER);
+
+    // ── Research ──────────────────────────────────────────────────────────────
+    public static final DeferredItem<BlueprintItem> BLUEPRINT =
+            REGISTRY.registerItem("blueprint", BlueprintItem::new);
+    public static final DeferredItem<BlockItem> RESEARCH_TABLE_ITEM =
+            REGISTRY.registerSimpleBlockItem("research_table", OmniTechBlocks.RESEARCH_TABLE);
 
     // ── Logic / GPIO ──────────────────────────────────────────────────────────
     public static final DeferredItem<BlockItem> PROGRAMMING_STATION_ITEM =

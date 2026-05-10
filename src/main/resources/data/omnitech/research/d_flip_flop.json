@@ -1,0 +1,9 @@
+{
+  "research": "d_flip_flop",
+  "display_name": "D Flip-Flop",
+  "inputs": [
+    {"item": "minecraft:paper", "count": 1},
+    {"item": "omnitech:gate_template_nand", "count": 4}
+  ],
+  "wins_required": 4
+}
