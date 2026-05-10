@@ -1,210 +1,267 @@
 package com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
+import com.dev1lroot.mcmods.omnitech.gui.LogicMachineMenu;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.LogicCableBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.expansion_slot.ExpansionSlotBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.floppy_drive.FloppyDriveBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.logic.vm.LogicVM;
-import com.dev1lroot.mcmods.omnitech.gui.LogicMachineMenu;
-import com.dev1lroot.mcmods.omnitech.items.FloppyDiskItem;
-import com.dev1lroot.mcmods.omnitech.items.MicrocontrollerItem;
-import com.dev1lroot.mcmods.omnitech.items.RamCardItem;
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.vm.OmniTechBusDevice;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.vm.SednaVM;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.vm.TerminalDisplay;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.vm.VMTerminal;
+import com.dev1lroot.mcmods.omnitech.network.TerminalOutputPacket;
+import com.dev1lroot.mcmods.omnitech.network.TerminalSyncPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.network.PacketDistributor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.nio.ByteBuffer;
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Arrays;
 
-public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
+public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LogicMachineBlockEntity.class);
 
     public static final int BTN_RUN   = 0;
     public static final int BTN_STOP  = 1;
     public static final int BTN_RESET = 2;
 
-    private NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
+    // ── VM ────────────────────────────────────────────────────────────────────
 
-    private final LogicVM vm = new LogicVM();
-    private boolean running = false;
-    private String  compileError = null;
+    @Nullable private SednaVM vm = null;
+    private boolean shouldBeRunning = false;
 
-    private final Map<Integer, GPIOPortBlockEntity>  gpioCache    = new HashMap<>();
-    private final Map<Integer, DisplayBlockEntity>   displayCache = new HashMap<>();
-    private final Map<Integer, FloppyDriveBlockEntity> floppyCache = new HashMap<>();
-    private final List<ExpansionSlotBlockEntity>     expansionSlotCache = new ArrayList<>();
+    /** Stable identity for this machine's save directory under VMs/. */
+    private UUID vmId = UUID.randomUUID();
+
+    /** Set in loadAdditional(); cleared once setLevel() fires and we restore from disk. */
+    private boolean pendingLoad = false;
+
+    // Client-side terminal mirror
+    private final VMTerminal clientTerminal = new VMTerminal();
+
+    // ── Peripheral cache ──────────────────────────────────────────────────────
+
+    private final Map<Integer, GPIOPortBlockEntity>    gpioCache      = new HashMap<>();
+    private final Map<Integer, DisplayBlockEntity>     displayCache   = new HashMap<>();
+    private final Map<Integer, FloppyDriveBlockEntity> floppyCache    = new HashMap<>();
+    // Tracks which ByteData object is currently loaded per driveId — object identity detects disk swaps
+    private final Map<Integer, OmniTechDataComponents.ByteData> floppySnapshot = new HashMap<>();
     private long lastCacheRefresh = -100L;
 
-    // Flat RAM address space built from connected RAM cards
-    private byte[] ramBuffer = new byte[0];
-    private record RamSlot(ExpansionSlotBlockEntity be, int slotIndex, int offset, int capacity) {}
-    private List<RamSlot>   ramSlots       = new ArrayList<>();
-    private boolean[]       ramSlotsDirty  = new boolean[0];
+    // ── Viewers (players with GUI open) ───────────────────────────────────────
 
-    private int tickAccum = 0;
+    private final Set<ServerPlayer> viewers = new HashSet<>();
 
-    protected final ContainerData dataAccess = new ContainerData() {
-        @Override public int get(int i) {
-            return switch (i) {
-                case 0 -> running ? 1 : 0;
-                case 1 -> vm.halted ? 1 : 0;
-                case 2 -> vm.currentLine();
-                case 3 -> (!items.get(0).isEmpty()) ? 1 : 0;
-                case 4 -> compileError != null ? 1 : 0;
-                case 5 -> Math.min(ramBuffer.length, 32767);
-                case 6 -> gpioCache.size();
-                case 7 -> floppyCache.size();
-                case 8 -> ramSlots.size();
-                default -> 0;
-            };
-        }
-        @Override public void set(int i, int v) {}
-        @Override public int getCount() { return 9; }
-    };
+    // ── Pending terminal output ──────────────────────────────────────────────
+
+    private final ConcurrentLinkedQueue<byte[]> pendingOutput = new ConcurrentLinkedQueue<>();
+
+    // -----------------------------------------------------------------------
 
     public LogicMachineBlockEntity(BlockPos pos, BlockState state) {
         super(OmniTechBlockEntities.LOGIC_MACHINE.get(), pos, state);
     }
 
-    // ── Ticking ───────────────────────────────────────────────────────────────
+    // ── Server tick ──────────────────────────────────────────────────────────
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
-            LogicMachineBlockEntity be) {
-        if (!be.running || be.vm.isEmpty()) return;
+                                   LogicMachineBlockEntity be) {
+        if (level.isClientSide()) return;
 
         if (level.getGameTime() - be.lastCacheRefresh > 20) {
-            be.flushDirtyRamSlots();
             be.rebuildNetworkCache(level, pos);
+            be.syncBusDevice();
+            be.syncFloppyDrives();
             be.lastCacheRefresh = level.getGameTime();
         }
 
-        if (be.vm.sleepTicks > 0) {
-            be.vm.sleepTicks--;
-            return;
+        if (level.getGameTime() % 100 == 0) {
+            be.floppyWriteBack();
         }
 
-        int speed = Math.clamp(
-                be.items.get(0).getOrDefault(OmniTechDataComponents.MCU_SPEED.get(), 20),
-                1, 1_000_000);
-        be.tickAccum += speed;
-        int instrsThisTick = be.tickAccum / 20;
-        be.tickAccum %= 20;
+        if (be.vm == null) return;
 
-        LogicVM.GPIOAccess gpio = new LogicVM.GPIOAccess() {
-            @Override public int read(int portId) {
-                GPIOPortBlockEntity g = be.gpioCache.get(portId);
-                return g != null ? g.getInputSignal() : 0;
-            }
-            @Override public void write(int portId, int value) {
-                GPIOPortBlockEntity g = be.gpioCache.get(portId);
-                if (g != null) g.setOutputSignal(value);
-            }
-        };
-        LogicVM.DisplayAccess display = new LogicVM.DisplayAccess() {
-            @Override public void setPixel(int displayId, int x, int y, int color) {
-                DisplayBlockEntity d = be.displayCache.get(displayId);
-                if (d != null) d.setPixel(x, y, color);
-            }
-            @Override public void reset(int displayId) {
-                DisplayBlockEntity d = be.displayCache.get(displayId);
-                if (d != null) d.resetPixels();
-            }
-            @Override public int getWidth(int displayId) {
-                DisplayBlockEntity d = be.displayCache.get(displayId);
-                return d != null ? d.getDisplayWidth() : 0;
-            }
-            @Override public int getHeight(int displayId) {
-                DisplayBlockEntity d = be.displayCache.get(displayId);
-                return d != null ? d.getDisplayHeight() : 0;
-            }
-            @Override public void drawLine(int displayId, int x1, int y1, int x2, int y2, int color) {
-                DisplayBlockEntity d = be.displayCache.get(displayId);
-                if (d != null) d.drawLine(x1, y1, x2, y2, color);
-            }
-            @Override public void fillRect(int displayId, int x, int y, int w, int h, int color) {
-                DisplayBlockEntity d = be.displayCache.get(displayId);
-                if (d != null) d.fillRect(x, y, w, h, color);
-            }
-            @Override public void blit(int displayId, int x, int y, int w, int h, int[] pixels) {
-                DisplayBlockEntity d = be.displayCache.get(displayId);
-                if (d != null) d.blit(x, y, w, h, pixels);
-            }
-        };
-        LogicVM.RAMAccess ram = new LogicVM.RAMAccess() {
-            @Override public int read(int addr) {
-                if (addr < 0 || addr >= be.ramBuffer.length) return 0;
-                return be.ramBuffer[addr] & 0xFF;
-            }
-            @Override public void write(int addr, int value) {
-                if (addr < 0 || addr >= be.ramBuffer.length) return;
-                be.ramBuffer[addr] = (byte)(value & 0xFF);
-                for (int i = 0; i < be.ramSlots.size(); i++) {
-                    RamSlot rs = be.ramSlots.get(i);
-                    if (addr >= rs.offset() && addr < rs.offset() + rs.capacity()) {
-                        be.ramSlotsDirty[i] = true;
-                        break;
-                    }
-                }
-            }
-            @Override public int capacity() { return be.ramBuffer.length; }
-        };
-        LogicVM.FloppyAccess floppy = (driveId, sector, dstAddr) -> {
-            FloppyDriveBlockEntity fd = be.floppyCache.get(driveId);
-            if (fd == null) return false;
-            ItemStack disk = fd.getDisk();
-            if (disk.isEmpty() || !(disk.getItem() instanceof FloppyDiskItem)) return false;
-            OmniTechDataComponents.ByteData floppyData = disk.get(OmniTechDataComponents.FLOPPY_DATA.get());
-            if (floppyData == null) return false;
-            byte[] data = floppyData.data();
-            int srcOffset = sector * FloppyDiskItem.SECTOR_SIZE;
-            if (srcOffset < 0 || srcOffset >= data.length) return false;
-            int copyLen = Math.min(FloppyDiskItem.SECTOR_SIZE,
-                    Math.min(data.length - srcOffset, be.ramBuffer.length - dstAddr));
-            if (copyLen <= 0) return false;
-            System.arraycopy(data, srcOffset, be.ramBuffer, dstAddr, copyLen);
-            // Mark dirty RAM slots in the destination range
-            for (int i = 0; i < be.ramSlots.size(); i++) {
-                RamSlot rs = be.ramSlots.get(i);
-                int end = rs.offset() + rs.capacity();
-                if (dstAddr < end && dstAddr + copyLen > rs.offset()) {
-                    be.ramSlotsDirty[i] = true;
-                }
-            }
-            return true;
-        };
+        be.vm.getBusDevice().pollGpioChanges();
+        be.vm.getBusDevice().flushPendingDisplays();
+        be.vm.tick();
 
-        for (int i = 0; i < instrsThisTick && !be.vm.halted; i++) {
-            be.vm.tick(gpio, display, ram, floppy);
-            if (be.vm.sleepTicks > 0) break;
+        byte[] newOut = be.vm.drainOutput();
+        if (newOut.length > 0) {
+            LOGGER.info("[tick] drainOutput returned {} bytes, viewers={}", newOut.length, be.viewers.size());
+            be.enqueueTerminalOutput(newOut);
         }
 
-        if (be.vm.halted) be.running = false;
-        be.setChanged();
+        // Render terminal text to the display block at portId=0 whenever there is new output.
+        // Other portIds are unaffected — they remain purely pixel-art displays.
+        VMTerminal term = be.vm.getTerminal();
+        if (term.isDirty()) {
+            DisplayBlockEntity display = be.displayCache.get(0);
+            if (display != null) TerminalDisplay.render(term, display);
+        }
+
+        byte[] chunk;
+        while ((chunk = be.pendingOutput.poll()) != null) {
+            if (!be.viewers.isEmpty()) {
+                LOGGER.info("[tick] sending {} bytes to {} viewer(s)", chunk.length, be.viewers.size());
+                TerminalOutputPacket pkt = new TerminalOutputPacket(pos, chunk);
+                for (ServerPlayer viewer : new ArrayList<>(be.viewers)) {
+                    PacketDistributor.sendToPlayer(viewer, pkt);
+                }
+            } else {
+                LOGGER.warn("[tick] output discarded — no viewers! {} bytes lost", chunk.length);
+            }
+        }
+
+        if (be.shouldBeRunning && be.vm.isPoweredOff()) {
+            be.shouldBeRunning = false;
+            be.setChanged();
+        }
     }
 
-    // ── Network cache ─────────────────────────────────────────────────────────
+    // ── GPIO / peripheral wiring ─────────────────────────────────────────────
+
+    private void syncBusDevice() {
+        if (vm == null) return;
+        var busDevice = vm.getBusDevice();
+        busDevice.clearPorts();
+        busDevice.clearDisplaySlots();
+
+        int idx = 0;
+        for (Map.Entry<Integer, GPIOPortBlockEntity> e : new TreeMap<>(gpioCache).entrySet()) {
+            GPIOPortBlockEntity g = e.getValue();
+            busDevice.setGpioPort(idx, g::getInputSignal, g::setOutputSignal);
+            idx++;
+        }
+
+        for (Map.Entry<Integer, DisplayBlockEntity> e : new TreeMap<>(displayCache).entrySet()) {
+            int portId = e.getKey();
+            if (portId <= 0 || portId > OmniTechBusDevice.MAX_DISP_SLOTS) continue;
+            DisplayBlockEntity display = e.getValue();
+            if (!display.isMaster()) continue;
+            int slot = portId - 1;
+            int w = Math.min(display.getDisplayWidth(),  OmniTechBusDevice.MAX_DISP_W);
+            int h = Math.min(display.getDisplayHeight(), OmniTechBusDevice.MAX_DISP_H);
+            busDevice.setDisplay(slot, w, h,
+                (pixels, pw, ph) -> display.blit(0, 0, pw, ph, pixels),
+                display::resetPixels);
+        }
+    }
+
+    // ── Floppy drive wiring ───────────────────────────────────────────────────
+
+    /**
+     * Called every 20 ticks alongside the cache rebuild.
+     *
+     * Change detection uses two independent checks:
+     *   1. Whether the slot has a disk at all (ItemStack.isEmpty).
+     *   2. Object identity of ByteData — a different reference means the disk was swapped.
+     *
+     * A blank disk (no FLOPPY_DATA component yet) has currentData == null but the slot
+     * is NOT empty, so it is inserted with a freshly zeroed 1.44 MB buffer rather than
+     * being treated as an ejection.
+     */
+    private void syncFloppyDrives() {
+        if (vm == null) return;
+
+        Set<Integer> activeDriveIds = new HashSet<>();
+
+        for (Map.Entry<Integer, FloppyDriveBlockEntity> e : floppyCache.entrySet()) {
+            int driveId = e.getKey();
+            if (driveId < 0 || driveId >= SednaVM.MAX_FLOPPY_DRIVES) continue;
+            FloppyDriveBlockEntity drive = e.getValue();
+            ItemStack disk = drive.getDisk();
+            activeDriveIds.add(driveId);
+
+            if (disk.isEmpty()) {
+                if (floppySnapshot.containsKey(driveId)) {
+                    vm.ejectFloppy(driveId);
+                    floppySnapshot.remove(driveId);
+                }
+                continue;
+            }
+
+            // Disk is physically present (may be blank — no FLOPPY_DATA yet)
+            OmniTechDataComponents.ByteData currentData = disk.get(OmniTechDataComponents.FLOPPY_DATA.get());
+            boolean alreadyInserted = floppySnapshot.containsKey(driveId);
+            OmniTechDataComponents.ByteData prevData = floppySnapshot.get(driveId); // null if blank or not inserted
+
+            if (alreadyInserted && currentData == prevData) continue; // no change
+
+            // Insert or swap: blank disk (null) gets a zeroed buffer in setFloppyDisk
+            byte[] bytes = currentData != null ? currentData.data() : new byte[0];
+            boolean readOnly = disk.getOrDefault(OmniTechDataComponents.READ_ONLY.get(), 0) == 1;
+            vm.setFloppyDisk(driveId, bytes, readOnly);
+            floppySnapshot.put(driveId, currentData); // null OK — marks "blank disk inserted"
+        }
+
+        // Eject drives that have left the cable network
+        Iterator<Map.Entry<Integer, OmniTechDataComponents.ByteData>> it = floppySnapshot.entrySet().iterator();
+        while (it.hasNext()) {
+            int driveId = it.next().getKey();
+            if (!activeDriveIds.contains(driveId)) {
+                vm.ejectFloppy(driveId);
+                it.remove();
+            }
+        }
+    }
+
+    /**
+     * Copies the VM's live floppy backing data back into each ItemStack so writes
+     * survive after the world is saved. Also updates floppySnapshot to the new
+     * ByteData reference so the next syncFloppyDrives() doesn't mistake the
+     * write-back for a disk swap.
+     */
+    private void floppyWriteBack() {
+        if (vm == null) return;
+        for (Map.Entry<Integer, FloppyDriveBlockEntity> e : floppyCache.entrySet()) {
+            int driveId = e.getKey();
+            if (driveId < 0 || driveId >= SednaVM.MAX_FLOPPY_DRIVES) continue;
+            byte[] live = vm.getFloppyData(driveId); // null if empty or read-only
+            if (live == null) continue;
+            FloppyDriveBlockEntity drive = e.getValue();
+            ItemStack disk = drive.getDisk();
+            if (disk.isEmpty()) continue;
+            OmniTechDataComponents.ByteData saved =
+                    new OmniTechDataComponents.ByteData(Arrays.copyOf(live, live.length));
+            disk.set(OmniTechDataComponents.FLOPPY_DATA.get(), saved);
+            drive.setChanged();
+            floppySnapshot.put(driveId, saved); // keep snapshot in sync to avoid spurious re-insert
+        }
+    }
+
+    // ── Network cache ────────────────────────────────────────────────────────
 
     private void rebuildNetworkCache(Level level, BlockPos origin) {
         gpioCache.clear();
         displayCache.clear();
         floppyCache.clear();
-        expansionSlotCache.clear();
 
         Set<BlockPos> visited = new HashSet<>();
         Queue<BlockPos> queue = new ArrayDeque<>();
@@ -224,69 +281,13 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
                     if (be instanceof GPIOPortBlockEntity g) {
                         gpioCache.put(g.getPortId(), g);
                     } else if (be instanceof DisplayBlockEntity d) {
-                        // Any block in a cluster (even a slave) registers the master
                         DisplayBlockEntity master = d.isMaster() ? d : d.getMasterEntity(level);
                         if (master != null) displayCache.put(master.getPortId(), master);
                     } else if (be instanceof FloppyDriveBlockEntity fd) {
                         floppyCache.put(fd.getDriveId(), fd);
-                    } else if (be instanceof ExpansionSlotBlockEntity es) {
-                        expansionSlotCache.add(es);
                     }
                 }
             }
-        }
-
-        buildRamAddressSpace();
-    }
-
-    private void buildRamAddressSpace() {
-        ramSlots = new ArrayList<>();
-        int totalBytes = 0;
-        for (ExpansionSlotBlockEntity es : expansionSlotCache) {
-            for (int i = 0; i < ExpansionSlotBlockEntity.SLOT_COUNT; i++) {
-                ItemStack stack = es.getItem(i);
-                if (!stack.isEmpty() && stack.getItem() instanceof RamCardItem) {
-                    int cap = stack.getOrDefault(OmniTechDataComponents.RAM_CAPACITY.get(), 1024);
-                    int addrStart = totalBytes;
-                    int addrEnd   = totalBytes + cap - 1;
-                    ramSlots.add(new RamSlot(es, i, totalBytes, cap));
-                    totalBytes += cap;
-                    // Stamp address range onto the card if it changed
-                    Integer curStart = stack.get(OmniTechDataComponents.RAM_ADDR_START.get());
-                    Integer curEnd   = stack.get(OmniTechDataComponents.RAM_ADDR_END.get());
-                    if (!Integer.valueOf(addrStart).equals(curStart) || !Integer.valueOf(addrEnd).equals(curEnd)) {
-                        stack.set(OmniTechDataComponents.RAM_ADDR_START.get(), addrStart);
-                        stack.set(OmniTechDataComponents.RAM_ADDR_END.get(), addrEnd);
-                        es.setItem(i, stack);
-                        es.setChanged();
-                    }
-                }
-            }
-        }
-
-        byte[] newBuffer = new byte[totalBytes];
-        for (RamSlot rs : ramSlots) {
-            OmniTechDataComponents.ByteData ramData = rs.be().getItem(rs.slotIndex()).get(OmniTechDataComponents.RAM_DATA.get());
-            if (ramData != null) {
-                byte[] data = ramData.data();
-                int len = Math.min(data.length, rs.capacity());
-                System.arraycopy(data, 0, newBuffer, rs.offset(), len);
-            }
-        }
-        ramBuffer = newBuffer;
-        ramSlotsDirty = new boolean[ramSlots.size()];
-    }
-
-    private void flushDirtyRamSlots() {
-        for (int i = 0; i < ramSlots.size(); i++) {
-            if (!ramSlotsDirty[i]) continue;
-            RamSlot rs = ramSlots.get(i);
-            byte[] data = Arrays.copyOfRange(ramBuffer, rs.offset(), rs.offset() + rs.capacity());
-            ItemStack stack = rs.be().getItem(rs.slotIndex()).copy();
-            stack.set(OmniTechDataComponents.RAM_DATA.get(), new OmniTechDataComponents.ByteData(data));
-            rs.be().setItem(rs.slotIndex(), stack);
-            rs.be().setChanged();
-            ramSlotsDirty[i] = false;
         }
     }
 
@@ -294,102 +295,207 @@ public class LogicMachineBlockEntity extends BaseContainerBlockEntity {
 
     public boolean handleButton(int id) {
         return switch (id) {
-            case BTN_RUN   -> { loadAndRun(); yield true; }
-            case BTN_STOP  -> { running = false; setChanged(); yield true; }
-            case BTN_RESET -> { running = false; vm.reset(); compileError = null; setChanged(); yield true; }
+            case BTN_RUN   -> { startVM(); yield true; }
+            case BTN_STOP  -> { stopVM(); yield true; }
+            case BTN_RESET -> { resetVM(); yield true; }
             default -> false;
         };
     }
 
-    private void loadAndRun() {
-        ItemStack stack = items.get(0);
-        if (stack.isEmpty() || !(stack.getItem() instanceof MicrocontrollerItem)) return;
-        int regCount = Math.clamp(stack.getOrDefault(OmniTechDataComponents.MCU_REGISTERS.get(), 4), 1, 256);
-        vm.setRegisterCount(regCount);
-        String prog = stack.getOrDefault(OmniTechDataComponents.PROGRAM.get(), "");
-        compileError = vm.compile(prog);
-        if (compileError == null && !vm.isEmpty()) running = true;
+    private void startVM() {
+        if (vm != null && vm.isRunning()) return;
+        try {
+            if (vm == null) vm = new SednaVM();
+            vm.start();
+            shouldBeRunning = true;
+            setChanged();
+        } catch (IOException e) {
+            LOGGER.error("Failed to start SednaVM", e);
+        }
+    }
+
+    private void stopVM() {
+        if (vm != null) vm.stop();
+        shouldBeRunning = false;
         setChanged();
+        clearAllDisplays();
     }
 
-    // ── Item slot ─────────────────────────────────────────────────────────────
-
-    @Override
-    public void setItem(int slot, ItemStack stack) {
-        super.setItem(slot, stack);
-        running = false;
-        vm.reset();
-        compileError = null;
+    private void resetVM() {
+        if (vm != null) {
+            vm.stop();
+            vm = null;
+        }
+        shouldBeRunning = false;
+        floppySnapshot.clear();
         setChanged();
+        clearAllDisplays();
     }
 
-    // ── BaseContainerBlockEntity ──────────────────────────────────────────────
+    private void clearAllDisplays() {
+        for (DisplayBlockEntity master : displayCache.values()) master.resetPixels();
+    }
+
+    // ── Terminal I/O ─────────────────────────────────────────────────────────
+
+    public void handleTerminalInput(byte[] data) {
+        if (vm == null || !vm.isRunning()) return;
+        VMTerminal t = vm.getTerminal();
+        for (byte b : data) t.putInput(b);
+    }
+
+    public void handleTerminalOutput(byte[] data) {
+        for (byte b : data) clientTerminal.write(b);
+    }
+
+    public void handleTerminalSync(int[] cells, int cursorRow, int cursorCol) {
+        clientTerminal.setSnapshot(cells, cursorRow, cursorCol);
+    }
+
+    public void enqueueTerminalOutput(byte[] data) {
+        if (data.length == 0) return;
+        // Split into ≤8192-byte chunks so the packet codec never overflows.
+        for (int i = 0; i < data.length; i += 8192) {
+            int end = Math.min(i + 8192, data.length);
+            byte[] chunk = new byte[end - i];
+            System.arraycopy(data, i, chunk, 0, chunk.length);
+            pendingOutput.add(chunk);
+        }
+    }
+
+    // ── Viewer tracking ───────────────────────────────────────────────────────
+
+    public void addViewer(ServerPlayer player) {
+        viewers.add(player);
+        // Send the current terminal state so the player sees what's already on screen.
+        if (vm != null && vm.isRunning()) {
+            VMTerminal t = vm.getTerminal();
+            PacketDistributor.sendToPlayer(player,
+                    new TerminalSyncPacket(worldPosition,
+                            t.getCellSnapshot(), t.getCursorRow(), t.getCursorCol()));
+        }
+    }
+
+    public void removeViewer(ServerPlayer player) { viewers.remove(player); }
+
+    // ── Accessors for GUI ─────────────────────────────────────────────────────
+
+    public boolean isRunning()    { return vm != null && vm.isRunning(); }
+    public boolean isPoweredOff() { return vm != null && vm.isPoweredOff(); }
+
+    public VMTerminal getTerminal() {
+        if (level != null && level.isClientSide()) return clientTerminal;
+        return vm != null ? vm.getTerminal() : clientTerminal;
+    }
+
+    public int getGpioCount()     { return gpioCache.size(); }
+    public int getFloppyCount()   { return floppyCache.size(); }
+    public BlockPos getBlockPos2() { return worldPosition; }
+
+    // ── MenuProvider ──────────────────────────────────────────────────────────
 
     @Override
-    protected Component getDefaultName() {
-        return Component.translatable("container.omnitech.logic_machine");
+    public Component getDisplayName() {
+        return Component.translatable("block.omnitech.logic_machine");
     }
 
     @Override
-    protected NonNullList<ItemStack> getItems() { return items; }
-
-    @Override
-    protected void setItems(NonNullList<ItemStack> items) { this.items = items; }
-
-    @Override
-    protected AbstractContainerMenu createMenu(int containerId, Inventory playerInventory) {
-        return new LogicMachineMenu(containerId, playerInventory, this, dataAccess);
+    public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
+        if (player instanceof ServerPlayer sp) addViewer(sp);
+        return new LogicMachineMenu(id, inv, this);
     }
 
-    @Override
-    public int getContainerSize() { return 1; }
+    // ── Level assignment — trigger deferred VM load ───────────────────────────
 
     @Override
-    public boolean stillValid(Player player) { return true; }
+    public void setLevel(Level level) {
+        super.setLevel(level);
+        if (!level.isClientSide() && pendingLoad) {
+            pendingLoad = false;
+            restoreVMFromDisk();
+        }
+    }
+
+    // ── VM file persistence ───────────────────────────────────────────────────
+
+    /** Absolute path: <world>/VMs/<vmId>/ */
+    private Path getVMDir() {
+        return ((ServerLevel) level).getServer()
+                .getWorldPath(LevelResource.ROOT)
+                .resolve("VMs")
+                .resolve(vmId.toString());
+    }
+
+    private void saveVMToDisk() {
+        if (vm == null || level == null || level.isClientSide()) return;
+        try {
+            vm.saveToDirectory(getVMDir());
+        } catch (IOException e) {
+            LOGGER.error("Failed to save VM state to disk", e);
+        }
+    }
+
+    private void restoreVMFromDisk() {
+        if (!shouldBeRunning) return;
+        try {
+            if (vm == null) vm = new SednaVM();
+            if (vm.loadFromDirectory(getVMDir())) {
+                vm.resume();
+            } else {
+                // No saved state — boot fresh
+                vm.start();
+            }
+        } catch (IOException e) {
+            LOGGER.error("Failed to restore VM from disk, booting fresh", e);
+            try {
+                if (vm == null) vm = new SednaVM();
+                vm.start();
+            } catch (IOException ex) {
+                LOGGER.error("Fresh VM start also failed", ex);
+            }
+        }
+    }
+
+    // ── Chunk load / unload ───────────────────────────────────────────────────
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        if (vm != null) {
+            vm.stop();          // stop the thread first so state is consistent
+            saveVMToDisk();     // then write files (no resume needed, BE is gone)
+        }
+    }
 
     // ── Serialization ────────────────────────────────────────────────────────
+    // Only the UUID and the running-intent flag go into NBT.
+    // All VM binary state lives in <world>/VMs/<vmId>/.
 
     @Override
     protected void saveAdditional(ValueOutput out) {
         super.saveAdditional(out);
-        ContainerHelper.saveAllItems(out, items);
-        out.putBoolean("Running", running);
-        vm.saveState(out);
-        // Flush RAM to items before save so RAM card items are portable
-        flushDirtyRamSlots();
-        // Also persist the flat buffer in block entity NBT for fast reload
-        if (ramBuffer.length > 0) {
-            out.store("RAMBuffer", OmniTechDataComponents.BYTE_ARRAY_CODEC, new OmniTechDataComponents.ByteData(ramBuffer));
-        }
+        out.putString("VmId",       vmId.toString());
+        out.putBoolean("ShouldRun", shouldBeRunning);
+        // VM binary state is flushed to disk in setRemoved() only.
+        // Writing 32MB+ on every autosave would block the server thread.
     }
 
     @Override
     protected void loadAdditional(ValueInput in) {
         super.loadAdditional(in);
-        ContainerHelper.loadAllItems(in, items);
-        running = in.getBooleanOr("Running", false);
-        ItemStack stack = items.get(0);
-        if (!stack.isEmpty() && stack.getItem() instanceof MicrocontrollerItem) {
-            int regCount = Math.clamp(
-                    stack.getOrDefault(OmniTechDataComponents.MCU_REGISTERS.get(), 4), 1, 256);
-            vm.setRegisterCount(regCount);
-            String prog = stack.getOrDefault(OmniTechDataComponents.PROGRAM.get(), "");
-            compileError = vm.compile(prog);
-        }
-        vm.loadState(in);
-        // Restore RAM buffer if stored (expansion slots may not be loaded yet)
-        in.read("RAMBuffer", OmniTechDataComponents.BYTE_ARRAY_CODEC).ifPresent(b -> { if (b.data().length > 0) ramBuffer = b.data(); });
+
+        String idStr = in.getStringOr("VmId", "");
+        vmId = idStr.isEmpty() ? UUID.randomUUID() : UUID.fromString(idStr);
+        shouldBeRunning = in.getBooleanOr("ShouldRun", false);
+
+        // We can't load VM files yet — level may be null at this point.
+        // setLevel() will fire shortly and trigger restoreVMFromDisk().
+        if (shouldBeRunning) pendingLoad = true;
     }
 
-    // ── Accessors for System tab ──────────────────────────────────────────────
-
-    /** Sorted list of connected GPIO port IDs for the System tab. */
-    public int[] getGpioPortIds() {
-        return gpioCache.keySet().stream().mapToInt(Integer::intValue).sorted().toArray();
-    }
-
-    /** Sorted list of connected Floppy Drive IDs for the System tab. */
-    public int[] getFloppyDriveIds() {
-        return floppyCache.keySet().stream().mapToInt(Integer::intValue).sorted().toArray();
+    @Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 }

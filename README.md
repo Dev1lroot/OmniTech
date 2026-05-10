@@ -91,6 +91,8 @@ Development is an ongoing battle against technical debt. The following systems a
 | [Materials](Documentation/materials.md) | 12 metals, item forms, processing chain |
 | [Planets & Space](Documentation/planets.md) | Dimensions, rocket, navigation GUI, sky renderer |
 | [Space Map API](Documentation/space_map_api.md) | `space_map.json` authoring reference |
+| [Logic Network Programming](Documentation/logic_network.md) | RISC-V bare-metal examples: GPIO, display, floppy |
+| [Linux MMIO Programming](Documentation/linux_mmio.md) | GPIO and display access from Linux via `/dev/mem` |
 
 ---
 

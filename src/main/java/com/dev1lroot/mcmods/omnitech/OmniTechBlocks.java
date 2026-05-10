@@ -30,6 +30,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.logic.floppy_drive.FloppyDriveBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.expansion_slot.ExpansionSlotBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station.ProgrammingStationBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.keyboard.KeyboardBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.LogicMachineBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logistic.SorterBlock;
@@ -161,6 +162,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> FLOPPY_DRIVE;
     public static final DeferredBlock<Block> EXPANSION_SLOT;
     public static final DeferredBlock<Block> REDSTONE_INTERSECTION;
+    public static final DeferredBlock<Block> KEYBOARD;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -367,6 +369,9 @@ public class OmniTechBlocks {
                 p -> new RedstoneIntersectionBlock(p.mapColor(MapColor.METAL).strength(2.5F)
                         .sound(SoundType.METAL)
                         .isRedstoneConductor((s, l, pos2) -> false)));
+        KEYBOARD = register("keyboard",
+                p -> new KeyboardBlock(p.mapColor(MapColor.METAL).strength(2.5F)
+                        .sound(SoundType.METAL)));
     }
 
     // ── Registration helpers ───────────────────────────────────────────────

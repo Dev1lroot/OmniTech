@@ -204,6 +204,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> DISPLAY_MK3_ITEM =
             REGISTRY.registerSimpleBlockItem("display_mk3", OmniTechBlocks.DISPLAY_MK3);
 
+    public static final DeferredItem<BlockItem> KEYBOARD_ITEM =
+            REGISTRY.registerSimpleBlockItem("keyboard", OmniTechBlocks.KEYBOARD);
+
     public static final DeferredItem<BlockItem> FLOPPY_DRIVE_ITEM =
             REGISTRY.registerSimpleBlockItem("floppy_drive", OmniTechBlocks.FLOPPY_DRIVE);
 

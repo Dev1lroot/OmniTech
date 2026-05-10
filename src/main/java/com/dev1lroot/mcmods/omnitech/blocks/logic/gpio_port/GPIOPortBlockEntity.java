@@ -25,7 +25,9 @@ public class GPIOPortBlockEntity extends BlockEntity implements MenuProvider {
 
     private int portId      = 0;   // 0 .. 65535
     private int inputSignal = 0;   // read from adjacent redstone
-    private int outputSignal = 0;  // set by LogicMachine
+    // Written from VM thread, read+applied from server thread via serverTick()
+    private volatile int outputSignal = 0;
+    private volatile boolean outputDirty = false;
 
     public GPIOPortBlockEntity(BlockPos pos, BlockState state) {
         super(OmniTechBlockEntities.GPIO_PORT.get(), pos, state);
@@ -40,20 +42,27 @@ public class GPIOPortBlockEntity extends BlockEntity implements MenuProvider {
         setChanged();
     }
 
-    /** Called by LogicMachine when executing OUT instruction. */
+    /**
+     * Called from the VM thread via the MMIO writer callback.
+     * Only mutates volatile fields — level methods are deferred to serverTick().
+     */
     public void setOutputSignal(int signal) {
         int clamped = Math.clamp(signal, 0, 15);
         if (outputSignal == clamped) return;
         outputSignal = clamped;
-        setChanged();
-        if (level != null) {
-            level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
-        }
+        outputDirty = true;
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
             GPIOPortBlockEntity be) {
+        // Apply any output signal written by the VM thread
+        if (be.outputDirty) {
+            be.outputDirty = false;
+            be.setChanged();
+            level.updateNeighborsAt(pos, state.getBlock());
+            level.sendBlockUpdated(pos, state, state, 3);
+        }
+
         // Sample incoming redstone from all 6 sides each tick
         int max = 0;
         for (Direction dir : Direction.values()) {

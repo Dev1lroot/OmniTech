@@ -110,26 +110,25 @@ neoForge {
 // "optional", meaning it will not be pulled by dependents of this mod.
 configurations {
     runtimeClasspath.extendsFrom localRuntime
+    embed
+    implementation.extendsFrom embed
 }
 
 dependencies {
     // JEI — compile against the full jar from run/mods, runtime provided by the player
     compileOnly files("run/mods/jei-26.1-neoforge-29.2.0.20.jar")
 
-    // Example mod dependency using a mod jar from ./libs with a flat dir repository
-    // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
-    // The group id is ignored when searching -- in this case, it is "blank"
-    // implementation "blank:coolmod-${mc_version}:${coolmod_version}"
+    // Sedna RISC-V emulator + Buildroot Linux image — bundled into our JAR
+    // sedna-mc-1.0.70 bundles sedna-2.0.13, sedna-buildroot-0.0.40, and ceres-0.0.4
+    embed files("libs/sedna-mc-1.0.70.jar")
+}
 
-    // Example mod dependency using a file as dependency
-    // implementation files("libs/coolmod-${mc_version}-${coolmod_version}.jar")
-
-    // Example project dependency using a sister or child project:
-    // implementation project(":myproject")
-
-    // For more info:
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
+// Embed sedna/ceres/buildroot classes directly into our mod JAR
+jar {
+    from {
+        configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

@@ -126,5 +126,6 @@
   "block.omnitech.speaker": "Динамик",
   "block.omnitech.microphone": "Микрофон",
   "block.omnitech.analog_cable": "Аналоговый Кабель",
-  "block.omnitech.valve": "Клапан"
+  "block.omnitech.valve": "Клапан",
+  "block.omnitech.keyboard": "Клавиатура"
 }

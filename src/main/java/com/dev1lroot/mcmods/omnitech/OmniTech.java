@@ -75,6 +75,12 @@ import com.dev1lroot.mcmods.omnitech.network.SetGPIOIdPacket;
 import com.dev1lroot.mcmods.omnitech.network.SetDisplayIdPacket;
 import com.dev1lroot.mcmods.omnitech.network.AssembleTruthTablePacket;
 import com.dev1lroot.mcmods.omnitech.network.SetFloppyDriveIdPacket;
+import com.dev1lroot.mcmods.omnitech.network.TerminalInputPacket;
+import com.dev1lroot.mcmods.omnitech.network.TerminalOutputPacket;
+import com.dev1lroot.mcmods.omnitech.network.TerminalSyncPacket;
+import com.dev1lroot.mcmods.omnitech.network.KeyboardModePacket;
+import com.dev1lroot.mcmods.omnitech.network.KeyboardReleasePacket;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.keyboard.KeyboardBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioManager;
 import com.dev1lroot.mcmods.omnitech.items.RadioLocatorItem;
@@ -137,6 +143,7 @@ public class OmniTech {
         NeoForge.EVENT_BUS.addListener(OmniTech::onServerTick);
         NeoForge.EVENT_BUS.addListener(OmniTech::onServerStopping);
         NeoForge.EVENT_BUS.addListener(OmniTech::onPlayerLoggedIn);
+        NeoForge.EVENT_BUS.addListener(OmniTech::onPlayerLoggedOut);
         modEventBus.addListener(OmniTech::registerAttributes);
         modEventBus.addListener(OmniTechEntities::registerSpawnPlacements);
 
@@ -462,6 +469,26 @@ public class OmniTech {
                 AssembleTruthTablePacket.TYPE,
                 AssembleTruthTablePacket.CODEC,
                 AssembleTruthTablePacket::handle);
+        event.registrar("1").playToServer(
+                TerminalInputPacket.TYPE,
+                TerminalInputPacket.CODEC,
+                TerminalInputPacket::handle);
+        event.registrar("1").playToClient(
+                TerminalOutputPacket.TYPE,
+                TerminalOutputPacket.CODEC,
+                TerminalOutputPacket::handle);
+        event.registrar("1").playToClient(
+                TerminalSyncPacket.TYPE,
+                TerminalSyncPacket.CODEC,
+                TerminalSyncPacket::handle);
+        event.registrar("1").playToClient(
+                KeyboardModePacket.TYPE,
+                KeyboardModePacket.CODEC,
+                KeyboardModePacket::handle);
+        event.registrar("1").playToServer(
+                KeyboardReleasePacket.TYPE,
+                KeyboardReleasePacket.CODEC,
+                KeyboardReleasePacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -543,6 +570,12 @@ public class OmniTech {
                 signal = Math.max(signal, s);
             }
             PacketDistributor.sendToPlayer(sp, new RadioLocatorSignalPacket(signal));
+        }
+    }
+
+    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity() instanceof ServerPlayer sp) {
+            KeyboardBlock.clearSession(sp.getUUID());
         }
     }
 

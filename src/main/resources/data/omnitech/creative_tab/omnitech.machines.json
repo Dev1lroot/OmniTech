@@ -51,6 +51,7 @@
     "omnitech:logic_cable",
     "omnitech:logic_machine",
     "omnitech:floppy_drive",
+    "omnitech:keyboard",
     "omnitech:expansion_slot",
     "omnitech:gpio_port",
     "omnitech:display",

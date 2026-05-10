@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.client.*;
+import com.dev1lroot.mcmods.omnitech.client.KeyboardCaptureManager;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlockEntity;
 import com.dev1lroot.mcmods.omnitech.network.MicrophoneAudioPacket;
@@ -30,6 +31,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
@@ -69,6 +71,7 @@ public class OmniTechClient
         modEventBus.addListener(this::registerItemModels);
         modEventBus.register(OmniTechClient.class);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onClientTick);
+        NeoForge.EVENT_BUS.addListener(KeyboardCaptureManager::onKeyInput);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onLevelUnload);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::registerClientCommands);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onSoundOptionsOpening);
@@ -177,6 +180,7 @@ public class OmniTechClient
      */
     public static void onLevelUnload(LevelEvent.Unload event) {
         if (!event.getLevel().isClientSide()) return;
+        KeyboardCaptureManager.deactivateLocal();
         MicrophoneCapture.stop();
         SpeakerAudioManager.closeAll();
         VoiceAudioManager.closeAll();
@@ -189,6 +193,11 @@ public class OmniTechClient
         // Audio cleanup is handled by onLevelUnload; this return just keeps the
         // rest of the tick logic from running without a valid player/level.
         if (mc.player == null || mc.level == null) return;
+
+        // Deactivate keyboard capture if window loses focus
+        if (KeyboardCaptureManager.isActive() && !mc.isWindowActive()) {
+            KeyboardCaptureManager.deactivate();
+        }
 
         if (mc.screen != null) {
             // Any open screen (pause menu, inventory, etc.) stops mic capture immediately.

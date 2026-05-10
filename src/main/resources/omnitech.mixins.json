@@ -5,6 +5,9 @@
   "mixins": [
     "SkyRendererMixin"
   ],
+  "client": [
+    "KeyboardHandlerMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   },

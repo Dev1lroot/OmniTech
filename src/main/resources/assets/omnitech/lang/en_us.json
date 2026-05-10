@@ -765,5 +765,6 @@
   "block.omnitech.speaker": "Speaker",
   "block.omnitech.microphone": "Microphone",
   "block.omnitech.analog_cable": "Analog Cable",
-  "block.omnitech.valve": "Valve"
+  "block.omnitech.valve": "Valve",
+  "block.omnitech.keyboard": "Keyboard"
 }
