@@ -3,6 +3,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.gui.LogicMachineMenu;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.LogicCableBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.analog.speaker.SpeakerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.floppy_drive.FloppyDriveBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlockEntity;
@@ -80,6 +81,7 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
     private final Map<Integer, GPIOPortBlockEntity>    gpioCache      = new HashMap<>();
     private final Map<Integer, DisplayBlockEntity>     displayCache   = new HashMap<>();
     private final Map<Integer, FloppyDriveBlockEntity> floppyCache    = new HashMap<>();
+    private final Map<Integer, SpeakerBlockEntity>     speakerCache   = new HashMap<>();
     private final Map<Integer, OmniTechDataComponents.ByteData> floppySnapshot = new HashMap<>();
     private long lastCacheRefresh = -100L;
 
@@ -134,12 +136,20 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
         var busDevice = vm.getBusDevice();
         busDevice.clearPorts();
         busDevice.clearDisplaySlots();
+        busDevice.clearSpeakerPorts();
 
         int idx = 0;
         for (Map.Entry<Integer, GPIOPortBlockEntity> e : new TreeMap<>(gpioCache).entrySet()) {
             GPIOPortBlockEntity g = e.getValue();
             busDevice.setGpioPort(idx, g::getInputSignal, g::setOutputSignal);
             idx++;
+        }
+
+        for (Map.Entry<Integer, SpeakerBlockEntity> e : new TreeMap<>(speakerCache).entrySet()) {
+            int speakerId = e.getKey();
+            SpeakerBlockEntity s = e.getValue();
+            busDevice.setSpeakerPort(speakerId, () ->
+                    s.setMmio(busDevice.getSpeakerVolume(speakerId), busDevice.getSpeakerFreq(speakerId)));
         }
 
         for (Map.Entry<Integer, DisplayBlockEntity> e : new TreeMap<>(displayCache).entrySet()) {
@@ -224,6 +234,7 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
         gpioCache.clear();
         displayCache.clear();
         floppyCache.clear();
+        speakerCache.clear();
 
         Set<BlockPos> visited = new HashSet<>();
         Queue<BlockPos> queue = new ArrayDeque<>();
@@ -247,6 +258,8 @@ public class LogicMachineBlockEntity extends BlockEntity implements MenuProvider
                         if (master != null) displayCache.put(master.getPortId(), master);
                     } else if (be instanceof FloppyDriveBlockEntity fd) {
                         floppyCache.put(fd.getDriveId(), fd);
+                    } else if (be instanceof SpeakerBlockEntity s) {
+                        speakerCache.put(speakerCache.size(), s);
                     }
                 }
             }

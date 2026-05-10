@@ -22,9 +22,15 @@ import java.util.function.IntSupplier;
  *     0x00C  [R]    Display slot count (portId > 0 displays)
  *     0x010  [R/W1C] IRQ status — bitmask of GPIO indices that changed
  *     0x014  [R/W]  IRQ mask  — set bits to enable IRQ for those GPIO indices
+ *     0x018  [R]    Speaker count
  *
  *   GPIO data (0x100 – 0x1FF):
  *     0x100 + portId*4  [RW]  GPIO port value (0..15)
+ *
+ *   Speaker data (0x200 – 0x2FF), 4 bytes per speaker:
+ *     0x200 + id*4  [RW]  bits 7:0  = volume (0–255)
+ *                         bits 23:8 = frequency in Hz (16-bit, 0 = stop)
+ *                         Word write sets both at once; byte stores address each byte.
  *
  *   Display slots (0x10000 – 0xFFFFF), one slot per portId (1-based):
  *     slot_base = 0x10000 + (portId-1) * DISP_STRIDE
@@ -46,12 +52,17 @@ public final class OmniTechBusDevice implements MemoryMappedDevice, InterruptSou
     private static final int REG_VERSION    = 0x004;
     private static final int REG_GPIO_COUNT = 0x008;
     private static final int REG_DISP_COUNT = 0x00C;
-    private static final int REG_IRQ_STATUS = 0x010;
-    private static final int REG_IRQ_MASK   = 0x014;
+    private static final int REG_IRQ_STATUS    = 0x010;
+    private static final int REG_IRQ_MASK      = 0x014;
+    private static final int REG_SPEAKER_COUNT = 0x018;
 
     // ---- GPIO region ----
     private static final int GPIO_BASE      = 0x100;
     private static final int MAX_GPIO_PORTS = 64;
+
+    // ---- Speaker region ----
+    private static final int SPEAKER_BASE      = 0x200;
+    private static final int MAX_SPEAKER_PORTS = 64;
 
     // ---- Display region ----
     private static final int DISP_REGION_BASE = 0x10000;
@@ -76,6 +87,12 @@ public final class OmniTechBusDevice implements MemoryMappedDevice, InterruptSou
     private final IntConsumer[]  gpioWriters     = new IntConsumer[MAX_GPIO_PORTS];
     private final int[]          lastGpioValues  = new int[MAX_GPIO_PORTS];
     private int gpioCount = 0;
+
+    // ---- Speaker state ----
+    private final int[]      speakerVolumes   = new int[MAX_SPEAKER_PORTS];
+    private final int[]      speakerFreqs     = new int[MAX_SPEAKER_PORTS];
+    private final Runnable[] speakerNotifiers = new Runnable[MAX_SPEAKER_PORTS];
+    private int speakerCount = 0;
 
     // ---- IRQ state ----
     private volatile int irqStatus = 0;
@@ -127,21 +144,33 @@ public final class OmniTechBusDevice implements MemoryMappedDevice, InterruptSou
     public void store(int offset, long value, int sizeLog2) {
         if (sizeLog2 == Sizes.SIZE_32_LOG2) {
             storeWord(offset, (int) value);
-        } else if (sizeLog2 == Sizes.SIZE_8_LOG2
-                && offset >= GPIO_BASE && offset < DISP_REGION_BASE) {
-            // Byte writes to GPIO output
-            int portId = (offset - GPIO_BASE) / 4;
-            if (portId < gpioCount && gpioWriters[portId] != null) {
-                gpioWriters[portId].accept((int) value & 0xFF);
+        } else if (sizeLog2 == Sizes.SIZE_8_LOG2) {
+            if (offset >= GPIO_BASE && offset < SPEAKER_BASE) {
+                // Byte writes to GPIO output
+                int portId = (offset - GPIO_BASE) / 4;
+                if (portId < gpioCount && gpioWriters[portId] != null) {
+                    gpioWriters[portId].accept((int) value & 0xFF);
+                }
+            } else if (offset >= SPEAKER_BASE && offset < DISP_REGION_BASE) {
+                // Byte writes to speaker volume/frequency
+                int id = (offset - SPEAKER_BASE) / 4;
+                int byteIdx = (offset - SPEAKER_BASE) % 4;
+                if (id >= 0 && id < speakerCount) {
+                    if (byteIdx == 0) speakerVolumes[id] = (int) value & 0xFF;
+                    else if (byteIdx == 1) speakerFreqs[id] = (speakerFreqs[id] & 0xFF00) | ((int) value & 0xFF);
+                    else if (byteIdx == 2) speakerFreqs[id] = (speakerFreqs[id] & 0x00FF) | (((int) value & 0xFF) << 8);
+                    if (speakerNotifiers[id] != null) speakerNotifiers[id].run();
+                }
             }
         }
     }
 
     private long loadWord(int offset) {
-        if (offset == REG_MAGIC)      return MAGIC;
-        if (offset == REG_VERSION)    return VERSION;
-        if (offset == REG_GPIO_COUNT) return gpioCount;
-        if (offset == REG_DISP_COUNT) return dispCount;
+        if (offset == REG_MAGIC)         return MAGIC;
+        if (offset == REG_VERSION)       return VERSION;
+        if (offset == REG_GPIO_COUNT)    return gpioCount;
+        if (offset == REG_DISP_COUNT)    return dispCount;
+        if (offset == REG_SPEAKER_COUNT) return speakerCount;
         if (offset == REG_IRQ_STATUS) {
             int status = irqStatus;
             irqStatus = 0;
@@ -150,10 +179,17 @@ public final class OmniTechBusDevice implements MemoryMappedDevice, InterruptSou
         }
         if (offset == REG_IRQ_MASK) return irqMask & 0xFFFF_FFFFL;
 
-        if (offset >= GPIO_BASE && offset < DISP_REGION_BASE) {
+        if (offset >= GPIO_BASE && offset < SPEAKER_BASE) {
             int portId = (offset - GPIO_BASE) / 4;
             if (portId < gpioCount && gpioReaders[portId] != null) {
                 return gpioReaders[portId].getAsInt() & 0xFFFF_FFFFL;
+            }
+        }
+
+        if (offset >= SPEAKER_BASE && offset < DISP_REGION_BASE) {
+            int id = (offset - SPEAKER_BASE) / 4;
+            if (id >= 0 && id < speakerCount) {
+                return ((speakerVolumes[id] & 0xFF) | ((speakerFreqs[id] & 0xFFFF) << 8)) & 0xFFFF_FFFFL;
             }
         }
 
@@ -184,10 +220,17 @@ public final class OmniTechBusDevice implements MemoryMappedDevice, InterruptSou
             if (irqStatus == 0) interrupt.lowerInterrupt();
         } else if (offset == REG_IRQ_MASK) {
             irqMask = value;
-        } else if (offset >= GPIO_BASE && offset < DISP_REGION_BASE) {
+        } else if (offset >= GPIO_BASE && offset < SPEAKER_BASE) {
             int portId = (offset - GPIO_BASE) / 4;
             if (portId < gpioCount && gpioWriters[portId] != null) {
                 gpioWriters[portId].accept(value);
+            }
+        } else if (offset >= SPEAKER_BASE && offset < DISP_REGION_BASE) {
+            int id = (offset - SPEAKER_BASE) / 4;
+            if (id >= 0 && id < speakerCount) {
+                speakerVolumes[id] = value & 0xFF;
+                speakerFreqs[id]   = (value >> 8) & 0xFFFF;
+                if (speakerNotifiers[id] != null) speakerNotifiers[id].run();
             }
         } else if (offset >= DISP_REGION_BASE) {
             int rel     = offset - DISP_REGION_BASE;
@@ -310,4 +353,23 @@ public final class OmniTechBusDevice implements MemoryMappedDevice, InterruptSou
     }
 
     public void setGpioCount(int count) { this.gpioCount = count; }
+
+    public void setSpeakerPort(int id, Runnable notifier) {
+        if (id < 0 || id >= MAX_SPEAKER_PORTS) return;
+        speakerNotifiers[id] = notifier;
+        speakerCount = Math.max(speakerCount, id + 1);
+    }
+
+    public void clearSpeakerPorts() {
+        for (int i = 0; i < speakerCount; i++) {
+            speakerVolumes[i] = 0;
+            speakerFreqs[i]   = 0;
+            if (speakerNotifiers[i] != null) speakerNotifiers[i].run();
+            speakerNotifiers[i] = null;
+        }
+        speakerCount = 0;
+    }
+
+    public int getSpeakerVolume(int id) { return id >= 0 && id < speakerCount ? speakerVolumes[id] : 0; }
+    public int getSpeakerFreq(int id)   { return id >= 0 && id < speakerCount ? speakerFreqs[id]   : 0; }
 }

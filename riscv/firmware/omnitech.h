@@ -62,6 +62,16 @@ static inline void uart_puthex32(uint32_t v) {
 
 #define GPIO(n)         BUS_REG(0x100 + (n) * 4)
 
+/* Speaker registers (word access):
+ *   BUS_SPEAKER_COUNT  [R]  number of speakers wired in cable network
+ *   SPEAKER(n)         [RW] bits 7:0  = volume (0–255)
+ *                           bits 23:8 = frequency in Hz (0 = stop)
+ *   Convenience macro:      SPEAKER(n) = SPEAKER_TONE(freq, vol)
+ */
+#define BUS_SPEAKER_COUNT BUS_REG(0x018)
+#define SPEAKER(n)        BUS_REG(0x200 + (n) * 4)
+#define SPEAKER_TONE(freq, vol) (((uint32_t)(freq) << 8) | ((vol) & 0xFF))
+
 /* Display slot helpers */
 #define DISP_STRIDE     0x10100UL
 #define DISP_SLOT(id)   (BUS_BASE + 0x10000UL + ((uint32_t)(id) - 1u) * DISP_STRIDE)

@@ -4,6 +4,7 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IAnalogInput;
 import com.dev1lroot.mcmods.omnitech.io.IAudioInput;
 import com.dev1lroot.mcmods.omnitech.network.SpeakerPlayPacket;
+import com.dev1lroot.mcmods.omnitech.network.SpeakerTonePacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,6 +37,11 @@ public class SpeakerBlockEntity extends BlockEntity implements IAnalogInput, IAu
     private byte[] audioBuffer = new byte[0];
     private long   lastAudioAt = Long.MIN_VALUE;
 
+    // MMIO fields — written by VM thread, read by server tick
+    volatile int     mmioVolume    = 0;
+    volatile int     mmioFrequency = 0;
+    volatile boolean mmioChanged   = false;
+
     public SpeakerBlockEntity(BlockPos pos, BlockState state) {
         super(OmniTechBlockEntities.SPEAKER.get(), pos, state);
     }
@@ -57,11 +63,32 @@ public class SpeakerBlockEntity extends BlockEntity implements IAnalogInput, IAu
 
     public float getSignal() { return signal; }
 
+    /** Called from the VM thread via the MMIO notifier — writes are volatile. */
+    public void setMmio(int volume, int frequency) {
+        mmioVolume    = volume;
+        mmioFrequency = frequency;
+        mmioChanged   = true;
+    }
+
     public static void serverTick(Level level, BlockPos pos, BlockState state,
             SpeakerBlockEntity be) {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         long now = level.getGameTime();
+
+        if (be.mmioChanged) {
+            be.mmioChanged = false;
+            int vol  = be.mmioVolume;
+            int freq = be.mmioFrequency;
+            SpeakerTonePacket tonePkt = new SpeakerTonePacket(pos, vol, freq);
+            double rangeSq = HEARING_RANGE * HEARING_RANGE;
+            for (ServerPlayer player : serverLevel.players()) {
+                if (player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= rangeSq) {
+                    PacketDistributor.sendToPlayer(player, tonePkt);
+                }
+            }
+        }
+
         boolean hasAudio  = now - be.lastAudioAt  <= STALE_TICKS && be.audioBuffer.length > 0;
         boolean hasSignal = now - be.lastPushAt   <= STALE_TICKS && be.signal >= 0.5f;
 

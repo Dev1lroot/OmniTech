@@ -183,6 +183,7 @@ public class OmniTechClient
         KeyboardCaptureManager.deactivateLocal();
         MicrophoneCapture.stop();
         SpeakerAudioManager.closeAll();
+        SpeakerToneManager.closeAll();
         VoiceAudioManager.closeAll();
         DisplayBlockEntityRenderer.cleanupAll();
     }
@@ -221,6 +222,7 @@ public class OmniTechClient
         if (gameTime % 4 == 0) tickMicrophoneCapture(mc);
         // Expire silent audio sources
         SpeakerAudioManager.tick(gameTime);
+        SpeakerToneManager.tick(gameTime);
         VoiceAudioManager.tick(gameTime);
     }
 

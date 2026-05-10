@@ -2,10 +2,13 @@ package com.dev1lroot.mcmods.omnitech.client;
 
 import com.dev1lroot.mcmods.omnitech.network.KeyboardReleasePacket;
 import com.dev1lroot.mcmods.omnitech.network.TerminalInputPacket;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.lwjgl.glfw.GLFW;
+
+import java.nio.charset.StandardCharsets;
 
 public final class KeyboardCaptureManager {
 
@@ -57,6 +60,11 @@ public final class KeyboardCaptureManager {
     private static byte[] keyToBytes(int key, int scanCode, int modifiers) {
         boolean shift = (modifiers & GLFW.GLFW_MOD_SHIFT) != 0;
         boolean ctrl  = (modifiers & GLFW.GLFW_MOD_CONTROL) != 0;
+
+        // Ctrl+V / Ctrl+Shift+V → paste from host clipboard
+        if (ctrl && key == GLFW.GLFW_KEY_V) {
+            return pasteFromClipboard();
+        }
 
         // Ctrl+letter → control bytes 0x01–0x1A
         if (ctrl && key >= GLFW.GLFW_KEY_A && key <= GLFW.GLFW_KEY_Z) {
@@ -168,6 +176,15 @@ public final class KeyboardCaptureManager {
             case GLFW.GLFW_KEY_KP_DIVIDE   -> new byte[]{'/'};
             default -> new byte[0];
         };
+    }
+
+    private static byte[] pasteFromClipboard() {
+        long window = Minecraft.getInstance().getWindow().handle();
+        String text = GLFW.glfwGetClipboardString(window);
+        if (text == null || text.isEmpty()) return new byte[0];
+        // Normalize line endings so pasted newlines behave like pressing Enter
+        text = text.replace("\r\n", "\r").replace("\n", "\r");
+        return text.getBytes(StandardCharsets.UTF_8);
     }
 
     private KeyboardCaptureManager() {}
