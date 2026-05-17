@@ -2,6 +2,9 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.items.BlueprintItem;
 import com.dev1lroot.mcmods.omnitech.items.BoreItem;
+import com.dev1lroot.mcmods.omnitech.items.ReactorControlRodItem;
+import com.dev1lroot.mcmods.omnitech.items.ReactorFuelRodItem;
+import com.dev1lroot.mcmods.omnitech.items.ReactorNeutronReflectorItem;
 import com.dev1lroot.mcmods.omnitech.items.FloppyDiskItem;
 import com.dev1lroot.mcmods.omnitech.items.GuidebookItem;
 import com.dev1lroot.mcmods.omnitech.items.FluidCanisterItem;
@@ -111,6 +114,20 @@ public class OmniTechItems
             "electric_wire", OmniTechBlocks.ELECTRIC_WIRE);
     public static final DeferredItem<BlockItem> ASSEMBLER_ITEM = REGISTRY.registerSimpleBlockItem(
             "assembler", OmniTechBlocks.ASSEMBLER);
+
+    public static final DeferredItem<BlockItem> REACTOR_BLOCK_ITEM = REGISTRY.registerSimpleBlockItem(
+            "reactor_block", OmniTechBlocks.REACTOR_BLOCK);
+    public static final DeferredItem<BlockItem> REACTOR_PORT_ITEM  = REGISTRY.registerSimpleBlockItem(
+            "reactor_port", OmniTechBlocks.REACTOR_PORT);
+    public static final DeferredItem<BlockItem> REACTOR_CELL_ITEM  = REGISTRY.registerSimpleBlockItem(
+            "reactor_cell", OmniTechBlocks.REACTOR_CELL);
+
+    public static final DeferredItem<ReactorFuelRodItem> REACTOR_FUEL_ROD =
+            REGISTRY.registerItem("reactor_fuel_rod", ReactorFuelRodItem::new);
+    public static final DeferredItem<ReactorControlRodItem> REACTOR_CONTROL_ROD =
+            REGISTRY.registerItem("reactor_control_rod", ReactorControlRodItem::new);
+    public static final DeferredItem<ReactorNeutronReflectorItem> REACTOR_NEUTRON_REFLECTOR =
+            REGISTRY.registerItem("reactor_neutron_reflector", ReactorNeutronReflectorItem::new);
 
     public static final DeferredItem<BlockItem> ELECTRIC_FURNACE_ITEM = REGISTRY.registerSimpleBlockItem(
             "electric_furnace", OmniTechBlocks.ELECTRIC_FURNACE);

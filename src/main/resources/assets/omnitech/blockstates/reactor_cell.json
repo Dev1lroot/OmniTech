@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "reactor_cell_state=cool,reactor_cell_type=empty":     { "model": "omnitech:block/reactor_cell_empty" },
+    "reactor_cell_state=heat,reactor_cell_type=empty":     { "model": "omnitech:block/reactor_cell_empty" },
+    "reactor_cell_state=meltdown,reactor_cell_type=empty": { "model": "omnitech:block/reactor_cell_empty" },
+
+    "reactor_cell_state=cool,reactor_cell_type=fuel":     { "model": "omnitech:block/reactor_cell_fuel" },
+    "reactor_cell_state=heat,reactor_cell_type=fuel":     { "model": "omnitech:block/reactor_cell_fuel" },
+    "reactor_cell_state=meltdown,reactor_cell_type=fuel": { "model": "omnitech:block/reactor_cell_fuel" },
+
+    "reactor_cell_state=cool,reactor_cell_type=control":     { "model": "omnitech:block/reactor_cell_control" },
+    "reactor_cell_state=heat,reactor_cell_type=control":     { "model": "omnitech:block/reactor_cell_control" },
+    "reactor_cell_state=meltdown,reactor_cell_type=control": { "model": "omnitech:block/reactor_cell_control" },
+
+    "reactor_cell_state=cool,reactor_cell_type=other":     { "model": "omnitech:block/reactor_cell_other" },
+    "reactor_cell_state=heat,reactor_cell_type=other":     { "model": "omnitech:block/reactor_cell_other" },
+    "reactor_cell_state=meltdown,reactor_cell_type=other": { "model": "omnitech:block/reactor_cell_other" }
+  }
+}

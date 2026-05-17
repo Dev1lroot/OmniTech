@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.gui.AssemblerScreen;
+import com.dev1lroot.mcmods.omnitech.gui.ReactorScreen;
 import com.dev1lroot.mcmods.omnitech.gui.BoilerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricHeaterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.RadioTransmitterScreen;
@@ -72,6 +73,7 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.FOUNDRY.get(), FoundryScreen::new);
         event.register(OmniTechMenuTypes.ELECTRIC_ENGINE.get(), ElectricEngineScreen::new);
         event.register(OmniTechMenuTypes.ASSEMBLER.get(), AssemblerScreen::new);
+        event.register(OmniTechMenuTypes.REACTOR.get(), ReactorScreen::new);
         event.register(OmniTechMenuTypes.ELECTRIC_CAPACITOR.get(), ElectricCapacitorScreen::new);
         event.register(OmniTechMenuTypes.ELECTRIC_FURNACE.get(), ElectricFurnaceScreen::new);
         event.register(OmniTechMenuTypes.SOLAR_PANEL.get(), SolarPanelScreen::new);
@@ -124,6 +126,12 @@ public class OmniTechGUI {
             event.accept(OmniTechItems.CRANK_ITEM);
             event.accept(OmniTechItems.ELECTRIC_CHARGER_ITEM);
             event.accept(OmniTechItems.RESEARCH_TABLE_ITEM);
+            event.accept(OmniTechItems.REACTOR_BLOCK_ITEM);
+            event.accept(OmniTechItems.REACTOR_PORT_ITEM);
+            event.accept(OmniTechItems.REACTOR_CELL_ITEM);
+            event.accept(OmniTechItems.REACTOR_FUEL_ROD);
+            event.accept(OmniTechItems.REACTOR_CONTROL_ROD);
+            event.accept(OmniTechItems.REACTOR_NEUTRON_REFLECTOR);
             event.accept(OmniTechItems.BLUEPRINT);
             event.accept(OmniTechItems.PROGRAMMING_STATION_ITEM);
             event.accept(OmniTechItems.LOGIC_MACHINE_ITEM);

@@ -781,5 +781,17 @@
   "block.omnitech.research_table": "Research Table",
   "container.omnitech.research_table": "Research Table",
   "item.omnitech.blueprint": "Blueprint",
-  "item.omnitech.research_table": "Research Table"
+  "item.omnitech.research_table": "Research Table",
+
+  "block.omnitech.reactor_block": "Reactor Block",
+  "block.omnitech.reactor_port":  "Reactor Port",
+  "block.omnitech.reactor_cell":  "Reactor Cell",
+  "item.omnitech.reactor_block":  "Reactor Block",
+  "item.omnitech.reactor_port":   "Reactor Port",
+  "item.omnitech.reactor_cell":   "Reactor Cell",
+  "container.omnitech.reactor":   "Reactor",
+  "block.omnitech.reactor_block.invalid": "Invalid reactor structure.",
+  "item.omnitech.reactor_fuel_rod":         "Reactor Fuel Rod",
+  "item.omnitech.reactor_control_rod":      "Reactor Control Rod",
+  "item.omnitech.reactor_neutron_reflector": "Reactor Neutron Reflector"
 }

@@ -32,6 +32,9 @@ import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station.ProgrammingStationBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.research_table.ResearchTableBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.keyboard.KeyboardBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorPort;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorCell;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.LogicMachineBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logistic.SorterBlock;
@@ -168,6 +171,11 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> EXPANSION_SLOT;
     public static final DeferredBlock<Block> REDSTONE_INTERSECTION;
     public static final DeferredBlock<Block> KEYBOARD;
+
+    // ── Reactor multiblock ────────────────────────────────────────────────────
+    public static final DeferredBlock<Block> REACTOR_BLOCK;
+    public static final DeferredBlock<Block> REACTOR_PORT;
+    public static final DeferredBlock<Block> REACTOR_CELL;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -383,6 +391,16 @@ public class OmniTechBlocks {
                         .isRedstoneConductor((s, l, pos2) -> false)));
         KEYBOARD = register("keyboard",
                 p -> new KeyboardBlock(p.mapColor(MapColor.METAL).strength(2.5F)
+                        .sound(SoundType.METAL)));
+
+        REACTOR_BLOCK = register("reactor_block",
+                p -> new ReactorBlock(p.mapColor(MapColor.METAL).strength(5.0F)
+                        .sound(SoundType.METAL)));
+        REACTOR_PORT  = register("reactor_port",
+                p -> new ReactorPort(p.mapColor(MapColor.METAL).strength(5.0F)
+                        .sound(SoundType.METAL)));
+        REACTOR_CELL  = register("reactor_cell",
+                p -> new ReactorCell(p.mapColor(MapColor.METAL).strength(5.0F)
                         .sound(SoundType.METAL)));
     }
 

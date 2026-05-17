@@ -181,6 +181,22 @@ public class OmniTechDataComponents {
                             .networkSynchronized(ByteBufCodecs.STRING_UTF8)
                             .build());
 
+    /** Temperature (°C) of a reactor rod while inserted in a reactor cell. Absent when not inserted. */
+    public static final Supplier<DataComponentType<Integer>> ROD_TEMPERATURE =
+            REGISTRY.register("rod_temperature", () ->
+                    DataComponentType.<Integer>builder()
+                            .persistent(Codec.INT)
+                            .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
+    /** Control rod insertion percentage (0–100). Present only on a control rod while inserted. */
+    public static final Supplier<DataComponentType<Integer>> ROD_CONTROL =
+            REGISTRY.register("rod_control", () ->
+                    DataComponentType.<Integer>builder()
+                            .persistent(Codec.INT)
+                            .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
     public static void register(IEventBus bus) {
         REGISTRY.register(bus);
     }
