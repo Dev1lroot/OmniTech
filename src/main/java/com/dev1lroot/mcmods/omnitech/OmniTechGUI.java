@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech;
 
+import com.dev1lroot.mcmods.omnitech.gui.AssemblerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.BoilerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricHeaterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.RadioTransmitterScreen;
@@ -70,6 +71,7 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.SMELTER.get(), SmelterScreen::new);
         event.register(OmniTechMenuTypes.FOUNDRY.get(), FoundryScreen::new);
         event.register(OmniTechMenuTypes.ELECTRIC_ENGINE.get(), ElectricEngineScreen::new);
+        event.register(OmniTechMenuTypes.ASSEMBLER.get(), AssemblerScreen::new);
         event.register(OmniTechMenuTypes.ELECTRIC_CAPACITOR.get(), ElectricCapacitorScreen::new);
         event.register(OmniTechMenuTypes.ELECTRIC_FURNACE.get(), ElectricFurnaceScreen::new);
         event.register(OmniTechMenuTypes.SOLAR_PANEL.get(), SolarPanelScreen::new);

@@ -1,0 +1,10 @@
+{
+  "blueprint":       "d_flip_flop",
+  "output":          {"item": "minecraft:comparator", "count": 1},
+  "components": [
+    {"item": "minecraft:iron_ingot",   "count": 4},
+    {"item": "minecraft:redstone",     "count": 8},
+    {"item": "minecraft:gold_ingot",   "count": 2}
+  ],
+  "processing_time": 200
+}

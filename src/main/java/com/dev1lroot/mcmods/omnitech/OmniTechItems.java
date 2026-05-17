@@ -109,6 +109,9 @@ public class OmniTechItems
             "electric_capacitor", OmniTechBlocks.ELECTRIC_CAPACITOR);
     public static final DeferredItem<BlockItem> ELECTRIC_WIRE_ITEM = REGISTRY.registerSimpleBlockItem(
             "electric_wire", OmniTechBlocks.ELECTRIC_WIRE);
+    public static final DeferredItem<BlockItem> ASSEMBLER_ITEM = REGISTRY.registerSimpleBlockItem(
+            "assembler", OmniTechBlocks.ASSEMBLER);
+
     public static final DeferredItem<BlockItem> ELECTRIC_FURNACE_ITEM = REGISTRY.registerSimpleBlockItem(
             "electric_furnace", OmniTechBlocks.ELECTRIC_FURNACE);
     public static final DeferredItem<BlockItem> SOLAR_PANEL_ITEM = REGISTRY.registerSimpleBlockItem(

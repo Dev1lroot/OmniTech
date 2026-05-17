@@ -124,6 +124,7 @@ public class OmniTech {
         ToolSetLoader.loadAll();
         ArmorSetLoader.loadAll();
         ResearchLoader.loadAll();   // reads data/omnitech/research/*.json
+        AssemblerLoader.loadAll();  // reads data/omnitech/assembler/*.json
 
         FluidLoader.loadAll();           // reads data/omnitech/fluid/*.json
         OmniTechFluids.register(modEventBus);

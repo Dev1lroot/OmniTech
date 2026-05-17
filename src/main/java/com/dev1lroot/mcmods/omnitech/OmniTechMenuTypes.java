@@ -17,6 +17,7 @@ import com.dev1lroot.mcmods.omnitech.gui.AlloyFurnaceMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricChargerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ChemicalInfuserMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ExtractorMenu;
+import com.dev1lroot.mcmods.omnitech.gui.AssemblerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricCapacitorMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricEngineMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricFurnaceMenu;
@@ -98,6 +99,10 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<ElectricEngineMenu>> ELECTRIC_ENGINE =
             REGISTRY.register("electric_engine",
                     () -> IMenuTypeExtension.create(ElectricEngineMenu::new));
+
+    public static final Supplier<MenuType<AssemblerMenu>> ASSEMBLER =
+            REGISTRY.register("assembler",
+                    () -> IMenuTypeExtension.create(AssemblerMenu::new));
 
     public static final Supplier<MenuType<ElectricCapacitorMenu>> ELECTRIC_CAPACITOR =
             REGISTRY.register("electric_capacitor",

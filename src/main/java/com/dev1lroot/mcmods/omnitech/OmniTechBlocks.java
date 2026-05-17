@@ -45,6 +45,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.pressure.decompressor.DecompressorBl
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_capacitor.ElectricCapacitorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_charger.ElectricChargerBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_engine.ElectricEngineBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.assembler.AssemblerBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_furnace.ElectricFurnaceBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_wire.ElectricWireBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.plumbing.*;
@@ -120,6 +121,8 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> SORTER;
     public static final DeferredBlock<Block> SMELTER;
     public static final DeferredBlock<Block> FOUNDRY;
+
+    public static final DeferredBlock<Block> ASSEMBLER;
 
     public static final DeferredBlock<Block> ELECTRIC_ENGINE;
     public static final DeferredBlock<Block> ELECTRIC_CAPACITOR;
@@ -246,6 +249,10 @@ public class OmniTechBlocks {
                         .sound(SoundType.METAL)));
         FOUNDRY = register("foundry",
                 p -> new FoundryBlock(p.mapColor(MapColor.METAL).strength(4.0F)
+                        .sound(SoundType.METAL)));
+
+        ASSEMBLER = register("assembler",
+                p -> new AssemblerBlock(p.mapColor(MapColor.METAL).strength(3.5F)
                         .sound(SoundType.METAL)));
 
         ELECTRIC_ENGINE = register("electric_engine",
