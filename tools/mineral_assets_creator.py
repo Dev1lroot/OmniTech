@@ -2,14 +2,15 @@ import os
 import yaml
 import json
 import random
+from pathlib import Path
 from PIL import Image, ImageDraw
 
-# Константы путей
-BASE_PATH = "/home/dev1lroot/Desktop/MinecraftMods/26.1/NeoForge/OmniTech/src/main/resources/assets/omnitech"
-TEXTURE_PATH = f"{BASE_PATH}/textures/block"
-MODEL_PATH = f"{BASE_PATH}/models/block"
-ITEM_PATH = f"{BASE_PATH}/items"
-CONFIG_FILE = "./minerals.yml"
+_SCRIPT_DIR  = Path(__file__).parent
+BASE_PATH    = _SCRIPT_DIR.parent / "src/main/resources/assets/omnitech"
+TEXTURE_PATH = str(BASE_PATH / "textures/block")
+MODEL_PATH   = str(BASE_PATH / "models/block")
+ITEM_PATH    = str(BASE_PATH / "items")
+CONFIG_FILE  = str(_SCRIPT_DIR / "minerals.yml")
 
 def hex_to_rgb(hex_color):
     hex_color = hex_color.lstrip('#')

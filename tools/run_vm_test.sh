@@ -2,8 +2,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-LIBS="$SCRIPT_DIR/libs"
-VMTEST="$SCRIPT_DIR/vmtest"
+LIBS="$SCRIPT_DIR/../libs"
+VMTEST="$SCRIPT_DIR/../vmtest"
 OUT="$VMTEST/out"
 GRADLE_CACHE="$HOME/.gradle/caches/modules-2/files-2.1"
 

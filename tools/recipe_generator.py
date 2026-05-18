@@ -25,7 +25,8 @@ from pathlib import Path
 import yaml
 
 SCRIPT_DIR   = Path(__file__).parent
-RES_DIR      = SCRIPT_DIR / "src/main/resources"
+ROOT_DIR     = SCRIPT_DIR.parent
+RES_DIR      = ROOT_DIR / "src/main/resources"
 RECIPE_DIR   = RES_DIR / "data/omnitech/recipe"
 FLUID_DIR    = RES_DIR / "data/omnitech/fluid"
 TOOL_MAT_DIR = RES_DIR / "data/omnitech/tool_material"

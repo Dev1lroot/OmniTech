@@ -16,11 +16,12 @@ from PIL import Image, ImageChops, ImageEnhance, ImageDraw
 import yaml
 
 SCRIPT_DIR          = Path(__file__).parent
-TEMPLATE_DIR        = str(SCRIPT_DIR / "templates/assets")
-ITEM_OUTPUT_DIR     = str(SCRIPT_DIR / "src/main/resources/assets/omnitech/textures/item")
-HUMANOID_OUTPUT_DIR = str(SCRIPT_DIR / "src/main/resources/assets/omnitech/textures/entity/equipment/humanoid")
-LEGGINGS_OUTPUT_DIR = str(SCRIPT_DIR / "src/main/resources/assets/omnitech/textures/entity/equipment/humanoid_leggings")
-RECIPE_DIR          = str(SCRIPT_DIR / "src/main/resources/data/omnitech/recipe")
+ROOT_DIR            = SCRIPT_DIR.parent
+TEMPLATE_DIR        = str(ROOT_DIR / "templates/assets")
+ITEM_OUTPUT_DIR     = str(ROOT_DIR / "src/main/resources/assets/omnitech/textures/item")
+HUMANOID_OUTPUT_DIR = str(ROOT_DIR / "src/main/resources/assets/omnitech/textures/entity/equipment/humanoid")
+LEGGINGS_OUTPUT_DIR = str(ROOT_DIR / "src/main/resources/assets/omnitech/textures/entity/equipment/humanoid_leggings")
+RECIPE_DIR          = str(ROOT_DIR / "src/main/resources/data/omnitech/recipe")
 
 ARMOR_PIECES = ["helmet", "chestplate", "leggings", "boots"]
 

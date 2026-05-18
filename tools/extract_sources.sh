@@ -1,7 +1,9 @@
 #!/bin/bash
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 # Target directory
-TARGET_DIR="./decompiled"
+TARGET_DIR="$SCRIPT_DIR/../decompiled"
 GRADLE_CACHE="$HOME/.gradle/caches"
 NEOFORM_INTERMEDIATE="$HOME/.gradle/caches/neoformruntime/intermediate_results"
 

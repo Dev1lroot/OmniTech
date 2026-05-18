@@ -23,10 +23,11 @@ from PIL import Image, ImageChops, ImageEnhance, ImageDraw
 import yaml
 
 SCRIPT_DIR       = Path(__file__).parent
-TEMPLATE_DIR     = SCRIPT_DIR / "templates/assets"
-OUTPUT_DIR       = SCRIPT_DIR / "src/main/resources/assets/omnitech/textures/item"
-BLOCK_OUTPUT_DIR = SCRIPT_DIR / "src/main/resources/assets/omnitech/textures/block"
-FLUID_OUTPUT_DIR = SCRIPT_DIR / "src/main/resources/assets/omnitech/textures/block/fluid"
+ROOT_DIR         = SCRIPT_DIR.parent
+TEMPLATE_DIR     = ROOT_DIR / "templates/assets"
+OUTPUT_DIR       = ROOT_DIR / "src/main/resources/assets/omnitech/textures/item"
+BLOCK_OUTPUT_DIR = ROOT_DIR / "src/main/resources/assets/omnitech/textures/block"
+FLUID_OUTPUT_DIR = ROOT_DIR / "src/main/resources/assets/omnitech/textures/block/fluid"
 
 VARIATIONS = [
     "raw_%", "%_ingot", "%_dust", "%_plate", "%_mote",

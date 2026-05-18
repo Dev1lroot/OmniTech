@@ -31,7 +31,8 @@ from pathlib import Path
 import yaml
 
 SCRIPT_DIR   = Path(__file__).parent
-RES_DIR      = SCRIPT_DIR / "src/main/resources"
+ROOT_DIR     = SCRIPT_DIR.parent
+RES_DIR      = ROOT_DIR / "src/main/resources"
 DATA_ITEM    = RES_DIR / "data/omnitech/item"
 MODEL_ITEM   = RES_DIR / "assets/omnitech/models/item"
 ITEMS_REF    = RES_DIR / "assets/omnitech/items"

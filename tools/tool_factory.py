@@ -15,10 +15,11 @@ from pathlib import Path
 from PIL import Image, ImageChops, ImageEnhance, ImageDraw
 import yaml
 
-SCRIPT_DIR = Path(__file__).parent
-TEMPLATE_DIR = str(SCRIPT_DIR / "templates/assets")
-OUTPUT_DIR   = str(SCRIPT_DIR / "src/main/resources/assets/omnitech/textures/item")
-RECIPE_DIR   = str(SCRIPT_DIR / "src/main/resources/data/omnitech/recipe")
+SCRIPT_DIR   = Path(__file__).parent
+ROOT_DIR     = SCRIPT_DIR.parent
+TEMPLATE_DIR = str(ROOT_DIR / "templates/assets")
+OUTPUT_DIR   = str(ROOT_DIR / "src/main/resources/assets/omnitech/textures/item")
+RECIPE_DIR   = str(ROOT_DIR / "src/main/resources/data/omnitech/recipe")
 
 TOOLS = ["pickaxe", "shovel", "sword", "axe", "hoe"]
 
