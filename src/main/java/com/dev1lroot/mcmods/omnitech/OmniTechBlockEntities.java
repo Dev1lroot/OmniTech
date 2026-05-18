@@ -18,6 +18,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.kinetic.crank.CrankBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.pressure.decompressor.DecompressorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.assembler.AssemblerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorCellBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_capacitor.ElectricCapacitorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_charger.ElectricChargerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.chemical_infuser.ChemicalInfuserBlockEntity;
@@ -154,6 +155,11 @@ public class OmniTechBlockEntities {
             REGISTRY.register("reactor",
                     () -> new BlockEntityType<>(ReactorBlockEntity::new,
                             OmniTechBlocks.REACTOR_BLOCK.get()));
+
+    public static final Supplier<BlockEntityType<ReactorCellBlockEntity>> REACTOR_CELL =
+            REGISTRY.register("reactor_cell",
+                    () -> new BlockEntityType<>(ReactorCellBlockEntity::new,
+                            OmniTechBlocks.REACTOR_CELL.get()));
 
     public static final Supplier<BlockEntityType<ElectricCapacitorBlockEntity>> ELECTRIC_CAPACITOR =
             REGISTRY.register("electric_capacitor",

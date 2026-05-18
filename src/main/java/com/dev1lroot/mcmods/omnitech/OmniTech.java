@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech;
 
+import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.boiler.BoilerBlockEntity;
 import net.minecraft.core.Direction;
 import org.slf4j.Logger;
@@ -141,8 +142,10 @@ public class OmniTech {
         OmniTechGUI.register(modEventBus);
         OmniTechDataComponents.register(modEventBus);
         OmniTechAttachments.register(modEventBus);
+        OmniTechMobEffects.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(com.dev1lroot.mcmods.omnitech.radiation.RadiationTick.class);
         NeoForge.EVENT_BUS.addListener(OmniTech::registerCommands);
         NeoForge.EVENT_BUS.addListener(OmniTech::onServerTick);
         NeoForge.EVENT_BUS.addListener(OmniTech::onServerStopping);
@@ -374,6 +377,19 @@ public class OmniTech {
                 Capabilities.Fluid.ITEM,
                 (stack, access) -> new FluidCanisterResourceHandler(access),
                 OmniTechItems.FLUID_CANISTER.get()
+        );
+
+        // Reactor master block exposes its distilled-water coolant tank
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.REACTOR.get(),
+                (be, side) -> be.getCoolantHandler()
+        );
+        // Reactor ports delegate to the nearest formed master
+        event.registerBlock(
+                Capabilities.Fluid.BLOCK,
+                (level, pos, state, be, side) -> ReactorBlockEntity.findCoolantHandler(level, pos),
+                OmniTechBlocks.REACTOR_PORT.get()
         );
 
         event.registerBlockEntity(

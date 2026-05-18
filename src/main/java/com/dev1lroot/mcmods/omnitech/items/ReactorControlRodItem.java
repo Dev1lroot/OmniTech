@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 public class ReactorControlRodItem extends ReactorRodItem {
 
     public ReactorControlRodItem(Properties properties) {
-        super(properties);
+        super(properties.durability(500));
     }
 
     @Override

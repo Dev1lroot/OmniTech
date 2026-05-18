@@ -5,7 +5,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorCellType;
 public class ReactorFuelRodItem extends ReactorRodItem {
 
     public ReactorFuelRodItem(Properties properties) {
-        super(properties);
+        super(properties.durability(2000));
     }
 
     @Override

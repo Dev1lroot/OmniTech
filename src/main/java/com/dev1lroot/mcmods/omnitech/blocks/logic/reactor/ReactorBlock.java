@@ -1,6 +1,7 @@
 package com.dev1lroot.mcmods.omnitech.blocks.logic.reactor;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
+import com.dev1lroot.mcmods.omnitech.radiation.NuclearExplosion;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -69,6 +70,19 @@ public class ReactorBlock extends BaseEntityBlock {
             player.sendSystemMessage(Component.translatable("block.omnitech.reactor_block.invalid"));
         }
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide()
+                && level.getBlockEntity(pos) instanceof ReactorBlockEntity rbe
+                && rbe.isFormed()
+                && rbe.getCoreTemperature() >= 300
+                && !rbe.hasExploded()) {
+            rbe.markExploded();
+            NuclearExplosion.trigger((ServerLevel) level, pos);
+        }
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override

@@ -36,7 +36,9 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
@@ -69,6 +71,7 @@ public class OmniTechClient
         modEventBus.addListener(this::onAddClientReloadListeners);
         modEventBus.addListener(this::registerItemColors);
         modEventBus.addListener(this::registerItemModels);
+        modEventBus.addListener(this::registerGuiLayers);
         modEventBus.register(OmniTechClient.class);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onClientTick);
         NeoForge.EVENT_BUS.addListener(KeyboardCaptureManager::onKeyInput);
@@ -103,6 +106,7 @@ public class OmniTechClient
         event.registerBlockEntityRenderer(OmniTechBlockEntities.THERMAL_CONDUCTOR.get(), ThermalConductorBER::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.RADIATOR.get(), RadiatorBER::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.REACTOR.get(), ReactorBER::new);
+        event.registerBlockEntityRenderer(OmniTechBlockEntities.REACTOR_CELL.get(), ReactorCellBER::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.DISPLAY.get(), DisplayBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.DISPLAY_MK2.get(), DisplayBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.DISPLAY_MK3.get(), DisplayBlockEntityRenderer::new);
@@ -282,6 +286,12 @@ public class OmniTechClient
             event.getToolTip().add(
                     Component.literal(formula).withStyle(ChatFormatting.DARK_GRAY));
         }
+    }
+
+    void registerGuiLayers(RegisterGuiLayersEvent event) {
+        event.registerAboveAll(
+                net.minecraft.resources.Identifier.fromNamespaceAndPath(OmniTech.MODID, "radiation_overlay"),
+                new RadiationOverlay());
     }
 
     private void onAddClientReloadListeners(AddClientReloadListenersEvent event) {

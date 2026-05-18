@@ -1,5 +1,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.logic.reactor;
 
+import com.dev1lroot.mcmods.omnitech.io.IFluidContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -13,7 +14,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import java.util.Optional;
 
-public class ReactorPort extends Block {
+public class ReactorPort extends Block implements IFluidContainer {
 
     public ReactorPort(Properties properties) {
         super(properties);

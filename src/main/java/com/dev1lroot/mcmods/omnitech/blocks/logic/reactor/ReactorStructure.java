@@ -107,6 +107,11 @@ public class ReactorStructure {
         return tryValidate(level, origin, width, depth).isPresent();
     }
 
+    /** Interior air-block count for a reactor with the given footprint: (w−2)×(d−2)×(H−2). */
+    public static int cavityBlocks(int w, int d) {
+        return (w - 2) * (d - 2) * (HEIGHT - 2);
+    }
+
     /**
      * When a ReactorPort or ReactorCell is removed, scan for any nearby formed master
      * and invalidate it. The origin (master) is always at lower-or-equal coordinates
@@ -126,5 +131,23 @@ public class ReactorStructure {
                 }
             }
         }
+    }
+
+    /** Returns the formed ReactorBlockEntity that owns the given block position, if any. */
+    public static java.util.Optional<ReactorBlockEntity> findMasterNear(Level level, BlockPos pos) {
+        if (level.isClientSide()) return java.util.Optional.empty();
+        BlockPos.MutableBlockPos mpos = new BlockPos.MutableBlockPos();
+        for (int dx = -(MAX_SIZE - 1); dx <= 0; dx++) {
+            for (int dy = -(HEIGHT - 1); dy <= 0; dy++) {
+                for (int dz = -(MAX_SIZE - 1); dz <= 0; dz++) {
+                    mpos.set(pos.getX() + dx, pos.getY() + dy, pos.getZ() + dz);
+                    if (level.getBlockEntity(mpos) instanceof ReactorBlockEntity rbe
+                            && rbe.isFormed()) {
+                        return java.util.Optional.of(rbe);
+                    }
+                }
+            }
+        }
+        return java.util.Optional.empty();
     }
 }
