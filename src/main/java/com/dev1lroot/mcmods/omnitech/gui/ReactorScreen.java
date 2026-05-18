@@ -1,10 +1,13 @@
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.items.ReactorControlRodItem;
+import com.dev1lroot.mcmods.omnitech.network.SetControlRodPacket;
 import com.dev1lroot.mcmods.omnitech.util.GuiUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
 
@@ -60,5 +63,18 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractLabels(g, mouseX, mouseY);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (hoveredSlot != null
+                && hoveredSlot.getSlotIndex() < menu.cellLocalPositions.size()
+                && hoveredSlot.getItem().getItem() instanceof ReactorControlRodItem) {
+            int delta = scrollY > 0 ? 1 : -1;
+            ClientPacketDistributor.sendToServer(
+                    new SetControlRodPacket(menu.containerId, hoveredSlot.getSlotIndex(), delta));
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 }

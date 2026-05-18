@@ -62,7 +62,7 @@ public class ReactorBlock extends BaseEntityBlock {
         if (structOpt.isPresent()) {
             ReactorStructure s = structOpt.get();
             if (level.getBlockEntity(s.origin) instanceof ReactorBlockEntity master) {
-                master.form(s);
+                if (!master.isFormed()) master.form(s);
                 openGui(master, (ServerPlayer) player);
             }
         } else {

@@ -173,10 +173,14 @@ public class ReactorMenu extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player player) {
         var be = player.level().getBlockEntity(masterPos);
-        if (be instanceof ReactorBlockEntity rbe && rbe.isFormed()) {
-            return player.distanceToSqr(
-                    masterPos.getX() + 0.5, masterPos.getY() + 0.5, masterPos.getZ() + 0.5) < 64.0;
-        }
-        return false;
+        if (!(be instanceof ReactorBlockEntity rbe) || !rbe.isFormed()) return false;
+        // Check distance from the nearest point on the reactor AABB, not just the NW corner.
+        double px = player.getX(), py = player.getY(), pz = player.getZ();
+        double minX = masterPos.getX(), minY = masterPos.getY(), minZ = masterPos.getZ();
+        double maxX = minX + structWidth, maxY = minY + ReactorStructure.HEIGHT, maxZ = minZ + structDepth;
+        double dx = Math.max(0.0, Math.max(minX - px, px - maxX));
+        double dy = Math.max(0.0, Math.max(minY - py, py - maxY));
+        double dz = Math.max(0.0, Math.max(minZ - pz, pz - maxZ));
+        return dx * dx + dy * dy + dz * dz < 64.0;
     }
 }

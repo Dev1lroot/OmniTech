@@ -2,8 +2,13 @@ package com.dev1lroot.mcmods.omnitech.items;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorCellType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+
+import java.util.function.Consumer;
 
 public abstract class ReactorRodItem extends Item {
 
@@ -12,6 +17,16 @@ public abstract class ReactorRodItem extends Item {
     }
 
     public abstract ReactorCellType getCellType();
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext ctx, TooltipDisplay display,
+                                Consumer<Component> tooltip, TooltipFlag flag) {
+        Integer temp = stack.get(OmniTechDataComponents.ROD_TEMPERATURE.get());
+        if (temp != null) {
+            tooltip.accept(Component.literal("Temperature: " + temp + " °C")
+                    .withStyle(s -> s.withColor(0xFFCC5533)));
+        }
+    }
 
     // ── Data component helpers ────────────────────────────────────────────────
 

@@ -1,10 +1,10 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "omnitech:block/machine_side",
-    "top":    "omnitech:block/uranium_block",
-    "side":   "omnitech:block/machine_side",
-    "bottom": "omnitech:block/machine_side"
+    "particle": "omnitech:block/reactor_port",
+    "top":    "omnitech:block/reactor_port",
+    "side":   "omnitech:block/reactor_port",
+    "bottom": "omnitech:block/reactor_port"
   },
   "elements": [
     {

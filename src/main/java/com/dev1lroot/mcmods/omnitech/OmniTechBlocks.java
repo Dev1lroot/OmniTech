@@ -400,7 +400,7 @@ public class OmniTechBlocks {
                 p -> new ReactorPort(p.mapColor(MapColor.METAL).strength(5.0F)
                         .sound(SoundType.METAL)));
         REACTOR_CELL  = register("reactor_cell",
-                p -> new ReactorCell(p.mapColor(MapColor.METAL).strength(5.0F)
+                p -> new ReactorCell(p.mapColor(MapColor.METAL).strength(5.0F).noOcclusion()
                         .sound(SoundType.METAL)));
     }
 

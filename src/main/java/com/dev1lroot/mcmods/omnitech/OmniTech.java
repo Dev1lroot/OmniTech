@@ -81,6 +81,7 @@ import com.dev1lroot.mcmods.omnitech.network.KeyboardModePacket;
 import com.dev1lroot.mcmods.omnitech.network.KeyboardReleasePacket;
 import com.dev1lroot.mcmods.omnitech.network.MinesweeperResultPacket;
 import com.dev1lroot.mcmods.omnitech.network.SpeakerTonePacket;
+import com.dev1lroot.mcmods.omnitech.network.SetControlRodPacket;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.keyboard.KeyboardBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioManager;
@@ -496,6 +497,10 @@ public class OmniTech {
                 SpeakerTonePacket.TYPE,
                 SpeakerTonePacket.CODEC,
                 SpeakerTonePacket::handle);
+        event.registrar("1").playToServer(
+                SetControlRodPacket.TYPE,
+                SetControlRodPacket.CODEC,
+                SetControlRodPacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
