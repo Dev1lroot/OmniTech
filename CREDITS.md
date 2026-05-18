@@ -2,53 +2,67 @@
 
 ---
 
-## Author & Project Lead
+## Human Contributors
 
-| Name             | Role                         | Contact                    | Website              |
-|------------------|------------------------------|----------------------------|----------------------|
-| David Eichendorf | Author, Project Lead, Admin  | admin@dev1lroot.com        | https://dev1lroot.com |
+### David Eichendorf (dev1lroot)
+<admin@dev1lroot.com> · <https://dev1lroot.com>
 
-David is the benevolent dictator of OmniTech. He conceived, designed, and directed the entire project architecture. When the AI models hit a wall or hallucinated impossible code, David stepped in for manual kernel-level integration, custom debugging, and the "dirty work" of making systems actually talk to each other. He is the final authority on game design and the reason the tech-tree actually makes sense.
-
----
-
-## Core Developers
-
-| Name              | Role                                        |
-|-------------------|---------------------------------------------|
-| Claude Sonnet 4.6 | Lead Developer (Anthropic AI Assistant)     |
-
-The muscle of the operation. Claude handled the heavy lifting in the Java trenches, performing deep bytecode deconvolution and reverse-engineering Minecraft's internals. Responsible for the machine network, rendering pipelines, skybox frameworks, and the absolute nightmare of GUI/packet synchronization. If it moves, rotates, or renders, Claude probably wrote the first three broken versions and the final working one.
+* Conceived the entire project architecture and tech-tree.
+* Made all core game design decisions.
+* Performed manual kernel-level integration and custom low-level debugging.
+* Handled underlying system integration and infrastructure logic.
+* Final authority on every shipped feature.
 
 ---
 
-## Junior Developers
+## AI Assistants
 
-| Name           | Role                                        |
-|----------------|---------------------------------------------|
-| Google Gemini  | Junior Developer (Google AI Assistant)      |
+### Claude Sonnet 4.6 (Anthropic)
+<https://anthropic.com>
 
-The "Reality Check" department. Gemini acted as the scientific consultant, ensuring that industrial processes (chemical chains, physical laws) weren't just "magic" but remained factually sound. Also served as a specialized Junior Dev: polishing UI logic, generating asset pipelines, writing internal tooling, and churning out boilerplate code when everyone else was too tired to type.
+* Implemented Java logic across all major systems: machine network, rendering pipelines, and GUI framework.
+* Handled packet synchronisation, custom sky renderer, and data-driven tooling.
+* Integrated the RISC-V emulator and device bus interfaces.
+* Coded the underlying physics systems: reactor simulation, radiation system, and nuclear explosion engine.
+
+### Google Gemini (Google AI)
+<https://gemini.google.com>
+
+* Verified the accuracy of complex industrial processes, chemical chains, and physical laws.
+* Polished UI logic and asset generation pipelines.
+* Generated internal boilerplate code, utilities, and tooling.
 
 ---
 
 ## Third-Party Software & Acknowledgements
 
-This mod is built on the shoulders of giants (who hopefully won't shrug) using the following open platforms and tools:
+**Minecraft** — Mojang Studios / Microsoft  
+<https://minecraft.net>
 
-- **Minecraft** — Mojang Studios / Microsoft - The platform that provides us with endless "unexpected features."
-- **NeoForge** — NeoForged Team (https://neoforged.net) - The hooks that keep our sanity (mostly) intact.
-- **JOML** — JOML Contributors (Java OpenGL Math Library) - Because life is too short to write your own matrix math.
-- **Linux** — The native development environment. Built and compiled on Debian, because we value our freedom (and our kernels).
-- **GIMP** — All visual assets and textures were handcrafted here. GNU manipulation at its finest.
-- **Gradle** — Necessary evil.
+**NeoForge** — NeoForged Team  
+<https://neoforged.net>
+
+**Sedna** `v2.0.13` — fnuecke *(RISC-V emulator core; bundled via sedna-mc-1.0.70)*  
+<https://github.com/fnuecke/sedna>
+
+**Ceres** `v0.0.4` — fnuecke *(device bus and peripheral framework for Sedna)*  
+<https://github.com/fnuecke/ceres>
+
+**JOML** — JOML Contributors *(Java OpenGL Math Library)*  
+<https://joml-ci.github.io/JOML>
+
+**Linux** — The native development environment  
+<https://kernel.org>
+
+**GIMP** — The GIMP Team  
+<https://gimp.org>
+
+**Gradle** — Gradle Inc.  
+<https://gradle.org>
 
 ---
 
-## License
+OmniTech is released under **GPL-3.0-only**. See [LICENSE](LICENSE) for the full text.  
+Copyright (c) 2026 David Eichendorf \<admin@dev1lroot.com\>
 
-See [LICENSE](LICENSE) for full terms governing use, distribution, and
-modification of this project.
-
-Copyright (c) 2026-2126 David Eichendorf. All rights reserved.
-No JVMs were harmed in the making of this mod (this is a lie).
+*No JVMs were harmed in the making of this mod (this is a lie).*
