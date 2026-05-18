@@ -41,3 +41,10 @@ run/
 **/src/generated/**/.cache/
 repo/
 !**/src/**/repo/
+
+### Project garbage ###
+li/
+net/
+META-INF/
+__pycache__/
+*.class
