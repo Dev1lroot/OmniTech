@@ -100,6 +100,7 @@ public class OmniTechClient
 
     void registerBlockEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(OmniTechBlockEntities.MANUAL_CENTRIFUGE.get(), ManualCentrifugeRenderer::new);
+        event.registerBlockEntityRenderer(OmniTechBlockEntities.ELECTRIC_ENGINE.get(), ElectricEngineRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.CRANK.get(), CrankBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.KF_PIPE.get(), KineticPipeRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.CONVEYOR_BELT.get(), ConveyorBeltRenderer::new);
