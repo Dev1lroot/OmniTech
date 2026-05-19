@@ -59,6 +59,7 @@ public class RadiationTick {
         long gameTime = level.getGameTime();
 
         for (ServerPlayer player : level.getServer().getPlayerList().getPlayers()) {
+            if (player.isCreative()) continue;
             int amplifier = computeAmplifier(player, centers);
 
             if (amplifier < 0) continue; // player out of all zones

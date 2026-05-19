@@ -4,6 +4,8 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
+import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorCellBlockEntity;
@@ -72,6 +74,9 @@ public class ReactorMenu extends AbstractContainerMenu {
     public final int scramBtnY;
     public final int scramBtnW;
 
+    /** Y position of the VENT (depressurize) button — same X and W as SCRAM. */
+    public final int ventBtnY;
+
     @Nullable public final ReactorBlockEntity reactorBE;
     private final ContainerData fluidData;
 
@@ -109,8 +114,9 @@ public class ReactorMenu extends AbstractContainerMenu {
         heatBarY    = tankBarY;
         heatBarH    = tankBarH;
         scramBtnX   = layout[9]; scramBtnY   = layout[10]; scramBtnW = layout[11];
+        ventBtnY    = scramBtnY - SCRAM_BTN_H - BAR_GAP;
 
-        // Sync coolant amount, capacity, and core temperature (avoid 16-bit overflow for fluid)
+        // Sync coolant amount, capacity, core temperature, coolant temperature, pressure
         final ReactorBlockEntity theBe = be;
         this.fluidData = new ContainerData() {
             @Override public int get(int i) {
@@ -118,11 +124,13 @@ public class ReactorMenu extends AbstractContainerMenu {
                     case 0 -> theBe.getCoolantAmount() / 1000;
                     case 1 -> theBe.getTankCapacity()  / 1000;
                     case 2 -> theBe.getCoreTemperature();
+                    case 3 -> theBe.getCoolantTemperature();
+                    case 4 -> theBe.getPressure();
                     default -> 0;
                 };
             }
             @Override public void set(int i, int v) {}
-            @Override public int getCount() { return 3; }
+            @Override public int getCount() { return 5; }
         };
         addDataSlots(fluidData);
 
@@ -172,8 +180,9 @@ public class ReactorMenu extends AbstractContainerMenu {
         heatBarY    = tankBarY;
         heatBarH    = tankBarH;
         scramBtnX   = layout[9]; scramBtnY   = layout[10]; scramBtnW = layout[11];
+        ventBtnY    = scramBtnY - SCRAM_BTN_H - BAR_GAP;
 
-        this.fluidData = new SimpleContainerData(3);
+        this.fluidData = new SimpleContainerData(5);
         addDataSlots(fluidData);
 
         Container container = new SimpleContainer(cellCount);
@@ -194,10 +203,31 @@ public class ReactorMenu extends AbstractContainerMenu {
     public int getWaterCapacityBuckets() { return fluidData.get(1); }
     /** Max rod temperature across all active cells (°C, 0..MAX_TEMPERATURE). */
     public int getCoreTemperature()      { return fluidData.get(2); }
-    /** Actual FluidStack for rendering; reads directly from the BE (works both sides). */
+    /** Current coolant temperature (°C, 20..MAX_COOLANT_TEMP). */
+    public int getCoolantTemperature()   { return fluidData.get(3); }
+    /** Current reactor pressure (0..MAX_PRESSURE); 0 when vented or empty. */
+    public int getPressure()             { return fluidData.get(4); }
+    /**
+     * Returns the coolant FluidStack for rendering/tooltip, with the synced
+     * coolant temperature stamped as a {@link OmniTechDataComponents#FLUID_TEMPERATURE}
+     * component so that {@link com.dev1lroot.mcmods.omnitech.util.GuiUtil#buildFluidTooltip}
+     * can display it automatically.
+     */
+    /** Returns the coolant FluidStack (water or steam) with temperature and pressure stamped. */
     public FluidStack getWaterFluid() {
-        if (reactorBE != null) return reactorBE.getCoolantTank();
-        return FluidStack.EMPTY;
+        FluidStack fs = (reactorBE != null) ? reactorBE.getCoolantTank() : FluidStack.EMPTY;
+        if (fs.isEmpty()) {
+            // Fallback: reconstruct from synced ContainerData (water only — steam is always live)
+            var fo = OmniTechFluids.get("distilled_water");
+            int water = getWaterBuckets();
+            if (fo != null && water > 0) fs = new FluidStack(fo.source.get(), water * 1000);
+        }
+        if (!fs.isEmpty()) {
+            fs = fs.copy();
+            int temp = getCoolantTemperature();
+            if (temp != 20) fs.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), temp);
+        }
+        return fs;
     }
 
     // ── Layout ───────────────────────────────────────────────────────────────
@@ -214,9 +244,10 @@ public class ReactorMenu extends AbstractContainerMenu {
         int iox    = PAD + (mainW - INV_W) / 2;
         int ioy    = PAD + gridH + 6;
         int tankX  = PAD + mainW + TANK_MARGIN;
-        // Reserve SCRAM_BTN_H + BAR_GAP at the bottom of the right column for the button
+        // Reserve room for SCRAM and VENT buttons stacked at the bottom of the right column
         int scramY = imgH - PAD - SCRAM_BTN_H;
-        int tankH  = scramY - PAD - BAR_GAP;
+        int ventY  = scramY - SCRAM_BTN_H - BAR_GAP;
+        int tankH  = ventY - PAD - BAR_GAP;
         int scramW = TANK_BAR_W + BAR_GAP + HEAT_BAR_W;
         return new int[]{imgW, imgH, gox, PAD, iox, ioy, tankX, PAD, tankH, tankX, scramY, scramW};
     }

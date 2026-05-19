@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
+
 /**
  * Binds named data sources to runtime suppliers so the renderer can query live
  * values without knowing the concrete menu type.

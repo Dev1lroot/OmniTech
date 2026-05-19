@@ -5,14 +5,20 @@
 package com.dev1lroot.mcmods.omnitech.util;
 
 import com.dev1lroot.mcmods.omnitech.OmniTech;
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.neoforged.neoforge.fluids.FluidStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiUtil
 {
@@ -83,6 +89,34 @@ public class GuiUtil
             }
         }
         graphics.disableScissor();
+    }
+
+    /**
+     * Builds a standard fluid tooltip: name, "amount / capacity mB", and — when the
+     * fluid carries a {@link OmniTechDataComponents#FLUID_TEMPERATURE} component above
+     * ambient — a colour-coded temperature line.  Callers may append additional lines
+     * before passing the list to {@code GuiGraphicsExtractor.setTooltipForNextFrame}.
+     */
+    public static List<Component> buildFluidTooltip(FluidStack fluid, int amount, int capacity) {
+        List<Component> lines = new ArrayList<>();
+        if (fluid.isEmpty() || amount <= 0) {
+            lines.add(Component.literal("Empty").withStyle(ChatFormatting.DARK_GRAY));
+            if (capacity > 0)
+                lines.add(Component.literal("0 / " + capacity + " mB")
+                        .withStyle(ChatFormatting.DARK_GRAY));
+        } else {
+            lines.add(fluid.getHoverName().copy());
+            lines.add(Component.literal(amount + " / " + capacity + " mB")
+                    .withStyle(ChatFormatting.GRAY));
+            Integer tempBox = fluid.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+            int temp = tempBox != null ? tempBox : 20;
+            ChatFormatting fmt = temp >= 250 ? ChatFormatting.RED
+                               : temp >= 100 ? ChatFormatting.GOLD
+                               : temp >   20 ? ChatFormatting.YELLOW
+                               :               ChatFormatting.GRAY;
+            lines.add(Component.literal(temp + " °C").withStyle(fmt));
+        }
+        return lines;
     }
 
     /**

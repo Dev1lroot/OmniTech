@@ -8,6 +8,7 @@ import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorStructure;
 import com.dev1lroot.mcmods.omnitech.items.ReactorControlRodItem;
+import com.dev1lroot.mcmods.omnitech.network.DepressurizeReactorPacket;
 import com.dev1lroot.mcmods.omnitech.network.ScramReactorPacket;
 import com.dev1lroot.mcmods.omnitech.network.SetControlRodPacket;
 import com.dev1lroot.mcmods.omnitech.util.GuiUtil;
@@ -38,6 +39,12 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
         this.inventoryLabelX = menu.invOffsetX;
         this.inventoryLabelY = menu.invOffsetY - 10;
 
+        addRenderableWidget(Button.builder(
+                Component.literal("VENT"),
+                btn -> ClientPacketDistributor.sendToServer(new DepressurizeReactorPacket(menu.containerId)))
+                .bounds(leftPos + menu.scramBtnX, topPos + menu.ventBtnY,
+                        menu.scramBtnW, ReactorMenu.SCRAM_BTN_H)
+                .build());
         addRenderableWidget(Button.builder(
                 Component.literal("SCRAM"),
                 btn -> ClientPacketDistributor.sendToServer(new ScramReactorPacket(menu.containerId)))
@@ -151,12 +158,24 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
                 && mouseY >= ty && mouseY < ty + menu.tankBarH) {
             int amount   = menu.getWaterBuckets()         * 1000;
             int capacity = menu.getWaterCapacityBuckets() * 1000;
-            List<Component> lines = new ArrayList<>();
-            lines.add(Component.translatable("fluid.omnitech.distilled_water"));
-            lines.add(Component.literal(amount + " / " + capacity + " mB")
-                    .withStyle(s -> s.withColor(0xFFAAAAAA)));
+            List<Component> lines = GuiUtil.buildFluidTooltip(menu.getWaterFluid(), amount, capacity);
+            // Pressure line
+            int pressure = menu.getPressure();
+            if (amount > 0) {
+                net.minecraft.ChatFormatting pFmt = pressure >= 700 ? net.minecraft.ChatFormatting.RED
+                                                  : pressure >= 300 ? net.minecraft.ChatFormatting.YELLOW
+                                                  :                   net.minecraft.ChatFormatting.GRAY;
+                lines.add(Component.literal(pressure + " / " + ReactorBlockEntity.MAX_PRESSURE + " kPa")
+                        .withStyle(pFmt));
+            }
             if (amount == 0) {
                 lines.add(Component.literal("Reactor offline — no coolant")
+                        .withStyle(s -> s.withColor(0xFFFF4444)));
+            } else if (pressure == 0 && amount > 0) {
+                lines.add(Component.literal("Depressurized — reduced moderation")
+                        .withStyle(s -> s.withColor(0xFFFFAA00)));
+            } else if (menu.getCoolantTemperature() >= 250) {
+                lines.add(Component.literal("Cooling reduced — replace coolant!")
                         .withStyle(s -> s.withColor(0xFFFF4444)));
             }
             g.setTooltipForNextFrame(this.font, lines, Optional.empty(), mouseX, mouseY);

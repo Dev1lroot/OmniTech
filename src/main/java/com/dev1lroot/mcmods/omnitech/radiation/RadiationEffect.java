@@ -28,9 +28,9 @@ public class RadiationEffect extends MobEffect {
     @Override
     public boolean applyEffectTick(ServerLevel level, LivingEntity entity, int amplification) {
         if (!(entity instanceof Player player)) return true;
+        if (player.isCreative()) return true;
 
-        // Apply 1 second of nausea
-        player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 20, 0, false, false));
+        player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 100, 0, false, false));
 
         // 50% chance to deal 1 hp radiation damage
         if (level.getRandom().nextBoolean()) {

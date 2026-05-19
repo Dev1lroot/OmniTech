@@ -6,8 +6,11 @@ package com.dev1lroot.mcmods.omnitech.radiation;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +48,20 @@ public class NuclearExplosion {
                     }
                 }
             }
+        }
+
+        // ── Kill all living entities in zone 1 (except creative players) ─────
+        AABB killBox = new AABB(
+                center.getX() - R1, center.getY() - R1, center.getZ() - R1,
+                center.getX() + R1, center.getY() + R1, center.getZ() + R1);
+        for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, killBox, e -> {
+            if (e instanceof Player p && p.isCreative()) return false;
+            double dx = e.getX() - center.getX();
+            double dy = e.getY() - center.getY();
+            double dz = e.getZ() - center.getZ();
+            return dx*dx + dy*dy + dz*dz <= (double) r1sq;
+        })) {
+            entity.kill(level);
         }
 
         // ── Zone 2: 32–64 blocks, 75%, queued ────────────────────────────────

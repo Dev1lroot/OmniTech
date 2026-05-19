@@ -5,7 +5,9 @@
 package com.dev1lroot.mcmods.omnitech.blocks.logic.reactor;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
+import com.dev1lroot.mcmods.omnitech.OmniTechMobEffects;
 import com.dev1lroot.mcmods.omnitech.gui.ReactorMenu;
 import com.dev1lroot.mcmods.omnitech.items.ReactorControlRodItem;
 import com.dev1lroot.mcmods.omnitech.items.ReactorFuelRodItem;
@@ -13,6 +15,7 @@ import com.dev1lroot.mcmods.omnitech.items.ReactorRodItem;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
@@ -24,8 +27,12 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -55,13 +62,17 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
     private static final int HEAT_TICK_INTERVAL      = 10;
     private static final int HEAT_PER_PULSE          = 3;
     private static final int PASSIVE_COOLING         = 1;
-    private static final int WATER_EXTRA_COOLING     = 2;
     private static final int REFLECTOR_HEAT_RATE     = 2;
     private static final int CONTROL_HEAT_RATE       = 2;
     private static final int CONTROL_HEAT_THRESHOLD  = 600;
     public  static final int MAX_TEMPERATURE         = 2000;
+    public  static final int MAX_COOLANT_TEMP        = 350;
+    public  static final int MAX_PRESSURE            = 1000;
+    private static final int AMBIENT_TEMP            = 20;
     private static final int TEMP_HEAT_THRESHOLD     = 300;
     private static final int TEMP_MELTDOWN_THRESHOLD = 1200;
+    private static final int RAD_INTERVAL            = 100; // ticks between radiation sweeps (5 s)
+    private static final int RAD_OUTER_RADIUS        = 10;  // blocks outside walls for Radiation I
 
     private static final Direction[] XZ_DIRS = {
         Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST
@@ -72,8 +83,10 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
     private ReactorStructure structure = null;
 
     // ── Coolant fluid tank ────────────────────────────────────────────────────
-    FluidStack coolantTank  = FluidStack.EMPTY;
-    int        tankCapacity = 0;
+    FluidStack coolantTank        = FluidStack.EMPTY;
+    int        tankCapacity       = 0;
+    int        coolantTemperature = AMBIENT_TEMP;
+    int        pressure           = 0;
     final CoolantHandler coolantHandler = new CoolantHandler();
 
     // ── Tick counters / persistence ───────────────────────────────────────────
@@ -84,14 +97,17 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
 
     private int     revalidateTick  = 0;
     private int     heatTick        = 0;
+    private int     radTick         = 0;
     private int     persistTick     = 0;
     private boolean tempDirty       = false;
     private int     coreTemperature = 0;
     private boolean hasExploded     = false;
 
-    public int     getCoreTemperature() { return coreTemperature; }
-    public boolean hasExploded()        { return hasExploded; }
-    public void    markExploded()       { hasExploded = true; }
+    public int     getCoreTemperature()    { return coreTemperature; }
+    public int     getCoolantTemperature() { return coolantTemperature; }
+    public int     getPressure()           { return pressure; }
+    public boolean hasExploded()           { return hasExploded; }
+    public void    markExploded()          { hasExploded = true; }
 
     public ReactorBlockEntity(BlockPos pos, BlockState state) {
         super(OmniTechBlockEntities.REACTOR.get(), pos, state);
@@ -250,10 +266,50 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
                 be.tickTemperature(level);
             }
 
+            if (++be.radTick >= RAD_INTERVAL) {
+                be.radTick = 0;
+                if (be.coreTemperature > 0) be.tickReactorRadiation(level);
+            }
+
             if (be.tempDirty && ++be.persistTick >= 200) {
                 be.persistTick = 0;
                 be.tempDirty   = false;
                 be.setChanged();
+            }
+        }
+    }
+
+    // ── Active-reactor radiation ──────────────────────────────────────────────
+
+    private void tickReactorRadiation(Level level) {
+        BlockPos o = structure.origin;
+
+        // Interior cavity: origin+(1,1,1) to origin+(w−1, H−1, d−1) [exclusive max per AABB]
+        AABB interiorBox = new AABB(
+                o.getX() + 1,                          o.getY() + 1,                           o.getZ() + 1,
+                o.getX() + structure.width  - 1,       o.getY() + ReactorStructure.HEIGHT - 1, o.getZ() + structure.depth - 1);
+
+        // Search volume: full reactor shell inflated by RAD_OUTER_RADIUS on every side
+        AABB searchBox = new AABB(
+                o.getX(), o.getY(), o.getZ(),
+                o.getX() + structure.width, o.getY() + ReactorStructure.HEIGHT, o.getZ() + structure.depth)
+                .inflate(RAD_OUTER_RADIUS);
+
+        Holder<MobEffect> effect = OmniTechMobEffects.RADIATION;
+
+        for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, searchBox)) {
+            if (entity instanceof Player p && p.isCreative()) continue;
+
+            // Inside the cavity → Radiation III; anywhere else in search volume → Radiation I
+            int amplifier = interiorBox.contains(entity.getX(), entity.getY(), entity.getZ()) ? 2 : 0;
+
+            MobEffectInstance existing = entity.getEffect(effect);
+            if (existing == null || existing.getAmplifier() < amplifier) {
+                entity.addEffect(new MobEffectInstance(effect, 200, amplifier, false, true));
+            } else if (existing.getAmplifier() == amplifier) {
+                // Refresh duration without downgrading
+                entity.addEffect(new MobEffectInstance(effect,
+                        Math.max(existing.getDuration(), 200), amplifier, false, true));
             }
         }
     }
@@ -265,7 +321,6 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
         int count = cells.size();
         if (count == 0) return;
 
-        // Collect cell BEs and their current items up front
         ReactorCellBlockEntity[] cellBEs = new ReactorCellBlockEntity[count];
         ItemStack[]              stacks  = new ItemStack[count];
         for (int i = 0; i < count; i++) {
@@ -280,73 +335,112 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
         Map<BlockPos, Integer> posToIndex = new HashMap<>(count * 2);
         for (int i = 0; i < count; i++) posToIndex.put(cells.get(i), i);
 
-        boolean hasWater = !coolantTank.isEmpty();
-        int cooling = PASSIVE_COOLING + (hasWater ? WATER_EXTRA_COOLING : 0);
+        boolean hasCoolant = !coolantTank.isEmpty();
+        // moderationFactor encodes both fluid type and fill level:
+        //   liquid water → 1.0 × fillFraction  (good moderator)
+        //   steam        → 0.1 × fillFraction  (poor moderator: low density)
+        //   no coolant   → 0.0                 (no moderation)
+        float moderationFactor = getModerationFactor();
+        // Thermal effectiveness of the coolant decreases as it heats up
+        float thermalEff = hasCoolant
+                ? Math.max(0.1f, 1f - (coolantTemperature - AMBIENT_TEMP) / (float)(MAX_COOLANT_TEMP - AMBIENT_TEMP))
+                : 0f;
+        float coolingFactor = thermalEff * moderationFactor;
 
-        int[] delta           = new int[count];
+        // ── Phase 1: neutron physics — compute raw heat per rod ───────────────
+        //
+        // The coolant is the neutron moderator (water/steam slows neutrons).
+        // Steam is a much weaker moderator than liquid water (low density).
+        // Control rods are pure absorbers/blockers — not graphite moderators.
+        // Pulse counts are scaled by moderationFactor before converting to heat.
+        int[] rawHeat         = new int[count];
         int[] effectivePulses = new int[count];
 
-        for (int i = 0; i < count; i++) {
+        if (moderationFactor < 0.01f) {
+            // No effective moderation → chain reaction cannot sustain; rawHeat stays zero.
+        } else for (int i = 0; i < count; i++) {
             ItemStack stack = stacks[i];
             if (stack.isEmpty() || !(stack.getItem() instanceof ReactorRodItem rod)) continue;
-
             BlockPos pos = cells.get(i);
 
             switch (rod.getCellType()) {
                 case FUEL -> {
-                    if (!hasWater) { delta[i] = -cooling; break; }
-                    int rawPulses = 1;
-                    double absorbed = 0.0;
+                    float totalPulses = 0.0f;
+                    dirScan:
                     for (Direction dir : XZ_DIRS) {
-                        Integer ni = posToIndex.get(pos.relative(dir));
-                        if (ni == null) continue;
-                        ItemStack ns = stacks[ni];
-                        if (ns.isEmpty() || !(ns.getItem() instanceof ReactorRodItem nr)) continue;
-                        switch (nr.getCellType()) {
-                            case FUEL, OTHER -> rawPulses++;
-                            case CONTROL     -> absorbed += ReactorControlRodItem.getControl(ns) / 100.0;
-                            default          -> {}
-                        }
-                    }
-                    int effective = (int) Math.max(0.0, rawPulses - absorbed);
-                    effectivePulses[i] = effective;
-                    delta[i] = HEAT_PER_PULSE * effective - cooling;
-                }
-                case OTHER -> {
-                    int adjFuel = 0;
-                    if (hasWater) {
-                        for (Direction dir : XZ_DIRS) {
-                            Integer ni = posToIndex.get(pos.relative(dir));
-                            if (ni == null) continue;
+                        float flux = 1.0f;
+                        for (int step = 1; step <= ReactorStructure.MAX_SIZE; step++) {
+                            Integer ni = posToIndex.get(pos.relative(dir, step));
+                            if (ni == null) break;                              // outside reactor
                             ItemStack ns = stacks[ni];
-                            if (!ns.isEmpty() && ns.getItem() instanceof ReactorRodItem nr
-                                    && nr.getCellType() == ReactorCellType.FUEL) adjFuel++;
+                            if (ns.isEmpty() || !(ns.getItem() instanceof ReactorRodItem nr)) break;
+                            switch (nr.getCellType()) {
+                                case FUEL:    totalPulses += flux;         continue dirScan;
+                                case CONTROL: {
+                                    // Control rod attenuates flux; fully inserted = full block
+                                    int ins = ReactorControlRodItem.getControl(ns);
+                                    flux *= (1.0f - ins / 100.0f);
+                                    if (flux < 0.01f) continue dirScan;    // path blocked
+                                    break;                                  // continue scanning
+                                }
+                                case OTHER:   totalPulses += flux * 0.5f; continue dirScan;
+                                default:                                   continue dirScan;
+                            }
                         }
                     }
-                    delta[i] = REFLECTOR_HEAT_RATE * adjFuel - cooling;
+                    // Scale by moderationFactor: steam reduces effective pulses
+                    int pulses = Math.round(totalPulses * moderationFactor);
+                    effectivePulses[i] = pulses;
+                    rawHeat[i]         = HEAT_PER_PULSE * pulses;
                 }
                 case CONTROL -> {
                     int insertion = ReactorControlRodItem.getControl(stack);
                     int adjFuel   = 0;
-                    if (hasWater) {
-                        for (Direction dir : XZ_DIRS) {
-                            Integer ni = posToIndex.get(pos.relative(dir));
-                            if (ni == null) continue;
-                            ItemStack ns = stacks[ni];
-                            if (!ns.isEmpty() && ns.getItem() instanceof ReactorRodItem nr
-                                    && nr.getCellType() == ReactorCellType.FUEL) adjFuel++;
-                        }
+                    for (Direction dir : XZ_DIRS) {
+                        Integer ni = posToIndex.get(pos.relative(dir));
+                        if (ni == null) continue;
+                        ItemStack ns = stacks[ni];
+                        if (!ns.isEmpty() && ns.getItem() instanceof ReactorRodItem nr
+                                && nr.getCellType() == ReactorCellType.FUEL) adjFuel++;
                     }
-                    double totalAbsorbed = (insertion / 100.0) * adjFuel;
-                    delta[i] = (int)(CONTROL_HEAT_RATE * totalAbsorbed) - cooling;
+                    rawHeat[i] = Math.round(CONTROL_HEAT_RATE * (insertion / 100.0f) * adjFuel);
+                }
+                case OTHER -> {
+                    int adjFuel = 0;
+                    for (Direction dir : XZ_DIRS) {
+                        Integer ni = posToIndex.get(pos.relative(dir));
+                        if (ni == null) continue;
+                        ItemStack ns = stacks[ni];
+                        if (!ns.isEmpty() && ns.getItem() instanceof ReactorRodItem nr
+                                && nr.getCellType() == ReactorCellType.FUEL) adjFuel++;
+                    }
+                    rawHeat[i] = REFLECTOR_HEAT_RATE * adjFuel;
                 }
                 default -> {}
             }
         }
 
-        boolean changed      = false;
-        int     totalHeat    = 0;
-        int     maxCoreTemp  = 0;
+        // ── Phase 2: split heat between rods and coolant ──────────────────────
+        //
+        // Water absorbs a fraction of each rod's raw heat (50 % × coolingFactor).
+        // Passive cooling and the water share reduce the rod's net temperature delta.
+        // Using rawHeat (not afterPassive) ensures coolant heats up even for small rods
+        // and avoids the decay-cancellation that plagued the old waterCoolingMax=2 cap.
+        int[] delta = new int[count];
+        int   coolantHeatAbsorbed = 0;
+
+        for (int i = 0; i < count; i++) {
+            if (stacks[i].isEmpty() || !(stacks[i].getItem() instanceof ReactorRodItem)) continue;
+            int waterCooling = (hasCoolant && rawHeat[i] > 0)
+                    ? Math.max(0, (int)(rawHeat[i] * coolingFactor * 0.5f))
+                    : 0;
+            delta[i]             = rawHeat[i] - PASSIVE_COOLING - waterCooling;
+            coolantHeatAbsorbed += waterCooling;
+        }
+
+        // ── Phase 3: apply deltas, damage rods, update cell states ────────────
+        boolean changed     = false;
+        int     maxCoreTemp = 0;
 
         for (int i = 0; i < count; i++) {
             ItemStack stack = stacks[i];
@@ -355,10 +449,9 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
             int temp = 0;
 
             if (hasRod) {
-                int cur      = ReactorRodItem.getTemperature(stack);
+                int cur  = ReactorRodItem.getTemperature(stack);
                 if (cur < 0) cur = 0;
-                totalHeat   += Math.max(0, delta[i]);
-                int next     = Math.max(0, Math.min(MAX_TEMPERATURE, cur + delta[i]));
+                int next = Math.max(0, Math.min(MAX_TEMPERATURE, cur + delta[i]));
                 boolean cellChanged = false;
 
                 if (next != cur) {
@@ -399,22 +492,101 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
 
         coreTemperature = maxCoreTemp;
 
-        // Trigger nuclear explosion on meltdown (only once)
-        if (!hasExploded && maxCoreTemp >= TEMP_MELTDOWN_THRESHOLD
-                && level instanceof ServerLevel sl) {
+        // ── Coolant heating and evaporation ───────────────────────────────────
+        //
+        // Temperature rise uses float arithmetic to avoid integer-division truncation
+        // when many buckets are present.  Liquid water does not evaporate while
+        // pressurized; steam evaporates at a rate proportional to temperature.
+        if (hasCoolant && coolantTank.getAmount() > 0) {
+            if (coolantHeatAbsorbed > 0) {
+                float buckets = Math.max(1f, coolantTank.getAmount() / 1000f);
+                int rise = Math.max(1, (int)(coolantHeatAbsorbed / buckets));
+                coolantTemperature = Math.min(MAX_COOLANT_TEMP, coolantTemperature + rise);
+                // Only liquid water is consumed by heat; steam evaporates separately below
+                if (!isSteamCoolant()) {
+                    int consumed  = Math.max(1, coolantHeatAbsorbed / 20);
+                    int newAmount = Math.max(0, coolantTank.getAmount() - consumed);
+                    coolantTank   = newAmount > 0 ? coolantTank.copyWithAmount(newAmount) : FluidStack.EMPTY;
+                }
+                changed = true;
+            }
+            // Steam dissipates from the reactor (low-density fluid escapes)
+            if (isSteamCoolant()) {
+                int evapRate  = Math.max(10, coolantTemperature * 2);
+                int newAmount = Math.max(0, coolantTank.getAmount() - evapRate);
+                coolantTank   = newAmount > 0 ? coolantTank.copyWithAmount(newAmount) : FluidStack.EMPTY;
+                if (newAmount == 0) coolantTemperature = AMBIENT_TEMP;
+                changed = true;
+            }
+        } else if (!hasCoolant && coolantTemperature > AMBIENT_TEMP) {
+            coolantTemperature = Math.max(AMBIENT_TEMP, coolantTemperature - 1);
+        }
+
+        updatePressure();
+
+        // ── Meltdown ──────────────────────────────────────────────────────────
+        if (!hasExploded && maxCoreTemp >= TEMP_MELTDOWN_THRESHOLD && level instanceof ServerLevel sl) {
             hasExploded = true;
             com.dev1lroot.mcmods.omnitech.radiation.NuclearExplosion.trigger(sl, getBlockPos());
             invalidate();
         }
 
-        if (hasWater && totalHeat > 0) {
-            int consumed  = Math.max(1, totalHeat / 20);
-            int newAmount = Math.max(0, coolantTank.getAmount() - consumed);
-            coolantTank   = newAmount > 0 ? coolantTank.copyWithAmount(newAmount) : FluidStack.EMPTY;
-            changed = true;
-        }
-
         if (changed) tempDirty = true;
+    }
+
+    // ── Pressure and moderation helpers ──────────────────────────────────────
+
+    private boolean isSteamCoolant() {
+        if (coolantTank.isEmpty()) return false;
+        var fo = OmniTechFluids.get("steam");
+        return fo != null && coolantTank.getFluid() == fo.source.get();
+    }
+
+    /**
+     * Returns a 0..1 moderation factor for neutron physics and heat transfer.
+     * Liquid water = 1.0 × fill fraction; steam = 0.1 × fill fraction (low density);
+     * empty tank = 0.0 (no moderation → no chain reaction).
+     */
+    private float getModerationFactor() {
+        if (coolantTank.isEmpty() || tankCapacity == 0) return 0f;
+        float fillFraction = (float) coolantTank.getAmount() / tankCapacity;
+        return isSteamCoolant() ? 0.1f * fillFraction : fillFraction;
+    }
+
+    /**
+     * Recomputes {@link #pressure} from the current coolant state.
+     * Pressure = volume component (0..500) + thermal component (0..500).
+     * Steam has pressure 0 — it represents a vented, depressurized state.
+     */
+    private void updatePressure() {
+        if (coolantTank.isEmpty() || isSteamCoolant()) {
+            pressure = 0;
+            return;
+        }
+        int fillComp    = tankCapacity > 0 ? coolantTank.getAmount() * 500 / tankCapacity : 0;
+        int thermalComp = coolantTemperature > AMBIENT_TEMP
+                ? Math.min(500, (coolantTemperature - AMBIENT_TEMP) * 500 / (MAX_COOLANT_TEMP - AMBIENT_TEMP))
+                : 0;
+        pressure = Math.min(MAX_PRESSURE, fillComp + thermalComp);
+    }
+
+    /**
+     * Depressurizes the reactor: converts liquid coolant to steam 1:1 if the
+     * coolant temperature is at or above 100 °C.  Below that threshold the water
+     * would not flash, so nothing happens.  Calling this on steam is a no-op.
+     */
+    public void depressurize() {
+        if (coolantTank.isEmpty() || isSteamCoolant()) return;
+        if (coolantTemperature < 100) return; // too cold to flash
+        var steamFo = OmniTechFluids.get("steam");
+        if (steamFo == null) return;
+        int amount = coolantTank.getAmount();
+        FluidStack steam = new FluidStack(steamFo.source.get(), amount);
+        steam.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), coolantTemperature);
+        coolantTank = steam;
+        pressure    = 0;
+        tempDirty   = true;
+        setChanged();
     }
 
     private static boolean hurtRod(ItemStack stack) {
@@ -459,37 +631,56 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
     private class CoolantHandler extends SnapshotJournal<FluidStack>
             implements ResourceHandler<FluidResource> {
 
+        // Type-only check: accepts any distilled water regardless of data components (e.g. temperature)
         private static boolean isDistilledWater(FluidResource resource) {
             if (resource.isEmpty()) return false;
             var fo = OmniTechFluids.get("distilled_water");
             if (fo == null) return false;
-            return resource.matches(new FluidStack(fo.source.get(), 1));
+            return resource.toStack(1).getFluid() == fo.source.get();
         }
 
         @Override protected FluidStack createSnapshot()              { return coolantTank; }
         @Override protected void revertToSnapshot(FluidStack snap)   { coolantTank = snap; }
         @Override protected void onRootCommit(FluidStack orig)       { tempDirty = true; }
 
-        @Override public int           size()                         { return 1; }
-        @Override public FluidResource getResource(int i)            { return i == 0 && !coolantTank.isEmpty() ? FluidResource.of(coolantTank) : FluidResource.EMPTY; }
-        @Override public long          getAmountAsLong(int i)        { return i == 0 ? coolantTank.getAmount() : 0L; }
-        @Override public long          getCapacityAsLong(int i, FluidResource r) { return i == 0 && formed ? tankCapacity : 0L; }
+        @Override public int size() { return 1; }
+
+        /** Returns the resource with the current coolant temperature stamped on it. */
+        @Override
+        public FluidResource getResource(int i) {
+            if (i != 0 || coolantTank.isEmpty()) return FluidResource.EMPTY;
+            FluidStack stamped = coolantTank.copy();
+            stamped.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), coolantTemperature);
+            return FluidResource.of(stamped);
+        }
+
+        @Override public long getAmountAsLong(int i)                       { return i == 0 ? coolantTank.getAmount() : 0L; }
+        @Override public long getCapacityAsLong(int i, FluidResource r)    { return i == 0 && formed ? tankCapacity : 0L; }
 
         @Override
         public boolean isValid(int index, FluidResource resource) {
             if (index != 0 || !formed) return false;
-            if (!isDistilledWater(resource)) return false;
-            return coolantTank.isEmpty() || resource.matches(coolantTank);
+            return isDistilledWater(resource);
         }
 
         @Override
         public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
             if (index != 0 || !formed || !isDistilledWater(resource) || amount <= 0) return 0;
-            if (!coolantTank.isEmpty() && !resource.matches(coolantTank)) return 0;
             int space    = tankCapacity - coolantTank.getAmount();
             int toInsert = Math.min(amount, space);
             if (toInsert <= 0) return 0;
+
+            // Blend temperatures: incoming fluid may carry a FLUID_TEMPERATURE component
+            FluidStack incoming = resource.toStack(1);
+            Integer incomingTempBox = incoming.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+            int incomingTemp = incomingTempBox != null ? incomingTempBox : AMBIENT_TEMP;
+            int existing = coolantTank.getAmount();
+            int blended = existing > 0
+                    ? (coolantTemperature * existing + incomingTemp * toInsert) / (existing + toInsert)
+                    : incomingTemp;
+
             updateSnapshots(tx);
+            coolantTemperature = Math.max(AMBIENT_TEMP, Math.min(MAX_COOLANT_TEMP, blended));
             coolantTank = coolantTank.isEmpty() ? resource.toStack(toInsert)
                     : coolantTank.copyWithAmount(coolantTank.getAmount() + toInsert);
             return toInsert;
@@ -498,7 +689,8 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
         @Override
         public int extract(int index, FluidResource resource, int amount, TransactionContext tx) {
             if (index != 0 || coolantTank.isEmpty() || amount <= 0) return 0;
-            if (!resource.matches(coolantTank)) return 0;
+            // Allow extracting whatever fluid is currently in the tank (water or steam)
+            if (resource.isEmpty() || resource.toStack(1).getFluid() != coolantTank.getFluid()) return 0;
             int toExtract = Math.min(amount, coolantTank.getAmount());
             updateSnapshots(tx);
             coolantTank = coolantTank.copyWithAmount(coolantTank.getAmount() - toExtract);
@@ -518,7 +710,9 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
             output.putInt("StructDepth",  structure.depth);
             output.putInt("CellCount",    structure.cells.size());
         }
-        output.putInt("TankCapacity", tankCapacity);
+        output.putInt("TankCapacity",        tankCapacity);
+        output.putInt("CoolantTemperature", coolantTemperature);
+        output.putInt("Pressure",           pressure);
         output.store("Coolant", FluidStack.OPTIONAL_CODEC, coolantTank);
     }
 
@@ -532,7 +726,9 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
             savedCellCount      = input.getIntOr("CellCount", 0);
             pendingRevalidation = true;
         }
-        tankCapacity = input.getIntOr("TankCapacity", 0);
-        coolantTank  = input.read("Coolant", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
+        tankCapacity       = input.getIntOr("TankCapacity", 0);
+        coolantTemperature = input.getIntOr("CoolantTemperature", AMBIENT_TEMP);
+        pressure           = input.getIntOr("Pressure", 0);
+        coolantTank        = input.read("Coolant", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
     }
 }

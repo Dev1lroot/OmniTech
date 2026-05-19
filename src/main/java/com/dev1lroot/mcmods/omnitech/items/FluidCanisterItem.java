@@ -5,6 +5,7 @@
 package com.dev1lroot.mcmods.omnitech.items;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -105,10 +106,17 @@ public class FluidCanisterItem extends Item {
             TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         FluidStack fluid = getFluid(stack);
         if (fluid.isEmpty()) {
-            tooltip.accept(Component.literal("Empty").withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
+            tooltip.accept(Component.literal("Empty").withStyle(ChatFormatting.DARK_GRAY));
         } else {
             tooltip.accept(Component.literal(fluid.getAmount() + " / " + CAPACITY + " mB")
-                    .withStyle(net.minecraft.ChatFormatting.GRAY));
+                    .withStyle(ChatFormatting.GRAY));
+            Integer tempBox = fluid.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+            int fluidTemp = tempBox != null ? tempBox : 20;
+            ChatFormatting tempFmt = fluidTemp >= 250 ? ChatFormatting.RED
+                                   : fluidTemp >= 100 ? ChatFormatting.GOLD
+                                   : fluidTemp >   20 ? ChatFormatting.YELLOW
+                                   :                    ChatFormatting.GRAY;
+            tooltip.accept(Component.literal(fluidTemp + " °C").withStyle(tempFmt));
         }
     }
 }

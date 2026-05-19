@@ -7,7 +7,6 @@ package com.dev1lroot.mcmods.omnitech.gui.layout;
 import com.dev1lroot.mcmods.omnitech.OmniTech;
 import com.dev1lroot.mcmods.omnitech.util.GuiUtil;
 import com.dev1lroot.mcmods.omnitech.util.HudWriter;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -15,7 +14,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,10 +66,8 @@ public final class GuiLayoutRenderer {
             switch (el.type) {
                 case "fluid_tank" -> {
                     GuiUtil.renderFrame(graphics, x, y, el.w, el.h);
-                    GuiUtil.renderFluidBar(graphics,
-                            ctx.getFluid(el.source),
-                            ctx.getFluidAmount(el.source),
-                            ctx.getFluidCapacity(el.source),
+                    GuiUtil.renderFluidBar(graphics, ctx.getFluid(el.source),
+                            ctx.getFluidAmount(el.source), ctx.getFluidCapacity(el.source),
                             x, y, el.w, el.h);
                     if (mouseX >= x && mouseX < x + el.w && mouseY >= y && mouseY < y + el.h)
                         graphics.fill(x, y, x + el.w, y + el.h, 0x80FFFFFF);
@@ -138,18 +134,7 @@ public final class GuiLayoutRenderer {
             int        amount   = ctx.getFluidAmount(el.source);
             int        capacity = ctx.getFluidCapacity(el.source);
 
-            List<Component> lines = new ArrayList<>();
-            if (fluid.isEmpty() || amount <= 0) {
-                lines.add(Component.literal("Empty").withStyle(ChatFormatting.DARK_GRAY));
-                if (capacity > 0) {
-                    lines.add(Component.literal("0 / " + capacity + " mB")
-                            .withStyle(ChatFormatting.DARK_GRAY));
-                }
-            } else {
-                lines.add(fluid.getHoverName().copy());
-                lines.add(Component.literal(amount + " / " + capacity + " mB")
-                        .withStyle(ChatFormatting.GRAY));
-            }
+            List<Component> lines = GuiUtil.buildFluidTooltip(fluid, amount, capacity);
 
             graphics.setTooltipForNextFrame(font, lines, Optional.empty(), mouseX, mouseY);
             return true;

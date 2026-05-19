@@ -201,6 +201,17 @@ public class OmniTechDataComponents {
                             .networkSynchronized(ByteBufCodecs.INT)
                             .build());
 
+    /**
+     * Temperature (°C) of a fluid stack. Absent = ambient (20 °C).
+     * Set on FluidStacks extracted from heated containers (e.g. the reactor coolant tank).
+     */
+    public static final Supplier<DataComponentType<Integer>> FLUID_TEMPERATURE =
+            REGISTRY.register("fluid_temperature", () ->
+                    DataComponentType.<Integer>builder()
+                            .persistent(Codec.INT)
+                            .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
     public static void register(IEventBus bus) {
         REGISTRY.register(bus);
     }
