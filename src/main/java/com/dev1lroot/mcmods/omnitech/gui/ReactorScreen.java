@@ -6,10 +6,13 @@ package com.dev1lroot.mcmods.omnitech.gui;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorStructure;
 import com.dev1lroot.mcmods.omnitech.items.ReactorControlRodItem;
+import com.dev1lroot.mcmods.omnitech.network.ScramReactorPacket;
 import com.dev1lroot.mcmods.omnitech.network.SetControlRodPacket;
 import com.dev1lroot.mcmods.omnitech.util.GuiUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
@@ -34,6 +37,13 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
         this.titleLabelY     = menu.gridOffsetY - 11;
         this.inventoryLabelX = menu.invOffsetX;
         this.inventoryLabelY = menu.invOffsetY - 10;
+
+        addRenderableWidget(Button.builder(
+                Component.literal("SCRAM"),
+                btn -> ClientPacketDistributor.sendToServer(new ScramReactorPacket(menu.containerId)))
+                .bounds(leftPos + menu.scramBtnX, topPos + menu.scramBtnY,
+                        menu.scramBtnW, ReactorMenu.SCRAM_BTN_H)
+                .build());
     }
 
     @Override
@@ -43,18 +53,20 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
         // Panel background
         g.fill(leftPos, topPos, leftPos + imageWidth, topPos + imageHeight, 0xFFC6C6C6);
 
-        // Grid area border (1-px darker inset)
+        // Full fixed MAX_SIZE grid border
         int gx = leftPos + menu.gridOffsetX;
         int gy = topPos  + menu.gridOffsetY;
-        int gw = menu.structWidth * ReactorMenu.SLOT_SIZE;
-        int gh = menu.structDepth * ReactorMenu.SLOT_SIZE;
+        int gw = ReactorStructure.MAX_SIZE * ReactorMenu.SLOT_SIZE;
+        int gh = ReactorStructure.MAX_SIZE * ReactorMenu.SLOT_SIZE;
         g.fill(gx - 1, gy - 1, gx + gw + 1, gy + gh + 1, 0xFF999999);
         g.fill(gx,     gy,     gx + gw,     gy + gh,     0xFFC6C6C6);
 
-        // Cell slot backgrounds (only where ReactorCells exist)
+        // Cell slot backgrounds (centred within the max grid)
         for (int[] lp : menu.cellLocalPositions) {
-            int sx = leftPos + menu.gridOffsetX + lp[0] * ReactorMenu.SLOT_SIZE + 1;
-            int sy = topPos  + menu.gridOffsetY + lp[1] * ReactorMenu.SLOT_SIZE + 1;
+            int sx = leftPos + menu.gridOffsetX
+                    + (lp[0] + menu.cellDisplayOffsetX) * ReactorMenu.SLOT_SIZE + 1;
+            int sy = topPos  + menu.gridOffsetY
+                    + (lp[1] + menu.cellDisplayOffsetY) * ReactorMenu.SLOT_SIZE + 1;
             GuiUtil.renderSlot(g, sx, sy);
         }
 

@@ -4,12 +4,13 @@
  */
 package com.dev1lroot.mcmods.omnitech.client;
 
+import com.dev1lroot.mcmods.omnitech.OmniTech;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorCellBlockEntity;
 import com.dev1lroot.mcmods.omnitech.items.ReactorControlRodItem;
+import com.dev1lroot.mcmods.omnitech.items.ReactorFuelRodItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -19,30 +20,35 @@ import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
-import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.ARGB;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Renders the control-rod geometry for a single ReactorCell.
- * Because this renderer belongs to the cell block entity (not the master),
- * it draws whenever the cell block is loaded — formation state doesn't matter.
+ * Renders the rod geometry for a single ReactorCell.
+ * Control rods slide in from the top; fuel rods sit permanently at full insertion.
+ * Both use a 4×80×4 pixel rod (0.25×5×0.25 blocks) centred in the cell block.
  */
 public class ReactorCellBER implements BlockEntityRenderer<ReactorCellBlockEntity, ReactorCellBERRenderState> {
 
-    private static final float X0    = 0.0f;
-    private static final float X1    = 1.0f;
-    private static final float Z0    = 0.0f;
-    private static final float Z1    = 1.0f;
-    private static final float ROD_H = 5.0f;
+    // Rod is 4/16 = 0.25 blocks wide, centred in the 1-block XZ space
+    private static final float ROD_MIN = 0.375f;   // 0.5 - 0.125
+    private static final float ROD_MAX = 0.625f;   // 0.5 + 0.125
+    private static final float ROD_H   = 5.0f;     // 5 blocks tall
 
-    private static final int COLOR = ARGB.color(0xFF, 0x50, 0x58, 0x60);
+    // Texture layout: 16×128.  Cap occupies rows 0–3 (4×4), side rows 4–83 (4×80).
+    private static final float CAP_U0  = 0f,       CAP_V0  = 0f;
+    private static final float CAP_U1  = 4f / 16f, CAP_V1  = 4f / 128f;   // 0.25, 0.03125
+    private static final float SIDE_U0 = 0f,       SIDE_V0 = 4f / 128f;   // 0.0,  0.03125
+    private static final float SIDE_U1 = 4f / 16f, SIDE_V1 = 84f / 128f;  // 0.25, 0.65625
+
+    private static final Identifier TEXTURE_CONTROL =
+            Identifier.fromNamespaceAndPath(OmniTech.MODID, "textures/entity/reactor_control_rod.png");
+    private static final Identifier TEXTURE_FUEL =
+            Identifier.fromNamespaceAndPath(OmniTech.MODID, "textures/entity/reactor_fuel_rod.png");
 
     public ReactorCellBER(BlockEntityRendererProvider.Context ctx) {}
 
@@ -54,15 +60,21 @@ public class ReactorCellBER implements BlockEntityRenderer<ReactorCellBlockEntit
                                    float partialTicks, Vec3 cameraPos,
                                    @Nullable ModelFeatureRenderer.CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(entity, state, partialTicks, cameraPos, breakProgress);
-        state.controlInsertion = -1;
+        state.rodType = ReactorCellBERRenderState.RodType.NONE;
 
         ItemStack stack = entity.getItem(0);
-        if (!(stack.getItem() instanceof ReactorControlRodItem)) return;
 
-        Integer control = stack.get(OmniTechDataComponents.ROD_CONTROL.get());
-        if (control == null) return;
-
-        state.controlInsertion = control;
+        if (stack.getItem() instanceof ReactorControlRodItem) {
+            Integer control = stack.get(OmniTechDataComponents.ROD_CONTROL.get());
+            if (control == null) return;
+            state.rodType          = ReactorCellBERRenderState.RodType.CONTROL;
+            state.controlInsertion = control;
+        } else if (stack.getItem() instanceof ReactorFuelRodItem) {
+            state.rodType          = ReactorCellBERRenderState.RodType.FUEL;
+            state.controlInsertion = 100; // fuel rods always fully inserted
+        } else {
+            return;
+        }
 
         ClientLevel level = entity.getLevel() instanceof ClientLevel cl ? cl : null;
         BlockPos pos = entity.getBlockPos();
@@ -74,35 +86,39 @@ public class ReactorCellBER implements BlockEntityRenderer<ReactorCellBlockEntit
     @Override
     public void submit(ReactorCellBERRenderState state, PoseStack pose,
                        SubmitNodeCollector nodes, CameraRenderState camera) {
-        if (state.controlInsertion < 0) return;
+        if (state.rodType == ReactorCellBERRenderState.RodType.NONE) return;
 
-        TextureAtlasSprite sprite = Minecraft.getInstance()
-                .getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS)
-                .getSprite(Identifier.withDefaultNamespace("block/white_wool"));
-        float u0 = sprite.getU0(), u1 = sprite.getU1();
-        float v0 = sprite.getV0(), v1 = sprite.getV1();
+        Identifier texture = state.rodType == ReactorCellBERRenderState.RodType.FUEL
+                ? TEXTURE_FUEL : TEXTURE_CONTROL;
 
         float t       = state.controlInsertion / 100.0f;
         float yBottom = 1.0f - ROD_H * t;
         float yTop    = yBottom + ROD_H;
 
-        nodes.submitCustomGeometry(pose, RenderTypes.eyes(sprite.atlasLocation()),
+        nodes.submitCustomGeometry(pose, RenderTypes.entitySolid(texture),
                 (p, buf) -> box(p, buf,
-                        X0, yBottom, Z0, X1, yTop, Z1,
-                        u0, v0, u1, v1, COLOR, state.light));
+                        ROD_MIN, yBottom, ROD_MIN,
+                        ROD_MAX, yTop,    ROD_MAX,
+                        state.light));
     }
 
     private static void box(PoseStack.Pose pose, VertexConsumer buf,
                              float x0, float y0, float z0,
                              float x1, float y1, float z1,
-                             float u0, float v0, float u1, float v1,
-                             int color, int light) {
-        quad(pose, buf, x0,y1,z0, u0,v0, x0,y1,z1, u0,v1, x1,y1,z1, u1,v1, x1,y1,z0, u1,v0, color, light,  0, 1, 0);
-        quad(pose, buf, x1,y0,z0, u0,v0, x1,y0,z1, u0,v1, x0,y0,z1, u1,v1, x0,y0,z0, u1,v0, color, light,  0,-1, 0);
-        quad(pose, buf, x0,y1,z0, u0,v0, x1,y1,z0, u1,v0, x1,y0,z0, u1,v1, x0,y0,z0, u0,v1, color, light,  0, 0,-1);
-        quad(pose, buf, x1,y1,z1, u0,v0, x0,y1,z1, u1,v0, x0,y0,z1, u1,v1, x1,y0,z1, u0,v1, color, light,  0, 0, 1);
-        quad(pose, buf, x0,y1,z1, u0,v0, x0,y1,z0, u1,v0, x0,y0,z0, u1,v1, x0,y0,z1, u0,v1, color, light, -1, 0, 0);
-        quad(pose, buf, x1,y1,z0, u0,v0, x1,y1,z1, u1,v0, x1,y0,z1, u1,v1, x1,y0,z0, u0,v1, color, light,  1, 0, 0);
+                             int light) {
+        int color = 0xFFFFFFFF;
+        // +Y (top cap)   u→x, v→z  (4×4)
+        quad(pose, buf, x0,y1,z0, CAP_U0,CAP_V0, x0,y1,z1, CAP_U0,CAP_V1, x1,y1,z1, CAP_U1,CAP_V1, x1,y1,z0, CAP_U1,CAP_V0, color, light,  0, 1, 0);
+        // -Y (bottom cap) u→-x, v→z  (4×4 — mirrored but cap is symmetric)
+        quad(pose, buf, x1,y0,z0, CAP_U0,CAP_V0, x1,y0,z1, CAP_U0,CAP_V1, x0,y0,z1, CAP_U1,CAP_V1, x0,y0,z0, CAP_U1,CAP_V0, color, light,  0,-1, 0);
+        // -Z (north side) u→x, v→y top-to-bottom  (4×80)
+        quad(pose, buf, x0,y1,z0, SIDE_U0,SIDE_V0, x1,y1,z0, SIDE_U1,SIDE_V0, x1,y0,z0, SIDE_U1,SIDE_V1, x0,y0,z0, SIDE_U0,SIDE_V1, color, light,  0, 0,-1);
+        // +Z (south side) u→-x, v→y top-to-bottom  (4×80)
+        quad(pose, buf, x1,y1,z1, SIDE_U0,SIDE_V0, x0,y1,z1, SIDE_U1,SIDE_V0, x0,y0,z1, SIDE_U1,SIDE_V1, x1,y0,z1, SIDE_U0,SIDE_V1, color, light,  0, 0, 1);
+        // -X (west side)  u→-z, v→y top-to-bottom  (4×80)
+        quad(pose, buf, x0,y1,z1, SIDE_U0,SIDE_V0, x0,y1,z0, SIDE_U1,SIDE_V0, x0,y0,z0, SIDE_U1,SIDE_V1, x0,y0,z1, SIDE_U0,SIDE_V1, color, light, -1, 0, 0);
+        // +X (east side)  u→z, v→y top-to-bottom   (4×80)
+        quad(pose, buf, x1,y1,z0, SIDE_U0,SIDE_V0, x1,y1,z1, SIDE_U1,SIDE_V0, x1,y0,z1, SIDE_U1,SIDE_V1, x1,y0,z0, SIDE_U0,SIDE_V1, color, light,  1, 0, 0);
     }
 
     private static void quad(PoseStack.Pose pose, VertexConsumer buf,

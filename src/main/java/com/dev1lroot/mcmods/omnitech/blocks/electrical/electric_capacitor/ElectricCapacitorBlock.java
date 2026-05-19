@@ -38,7 +38,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ElectricCapacitorBlock extends BaseEntityBlock {
     public static final MapCodec<ElectricCapacitorBlock> CODEC = simpleCodec(ElectricCapacitorBlock::new);
-    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
     public ElectricCapacitorBlock(Properties properties) {
@@ -74,7 +74,7 @@ public class ElectricCapacitorBlock extends BaseEntityBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return defaultBlockState().setValue(FACING, context.getNearestLookingDirection().getOpposite());
     }
 
     @Override

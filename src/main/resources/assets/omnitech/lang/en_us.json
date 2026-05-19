@@ -793,5 +793,9 @@
   "block.omnitech.reactor_block.invalid": "Invalid reactor structure.",
   "item.omnitech.reactor_fuel_rod":         "Reactor Fuel Rod",
   "item.omnitech.reactor_control_rod":      "Reactor Control Rod",
-  "item.omnitech.reactor_neutron_reflector": "Reactor Neutron Reflector",\n  "effect.omnitech.radiation": "Radiation"
+  "item.omnitech.reactor_neutron_reflector": "Reactor Neutron Reflector",
+  "effect.omnitech.radiation": "Radiation",
+
+  "entity.omnitech.penguin":   "Penguin",
+  "item.omnitech.penguin_egg": "Penguin Egg"
 }

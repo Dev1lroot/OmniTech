@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.entities.AbyssalEelEntity;
 import com.dev1lroot.mcmods.omnitech.entities.CokeOvenEntity;
+import com.dev1lroot.mcmods.omnitech.entities.PenguinEntity;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -44,6 +45,15 @@ public class OmniTechEntities {
                             .build(ResourceKey.create(Registries.ENTITY_TYPE,
                                     Identifier.fromNamespaceAndPath(OmniTech.MODID, "coke_oven"))));
 
+    /** Friendly flocking animal — spawns on ice in cold biomes, hunts fish with swim timer. */
+    public static final Supplier<EntityType<PenguinEntity>> PENGUIN =
+            REGISTRY.register("penguin",
+                    () -> EntityType.Builder.<PenguinEntity>of(PenguinEntity::new, MobCategory.CREATURE)
+                            .sized(0.5f, 0.9f)
+                            .clientTrackingRange(10)
+                            .build(ResourceKey.create(Registries.ENTITY_TYPE,
+                                    Identifier.fromNamespaceAndPath(OmniTech.MODID, "penguin"))));
+
     /** Europa's deep-sea predator — hostile fish, 2× salmon size, below Y = 40 only. */
     public static final Supplier<EntityType<AbyssalEelEntity>> ABYSSAL_EEL =
             REGISTRY.register("abyssal_eel",
@@ -55,6 +65,13 @@ public class OmniTechEntities {
                                     Identifier.fromNamespaceAndPath(OmniTech.MODID, "abyssal_eel"))));
 
     public static void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
+        event.register(
+                PENGUIN.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                PenguinEntity::checkSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
         event.register(
                 ABYSSAL_EEL.get(),
                 SpawnPlacementTypes.IN_WATER,

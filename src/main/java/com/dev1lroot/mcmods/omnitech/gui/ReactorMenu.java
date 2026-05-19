@@ -30,20 +30,25 @@ import java.util.List;
 
 public class ReactorMenu extends AbstractContainerMenu {
 
-    public static final int  SLOT_SIZE  = 18;
-    public static final int  PAD        = 7;
-    public static final int  TANK_BAR_W = 12;
-    public static final int  HEAT_BAR_W = 12;
+    public static final int  SLOT_SIZE   = 18;
+    public static final int  PAD         = 7;
+    public static final int  TANK_BAR_W  = 12;
+    public static final int  HEAT_BAR_W  = 12;
+    public static final int  SCRAM_BTN_H = 20;
     private static final int TANK_MARGIN = 6;
-    private static final int BAR_GAP    = 4;
-    private static final int INV_W      = 9 * SLOT_SIZE;            // 162
-    private static final int INV_H      = 3 * SLOT_SIZE + 4 + SLOT_SIZE; // 76
+    private static final int BAR_GAP     = 4;
+    private static final int INV_W       = 9 * SLOT_SIZE;                 // 162
+    private static final int INV_H       = 3 * SLOT_SIZE + 4 + SLOT_SIZE; // 76
 
     public final int structWidth;
     public final int structDepth;
 
     /** [localX, localZ] pairs, same order as cell slots (sorted Z then X). */
     public final List<int[]> cellLocalPositions;
+
+    /** Offset to centre a sub-max reactor inside the fixed MAX_SIZE grid display. */
+    public final int cellDisplayOffsetX;
+    public final int cellDisplayOffsetY;
 
     public final int imageWidth;
     public final int imageHeight;
@@ -61,6 +66,11 @@ public class ReactorMenu extends AbstractContainerMenu {
     public final int heatBarX;
     public final int heatBarY;
     public final int heatBarH;
+
+    /** Position and size of the SCRAM button (height = SCRAM_BTN_H). */
+    public final int scramBtnX;
+    public final int scramBtnY;
+    public final int scramBtnW;
 
     @Nullable public final ReactorBlockEntity reactorBE;
     private final ContainerData fluidData;
@@ -87,8 +97,10 @@ public class ReactorMenu extends AbstractContainerMenu {
             });
         }
         this.cellSlotCount = cellLocalPositions.size();
+        this.cellDisplayOffsetX = (ReactorStructure.MAX_SIZE - structWidth)  / 2;
+        this.cellDisplayOffsetY = (ReactorStructure.MAX_SIZE - structDepth) / 2;
 
-        int[] layout = layout(structWidth, structDepth);
+        int[] layout = layout();
         imageWidth  = layout[0]; imageHeight  = layout[1];
         gridOffsetX = layout[2]; gridOffsetY  = layout[3];
         invOffsetX  = layout[4]; invOffsetY   = layout[5];
@@ -96,6 +108,7 @@ public class ReactorMenu extends AbstractContainerMenu {
         heatBarX    = tankBarX + TANK_BAR_W + BAR_GAP;
         heatBarY    = tankBarY;
         heatBarH    = tankBarH;
+        scramBtnX   = layout[9]; scramBtnY   = layout[10]; scramBtnW = layout[11];
 
         // Sync coolant amount, capacity, and core temperature (avoid 16-bit overflow for fluid)
         final ReactorBlockEntity theBe = be;
@@ -121,8 +134,8 @@ public class ReactorMenu extends AbstractContainerMenu {
                     serverLevel.getBlockEntity(cellPos) instanceof ReactorCellBlockEntity cbe
                     ? cbe : new net.minecraft.world.SimpleContainer(1);
             addSlot(new ReactorCellSlot(cellContainer, 0,
-                    gridOffsetX + lp[0] * SLOT_SIZE + 1,
-                    gridOffsetY + lp[1] * SLOT_SIZE + 1,
+                    gridOffsetX + (lp[0] + cellDisplayOffsetX) * SLOT_SIZE + 1,
+                    gridOffsetY + (lp[1] + cellDisplayOffsetY) * SLOT_SIZE + 1,
                     serverLevel, cellPos));
         }
         addPlayerSlots(playerInventory, invOffsetX, invOffsetY);
@@ -147,8 +160,10 @@ public class ReactorMenu extends AbstractContainerMenu {
             cellLocalPositions.add(new int[]{buf.readVarInt(), buf.readVarInt()});
         }
         this.cellSlotCount = cellCount;
+        this.cellDisplayOffsetX = (ReactorStructure.MAX_SIZE - structWidth)  / 2;
+        this.cellDisplayOffsetY = (ReactorStructure.MAX_SIZE - structDepth) / 2;
 
-        int[] layout = layout(structWidth, structDepth);
+        int[] layout = layout();
         imageWidth  = layout[0]; imageHeight  = layout[1];
         gridOffsetX = layout[2]; gridOffsetY  = layout[3];
         invOffsetX  = layout[4]; invOffsetY   = layout[5];
@@ -156,6 +171,7 @@ public class ReactorMenu extends AbstractContainerMenu {
         heatBarX    = tankBarX + TANK_BAR_W + BAR_GAP;
         heatBarY    = tankBarY;
         heatBarH    = tankBarH;
+        scramBtnX   = layout[9]; scramBtnY   = layout[10]; scramBtnW = layout[11];
 
         this.fluidData = new SimpleContainerData(3);
         addDataSlots(fluidData);
@@ -164,8 +180,8 @@ public class ReactorMenu extends AbstractContainerMenu {
         for (int i = 0; i < cellCount; i++) {
             int[] lp = cellLocalPositions.get(i);
             addSlot(new Slot(container, i,
-                    gridOffsetX + lp[0] * SLOT_SIZE + 1,
-                    gridOffsetY + lp[1] * SLOT_SIZE + 1));
+                    gridOffsetX + (lp[0] + cellDisplayOffsetX) * SLOT_SIZE + 1,
+                    gridOffsetY + (lp[1] + cellDisplayOffsetY) * SLOT_SIZE + 1));
         }
         addPlayerSlots(playerInventory, invOffsetX, invOffsetY);
     }
@@ -186,19 +202,23 @@ public class ReactorMenu extends AbstractContainerMenu {
 
     // ── Layout ───────────────────────────────────────────────────────────────
 
-    // returns [imgW, imgH, gox, goy, iox, ioy, tankX, tankY, tankH]
-    private static int[] layout(int w, int d) {
-        int gridW  = w * SLOT_SIZE;
-        int gridH  = d * SLOT_SIZE;
-        int mainW  = Math.max(gridW, INV_W);
-        int imgW   = 2 * PAD + mainW + TANK_MARGIN + TANK_BAR_W + BAR_GAP + HEAT_BAR_W;
-        int imgH   = PAD + gridH + 6 + INV_H + PAD;
+    // returns [imgW, imgH, gox, goy, iox, ioy, tankX, tankY, tankH, scramX, scramY, scramW]
+    // Layout is fixed to MAX_SIZE grid; smaller reactors are centred within it.
+    private static int[] layout() {
+        int gridW  = ReactorStructure.MAX_SIZE * SLOT_SIZE; // 11*18 = 198
+        int gridH  = ReactorStructure.MAX_SIZE * SLOT_SIZE; // 198
+        int mainW  = Math.max(gridW, INV_W);                // 198
+        int imgW   = 2 * PAD + mainW + TANK_MARGIN + TANK_BAR_W + BAR_GAP + HEAT_BAR_W; // 246
+        int imgH   = PAD + gridH + 6 + INV_H + PAD;        // 294
         int gox    = PAD + (mainW - gridW) / 2;
         int iox    = PAD + (mainW - INV_W) / 2;
         int ioy    = PAD + gridH + 6;
         int tankX  = PAD + mainW + TANK_MARGIN;
-        int tankH  = imgH - 2 * PAD;
-        return new int[]{imgW, imgH, gox, PAD, iox, ioy, tankX, PAD, tankH};
+        // Reserve SCRAM_BTN_H + BAR_GAP at the bottom of the right column for the button
+        int scramY = imgH - PAD - SCRAM_BTN_H;
+        int tankH  = scramY - PAD - BAR_GAP;
+        int scramW = TANK_BAR_W + BAR_GAP + HEAT_BAR_W;
+        return new int[]{imgW, imgH, gox, PAD, iox, ioy, tankX, PAD, tankH, tankX, scramY, scramW};
     }
 
     // ── Slot helpers ──────────────────────────────────────────────────────────

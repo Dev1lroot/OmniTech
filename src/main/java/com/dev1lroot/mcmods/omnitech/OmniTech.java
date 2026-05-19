@@ -86,12 +86,14 @@ import com.dev1lroot.mcmods.omnitech.network.KeyboardModePacket;
 import com.dev1lroot.mcmods.omnitech.network.KeyboardReleasePacket;
 import com.dev1lroot.mcmods.omnitech.network.MinesweeperResultPacket;
 import com.dev1lroot.mcmods.omnitech.network.SpeakerTonePacket;
+import com.dev1lroot.mcmods.omnitech.network.ScramReactorPacket;
 import com.dev1lroot.mcmods.omnitech.network.SetControlRodPacket;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.keyboard.KeyboardBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.RadioManager;
 import com.dev1lroot.mcmods.omnitech.items.RadioLocatorItem;
 import com.dev1lroot.mcmods.omnitech.entities.AbyssalEelEntity;
+import com.dev1lroot.mcmods.omnitech.entities.PenguinEntity;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechCarvers;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechFeatures;
@@ -521,6 +523,10 @@ public class OmniTech {
                 SetControlRodPacket.TYPE,
                 SetControlRodPacket.CODEC,
                 SetControlRodPacket::handle);
+        event.registrar("1").playToServer(
+                ScramReactorPacket.TYPE,
+                ScramReactorPacket.CODEC,
+                ScramReactorPacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -545,6 +551,7 @@ public class OmniTech {
      * completion for all dimensions registered on the server.
      */
     public static void registerAttributes(EntityAttributeCreationEvent event) {
+        event.put(OmniTechEntities.PENGUIN.get(),     PenguinEntity.createAttributes().build());
         event.put(OmniTechEntities.ABYSSAL_EEL.get(), AbyssalEelEntity.createAttributes().build());
     }
 

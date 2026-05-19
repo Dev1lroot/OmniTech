@@ -11,12 +11,14 @@ import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlockEnt
 import com.dev1lroot.mcmods.omnitech.network.MicrophoneAudioPacket;
 import com.dev1lroot.mcmods.omnitech.network.VoiceChatSendPacket;
 import com.dev1lroot.mcmods.omnitech.entities.AbyssalEelRenderer;
+import com.dev1lroot.mcmods.omnitech.entities.PenguinRenderer;
 import net.minecraft.core.BlockPos;
 import java.util.ArrayList;
 import java.util.List;
 import com.dev1lroot.mcmods.omnitech.entities.CokeOvenEntityRenderer;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntity;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntityRenderer;
+import com.dev1lroot.mcmods.omnitech.models.PenguinModel;
 import com.dev1lroot.mcmods.omnitech.models.RocketModel;
 import com.dev1lroot.mcmods.omnitech.gui.SpaceNavigationScreen;
 import com.dev1lroot.mcmods.omnitech.gui.guidebook.GuidebookLoader;
@@ -115,12 +117,14 @@ public class OmniTechClient
         event.registerBlockEntityRenderer(OmniTechBlockEntities.DISPLAY_MK2.get(), DisplayBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.DISPLAY_MK3.get(), DisplayBlockEntityRenderer::new);
         event.registerEntityRenderer(OmniTechEntities.ROCKET.get(), RocketEntityRenderer::new);
+        event.registerEntityRenderer(OmniTechEntities.PENGUIN.get(), PenguinRenderer::new);
         event.registerEntityRenderer(OmniTechEntities.ABYSSAL_EEL.get(), AbyssalEelRenderer::new);
         event.registerEntityRenderer(OmniTechEntities.COKE_OVEN.get(), CokeOvenEntityRenderer::new);
     }
 
     void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(RocketModel.LAYER_LOCATION, RocketModel::createBodyLayer);
+        event.registerLayerDefinition(PenguinModel.LAYER_LOCATION, PenguinModel::createBodyLayer);
     }
 
     void registerCustomEnvironmentRenderers(RegisterCustomEnvironmentEffectRendererEvent event) {

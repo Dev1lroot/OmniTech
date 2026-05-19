@@ -32,6 +32,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorType;
@@ -46,6 +47,14 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class OmniTechItems
 {
     public static final DeferredRegister.Items REGISTRY = DeferredRegister.createItems(OmniTech.MODID);
+
+    // ── Spawn eggs ────────────────────────────────────────────────────────────
+
+    /** Spawn egg for {@link com.dev1lroot.mcmods.omnitech.entities.PenguinEntity}. */
+    public static final DeferredItem<SpawnEggItem> PENGUIN_EGG =
+            REGISTRY.registerItem("penguin_egg",
+                    SpawnEggItem::new,
+                    props -> props.spawnEgg(OmniTechEntities.PENGUIN.get()));
 
     // Europa terrain block items
     public static final DeferredItem<BlockItem> EUROPA_STONE_ITEM = REGISTRY.registerSimpleBlockItem(
