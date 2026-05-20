@@ -1,5 +1,9 @@
 {
-  "density":     -1000,
-  "viscosity":      10,
-  "temperature":   373
+  "density": -1000,
+  "viscosity": 10,
+  "temperature": 373,
+  "min_temp": 100,
+  "max_temp": 10000,
+  "min_pressure": 1,
+  "max_pressure": 200000
 }

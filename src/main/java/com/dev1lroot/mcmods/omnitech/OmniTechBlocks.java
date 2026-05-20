@@ -12,6 +12,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_engine.ElectricE
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_relay.PowerRelayBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticGeneratorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticPipeBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticReductorAxisBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticReductorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.ElectrolysisMachineBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.FractionalDistillerBlock;
@@ -112,6 +113,8 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> KF_GENERATOR;
     public static final DeferredBlock<Block> KF_PIPE;
     public static final DeferredBlock<Block> KF_REDUCTOR;
+    /** Ghost block — holds the {@code kf_reductor_axis} blockstate for BER spinning axis rendering. */
+    public static final DeferredBlock<Block> KF_REDUCTOR_AXIS;
 
     public static final DeferredBlock<Block> HEATER;
     public static final DeferredBlock<Block> STIRLING_ENGINE;
@@ -210,7 +213,15 @@ public class OmniTechBlocks {
                 p -> new KineticReductorBlock(p
                         .mapColor(MapColor.METAL)
                         .strength(3.5F)
+                        .noOcclusion()
                         .sound(SoundType.METAL)));
+        KF_REDUCTOR_AXIS = register("kf_reductor_axis",
+                p -> new KineticReductorAxisBlock(p
+                        .mapColor(MapColor.METAL)
+                        .strength(3.5F)
+                        .sound(SoundType.METAL)
+                        .noOcclusion()
+                        .noLootTable()));
 
         HEATER = register("heater",
                 p -> new HeaterBlock(p.mapColor(MapColor.STONE).strength(3.5F).sound(SoundType.STONE)));

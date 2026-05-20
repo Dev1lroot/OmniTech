@@ -5,8 +5,10 @@
 package com.dev1lroot.mcmods.omnitech.blocks.labware.extractor;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.gui.ExtractorMenu;
 import com.dev1lroot.mcmods.omnitech.io.IKineticReceiver;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.recipes.ExtractorRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.ExtractorRecipeManager;
 import net.minecraft.core.BlockPos;
@@ -181,7 +183,7 @@ public class ExtractorBlockEntity extends BaseContainerBlockEntity
         if (!be.outputFluid.isEmpty()) {
             var nb = level.getCapability(Capabilities.Fluid.BLOCK,
                     pos.relative(facing), facing.getOpposite());
-            if (nb != null) dirty |= tryPushFluid(be.outputFluidHandler, nb);
+            if (nb != null) dirty |= FluidNetworkUtil.tryPushFluid(be.outputFluidHandler, nb);
         }
 
         if (dirty) {
@@ -226,7 +228,12 @@ public class ExtractorBlockEntity extends BaseContainerBlockEntity
             if (outputFluid.isEmpty()) {
                 outputFluid = outFluid.copy();
             } else {
-                outputFluid.grow(outFluid.getAmount());
+                int existAmt = outputFluid.getAmount();
+                int newAmt   = outFluid.getAmount();
+                int mixTemp  = (fluidTemp(outputFluid) * existAmt + fluidTemp(outFluid) * newAmt) / (existAmt + newAmt);
+                int mixPres  = (fluidPressure(outputFluid) * existAmt + fluidPressure(outFluid) * newAmt) / (existAmt + newAmt);
+                outputFluid.grow(newAmt);
+                applyAttributes(outputFluid, mixTemp, mixPres);
             }
         }
 
@@ -245,22 +252,6 @@ public class ExtractorBlockEntity extends BaseContainerBlockEntity
         setChanged();
     }
 
-    private static boolean tryPushFluid(ResourceHandler<FluidResource> from,
-            ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            FluidResource res = from.getResource(0);
-            if (res.isEmpty()) return false;
-            int avail    = Math.min(1000, (int) from.getAmountAsLong(0));
-            int accepted = to.insert(res, avail, tx);
-            if (accepted > 0) {
-                from.extract(res, accepted, tx);
-                tx.commit();
-                return true;
-            }
-        }
-        return false;
-    }
-
     // ── Fluid accessor ────────────────────────────────────────────────────────
 
     public FluidStack getOutputFluid() { return outputFluid; }
@@ -273,6 +264,27 @@ public class ExtractorBlockEntity extends BaseContainerBlockEntity
     @Override public boolean canPlaceItem(int index, ItemStack stack) { return index == SLOT_INPUT; }
     @Override public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction dir) { return index == SLOT_INPUT; }
     @Override public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction dir) { return index == SLOT_RESIDUE; }
+
+    // ── Fluid attribute helpers ───────────────────────────────────────────────
+
+    private static int fluidTemp(FluidStack fs) {
+        if (fs.isEmpty()) return 20;
+        Integer t = fs.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        return t != null ? t : 20;
+    }
+
+    private static int fluidPressure(FluidStack fs) {
+        if (fs.isEmpty()) return 101;
+        Integer p = fs.get(OmniTechDataComponents.FLUID_PRESSURE.get());
+        return p != null ? p : 101;
+    }
+
+    private static void applyAttributes(FluidStack fs, int temp, int pressure) {
+        if (temp != 20) fs.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), temp);
+        else            fs.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        if (pressure != 101) fs.set(OmniTechDataComponents.FLUID_PRESSURE.get(), pressure);
+        else                 fs.remove(OmniTechDataComponents.FLUID_PRESSURE.get());
+    }
 
     // ── Persistence ───────────────────────────────────────────────────────────
 

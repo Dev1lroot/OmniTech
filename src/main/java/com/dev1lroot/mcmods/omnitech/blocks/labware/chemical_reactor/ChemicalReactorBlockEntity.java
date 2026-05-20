@@ -5,6 +5,8 @@
 package com.dev1lroot.mcmods.omnitech.blocks.labware.chemical_reactor;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
 import com.dev1lroot.mcmods.omnitech.gui.ChemicalReactorMenu;
 import com.dev1lroot.mcmods.omnitech.recipes.ChemicalReactorRecipe;
@@ -221,7 +223,7 @@ public class ChemicalReactorBlockEntity extends BaseContainerBlockEntity
                     || be.inputFluid2.getAmount() < INPUT_TANK_CAPACITY) {
                 var src = level.getCapability(Capabilities.Fluid.BLOCK,
                         pos.relative(face), face.getOpposite());
-                if (src != null) dirty |= tryPullFluid(src, be.anyInputHandler);
+                if (src != null) dirty |= FluidNetworkUtil.tryPullFluid(src, be.anyInputHandler);
             }
         }
 
@@ -284,7 +286,7 @@ public class ChemicalReactorBlockEntity extends BaseContainerBlockEntity
             Direction back = facing.getOpposite();
             var nb = level.getCapability(Capabilities.Fluid.BLOCK,
                     pos.relative(back), back.getOpposite());
-            if (nb != null) dirty |= tryPushFluid(be.outputFluidHandler, nb);
+            if (nb != null) dirty |= FluidNetworkUtil.tryPushFluid(be.outputFluidHandler, nb);
         }
 
         if (dirty) {
@@ -329,8 +331,16 @@ public class ChemicalReactorBlockEntity extends BaseContainerBlockEntity
         // Add output
         FluidStack out = currentRecipe.getOutput();
         if (!out.isEmpty()) {
-            if (outputFluid.isEmpty()) outputFluid = out.copy();
-            else outputFluid.grow(out.getAmount());
+            if (outputFluid.isEmpty()) {
+                outputFluid = out.copy();
+            } else {
+                int existAmt = outputFluid.getAmount();
+                int newAmt   = out.getAmount();
+                int mixTemp  = (fluidTemp(outputFluid) * existAmt + fluidTemp(out) * newAmt) / (existAmt + newAmt);
+                int mixPres  = (fluidPressure(outputFluid) * existAmt + fluidPressure(out) * newAmt) / (existAmt + newAmt);
+                outputFluid.grow(newAmt);
+                applyAttributes(outputFluid, mixTemp, mixPres);
+            }
         }
 
         // Damage catalyst
@@ -359,43 +369,6 @@ public class ChemicalReactorBlockEntity extends BaseContainerBlockEntity
         else stack.setDamageValue(newDmg);
     }
 
-    // ── Fluid transfer utilities ──────────────────────────────────────────────
-
-    private static boolean tryPullFluid(ResourceHandler<FluidResource> from,
-            ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            for (int i = 0; i < from.size(); i++) {
-                FluidResource res = from.getResource(i);
-                if (!res.isEmpty()) {
-                    int avail    = Math.min(1000, (int) from.getAmountAsLong(i));
-                    int accepted = to.insert(res, avail, tx);
-                    if (accepted > 0) {
-                        from.extract(res, accepted, tx);
-                        tx.commit();
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private static boolean tryPushFluid(ResourceHandler<FluidResource> from,
-            ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            FluidResource res = from.getResource(0);
-            if (res.isEmpty()) return false;
-            int avail    = Math.min(1000, (int) from.getAmountAsLong(0));
-            int accepted = to.insert(res, avail, tx);
-            if (accepted > 0) {
-                from.extract(res, accepted, tx);
-                tx.commit();
-                return true;
-            }
-        }
-        return false;
-    }
-
     // ── Fluid accessors (for GUI) ─────────────────────────────────────────────
 
     public FluidStack getInputFluid1()  { return inputFluid1;  }
@@ -411,6 +384,27 @@ public class ChemicalReactorBlockEntity extends BaseContainerBlockEntity
     @Override public boolean canPlaceItem(int index, ItemStack stack) { return index == SLOT_CATALYST; }
     @Override public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction dir) { return index == SLOT_CATALYST; }
     @Override public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction dir) { return false; }
+
+    // ── Fluid attribute helpers ───────────────────────────────────────────────
+
+    private static int fluidTemp(FluidStack fs) {
+        if (fs.isEmpty()) return 20;
+        Integer t = fs.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        return t != null ? t : 20;
+    }
+
+    private static int fluidPressure(FluidStack fs) {
+        if (fs.isEmpty()) return 101;
+        Integer p = fs.get(OmniTechDataComponents.FLUID_PRESSURE.get());
+        return p != null ? p : 101;
+    }
+
+    private static void applyAttributes(FluidStack fs, int temp, int pressure) {
+        if (temp != 20) fs.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), temp);
+        else            fs.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        if (pressure != 101) fs.set(OmniTechDataComponents.FLUID_PRESSURE.get(), pressure);
+        else                 fs.remove(OmniTechDataComponents.FLUID_PRESSURE.get());
+    }
 
     // ── Persistence ───────────────────────────────────────────────────────────
 
@@ -453,13 +447,11 @@ public class ChemicalReactorBlockEntity extends BaseContainerBlockEntity
         @Override public long getCapacityAsLong(int i, FluidResource r){ return INPUT_TANK_CAPACITY; }
         @Override public boolean isValid(int i, FluidResource r)      { return true; }
         @Override public int insert(int i, FluidResource res, int amt, TransactionContext tx) {
-            if (res.isEmpty() || (!inputFluid1.isEmpty() && !res.matches(inputFluid1))) return 0;
+            if (res.isEmpty() || (!inputFluid1.isEmpty() && !FluidStack.isSameFluid(inputFluid1, res.toStack(1)))) return 0;
             int toFill = Math.min(amt, INPUT_TANK_CAPACITY - inputFluid1.getAmount());
             if (toFill <= 0) return 0;
             updateSnapshots(tx);
-            inputFluid1 = inputFluid1.isEmpty()
-                    ? res.toStack(toFill)
-                    : inputFluid1.copyWithAmount(inputFluid1.getAmount() + toFill);
+            inputFluid1 = FluidNetworkUtil.blendInto(inputFluid1, res, toFill);
             return toFill;
         }
         @Override public int extract(int i, FluidResource res, int amt, TransactionContext tx) { return 0; }
@@ -475,13 +467,11 @@ public class ChemicalReactorBlockEntity extends BaseContainerBlockEntity
         @Override public long getCapacityAsLong(int i, FluidResource r){ return INPUT_TANK_CAPACITY; }
         @Override public boolean isValid(int i, FluidResource r)      { return true; }
         @Override public int insert(int i, FluidResource res, int amt, TransactionContext tx) {
-            if (res.isEmpty() || (!inputFluid2.isEmpty() && !res.matches(inputFluid2))) return 0;
+            if (res.isEmpty() || (!inputFluid2.isEmpty() && !FluidStack.isSameFluid(inputFluid2, res.toStack(1)))) return 0;
             int toFill = Math.min(amt, INPUT_TANK_CAPACITY - inputFluid2.getAmount());
             if (toFill <= 0) return 0;
             updateSnapshots(tx);
-            inputFluid2 = inputFluid2.isEmpty()
-                    ? res.toStack(toFill)
-                    : inputFluid2.copyWithAmount(inputFluid2.getAmount() + toFill);
+            inputFluid2 = FluidNetworkUtil.blendInto(inputFluid2, res, toFill);
             return toFill;
         }
         @Override public int extract(int i, FluidResource res, int amt, TransactionContext tx) { return 0; }

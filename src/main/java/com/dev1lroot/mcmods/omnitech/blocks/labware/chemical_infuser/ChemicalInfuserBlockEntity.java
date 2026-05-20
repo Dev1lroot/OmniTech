@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.labware.chemical_infuser;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.gui.ChemicalInfuserMenu;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.io.IColdReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IKineticReceiver;
@@ -186,7 +187,7 @@ public class ChemicalInfuserBlockEntity extends BaseContainerBlockEntity
         if (be.inputFluid.getAmount() < INPUT_TANK_CAPACITY) {
             var src = level.getCapability(Capabilities.Fluid.BLOCK,
                     pos.relative(facing), facing.getOpposite());
-            if (src != null) dirty |= tryPullFluid(src, be.inputFluidHandler);
+            if (src != null) dirty |= FluidNetworkUtil.tryPullFluid(src, be.inputFluidHandler);
         }
 
         // 2. Recipe matching
@@ -275,25 +276,6 @@ public class ChemicalInfuserBlockEntity extends BaseContainerBlockEntity
         setChanged();
     }
 
-    private static boolean tryPullFluid(ResourceHandler<FluidResource> from,
-            ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            for (int i = 0; i < from.size(); i++) {
-                FluidResource res = from.getResource(i);
-                if (!res.isEmpty()) {
-                    int avail    = Math.min(1000, (int) from.getAmountAsLong(i));
-                    int accepted = to.insert(res, avail, tx);
-                    if (accepted > 0) {
-                        from.extract(res, accepted, tx);
-                        tx.commit();
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
     // ── Fluid accessors ───────────────────────────────────────────────────────
 
     public FluidStack getInputFluid() { return inputFluid; }
@@ -349,13 +331,11 @@ public class ChemicalInfuserBlockEntity extends BaseContainerBlockEntity
         @Override public long getCapacityAsLong(int i, FluidResource r){ return INPUT_TANK_CAPACITY; }
         @Override public boolean isValid(int i, FluidResource r)      { return true; }
         @Override public int insert(int i, FluidResource res, int amt, TransactionContext tx) {
-            if (res.isEmpty() || (!inputFluid.isEmpty() && !res.matches(inputFluid))) return 0;
+            if (res.isEmpty() || (!inputFluid.isEmpty() && !FluidStack.isSameFluid(inputFluid, res.toStack(1)))) return 0;
             int toFill = Math.min(amt, INPUT_TANK_CAPACITY - inputFluid.getAmount());
             if (toFill <= 0) return 0;
             updateSnapshots(tx);
-            inputFluid = inputFluid.isEmpty()
-                    ? res.toStack(toFill)
-                    : inputFluid.copyWithAmount(inputFluid.getAmount() + toFill);
+            inputFluid = FluidNetworkUtil.blendInto(inputFluid, res, toFill);
             return toFill;
         }
         @Override public int extract(int i, FluidResource res, int amt, TransactionContext tx) { return 0; }

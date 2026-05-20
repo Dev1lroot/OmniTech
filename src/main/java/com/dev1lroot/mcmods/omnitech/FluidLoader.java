@@ -56,6 +56,11 @@ public class FluidLoader {
                 int temperature = json.has("temperature") ? json.get("temperature").getAsInt() : 300;
                 int lightLevel  = json.has("light_level") ? json.get("light_level").getAsInt() : 0;
 
+                int minTemp     = json.has("min_temp")     ? json.get("min_temp").getAsInt()     : -273;
+                int maxTemp     = json.has("max_temp")     ? json.get("max_temp").getAsInt()     : 10_000;
+                int minPressure = json.has("min_pressure") ? json.get("min_pressure").getAsInt() : 0;
+                int maxPressure = json.has("max_pressure") ? json.get("max_pressure").getAsInt() : 100_000;
+
                 FluidType.Properties props = FluidType.Properties.create()
                         .density(density)
                         .viscosity(viscosity)
@@ -63,8 +68,10 @@ public class FluidLoader {
                         .lightLevel(lightLevel);
 
                 OmniTechFluids.registerFluid(name, props);
-                OmniTech.LOGGER.debug("[FluidLoader] Registered: {} (density={}, viscosity={}, temp={}K)",
-                        name, density, viscosity, temperature);
+                FluidPhysicsRegistry.register(name,
+                        new FluidPhysicsRegistry.FluidPhysics(minTemp, maxTemp, minPressure, maxPressure));
+                OmniTech.LOGGER.debug("[FluidLoader] Registered: {} (density={}, viscosity={}, temp={}K, T=[{},{}] P=[{},{}])",
+                        name, density, viscosity, temperature, minTemp, maxTemp, minPressure, maxPressure);
 
             } catch (Exception e) {
                 OmniTech.LOGGER.error("[FluidLoader] Failed to parse fluid '{}': {}", name, e.getMessage());

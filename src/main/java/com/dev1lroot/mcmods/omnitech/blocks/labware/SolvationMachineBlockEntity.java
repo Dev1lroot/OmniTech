@@ -5,6 +5,8 @@
 package com.dev1lroot.mcmods.omnitech.blocks.labware;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.gui.SolvationMachineMenu;
 import com.dev1lroot.mcmods.omnitech.io.IKineticReceiver;
 import com.dev1lroot.mcmods.omnitech.recipes.SolvationRecipe;
@@ -136,7 +138,7 @@ public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
         if (be.inputFluid.getAmount() < INPUT_TANK_CAPACITY) {
             var inputSource = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(facing), facing.getOpposite());
             if (inputSource != null) {
-                changed |= tryPullFluid(inputSource, be.inputFluidHandler);
+                changed |= FluidNetworkUtil.tryPullFluid(inputSource, be.inputFluidHandler);
             }
         }
 
@@ -173,7 +175,7 @@ public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
             Direction back = facing.getOpposite();
             var neighbor = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(back), back.getOpposite());
             if (neighbor != null) {
-                changed |= tryPushFluid(be.outputFluidHandler, neighbor);
+                changed |= FluidNetworkUtil.tryPushFluid(be.outputFluidHandler, neighbor);
             }
         }
 
@@ -211,7 +213,12 @@ public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
             if (outputFluid.isEmpty()) {
                 outputFluid = out.copy();
             } else {
-                outputFluid.grow(out.getAmount());
+                int existAmt = outputFluid.getAmount();
+                int newAmt   = out.getAmount();
+                int mixTemp  = (fluidTemp(outputFluid) * existAmt + fluidTemp(out) * newAmt) / (existAmt + newAmt);
+                int mixPres  = (fluidPressure(outputFluid) * existAmt + fluidPressure(out) * newAmt) / (existAmt + newAmt);
+                outputFluid.grow(newAmt);
+                applyAttributes(outputFluid, mixTemp, mixPres);
             }
         }
 
@@ -219,37 +226,25 @@ public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
         setChanged();
     }
 
-    private static boolean tryPullFluid(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            for (int i = 0; i < from.size(); i++) {
-                FluidResource res = from.getResource(i);
-                if (!res.isEmpty()) {
-                    int available = Math.min(1000, (int) from.getAmountAsLong(i));
-                    int accepted = to.insert(res, available, tx);
-                    if (accepted > 0) {
-                        from.extract(res, accepted, tx);
-                        tx.commit();
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+    // ── Fluid attribute helpers ───────────────────────────────────────────────
+
+    private static int fluidTemp(FluidStack fs) {
+        if (fs.isEmpty()) return 20;
+        Integer t = fs.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        return t != null ? t : 20;
     }
 
-    private static boolean tryPushFluid(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            FluidResource res = from.getResource(0);
-            if (res.isEmpty()) return false;
-            int available = Math.min(1000, (int) from.getAmountAsLong(0));
-            int accepted = to.insert(res, available, tx);
-            if (accepted > 0) {
-                from.extract(res, accepted, tx);
-                tx.commit();
-                return true;
-            }
-        }
-        return false;
+    private static int fluidPressure(FluidStack fs) {
+        if (fs.isEmpty()) return 101;
+        Integer p = fs.get(OmniTechDataComponents.FLUID_PRESSURE.get());
+        return p != null ? p : 101;
+    }
+
+    private static void applyAttributes(FluidStack fs, int temp, int pressure) {
+        if (temp != 20) fs.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), temp);
+        else            fs.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        if (pressure != 101) fs.set(OmniTechDataComponents.FLUID_PRESSURE.get(), pressure);
+        else                 fs.remove(OmniTechDataComponents.FLUID_PRESSURE.get());
     }
 
     // ВАЖНО: Убедитесь, что вы зарегистрировали Capabilities в главном классе мода!
@@ -264,11 +259,11 @@ public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
         @Override public long getCapacityAsLong(int index, FluidResource res) { return INPUT_TANK_CAPACITY; }
         @Override public boolean isValid(int index, FluidResource resource) { return true; }
         @Override public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
-            if (resource.isEmpty() || (!inputFluid.isEmpty() && !resource.matches(inputFluid))) return 0;
+            if (resource.isEmpty() || (!inputFluid.isEmpty() && !FluidStack.isSameFluid(inputFluid, resource.toStack(1)))) return 0;
             int toFill = Math.min(amount, INPUT_TANK_CAPACITY - inputFluid.getAmount());
             if (toFill <= 0) return 0;
             updateSnapshots(tx);
-            inputFluid = inputFluid.isEmpty() ? resource.toStack(toFill) : inputFluid.copyWithAmount(inputFluid.getAmount() + toFill);
+            inputFluid = FluidNetworkUtil.blendInto(inputFluid, resource, toFill);
             return toFill;
         }
         @Override public int extract(int index, FluidResource resource, int amount, TransactionContext tx) { return 0; }

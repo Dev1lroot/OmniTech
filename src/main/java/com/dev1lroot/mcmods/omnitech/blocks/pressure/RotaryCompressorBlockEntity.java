@@ -4,11 +4,12 @@
  */
 package com.dev1lroot.mcmods.omnitech.blocks.pressure;
 
+import com.dev1lroot.mcmods.omnitech.FluidPhysicsRegistry;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.gui.RotaryCompressorMenu;
 import com.dev1lroot.mcmods.omnitech.io.IKineticReceiver;
-import com.dev1lroot.mcmods.omnitech.recipes.RotaryCompressionRecipe;
-import com.dev1lroot.mcmods.omnitech.recipes.RotaryCompressionRecipeManager;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -33,66 +34,72 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-import java.util.Optional;
+/**
+ * Rotary Compressor — recipe-free, attribute-based compression.
+ *
+ * <p>Always processes {@link #BATCH_SIZE} mB per cycle at a KF cost of
+ * 0.1 KF per 100 kPa of pressure difference.  KF is accumulated from the
+ * network tick-by-tick; processing fires as soon as the buffer reaches the
+ * cycle cost.  A hard cooldown of {@link #MIN_CYCLE_TICKS} enforces a
+ * maximum throughput of {@link #BATCH_SIZE} mB per {@link #MIN_CYCLE_TICKS}
+ * ticks regardless of how much KF is buffered.
+ */
+public class RotaryCompressorBlockEntity extends BlockEntity implements MenuProvider, IKineticReceiver {
 
-public class RotaryCompressorBlockEntity extends BlockEntity implements IKineticReceiver, MenuProvider {
+    public static final int   INPUT_TANK_CAPACITY  = 8_000;
+    public static final int   OUTPUT_TANK_CAPACITY = 8_000;
+    public static final int   BATCH_SIZE           = 1_000;
+    public static final int   MIN_CYCLE_TICKS      = 10;
+    public static final float KF_PER_100KPA        = 0.1f;
+    public static final int   MIN_PRESSURE         = 101;
+    public static final int   MAX_PRESSURE         = 16_000;
 
-    public static final int INPUT_TANK_CAPACITY  = 8_000;
-    public static final int OUTPUT_TANK_CAPACITY = 8_000;
-
-    private FluidStack inputFluid  = FluidStack.EMPTY;
-    private FluidStack outputFluid = FluidStack.EMPTY;
-
-    private float kineticForce         = 0f;
-    private float requiredKineticForce = 0f;
-    private RotaryCompressionRecipe currentRecipe   = null;
-    private String                  currentRecipeId = null;
+    private FluidStack inputFluid     = FluidStack.EMPTY;
+    private FluidStack outputFluid    = FluidStack.EMPTY;
+    private int        processCooldown = 0;
+    private int        targetPressure = 200;
+    private float      kineticForce   = 0f;
 
     public final ResourceHandler<FluidResource> inputFluidHandler  = new InputTankHandler();
     public final ResourceHandler<FluidResource> outputFluidHandler = new OutputTankHandler();
 
+    // [0]=inAmt  [1]=inCap  [2]=outAmt  [3]=outCap  [4]=targetPressure
+    // [5]=processCooldown  [6]=kfCurrent×100  [7]=kfRequired×100
     protected final ContainerData dataAccess = new ContainerData() {
-        @Override public int get(int index) {
-            return switch (index) {
-                case 0 -> (int)(kineticForce * 100f);
-                case 1 -> (int)(requiredKineticForce * 100f);
-                case 2 -> inputFluid.getAmount();
-                case 3 -> INPUT_TANK_CAPACITY;
-                case 4 -> outputFluid.getAmount();
-                case 5 -> OUTPUT_TANK_CAPACITY;
+        @Override public int get(int i) {
+            return switch (i) {
+                case 0 -> inputFluid.getAmount();
+                case 1 -> INPUT_TANK_CAPACITY;
+                case 2 -> outputFluid.getAmount();
+                case 3 -> OUTPUT_TANK_CAPACITY;
+                case 4 -> targetPressure;
+                case 5 -> processCooldown;
+                case 6 -> (int)(kineticForce * 100f);
+                case 7 -> (int)(kfNeededForCycle() * 100f);
                 default -> 0;
             };
         }
-        @Override public void set(int index, int value) {
-            switch (index) {
-                case 0 -> kineticForce = value / 100f;
-                case 1 -> requiredKineticForce = value / 100f;
-            }
+        @Override public void set(int i, int value) {
+            if (i == 4) targetPressure  = value;
+            if (i == 5) processCooldown = value;
         }
-        @Override public int getCount() { return 6; }
+        @Override public int getCount() { return 8; }
     };
 
     public RotaryCompressorBlockEntity(BlockPos pos, BlockState state) {
         super(OmniTechBlockEntities.ROTARY_COMPRESSOR.get(), pos, state);
     }
 
-    @Override
-    public Component getDisplayName() {
-        return Component.translatable("container.omnitech.rotary_compressor");
-    }
+    @Override public Component getDisplayName() { return Component.translatable("container.omnitech.rotary_compressor"); }
 
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory inv, Player player) {
         return new RotaryCompressorMenu(containerId, inv, this, dataAccess);
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
-    }
+    @Override public Packet<ClientGamePacketListener> getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(this); }
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
@@ -104,171 +111,175 @@ public class RotaryCompressorBlockEntity extends BlockEntity implements IKinetic
         }
     }
 
+    // ── IKineticReceiver ──────────────────────────────────────────────────────
+
+    private float kfNeededForCycle() {
+        if (inputFluid.isEmpty()) return 0f;
+        int deltaP = Math.abs(targetPressure - fluidPressure(inputFluid));
+        return deltaP / 100f * KF_PER_100KPA;
+    }
+
     @Override
     public float getKfDemand() {
-        return (currentRecipe != null && canProcess()) ? 0.1f : 0f;
+        if (!canProcessFluid()) return 0f;
+        return kfNeededForCycle() / MIN_CYCLE_TICKS;
     }
 
     @Override
     public boolean addKineticForce(float amount) {
-        if (currentRecipe == null || !canProcess()) return false;
-        kineticForce += amount;
+        if (!canProcessFluid()) { kineticForce = 0f; return false; }
+        float kfNeeded = kfNeededForCycle();
+        kineticForce = Math.min(kineticForce + amount, kfNeeded * 5f);
         setChanged();
-        if (kineticForce >= requiredKineticForce) {
-            process();
-        }
         return true;
     }
 
-    public static void serverTick(Level level, BlockPos pos, BlockState state, RotaryCompressorBlockEntity be) {
+    // ── Server tick ───────────────────────────────────────────────────────────
+
+    public static void serverTick(Level level, BlockPos pos, BlockState state,
+            RotaryCompressorBlockEntity be) {
         boolean changed = false;
         Direction facing = state.getValue(RotaryCompressorBlock.FACING);
 
-        // 1. Pull fluid into input tank from the front face
         if (be.inputFluid.getAmount() < INPUT_TANK_CAPACITY) {
-            var inputSource = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(facing), facing.getOpposite());
-            if (inputSource != null) {
-                changed |= tryPullFluid(inputSource, be.inputFluidHandler);
-            }
+            var src = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(facing), facing.getOpposite());
+            if (src != null) changed |= FluidNetworkUtil.tryPullFluid(src, be.inputFluidHandler);
         }
 
-        // 2. Match recipe
-        Optional<RotaryCompressionRecipe> found = RotaryCompressionRecipeManager.findRecipe(be.inputFluid);
-        if (found.isPresent()) {
-            RotaryCompressionRecipe recipe = found.get();
-            if (!recipe.getId().equals(be.currentRecipeId)) {
-                be.currentRecipe = recipe;
-                be.currentRecipeId = recipe.getId();
-                be.kineticForce = 0f;
-                be.requiredKineticForce = recipe.getRequiredKineticForce();
-                changed = true;
-            }
-        } else {
-            if (be.currentRecipe != null) {
-                be.currentRecipe = null;
-                be.currentRecipeId = null;
-                be.kineticForce = 0f;
-                be.requiredKineticForce = 0f;
-                changed = true;
-            }
+        if (be.processCooldown > 0) {
+            be.processCooldown--;
+            changed = true;
         }
 
-        // 3. LIT state
-        boolean shouldBeLit = be.currentRecipe != null && be.canProcess();
+        if (be.processCooldown == 0 && be.canProcess()) {
+            be.process();
+            changed = true;
+        }
+
+        boolean shouldBeLit = be.canProcessFluid();
         if (state.getValue(RotaryCompressorBlock.LIT) != shouldBeLit) {
             level.setBlock(pos, state.setValue(RotaryCompressorBlock.LIT, shouldBeLit), 3);
             changed = true;
         }
 
-        // 4. Push output fluid out the back face
         if (!be.outputFluid.isEmpty()) {
-            Direction back = facing.getOpposite();
-            var neighbor = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(back), back.getOpposite());
-            if (neighbor != null) {
-                changed |= tryPushFluid(be.outputFluidHandler, neighbor);
-            }
+            var neighbor = level.getCapability(Capabilities.Fluid.BLOCK,
+                    pos.relative(facing.getOpposite()), facing);
+            if (neighbor != null) changed |= FluidNetworkUtil.tryPushFluid(be.outputFluidHandler, neighbor);
         }
 
-        if (changed) {
-            be.setChanged();
-            if (!level.isClientSide()) {
-                level.sendBlockUpdated(pos, state, state, 3);
-            }
-        }
+        if (changed) { be.setChanged(); if (!level.isClientSide()) level.sendBlockUpdated(pos, state, state, 3); }
+    }
+
+    // ── Processing ────────────────────────────────────────────────────────────
+
+    private boolean canProcessFluid() {
+        if (inputFluid.isEmpty() || inputFluid.getAmount() < BATCH_SIZE) return false;
+        if (fluidPressure(inputFluid) >= targetPressure) return false;
+        if (outputFluid.isEmpty()) return true;
+        if (!FluidStack.isSameFluid(outputFluid, inputFluid)) return false;
+        return (OUTPUT_TANK_CAPACITY - outputFluid.getAmount()) >= BATCH_SIZE;
     }
 
     private boolean canProcess() {
-        if (currentRecipe == null) return false;
-        if (inputFluid.isEmpty() || !inputFluid.is(currentRecipe.getInputFluid().getFluid())) return false;
-        if (inputFluid.getAmount() < currentRecipe.getInputFluidAmount()) return false;
-
-        FluidStack out = currentRecipe.getOutputFluid();
-        if (outputFluid.isEmpty()) return true;
-        if (!outputFluid.is(out.getFluid())) return false;
-        return (OUTPUT_TANK_CAPACITY - outputFluid.getAmount()) >= out.getAmount();
+        if (!canProcessFluid()) return false;
+        float kfNeeded = kfNeededForCycle();
+        return kfNeeded <= 0f || kineticForce >= kfNeeded;
     }
 
     private void process() {
-        if (currentRecipe == null) return;
-        int toConsume = currentRecipe.getInputFluidAmount();
-        inputFluid.shrink(toConsume);
+        float kfCost    = kfNeededForCycle();
+        int   inPressure = fluidPressure(inputFluid);
+        int   inTemp     = fluidTemp(inputFluid);
+        int   deltaP     = targetPressure - inPressure;
+        int   maxTemp    = FluidPhysicsRegistry.get(inputFluid.getFluid()).maxTemp();
+        int   outTemp    = Math.min(maxTemp, inTemp + Math.max(0, deltaP / 20));
+        FluidResource res = FluidResource.of(inputFluid);
+
+        inputFluid.shrink(BATCH_SIZE);
         if (inputFluid.getAmount() <= 0) inputFluid = FluidStack.EMPTY;
 
-        FluidStack out = currentRecipe.getOutputFluid();
-        if (!out.isEmpty()) {
-            if (outputFluid.isEmpty()) {
-                outputFluid = out.copy();
-            } else {
-                outputFluid.grow(out.getAmount());
-            }
+        FluidStack produced = res.toStack(BATCH_SIZE);
+        applyAttributes(produced, outTemp, targetPressure);
+
+        if (outputFluid.isEmpty()) {
+            outputFluid = produced;
+        } else {
+            int existAmt = outputFluid.getAmount();
+            int mixTemp  = (fluidTemp(outputFluid) * existAmt + outTemp * BATCH_SIZE) / (existAmt + BATCH_SIZE);
+            int mixPres  = (fluidPressure(outputFluid) * existAmt + targetPressure * BATCH_SIZE) / (existAmt + BATCH_SIZE);
+            outputFluid.grow(BATCH_SIZE);
+            applyAttributes(outputFluid, mixTemp, mixPres);
         }
 
-        kineticForce = 0f;
+        kineticForce    = Math.max(0f, kineticForce - kfCost);
+        processCooldown = MIN_CYCLE_TICKS;
         setChanged();
     }
 
-    private static boolean tryPullFluid(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            for (int i = 0; i < from.size(); i++) {
-                FluidResource res = from.getResource(i);
-                if (!res.isEmpty()) {
-                    int available = Math.min(1000, (int) from.getAmountAsLong(i));
-                    int accepted = to.insert(res, available, tx);
-                    if (accepted > 0) {
-                        from.extract(res, accepted, tx);
-                        tx.commit();
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private static void applyAttributes(FluidStack fs, int temp, int pressure) {
+        if (temp != 20) fs.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), temp);
+        else            fs.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        if (pressure != 101) fs.set(OmniTechDataComponents.FLUID_PRESSURE.get(), pressure);
+        else                 fs.remove(OmniTechDataComponents.FLUID_PRESSURE.get());
     }
 
-    private static boolean tryPushFluid(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            FluidResource res = from.getResource(0);
-            if (res.isEmpty()) return false;
-            int available = Math.min(1000, (int) from.getAmountAsLong(0));
-            int accepted = to.insert(res, available, tx);
-            if (accepted > 0) {
-                from.extract(res, accepted, tx);
-                tx.commit();
-                return true;
-            }
-        }
-        return false;
+    static int fluidTemp(FluidStack fs) {
+        if (fs.isEmpty()) return 20;
+        Integer t = fs.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        return t != null ? t : 20;
     }
+
+    static int fluidPressure(FluidStack fs) {
+        if (fs.isEmpty()) return 101;
+        Integer p = fs.get(OmniTechDataComponents.FLUID_PRESSURE.get());
+        return p != null ? p : 101;
+    }
+
+    // ── Public accessors ──────────────────────────────────────────────────────
+
+    public void setTargetPressure(int kPa) {
+        targetPressure = Math.max(MIN_PRESSURE, Math.min(MAX_PRESSURE, kPa));
+        setChanged();
+    }
+
+    public FluidStack getInputFluid()    { return inputFluid; }
+    public FluidStack getOutputFluid()   { return outputFluid; }
+    public int        getTargetPressure(){ return targetPressure; }
+
+    // ── Tank handlers ─────────────────────────────────────────────────────────
 
     private class InputTankHandler extends SnapshotJournal<FluidStack> implements ResourceHandler<FluidResource> {
-        @Override protected FluidStack createSnapshot() { return inputFluid.copy(); }
+        @Override protected FluidStack createSnapshot()         { return inputFluid.copy(); }
         @Override protected void revertToSnapshot(FluidStack s) { inputFluid = s; }
         @Override public int size() { return 1; }
-        @Override public FluidResource getResource(int index) { return inputFluid.isEmpty() ? FluidResource.EMPTY : FluidResource.of(inputFluid); }
-        @Override public long getAmountAsLong(int index) { return inputFluid.getAmount(); }
-        @Override public long getCapacityAsLong(int index, FluidResource res) { return INPUT_TANK_CAPACITY; }
-        @Override public boolean isValid(int index, FluidResource resource) { return true; }
-        @Override public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
-            if (resource.isEmpty() || (!inputFluid.isEmpty() && !resource.matches(inputFluid))) return 0;
+        @Override public FluidResource getResource(int i) { return inputFluid.isEmpty() ? FluidResource.EMPTY : FluidResource.of(inputFluid); }
+        @Override public long getAmountAsLong(int i) { return inputFluid.getAmount(); }
+        @Override public long getCapacityAsLong(int i, FluidResource r) { return INPUT_TANK_CAPACITY; }
+        @Override public boolean isValid(int i, FluidResource r) { return true; }
+        @Override public int insert(int i, FluidResource resource, int amount, TransactionContext tx) {
+            if (resource.isEmpty() || (!inputFluid.isEmpty() && !FluidStack.isSameFluid(inputFluid, resource.toStack(1)))) return 0;
             int toFill = Math.min(amount, INPUT_TANK_CAPACITY - inputFluid.getAmount());
             if (toFill <= 0) return 0;
             updateSnapshots(tx);
-            inputFluid = inputFluid.isEmpty() ? resource.toStack(toFill) : inputFluid.copyWithAmount(inputFluid.getAmount() + toFill);
+            inputFluid = FluidNetworkUtil.blendInto(inputFluid, resource, toFill);
             return toFill;
         }
-        @Override public int extract(int index, FluidResource resource, int amount, TransactionContext tx) { return 0; }
+        @Override public int extract(int i, FluidResource r, int amount, TransactionContext tx) { return 0; }
     }
 
     private class OutputTankHandler extends SnapshotJournal<FluidStack> implements ResourceHandler<FluidResource> {
-        @Override protected FluidStack createSnapshot() { return outputFluid.copy(); }
+        @Override protected FluidStack createSnapshot()         { return outputFluid.copy(); }
         @Override protected void revertToSnapshot(FluidStack s) { outputFluid = s; }
         @Override public int size() { return 1; }
-        @Override public FluidResource getResource(int index) { return outputFluid.isEmpty() ? FluidResource.EMPTY : FluidResource.of(outputFluid); }
-        @Override public long getAmountAsLong(int index) { return outputFluid.getAmount(); }
-        @Override public long getCapacityAsLong(int index, FluidResource res) { return OUTPUT_TANK_CAPACITY; }
-        @Override public boolean isValid(int index, FluidResource resource) { return false; }
-        @Override public int insert(int index, FluidResource resource, int amount, TransactionContext tx) { return 0; }
-        @Override public int extract(int index, FluidResource resource, int amount, TransactionContext tx) {
+        @Override public FluidResource getResource(int i) { return outputFluid.isEmpty() ? FluidResource.EMPTY : FluidResource.of(outputFluid); }
+        @Override public long getAmountAsLong(int i) { return outputFluid.getAmount(); }
+        @Override public long getCapacityAsLong(int i, FluidResource r) { return OUTPUT_TANK_CAPACITY; }
+        @Override public boolean isValid(int i, FluidResource r) { return false; }
+        @Override public int insert(int i, FluidResource r, int amount, TransactionContext tx) { return 0; }
+        @Override public int extract(int i, FluidResource resource, int amount, TransactionContext tx) {
             if (outputFluid.isEmpty() || !resource.matches(outputFluid)) return 0;
             int toExt = Math.min(amount, outputFluid.getAmount());
             updateSnapshots(tx);
@@ -278,16 +289,16 @@ public class RotaryCompressorBlockEntity extends BlockEntity implements IKinetic
         }
     }
 
-    public FluidStack getInputFluid()  { return inputFluid; }
-    public FluidStack getOutputFluid() { return outputFluid; }
+    // ── Persistence ───────────────────────────────────────────────────────────
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        inputFluid  = input.read("InputFluid",  FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
-        outputFluid = input.read("OutputFluid", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
-        kineticForce         = input.getFloatOr("KineticForce",         0f);
-        requiredKineticForce = input.getFloatOr("RequiredKineticForce", 0f);
+        inputFluid      = input.read("InputFluid",  FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
+        outputFluid     = input.read("OutputFluid", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
+        processCooldown = input.getIntOr("ProcessCooldown", 0);
+        targetPressure  = input.getIntOr("TargetPressure",  200);
+        kineticForce    = input.getFloatOr("KineticForce",  0f);
     }
 
     @Override
@@ -295,7 +306,8 @@ public class RotaryCompressorBlockEntity extends BlockEntity implements IKinetic
         super.saveAdditional(output);
         output.store("InputFluid",  FluidStack.OPTIONAL_CODEC, inputFluid);
         output.store("OutputFluid", FluidStack.OPTIONAL_CODEC, outputFluid);
-        output.putFloat("KineticForce",         kineticForce);
-        output.putFloat("RequiredKineticForce", requiredKineticForce);
+        output.putInt("ProcessCooldown", processCooldown);
+        output.putInt("TargetPressure",  targetPressure);
+        output.putFloat("KineticForce",  kineticForce);
     }
 }

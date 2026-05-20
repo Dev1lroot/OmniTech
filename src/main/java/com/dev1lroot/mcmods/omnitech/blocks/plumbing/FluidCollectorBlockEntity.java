@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.plumbing;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.recipes.FluidCollectorRecipe;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.recipes.FluidCollectorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import net.minecraft.core.BlockPos;
@@ -104,7 +105,7 @@ public class FluidCollectorBlockEntity extends BlockEntity {
             ResourceHandler<FluidResource> target =
                     FluidNetworkUtil.findOutputTarget(level, pos.relative(facing), outRes);
             if (target != null) {
-                changed |= tryPushFluid(be.outputFluidHandler, target);
+                changed |= FluidNetworkUtil.tryPushFluid(be.outputFluidHandler, target);
             }
         }
 
@@ -151,22 +152,6 @@ public class FluidCollectorBlockEntity extends BlockEntity {
                     Identifier.fromNamespaceAndPath("omnitech", "air"));
         }
         return cachedAirFluid;
-    }
-
-    private static boolean tryPushFluid(ResourceHandler<FluidResource> from,
-                                        ResourceHandler<FluidResource> to) {
-        try (Transaction tx = Transaction.openRoot()) {
-            FluidResource res = from.getResource(0);
-            if (res.isEmpty()) return false;
-            int available = Math.min(1000, (int) from.getAmountAsLong(0));
-            int accepted  = to.insert(res, available, tx);
-            if (accepted > 0) {
-                from.extract(res, accepted, tx);
-                tx.commit();
-                return true;
-            }
-        }
-        return false;
     }
 
     // ── Output tank handler ───────────────────────────────────────────────────

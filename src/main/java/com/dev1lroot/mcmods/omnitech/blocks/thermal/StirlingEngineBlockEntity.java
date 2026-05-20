@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.thermal;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.gui.StirlingEngineMenu;
 import com.dev1lroot.mcmods.omnitech.io.IKineticSupplier;
 import com.dev1lroot.mcmods.omnitech.util.KineticNetworkUtil;
@@ -90,7 +91,7 @@ public class StirlingEngineBlockEntity extends BlockEntity implements MenuProvid
                 if (face == Direction.DOWN) continue;
                 var neighbor = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(face), face.getOpposite());
                 if (neighbor != null) {
-                    dirty |= tryPullFluid(neighbor, be.steamHandler, OmniTechFluids.get("steam").source.get());
+                    dirty |= FluidNetworkUtil.tryPullFluid(neighbor, be.steamHandler, OmniTechFluids.get("steam").source.get(), 100);
                 }
             }
         }
@@ -114,7 +115,7 @@ public class StirlingEngineBlockEntity extends BlockEntity implements MenuProvid
         if (!be.waterTank.isEmpty()) {
             var output = level.getCapability(Capabilities.Fluid.BLOCK, pos.below(), Direction.UP);
             if (output != null) {
-                dirty |= tryPushFluid(be.waterHandler, output);
+                dirty |= FluidNetworkUtil.tryPushFluid(be.waterHandler, output, 100);
             }
         }
 
@@ -125,40 +126,6 @@ public class StirlingEngineBlockEntity extends BlockEntity implements MenuProvid
         if (dirty) {
             be.setChanged();
         }
-    }
-
-    private static boolean tryPullFluid(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to, net.minecraft.world.level.material.Fluid filter) {
-        try (Transaction tx = Transaction.openRoot()) {
-            for (int i = 0; i < from.size(); i++) {
-                FluidResource res = from.getResource(i);
-                if (!res.isEmpty() && res.is(filter)) {
-                    int available = Math.min(100, (int)from.getAmountAsLong(i));
-                    int accepted = to.insert(res, available, tx);
-                    if (accepted > 0) {
-                        from.extract(res, accepted, tx);
-                        tx.commit();
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private static boolean tryPushFluid(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to) {
-        try (Transaction tx = Transaction.openRoot()) {
-            FluidResource res = from.getResource(0);
-            if (!res.isEmpty()) {
-                int available = Math.min(100, (int)from.getAmountAsLong(0));
-                int accepted = to.insert(res, available, tx);
-                if (accepted > 0) {
-                    from.extract(res, accepted, tx);
-                    tx.commit();
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     @Override
@@ -206,9 +173,9 @@ public class StirlingEngineBlockEntity extends BlockEntity implements MenuProvid
             if (toInsert <= 0) return 0;
             updateSnapshots(tx);
             if (isSteam) {
-                steamTank = steamTank.isEmpty() ? resource.toStack(toInsert) : steamTank.copyWithAmount(current + toInsert);
+                steamTank = FluidNetworkUtil.blendInto(steamTank, resource, toInsert);
             } else {
-                waterTank = waterTank.isEmpty() ? resource.toStack(toInsert) : waterTank.copyWithAmount(current + toInsert);
+                waterTank = FluidNetworkUtil.blendInto(waterTank, resource, toInsert);
             }
             return toInsert;
         }

@@ -9,6 +9,7 @@ import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.HeatExchangerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -27,7 +28,7 @@ public class HeatExchangerMenu extends AbstractContainerMenu {
         this(containerId, playerInventory,
                 (HeatExchangerBlockEntity) playerInventory.player.level()
                         .getBlockEntity(extraData.readBlockPos()),
-                new SimpleContainerData(7));
+                new SimpleContainerData(6));
     }
 
     // Server constructor
@@ -49,25 +50,22 @@ public class HeatExchangerMenu extends AbstractContainerMenu {
     public FluidStack getOutputFluid() { return blockEntity != null ? blockEntity.getOutputFluid() : FluidStack.EMPTY; }
 
     // ── ContainerData accessors ────────────────────────────────────────────────
-    // 0=storedHeat  1=maxHeat  2=processTimer
-    // 3=inFluidAmt  4=inFluidCap  5=outFluidAmt  6=outFluidCap
+    // [0]=machineTemp  [1]=processTimer
+    // [2]=inAmt  [3]=inCap  [4]=outAmt  [5]=outCap
 
-    public int getStoredHeat()         { return data.get(0); }
-    public int getMaxHeat()            { return data.get(1); }
-    public int getProcessTimer()       { return data.get(2); }
-    public int getInputFluidAmount()   { return data.get(3); }
-    public int getInputFluidCapacity() { return data.get(4); }
-    public int getOutputFluidAmount()  { return data.get(5); }
-    public int getOutputFluidCapacity(){ return data.get(6); }
-
-    public float getHeatScaled() {
-        int max = getMaxHeat();
-        if (max <= 0) return 0f;
-        return Math.min(100f, getStoredHeat() / (float) max * 100f);
-    }
+    public int getMachineTemp()          { return data.get(0); }
+    public int getProcessTimer()         { return data.get(1); }
+    public int getInputFluidAmount()     { return data.get(2); }
+    public int getInputFluidCapacity()   { return data.get(3); }
+    public int getOutputFluidAmount()    { return data.get(4); }
+    public int getOutputFluidCapacity()  { return data.get(5); }
 
     public float getProcessProgressScaled() {
         return Math.min(100f, getProcessTimer() / (float) HeatExchangerBlockEntity.PROCESS_TIME * 100f);
+    }
+
+    public BlockPos getBlockPos() {
+        return blockEntity != null ? blockEntity.getBlockPos() : BlockPos.ZERO;
     }
 
     // ── Shift-click ───────────────────────────────────────────────────────────
@@ -98,7 +96,9 @@ public class HeatExchangerMenu extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player player) {
         return stillValid(
-                ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos()),
+                ContainerLevelAccess.create(
+                        blockEntity != null ? blockEntity.getLevel() : null,
+                        blockEntity != null ? blockEntity.getBlockPos() : null),
                 player, OmniTechBlocks.HEAT_EXCHANGER.get());
     }
 }

@@ -13,10 +13,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -24,6 +26,149 @@ import java.util.*;
 public final class FluidNetworkUtil {
     private FluidNetworkUtil() {}
 
+
+    // ── Public fluid attribute helpers ────────────────────────────────────────
+
+    public static int fluidTemp(FluidStack fs) {
+        if (fs.isEmpty()) return 20;
+        Integer t = fs.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        return t != null ? t : 20;
+    }
+
+    public static int fluidPressure(FluidStack fs) {
+        if (fs.isEmpty()) return 101;
+        Integer p = fs.get(OmniTechDataComponents.FLUID_PRESSURE.get());
+        return p != null ? p : 101;
+    }
+
+    public static void applyAttributes(FluidStack fs, int temp, int pressure) {
+        if (temp != 20) fs.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), temp);
+        else            fs.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        if (pressure != 101) fs.set(OmniTechDataComponents.FLUID_PRESSURE.get(), pressure);
+        else                 fs.remove(OmniTechDataComponents.FLUID_PRESSURE.get());
+    }
+
+    /**
+     * Returns a FluidStack equal to {@code existing + toInsert} mB, with
+     * temperature and pressure blended by volume. When {@code existing} is
+     * empty the incoming resource's attributes are used unchanged.
+     */
+    public static FluidStack blendInto(FluidStack existing, FluidResource incoming, int toInsert) {
+        int existingAmount   = existing.getAmount();
+        int total            = existingAmount + toInsert;
+        FluidStack sample    = incoming.toStack(1);
+        int incomingTemp     = fluidTemp(sample);
+        int incomingPressure = fluidPressure(sample);
+
+        int blendedTemp = existingAmount > 0
+                ? (fluidTemp(existing) * existingAmount + incomingTemp * toInsert) / total
+                : incomingTemp;
+        int blendedPressure = existingAmount > 0
+                ? (fluidPressure(existing) * existingAmount + incomingPressure * toInsert) / total
+                : incomingPressure;
+
+        FluidStack result = existing.isEmpty()
+                ? incoming.toStack(toInsert)
+                : existing.copyWithAmount(total);
+
+        if (blendedTemp != 20)      result.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), blendedTemp);
+        else                        result.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        if (blendedPressure != 101) result.set(OmniTechDataComponents.FLUID_PRESSURE.get(), blendedPressure);
+        else                        result.remove(OmniTechDataComponents.FLUID_PRESSURE.get());
+
+        return result;
+    }
+
+    // ── Unified fluid transfer ─────────────────────────────────────────────────
+
+    /** Transfers up to 1000 mB from any non-empty slot of {@code from} into {@code to}. */
+    public static boolean tryPullFluid(ResourceHandler<FluidResource> from,
+                                       ResourceHandler<FluidResource> to) {
+        return tryPullFluid(from, to, null, 1000);
+    }
+
+    /**
+     * Transfers up to {@code maxAmount} mB of a fluid matching {@code filter}
+     * from {@code from} into {@code to}. Pass {@code null} to accept any fluid.
+     */
+    public static boolean tryPullFluid(ResourceHandler<FluidResource> from,
+                                       ResourceHandler<FluidResource> to,
+                                       @Nullable Fluid filter,
+                                       int maxAmount) {
+        try (var tx = Transaction.openRoot()) {
+            for (int i = 0; i < from.size(); i++) {
+                FluidResource res = from.getResource(i);
+                if (res.isEmpty()) continue;
+                if (filter != null && !res.is(filter)) continue;
+                int avail = Math.min(maxAmount, (int) from.getAmountAsLong(i));
+                int acc   = to.insert(res, avail, tx);
+                if (acc > 0) {
+                    from.extract(res, acc, tx);
+                    tx.commit();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** Transfers up to 1000 mB from slot 0 of {@code from} into {@code to}. */
+    public static boolean tryPushFluid(ResourceHandler<FluidResource> from,
+                                       ResourceHandler<FluidResource> to) {
+        return tryPushFluid(from, to, 1000);
+    }
+
+    /** Transfers up to {@code maxAmount} mB from slot 0 of {@code from} into {@code to}. */
+    public static boolean tryPushFluid(ResourceHandler<FluidResource> from,
+                                       ResourceHandler<FluidResource> to,
+                                       int maxAmount) {
+        try (var tx = Transaction.openRoot()) {
+            FluidResource res = from.getResource(0);
+            if (res.isEmpty()) return false;
+            int avail = Math.min(maxAmount, (int) from.getAmountAsLong(0));
+            int acc   = to.insert(res, avail, tx);
+            if (acc > 0) {
+                from.extract(res, acc, tx);
+                tx.commit();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Distributes up to 1000 mB evenly across all {@code targets} in one transaction. */
+    public static boolean tryPushFluidEvenly(ResourceHandler<FluidResource> from,
+                                             List<ResourceHandler<FluidResource>> targets) {
+        return tryPushFluidEvenly(from, targets, 1000);
+    }
+
+    /**
+     * Distributes up to {@code maxTotal} mB evenly across all {@code targets},
+     * split by the number of targets. All transfers commit atomically.
+     */
+    public static boolean tryPushFluidEvenly(ResourceHandler<FluidResource> from,
+                                             List<ResourceHandler<FluidResource>> targets,
+                                             int maxTotal) {
+        if (targets.isEmpty()) return false;
+        FluidResource res = from.getResource(0);
+        if (res.isEmpty()) return false;
+        int available = Math.min(maxTotal, (int) from.getAmountAsLong(0));
+        if (available <= 0) return false;
+
+        int perTarget = Math.max(1, available / targets.size());
+        int totalPushed = 0;
+        try (var tx = Transaction.openRoot()) {
+            for (var target : targets) {
+                totalPushed += target.insert(res, perTarget, tx);
+            }
+            if (totalPushed > 0) {
+                from.extract(res, totalPushed, tx);
+                tx.commit();
+                return true;
+            }
+        }
+        return false;
+    }
 
     // Добавьте этот метод в раздел Helpers для удобства
     private static int getBlockColor(BlockState state) {
@@ -54,14 +199,17 @@ public final class FluidNetworkUtil {
             return;
         }
 
-        // Bake the weighted-average temperature into the reference stack so every
-        // node in the network ends up with the same blended temperature after redistribution.
+        // Bake the weighted-average temperature and pressure into the reference stack so every
+        // node in the network ends up with the same blended values after redistribution.
         FluidStack ref = data.reference();
         if (!ref.isEmpty()) {
             ref = ref.copy();
             int temp = data.blendedTemp();
             if (temp != 20) ref.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), temp);
             else            ref.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+            int pressure = data.blendedPressure();
+            if (pressure != 101) ref.set(OmniTechDataComponents.FLUID_PRESSURE.get(), pressure);
+            else                 ref.remove(OmniTechDataComponents.FLUID_PRESSURE.get());
         }
 
         Map<Integer, List<BlockEntity>> levels = groupNodesByHeight(data.nodes());
@@ -213,7 +361,7 @@ public final class FluidNetworkUtil {
 
     // ── Network collection ────────────────────────────────────────────────────
 
-    private record NetworkData(List<BlockEntity> nodes, long totalAmount, FluidStack reference, int blendedTemp) {}
+    private record NetworkData(List<BlockEntity> nodes, long totalAmount, FluidStack reference, int blendedTemp, int blendedPressure) {}
 
     private static NetworkData collectNetwork(Level level, BlockPos startPos) {
         Set<BlockPos> visited = new HashSet<>();
@@ -225,6 +373,7 @@ public final class FluidNetworkUtil {
 
         long totalAmount = 0;
         long totalWeightedTemp = 0;
+        long totalWeightedPressure = 0;
         FluidStack referenceStack = FluidStack.EMPTY;
 
         while (!queue.isEmpty()) {
@@ -245,7 +394,8 @@ public final class FluidNetworkUtil {
 
             int fsAmount = fs.getAmount();
             totalAmount += fsAmount;
-            totalWeightedTemp += (long) getFluidTemp(fs) * fsAmount;
+            totalWeightedTemp     += (long) getFluidTemp(fs)     * fsAmount;
+            totalWeightedPressure += (long) getFluidPressure(fs) * fsAmount;
             nodes.add(be);
 
             for (BlockPos nextPos : getConnectedNeighbors(level, pos, be)) {
@@ -255,8 +405,9 @@ public final class FluidNetworkUtil {
                 }
             }
         }
-        int blendedTemp = totalAmount > 0 ? (int) (totalWeightedTemp / totalAmount) : 20;
-        return new NetworkData(nodes, totalAmount, referenceStack, blendedTemp);
+        int blendedTemp     = totalAmount > 0 ? (int) (totalWeightedTemp     / totalAmount) : 20;
+        int blendedPressure = totalAmount > 0 ? (int) (totalWeightedPressure / totalAmount) : 101;
+        return new NetworkData(nodes, totalAmount, referenceStack, blendedTemp, blendedPressure);
     }
 
     // ── Gravity distribution ──────────────────────────────────────────────────
@@ -359,11 +510,8 @@ public final class FluidNetworkUtil {
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    private static int getFluidTemp(FluidStack fs) {
-        if (fs.isEmpty()) return 20;
-        Integer t = fs.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
-        return t != null ? t : 20;
-    }
+    private static int getFluidTemp(FluidStack fs)      { return fluidTemp(fs);     }
+    private static int getFluidPressure(FluidStack fs)  { return fluidPressure(fs); }
 
     private static boolean isValidNode(BlockEntity be, FluidStack reference) {
         return be instanceof FluidPipeBlockEntity || be instanceof FluidTankBlockEntity;

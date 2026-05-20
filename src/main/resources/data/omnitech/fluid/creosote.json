@@ -1,6 +1,10 @@
 {
-  "density":     1100,
-  "viscosity":   2000,
-  "temperature":  320,
-  "light_level":   0
+  "density": 1100,
+  "viscosity": 2000,
+  "temperature": 320,
+  "light_level": 0,
+  "min_temp": -10,
+  "max_temp": 400,
+  "min_pressure": 0,
+  "max_pressure": 50000
 }

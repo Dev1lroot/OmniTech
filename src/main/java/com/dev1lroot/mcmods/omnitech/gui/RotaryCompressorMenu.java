@@ -9,6 +9,7 @@ import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.pressure.RotaryCompressorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -26,7 +27,7 @@ public class RotaryCompressorMenu extends AbstractContainerMenu {
         this(containerId, playerInventory,
                 (RotaryCompressorBlockEntity) playerInventory.player.level()
                         .getBlockEntity(extraData.readBlockPos()),
-                new SimpleContainerData(6));
+                new SimpleContainerData(8));
     }
 
     // Server constructor
@@ -53,18 +54,24 @@ public class RotaryCompressorMenu extends AbstractContainerMenu {
     }
 
     // ── ContainerData accessors ────────────────────────────────────────────────
+    // [0]=inAmt  [1]=inCap  [2]=outAmt  [3]=outCap  [4]=targetPressure
+    // [5]=processCooldown  [6]=kfCurrent×100  [7]=kfRequired×100
 
-    public float getKineticForce()         { return data.get(0) / 100f; }
-    public float getRequiredKineticForce() { return data.get(1) / 100f; }
-    public int getInputFluidAmount()       { return data.get(2); }
-    public int getInputFluidCapacity()     { return data.get(3); }
-    public int getOutputFluidAmount()      { return data.get(4); }
-    public int getOutputFluidCapacity()    { return data.get(5); }
-
+    public int getInputFluidAmount()    { return data.get(0); }
+    public int getInputFluidCapacity()  { return data.get(1); }
+    public int getOutputFluidAmount()   { return data.get(2); }
+    public int getOutputFluidCapacity() { return data.get(3); }
+    public int getTargetPressure()      { return data.get(4); }
+    public int getProcessCooldown()     { return data.get(5); }
+    public float getKineticForce()         { return data.get(6) / 100f; }
+    public float getKineticForceRequired() { return data.get(7) / 100f; }
     public float getKfProgressScaled() {
-        float required = getRequiredKineticForce();
-        if (required <= 0f) return 0f;
-        return Math.min(100f, getKineticForce() / required * 100f);
+        float req = getKineticForceRequired();
+        return req > 0f ? Math.min(100f, getKineticForce() / req * 100f) : 0f;
+    }
+
+    public BlockPos getBlockPos() {
+        return blockEntity != null ? blockEntity.getBlockPos() : BlockPos.ZERO;
     }
 
     // ── Shift-click ───────────────────────────────────────────────────────────

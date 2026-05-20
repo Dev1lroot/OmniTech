@@ -110,11 +110,18 @@ public class GuiUtil
                     .withStyle(ChatFormatting.GRAY));
             Integer tempBox = fluid.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
             int temp = tempBox != null ? tempBox : 20;
-            ChatFormatting fmt = temp >= 250 ? ChatFormatting.RED
-                               : temp >= 100 ? ChatFormatting.GOLD
-                               : temp >   20 ? ChatFormatting.YELLOW
-                               :               ChatFormatting.GRAY;
-            lines.add(Component.literal(temp + " °C").withStyle(fmt));
+            ChatFormatting tempFmt = temp >= 250 ? ChatFormatting.RED
+                                   : temp >= 100 ? ChatFormatting.GOLD
+                                   : temp >   20 ? ChatFormatting.YELLOW
+                                   :               ChatFormatting.GRAY;
+            lines.add(Component.literal(temp + " °C").withStyle(tempFmt));
+            Integer pressureBox = fluid.get(OmniTechDataComponents.FLUID_PRESSURE.get());
+            int pressure = pressureBox != null ? pressureBox : 101;
+            ChatFormatting pressFmt = pressure >= 2000 ? ChatFormatting.RED
+                                    : pressure >= 500  ? ChatFormatting.GOLD
+                                    : pressure >  101  ? ChatFormatting.YELLOW
+                                    :                    ChatFormatting.GRAY;
+            lines.add(Component.literal(pressure + " kPa").withStyle(pressFmt));
         }
         return lines;
     }

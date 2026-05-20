@@ -5,6 +5,8 @@
 package com.dev1lroot.mcmods.omnitech.blocks.labware;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.blocks.ThermalState;
 import com.dev1lroot.mcmods.omnitech.gui.FractionalDistillerMenu;
 import com.dev1lroot.mcmods.omnitech.io.IColdReceiver;
@@ -257,7 +259,7 @@ public class FractionalDistillerBlockEntity extends BlockEntity
         if (be.inputFluid.getAmount() < INPUT_TANK_CAPACITY) {
             var source = level.getCapability(Capabilities.Fluid.BLOCK,
                     pos.relative(facing), facing.getOpposite());
-            if (source != null) dirty |= tryPullFluid(source, be.inputFluidHandler);
+            if (source != null) dirty |= FluidNetworkUtil.tryPullFluid(source, be.inputFluidHandler);
         }
 
         // 2. Scan the structure this tick
@@ -332,7 +334,7 @@ public class FractionalDistillerBlockEntity extends BlockEntity
             if (!seg.outputFluid.isEmpty()) {
                 var neighbor = level.getCapability(Capabilities.Fluid.BLOCK,
                         seg.worldPosition.relative(back), back.getOpposite());
-                if (neighbor != null) dirty |= tryPushFluid(seg.outputFluidHandler, neighbor);
+                if (neighbor != null) dirty |= FluidNetworkUtil.tryPushFluid(seg.outputFluidHandler, neighbor);
             }
         }
 
@@ -363,19 +365,31 @@ public class FractionalDistillerBlockEntity extends BlockEntity
     private void process(Level level, List<FractionalDistillerBlockEntity> structure) {
         if (currentRecipe == null) return;
 
+        int outTemp = AMBIENT_TEMPERATURE + storedHeat;
+
         // Consume input
         inputFluid.shrink(currentRecipe.getInputAmount());
         if (inputFluid.getAmount() <= 0) inputFluid = FluidStack.EMPTY;
 
-        // Distribute outputs to each segment's tank
+        // Distribute outputs to each segment's tank with temperature stamped
         for (int i = 0; i < currentRecipe.getOutputCount() && i < structure.size(); i++) {
             FluidStack out = currentRecipe.getOutputStack(i);
             FractionalDistillerBlockEntity seg = structure.get(i);
 
+            FluidStack produced = out.copy();
+            if (outTemp != 20) produced.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), outTemp);
+            else               produced.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+
             if (seg.outputFluid.isEmpty()) {
-                seg.outputFluid = out.copy();
+                seg.outputFluid = produced;
             } else if (seg.outputFluid.is(out.getFluid())) {
+                int existAmt = seg.outputFluid.getAmount();
+                Integer existTBox = seg.outputFluid.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+                int existTemp = existTBox != null ? existTBox : 20;
+                int blended = (existTemp * existAmt + outTemp * out.getAmount()) / (existAmt + out.getAmount());
                 seg.outputFluid.grow(out.getAmount());
+                if (blended != 20) seg.outputFluid.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), blended);
+                else               seg.outputFluid.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
             }
 
             seg.setChanged();
@@ -385,43 +399,6 @@ public class FractionalDistillerBlockEntity extends BlockEntity
         }
 
         processTimer = 0;
-    }
-
-    // ── Fluid transfer helpers ────────────────────────────────────────────────
-
-    private static boolean tryPullFluid(ResourceHandler<FluidResource> from,
-                                        ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            for (int i = 0; i < from.size(); i++) {
-                FluidResource res = from.getResource(i);
-                if (!res.isEmpty()) {
-                    int available = Math.min(1000, (int) from.getAmountAsLong(i));
-                    int accepted  = to.insert(res, available, tx);
-                    if (accepted > 0) {
-                        from.extract(res, accepted, tx);
-                        tx.commit();
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private static boolean tryPushFluid(ResourceHandler<FluidResource> from,
-                                        ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            FluidResource res = from.getResource(0);
-            if (res.isEmpty()) return false;
-            int available = Math.min(1000, (int) from.getAmountAsLong(0));
-            int accepted  = to.insert(res, available, tx);
-            if (accepted > 0) {
-                from.extract(res, accepted, tx);
-                tx.commit();
-                return true;
-            }
-        }
-        return false;
     }
 
     // ── Accessors ─────────────────────────────────────────────────────────────
@@ -492,12 +469,11 @@ public class FractionalDistillerBlockEntity extends BlockEntity
         @Override
         public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
             if (resource.isEmpty()) return 0;
-            if (!inputFluid.isEmpty() && !resource.matches(inputFluid)) return 0;
+            if (!inputFluid.isEmpty() && !FluidStack.isSameFluid(inputFluid, resource.toStack(1))) return 0;
             int toFill = Math.min(amount, INPUT_TANK_CAPACITY - inputFluid.getAmount());
             if (toFill <= 0) return 0;
             updateSnapshots(tx);
-            inputFluid = inputFluid.isEmpty() ? resource.toStack(toFill)
-                    : inputFluid.copyWithAmount(inputFluid.getAmount() + toFill);
+            inputFluid = FluidNetworkUtil.blendInto(inputFluid, resource, toFill);
             return toFill;
         }
 

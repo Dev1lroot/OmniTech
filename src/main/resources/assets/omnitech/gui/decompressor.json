@@ -32,9 +32,17 @@
       "id": "process_progress",
       "type": "progressbar",
       "x": 52,
-      "y": 50,
+      "y": 42,
       "w": 72,
       "source": "process_progress"
+    },
+    {
+      "id": "kf_progress",
+      "type": "progressbar",
+      "x": 52,
+      "y": 53,
+      "w": 72,
+      "source": "kf_progress"
     }
   ]
 }

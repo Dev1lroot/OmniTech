@@ -1,8 +1,0 @@
-{
-  "requiredMinimalTemperature": -196,
-  "productionTime": 20,
-  "heatConsumptionPerTick": 1,
-  "input":  { "fluid": "omnitech:compressed_air",  "amount": 1000 },
-  "output": { "fluid": "omnitech:liquefied_air",   "amount": 1000 },
-  "result": { "item": "omnitech:sodium_chlorine_mote", "amount": 1, "chance": 0.0 }
-}

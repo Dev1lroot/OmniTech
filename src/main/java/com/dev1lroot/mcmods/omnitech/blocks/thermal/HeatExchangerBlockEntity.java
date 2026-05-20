@@ -5,12 +5,10 @@
 package com.dev1lroot.mcmods.omnitech.blocks.thermal;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.gui.HeatExchangerMenu;
-import com.dev1lroot.mcmods.omnitech.io.IColdReceiver;
-import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IThermalNode;
-import com.dev1lroot.mcmods.omnitech.recipes.HeatExchangerRecipe;
-import com.dev1lroot.mcmods.omnitech.recipes.HeatExchangerRecipeManager;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -38,335 +36,238 @@ import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-import java.util.Optional;
-
 /**
- * Heat Exchanger block entity.
+ * Heat Exchanger — passive thermal conditioner.
  *
- * <p>Converts one fluid into another in timed batches.  Each completed batch
- * adds {@link HeatExchangerRecipe#getProductionHeat()} °C to this machine's
- * own {@link #storedHeat}.  Processing is <em>blocked</em> while
- * {@code storedHeat >= recipe.maxHeat} — the machine must radiate its heat
- * away to adjacent {@link IHeatReceiver} blocks before the next batch can run.
- *
- * <p>Radiation works exactly like the Heater: each tick the machine pushes
- * {@code storedHeat / 60} °C to every adjacent receiver, and the absorbed
- * amount is deducted from {@code storedHeat}.
+ * <p>When fluid enters, its temperature is averaged with ambient
+ * ({@code outTemp = (fluidTemp + ambient) / 2}) and output.  The machine itself
+ * absorbs the fluid's temperature ({@code machineTemp = fluidTemp}) and emits that
+ * as its thermal-network temperature.  machineTemp decays toward ambient at 1 °C
+ * per {@link #DECAY_INTERVAL} ticks.  Processing is gated: the machine can only
+ * condition a fluid whose temperature differs from machineTemp by at least 1 °C.
  */
-public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvider, IColdReceiver, IThermalNode {
+public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvider, IThermalNode {
 
     public static final int INPUT_TANK_CAPACITY  = 8_000;
     public static final int OUTPUT_TANK_CAPACITY = 8_000;
-    /**
-     * Hard ceiling for stored heat — prevents runaway accumulation even if no
-     * adjacent receivers drain the heat away.
-     */
-    public static final int MAX_STORED_HEAT = 1_000;
-    /**
-     * Ticks required to complete one processing batch (20 ticks = 1 second).
-     */
-    public static final int PROCESS_TIME = 20;
+    public static final int PROCESS_TIME         = 20;
+    public static final int BATCH_SIZE           = 1_000;
+
+    private static final int AMBIENT_TEMPERATURE = 20;
+    private static final int DECAY_INTERVAL      = 20;
 
     private FluidStack inputFluid  = FluidStack.EMPTY;
     private FluidStack outputFluid = FluidStack.EMPTY;
 
-    private static final int AMBIENT_TEMPERATURE = 15;
-    private static final int DECAY_INTERVAL      = 20;
-
-    /** Accumulated heat produced by this machine. */
-    private int storedHeat   = 0;
-    /** Recipe's maxHeat, cached here so the GUI can display it without a recipe lookup. */
-    private int maxHeat      = 0;
+    private int machineTemp  = AMBIENT_TEMPERATURE;
     private int processTimer = 0;
     private int decayTimer   = 0;
-
-    private HeatExchangerRecipe currentRecipe   = null;
-    private String              currentRecipeId = null;
 
     public final ResourceHandler<FluidResource> inputFluidHandler  = new InputTankHandler();
     public final ResourceHandler<FluidResource> outputFluidHandler = new OutputTankHandler();
 
-    // ContainerData indices:
-    // 0 storedHeat  1 maxHeat  2 processTimer
-    // 3 inFluidAmt  4 inFluidCap  5 outFluidAmt  6 outFluidCap
+    // [0]=machineTemp  [1]=processTimer
+    // [2]=inAmt  [3]=inCap  [4]=outAmt  [5]=outCap
     protected final ContainerData dataAccess = new ContainerData() {
-        @Override public int get(int index) {
-            return switch (index) {
-                case 0 -> storedHeat;
-                case 1 -> maxHeat;
-                case 2 -> processTimer;
-                case 3 -> inputFluid.getAmount();
-                case 4 -> INPUT_TANK_CAPACITY;
-                case 5 -> outputFluid.getAmount();
-                case 6 -> OUTPUT_TANK_CAPACITY;
+        @Override public int get(int i) {
+            return switch (i) {
+                case 0 -> machineTemp;
+                case 1 -> processTimer;
+                case 2 -> inputFluid.getAmount();
+                case 3 -> INPUT_TANK_CAPACITY;
+                case 4 -> outputFluid.getAmount();
+                case 5 -> OUTPUT_TANK_CAPACITY;
                 default -> 0;
             };
         }
-        @Override public void set(int index, int value) {
-            switch (index) {
-                case 0 -> storedHeat   = value;
-                case 1 -> maxHeat      = value;
-                case 2 -> processTimer = value;
-            }
+        @Override public void set(int i, int value) {
+            if (i == 0) machineTemp  = value;
+            if (i == 1) processTimer = value;
         }
-        @Override public int getCount() { return 7; }
+        @Override public int getCount() { return 6; }
     };
 
     public HeatExchangerBlockEntity(BlockPos pos, BlockState state) {
         super(OmniTechBlockEntities.HEAT_EXCHANGER.get(), pos, state);
     }
 
-    @Override
-    public Component getDisplayName() {
-        return Component.translatable("container.omnitech.heat_exchanger");
-    }
+    @Override public Component getDisplayName() { return Component.translatable("container.omnitech.heat_exchanger"); }
 
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory inv, Player player) {
         return new HeatExchangerMenu(containerId, inv, this, dataAccess);
     }
 
+    @Override public Packet<ClientGamePacketListener> getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(this); }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        var reporter = new ProblemReporter.ScopedCollector(this.problemPath(), com.mojang.logging.LogUtils.getLogger());
+        try (reporter) {
+            var out = net.minecraft.world.level.storage.TagValueOutput.createWithContext(reporter, registries);
+            saveAdditional(out);
+            return out.buildResult();
+        }
+    }
+
     // ── IThermalNode ──────────────────────────────────────────────────────────
 
     @Override
-    public float getTemperature() { return AMBIENT_TEMP + storedHeat; }
+    public float getTemperature() { return machineTemp; }
 
+    // The machine is a thermal source; its temperature is set by fluid physics alone.
     @Override
-    public void applyHeat(float dT) {
-        if (dT < 0) storedHeat = Math.max(0, storedHeat + (int) dT);
-    }
-
-    // ── IColdReceiver ─────────────────────────────────────────────────────────
-
-    @Override
-    public int addCold(int celsius) {
-        if (storedHeat <= 0) return 0;
-        int absorbed = Math.min(celsius, storedHeat);
-        storedHeat -= absorbed;
-        return absorbed;
-    }
+    public void applyHeat(float dT) {}
 
     // ── Server tick ───────────────────────────────────────────────────────────
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
             HeatExchangerBlockEntity be) {
-
         boolean changed = false;
         Direction facing = state.getValue(HeatExchangerBlock.FACING);
 
-        // 1. Pull input fluid from the front-face network
         if (be.inputFluid.getAmount() < INPUT_TANK_CAPACITY) {
-            var source = level.getCapability(Capabilities.Fluid.BLOCK,
-                    pos.relative(facing), facing.getOpposite());
-            if (source != null) {
-                changed |= tryPullFluid(source, be.inputFluidHandler);
-            }
+            var src = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(facing), facing.getOpposite());
+            if (src != null) changed |= FluidNetworkUtil.tryPullFluid(src, be.inputFluidHandler);
         }
 
-        // 2. Match recipe
-        Optional<HeatExchangerRecipe> found =
-                HeatExchangerRecipeManager.findRecipe(be.inputFluid);
-        if (found.isPresent()) {
-            HeatExchangerRecipe recipe = found.get();
-            if (!recipe.getId().equals(be.currentRecipeId)) {
-                be.currentRecipe   = recipe;
-                be.currentRecipeId = recipe.getId();
-                be.maxHeat         = recipe.getMaxHeat();
-                be.processTimer    = 0;
-                changed = true;
-            }
-        } else {
-            if (be.currentRecipe != null) {
-                be.currentRecipe   = null;
-                be.currentRecipeId = null;
-                be.maxHeat         = 0;
-                be.processTimer    = 0;
-                changed = true;
-            }
-        }
-
-        // 3. Advance process timer — only when cool enough and conditions met
-        if (be.currentRecipe != null && be.storedHeat < be.maxHeat && be.canProcess()) {
+        if (be.canProcess()) {
             be.processTimer++;
             if (be.processTimer >= PROCESS_TIME) {
                 be.process();
-                changed = true;
             }
             changed = true;
         } else if (be.processTimer > 0) {
-            // Recipe gone or machine overheating — reset timer
             be.processTimer = 0;
             changed = true;
         }
 
-        // 4. Heat is now extracted by adjacent ThermalConductorBlockEntity tiles via IThermalNode.
-
-        // 5. Ambient decay — storedHeat drifts 1°C toward 15 every 20 ticks
-        if (be.storedHeat != AMBIENT_TEMPERATURE) {
+        // Ambient decay — machineTemp drifts toward ambient by 1 °C every DECAY_INTERVAL ticks
+        if (be.machineTemp != AMBIENT_TEMPERATURE) {
             be.decayTimer++;
             if (be.decayTimer >= DECAY_INTERVAL) {
                 be.decayTimer = 0;
-                if (be.storedHeat > AMBIENT_TEMPERATURE) be.storedHeat--;
-                else be.storedHeat++;
+                if (be.machineTemp > AMBIENT_TEMPERATURE) be.machineTemp--;
+                else be.machineTemp++;
                 changed = true;
             }
         } else {
             be.decayTimer = 0;
         }
 
-        // 6. Update LIT state
-        boolean shouldBeLit = be.currentRecipe != null
-                && be.storedHeat > 0 && be.storedHeat < be.maxHeat;
+        boolean shouldBeLit = be.canProcess() || be.machineTemp != AMBIENT_TEMPERATURE;
         if (state.getValue(HeatExchangerBlock.LIT) != shouldBeLit) {
             level.setBlock(pos, state.setValue(HeatExchangerBlock.LIT, shouldBeLit), 3);
             changed = true;
         }
 
-        // 7. Push output fluid to back-face network
         if (!be.outputFluid.isEmpty()) {
-            Direction back = facing.getOpposite();
             var neighbor = level.getCapability(Capabilities.Fluid.BLOCK,
-                    pos.relative(back), back.getOpposite());
-            if (neighbor != null) {
-                changed |= tryPushFluid(be.outputFluidHandler, neighbor);
-            }
+                    pos.relative(facing.getOpposite()), facing);
+            if (neighbor != null) changed |= FluidNetworkUtil.tryPushFluid(be.outputFluidHandler, neighbor);
         }
 
-        if (changed) {
-            be.setChanged();
-            level.sendBlockUpdated(pos, state, state, 3);
-        }
+        if (changed) { be.setChanged(); if (!level.isClientSide()) level.sendBlockUpdated(pos, state, state, 3); }
     }
 
-    private boolean canProcess() {
-        if (currentRecipe == null) return false;
-        if (inputFluid.isEmpty() || !inputFluid.is(currentRecipe.getInputFluid().getFluid())) return false;
-        if (inputFluid.getAmount() < currentRecipe.getInputFluidAmount()) return false;
+    // ── Processing ────────────────────────────────────────────────────────────
 
-        FluidStack out = currentRecipe.getOutputFluid();
+    private boolean canProcess() {
+        if (inputFluid.isEmpty() || inputFluid.getAmount() < BATCH_SIZE) return false;
+        int fluidT = fluidTemp(inputFluid);
+        // machine must differ from fluid by at least 1 °C to exchange heat
+        if (Math.abs(machineTemp - fluidT) < 1) return false;
         if (outputFluid.isEmpty()) return true;
-        if (!outputFluid.is(out.getFluid())) return false;
-        return (OUTPUT_TANK_CAPACITY - outputFluid.getAmount()) >= out.getAmount();
+        if (!FluidStack.isSameFluid(outputFluid, inputFluid)) return false;
+        return (OUTPUT_TANK_CAPACITY - outputFluid.getAmount()) >= BATCH_SIZE;
     }
 
     private void process() {
-        // Consume input fluid
-        int toConsume = currentRecipe.getInputFluidAmount();
-        inputFluid.shrink(toConsume);
+        int fluidT  = fluidTemp(inputFluid);
+        int fluidP  = fluidPressure(inputFluid);
+        int outTemp = (fluidT + AMBIENT_TEMPERATURE) / 2;
+        machineTemp = fluidT;
+
+        FluidResource res = FluidResource.of(inputFluid);
+        inputFluid.shrink(BATCH_SIZE);
         if (inputFluid.getAmount() <= 0) inputFluid = FluidStack.EMPTY;
 
-        // Produce output fluid
-        FluidStack out = currentRecipe.getOutputFluid();
-        if (!out.isEmpty()) {
-            if (outputFluid.isEmpty()) {
-                outputFluid = out.copy();
-            } else {
-                outputFluid.grow(out.getAmount());
-            }
-        }
+        FluidStack produced = res.toStack(BATCH_SIZE);
+        applyAttributes(produced, outTemp, fluidP);
 
-        // Accumulate produced heat (capped at MAX_STORED_HEAT)
-        storedHeat = Math.min(MAX_STORED_HEAT, storedHeat + currentRecipe.getProductionHeat());
+        if (outputFluid.isEmpty()) {
+            outputFluid = produced;
+        } else {
+            int existAmt = outputFluid.getAmount();
+            int mixTemp  = (fluidTemp(outputFluid) * existAmt + outTemp * BATCH_SIZE) / (existAmt + BATCH_SIZE);
+            int mixPres  = (fluidPressure(outputFluid) * existAmt + fluidP * BATCH_SIZE) / (existAmt + BATCH_SIZE);
+            outputFluid.grow(BATCH_SIZE);
+            applyAttributes(outputFluid, mixTemp, mixPres);
+        }
 
         processTimer = 0;
         setChanged();
     }
 
-    // ── Fluid transfer helpers ────────────────────────────────────────────────
+    // ── Helpers ───────────────────────────────────────────────────────────────
 
-    private static boolean tryPullFluid(ResourceHandler<FluidResource> from,
-                                        ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            for (int i = 0; i < from.size(); i++) {
-                FluidResource res = from.getResource(i);
-                if (!res.isEmpty()) {
-                    int available = Math.min(1000, (int) from.getAmountAsLong(i));
-                    int accepted  = to.insert(res, available, tx);
-                    if (accepted > 0) {
-                        from.extract(res, accepted, tx);
-                        tx.commit();
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+    private static void applyAttributes(FluidStack fs, int temp, int pressure) {
+        if (temp != 20) fs.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), temp);
+        else            fs.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        if (pressure != 101) fs.set(OmniTechDataComponents.FLUID_PRESSURE.get(), pressure);
+        else                 fs.remove(OmniTechDataComponents.FLUID_PRESSURE.get());
     }
 
-    private static boolean tryPushFluid(ResourceHandler<FluidResource> from,
-                                        ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            FluidResource res = from.getResource(0);
-            if (res.isEmpty()) return false;
-            int available = Math.min(1000, (int) from.getAmountAsLong(0));
-            int accepted  = to.insert(res, available, tx);
-            if (accepted > 0) {
-                from.extract(res, accepted, tx);
-                tx.commit();
-                return true;
-            }
-        }
-        return false;
+    private static int fluidTemp(FluidStack fs) {
+        if (fs.isEmpty()) return 20;
+        Integer t = fs.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        return t != null ? t : 20;
     }
+
+    private static int fluidPressure(FluidStack fs) {
+        if (fs.isEmpty()) return 101;
+        Integer p = fs.get(OmniTechDataComponents.FLUID_PRESSURE.get());
+        return p != null ? p : 101;
+    }
+
+    // ── Accessors ─────────────────────────────────────────────────────────────
+
+    public FluidStack getInputFluid()  { return inputFluid; }
+    public FluidStack getOutputFluid() { return outputFluid; }
+    public int getMachineTemp()        { return machineTemp; }
+    public int getProcessTimer()       { return processTimer; }
 
     // ── Tank handlers ─────────────────────────────────────────────────────────
 
-    private class InputTankHandler extends SnapshotJournal<FluidStack>
-            implements ResourceHandler<FluidResource> {
-
+    private class InputTankHandler extends SnapshotJournal<FluidStack> implements ResourceHandler<FluidResource> {
         @Override protected FluidStack createSnapshot()         { return inputFluid.copy(); }
         @Override protected void revertToSnapshot(FluidStack s) { inputFluid = s; }
         @Override public int size()                             { return 1; }
-
-        @Override
-        public FluidResource getResource(int index) {
-            return inputFluid.isEmpty() ? FluidResource.EMPTY : FluidResource.of(inputFluid);
-        }
-
-        @Override public long getAmountAsLong(int index)                       { return inputFluid.getAmount(); }
-        @Override public long getCapacityAsLong(int index, FluidResource res)  { return INPUT_TANK_CAPACITY; }
-        @Override public boolean isValid(int index, FluidResource resource)    { return true; }
-
-        @Override
-        public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
-            if (resource.isEmpty() || (!inputFluid.isEmpty() && !resource.matches(inputFluid))) return 0;
+        @Override public FluidResource getResource(int i)      { return inputFluid.isEmpty() ? FluidResource.EMPTY : FluidResource.of(inputFluid); }
+        @Override public long getAmountAsLong(int i)           { return inputFluid.getAmount(); }
+        @Override public long getCapacityAsLong(int i, FluidResource r) { return INPUT_TANK_CAPACITY; }
+        @Override public boolean isValid(int i, FluidResource r)        { return true; }
+        @Override public int insert(int i, FluidResource resource, int amount, TransactionContext tx) {
+            if (resource.isEmpty() || (!inputFluid.isEmpty() && !FluidStack.isSameFluid(inputFluid, resource.toStack(1)))) return 0;
             int toFill = Math.min(amount, INPUT_TANK_CAPACITY - inputFluid.getAmount());
             if (toFill <= 0) return 0;
             updateSnapshots(tx);
-            inputFluid = inputFluid.isEmpty() ? resource.toStack(toFill)
-                    : inputFluid.copyWithAmount(inputFluid.getAmount() + toFill);
+            inputFluid = FluidNetworkUtil.blendInto(inputFluid, resource, toFill);
             return toFill;
         }
-
-        @Override
-        public int extract(int index, FluidResource resource, int amount, TransactionContext tx) {
-            return 0;
-        }
+        @Override public int extract(int i, FluidResource r, int amount, TransactionContext tx) { return 0; }
     }
 
-    private class OutputTankHandler extends SnapshotJournal<FluidStack>
-            implements ResourceHandler<FluidResource> {
-
+    private class OutputTankHandler extends SnapshotJournal<FluidStack> implements ResourceHandler<FluidResource> {
         @Override protected FluidStack createSnapshot()         { return outputFluid.copy(); }
         @Override protected void revertToSnapshot(FluidStack s) { outputFluid = s; }
         @Override public int size()                             { return 1; }
-
-        @Override
-        public FluidResource getResource(int index) {
-            return outputFluid.isEmpty() ? FluidResource.EMPTY : FluidResource.of(outputFluid);
-        }
-
-        @Override public long getAmountAsLong(int index)                       { return outputFluid.getAmount(); }
-        @Override public long getCapacityAsLong(int index, FluidResource res)  { return OUTPUT_TANK_CAPACITY; }
-        @Override public boolean isValid(int index, FluidResource resource)    { return false; }
-
-        @Override
-        public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
-            return 0;
-        }
-
-        @Override
-        public int extract(int index, FluidResource resource, int amount, TransactionContext tx) {
+        @Override public FluidResource getResource(int i)      { return outputFluid.isEmpty() ? FluidResource.EMPTY : FluidResource.of(outputFluid); }
+        @Override public long getAmountAsLong(int i)           { return outputFluid.getAmount(); }
+        @Override public long getCapacityAsLong(int i, FluidResource r) { return OUTPUT_TANK_CAPACITY; }
+        @Override public boolean isValid(int i, FluidResource r)        { return false; }
+        @Override public int insert(int i, FluidResource r, int amount, TransactionContext tx) { return 0; }
+        @Override public int extract(int i, FluidResource resource, int amount, TransactionContext tx) {
             if (outputFluid.isEmpty() || !resource.matches(outputFluid)) return 0;
             int toExt = Math.min(amount, outputFluid.getAmount());
             updateSnapshots(tx);
@@ -376,42 +277,16 @@ public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvide
         }
     }
 
-    // ── Accessors ─────────────────────────────────────────────────────────────
-
-    public FluidStack getInputFluid()  { return inputFluid; }
-    public FluidStack getOutputFluid() { return outputFluid; }
-    public int getStoredHeat()         { return storedHeat; }
-    public int getMaxHeat()            { return maxHeat; }
-    public int getProcessTimer()       { return processTimer; }
-
-    // ── Sync & persistence ────────────────────────────────────────────────────
-
-    @Override
-    public Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
-    }
-
-    @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        var reporter = new ProblemReporter.ScopedCollector(this.problemPath(),
-                com.mojang.logging.LogUtils.getLogger());
-        try (reporter) {
-            var out = net.minecraft.world.level.storage.TagValueOutput
-                    .createWithContext(reporter, registries);
-            saveAdditional(out);
-            return out.buildResult();
-        }
-    }
+    // ── Persistence ───────────────────────────────────────────────────────────
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         inputFluid   = input.read("InputFluid",  FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
         outputFluid  = input.read("OutputFluid", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
-        storedHeat   = input.getIntOr("StoredHeat",   0);
-        maxHeat      = input.getIntOr("MaxHeat",       0);
-        processTimer = input.getIntOr("ProcessTimer",  0);
-        decayTimer   = input.getIntOr("DecayTimer",    0);
+        machineTemp  = input.getIntOr("MachineTemp",  AMBIENT_TEMPERATURE);
+        processTimer = input.getIntOr("ProcessTimer", 0);
+        decayTimer   = input.getIntOr("DecayTimer",   0);
     }
 
     @Override
@@ -419,8 +294,7 @@ public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvide
         super.saveAdditional(output);
         output.store("InputFluid",  FluidStack.OPTIONAL_CODEC, inputFluid);
         output.store("OutputFluid", FluidStack.OPTIONAL_CODEC, outputFluid);
-        output.putInt("StoredHeat",   storedHeat);
-        output.putInt("MaxHeat",      maxHeat);
+        output.putInt("MachineTemp",  machineTemp);
         output.putInt("ProcessTimer", processTimer);
         output.putInt("DecayTimer",   decayTimer);
     }

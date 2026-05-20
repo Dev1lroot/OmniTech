@@ -5,6 +5,8 @@
 package com.dev1lroot.mcmods.omnitech.blocks.thermal;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.gui.SmelterMenu;
 import com.dev1lroot.mcmods.omnitech.io.IColdReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
@@ -160,23 +162,6 @@ public class SmelterBlockEntity extends BaseContainerBlockEntity implements IHea
         return absorbed;
     }
 
-    private static boolean tryPushFluid(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to) {
-        try (Transaction tx = Transaction.openRoot()) {
-            FluidResource res = from.getResource(0);
-            if (!res.isEmpty()) {
-                // Eject 1000mB per tick (or whatever rate you prefer)
-                int available = Math.min(1000, (int)from.getAmountAsLong(0));
-                int accepted = to.insert(res, available, tx);
-                if (accepted > 0) {
-                    from.extract(res, accepted, tx);
-                    tx.commit();
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     // ── Server tick ───────────────────────────────────────────────────────────
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, SmelterBlockEntity be) {
@@ -226,19 +211,14 @@ public class SmelterBlockEntity extends BaseContainerBlockEntity implements IHea
             changed = true;
         }
 
-        // NEW: Auto-ejection logic
+        // Push output fluid evenly to all neighbouring receivers
         if (!be.outputFluid.isEmpty()) {
-            // You can choose a specific direction (e.g., pos.below())
-            // or loop through Direction.values() to eject to all sides.
+            List<ResourceHandler<FluidResource>> targets = new ArrayList<>();
             for (Direction direction : Direction.values()) {
                 var neighbor = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(direction), direction.getOpposite());
-                if (neighbor != null) {
-                    if (tryPushFluid(be.fluidHandler, neighbor)) {
-                        changed = true;
-                        // Optional: break; if you only want to push to one side per tick
-                    }
-                }
+                if (neighbor != null) targets.add(neighbor);
             }
+            changed |= FluidNetworkUtil.tryPushFluidEvenly(be.fluidHandler, targets);
         }
 
         if (changed) {
@@ -295,9 +275,35 @@ public class SmelterBlockEntity extends BaseContainerBlockEntity implements IHea
             if (outputFluid.isEmpty()) {
                 outputFluid = out.copy();
             } else {
-                outputFluid.grow(out.getAmount());
+                int existAmt = outputFluid.getAmount();
+                int newAmt   = out.getAmount();
+                int mixTemp  = (fluidTemp(outputFluid) * existAmt + fluidTemp(out) * newAmt) / (existAmt + newAmt);
+                int mixPres  = (fluidPressure(outputFluid) * existAmt + fluidPressure(out) * newAmt) / (existAmt + newAmt);
+                outputFluid.grow(newAmt);
+                applyAttributes(outputFluid, mixTemp, mixPres);
             }
         }
+    }
+
+    // ── Fluid attribute helpers ───────────────────────────────────────────────
+
+    private static int fluidTemp(FluidStack fs) {
+        if (fs.isEmpty()) return 20;
+        Integer t = fs.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        return t != null ? t : 20;
+    }
+
+    private static int fluidPressure(FluidStack fs) {
+        if (fs.isEmpty()) return 101;
+        Integer p = fs.get(OmniTechDataComponents.FLUID_PRESSURE.get());
+        return p != null ? p : 101;
+    }
+
+    private static void applyAttributes(FluidStack fs, int temp, int pressure) {
+        if (temp != 20) fs.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), temp);
+        else            fs.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        if (pressure != 101) fs.set(OmniTechDataComponents.FLUID_PRESSURE.get(), pressure);
+        else                 fs.remove(OmniTechDataComponents.FLUID_PRESSURE.get());
     }
 
     // ── Accessors ─────────────────────────────────────────────────────────────

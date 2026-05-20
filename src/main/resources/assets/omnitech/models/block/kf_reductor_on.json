@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all":      "omnitech:block/kf_reductor_on",
-    "particle": "omnitech:block/kf_reductor_on"
-  }
-}

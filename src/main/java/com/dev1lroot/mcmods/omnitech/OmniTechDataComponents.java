@@ -212,6 +212,18 @@ public class OmniTechDataComponents {
                             .networkSynchronized(ByteBufCodecs.INT)
                             .build());
 
+    /**
+     * Absolute pressure (kPa) of a fluid stack. Absent = atmospheric (101 kPa).
+     * Set by the Rotary Compressor and removed/lowered by the Decompressor.
+     * Equalized across connected fluid networks like temperature.
+     */
+    public static final Supplier<DataComponentType<Integer>> FLUID_PRESSURE =
+            REGISTRY.register("fluid_pressure", () ->
+                    DataComponentType.<Integer>builder()
+                            .persistent(Codec.INT)
+                            .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
     public static void register(IEventBus bus) {
         REGISTRY.register(bus);
     }

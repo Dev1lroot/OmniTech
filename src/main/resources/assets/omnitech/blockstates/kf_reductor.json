@@ -1,6 +1,8 @@
 {
-  "variants": {
-    "powered=false": { "model": "omnitech:block/kf_reductor" },
-    "powered=true":  { "model": "omnitech:block/kf_reductor_on" }
-  }
+  "multipart": [
+    { "apply": { "model": "omnitech:block/kf_reductor" } },
+    { "when": { "powered": "false" }, "apply": { "model": "omnitech:block/kf_reductor_axis" } },
+    { "when": { "powered": "false" }, "apply": { "model": "omnitech:block/kf_reductor_axis", "y": 90 } },
+    { "when": { "powered": "false" }, "apply": { "model": "omnitech:block/kf_reductor_axis", "x": 270 } }
+  ]
 }

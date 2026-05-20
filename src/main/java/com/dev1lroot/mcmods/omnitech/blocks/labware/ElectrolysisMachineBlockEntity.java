@@ -5,6 +5,8 @@
 package com.dev1lroot.mcmods.omnitech.blocks.labware;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.gui.ElectrolysisMachineMenu;
 import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
@@ -222,7 +224,7 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
         if (be.inputFluid.getAmount() < INPUT_TANK_CAPACITY) {
             var src = level.getCapability(Capabilities.Fluid.BLOCK,
                     pos.relative(facing), facing.getOpposite());
-            if (src != null) changed |= tryPullFluid(src, be.inputFluidHandler);
+            if (src != null) changed |= FluidNetworkUtil.tryPullFluid(src, be.inputFluidHandler);
         }
 
         // 2. Find / update recipe
@@ -281,17 +283,17 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
         if (!be.anodeFluid.isEmpty()) {
             Direction dir = facing.getCounterClockWise();
             var nb = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(dir), dir.getOpposite());
-            if (nb != null) changed |= tryPushFluid(be.anodeFluidHandler, nb);
+            if (nb != null) changed |= FluidNetworkUtil.tryPushFluid(be.anodeFluidHandler, nb);
         }
         if (!be.cathodeFluid.isEmpty()) {
             Direction dir = facing.getClockWise();
             var nb = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(dir), dir.getOpposite());
-            if (nb != null) changed |= tryPushFluid(be.cathodeFluidHandler, nb);
+            if (nb != null) changed |= FluidNetworkUtil.tryPushFluid(be.cathodeFluidHandler, nb);
         }
         if (!be.solutionFluid.isEmpty()) {
             Direction dir = facing.getOpposite();
             var nb = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(dir), dir.getOpposite());
-            if (nb != null) changed |= tryPushFluid(be.solutionFluidHandler, nb);
+            if (nb != null) changed |= FluidNetworkUtil.tryPushFluid(be.solutionFluidHandler, nb);
         }
 
         if (changed) {
@@ -327,22 +329,43 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
         // Add anode output
         FluidStack outAnode = currentRecipe.getOutputAnode();
         if (!outAnode.isEmpty()) {
-            if (anodeFluid.isEmpty()) anodeFluid = outAnode.copy();
-            else anodeFluid.grow(outAnode.getAmount());
+            if (anodeFluid.isEmpty()) {
+                anodeFluid = outAnode.copy();
+            } else {
+                int ea = anodeFluid.getAmount(), na = outAnode.getAmount();
+                anodeFluid.grow(na);
+                applyAttributes(anodeFluid,
+                        (fluidTemp(anodeFluid) * ea + fluidTemp(outAnode) * na) / (ea + na),
+                        (fluidPressure(anodeFluid) * ea + fluidPressure(outAnode) * na) / (ea + na));
+            }
         }
 
         // Add cathode output
         FluidStack outCathode = currentRecipe.getOutputCathode();
         if (!outCathode.isEmpty()) {
-            if (cathodeFluid.isEmpty()) cathodeFluid = outCathode.copy();
-            else cathodeFluid.grow(outCathode.getAmount());
+            if (cathodeFluid.isEmpty()) {
+                cathodeFluid = outCathode.copy();
+            } else {
+                int ec = cathodeFluid.getAmount(), nc = outCathode.getAmount();
+                cathodeFluid.grow(nc);
+                applyAttributes(cathodeFluid,
+                        (fluidTemp(cathodeFluid) * ec + fluidTemp(outCathode) * nc) / (ec + nc),
+                        (fluidPressure(cathodeFluid) * ec + fluidPressure(outCathode) * nc) / (ec + nc));
+            }
         }
 
         // Add solution output
         FluidStack outSolution = currentRecipe.getOutputSolution();
         if (!outSolution.isEmpty()) {
-            if (solutionFluid.isEmpty()) solutionFluid = outSolution.copy();
-            else solutionFluid.grow(outSolution.getAmount());
+            if (solutionFluid.isEmpty()) {
+                solutionFluid = outSolution.copy();
+            } else {
+                int es = solutionFluid.getAmount(), ns = outSolution.getAmount();
+                solutionFluid.grow(ns);
+                applyAttributes(solutionFluid,
+                        (fluidTemp(solutionFluid) * es + fluidTemp(outSolution) * ns) / (es + ns),
+                        (fluidPressure(solutionFluid) * es + fluidPressure(outSolution) * ns) / (es + ns));
+            }
         }
 
         // Damage electrode items
@@ -362,43 +385,6 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
         } else {
             stack.setDamageValue(newDmg);
         }
-    }
-
-    // ── Fluid transfer utilities ──────────────────────────────────────────────
-
-    private static boolean tryPullFluid(ResourceHandler<FluidResource> from,
-            ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            for (int i = 0; i < from.size(); i++) {
-                FluidResource res = from.getResource(i);
-                if (!res.isEmpty()) {
-                    int avail    = Math.min(1000, (int) from.getAmountAsLong(i));
-                    int accepted = to.insert(res, avail, tx);
-                    if (accepted > 0) {
-                        from.extract(res, accepted, tx);
-                        tx.commit();
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private static boolean tryPushFluid(ResourceHandler<FluidResource> from,
-            ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            FluidResource res = from.getResource(0);
-            if (res.isEmpty()) return false;
-            int avail    = Math.min(1000, (int) from.getAmountAsLong(0));
-            int accepted = to.insert(res, avail, tx);
-            if (accepted > 0) {
-                from.extract(res, accepted, tx);
-                tx.commit();
-                return true;
-            }
-        }
-        return false;
     }
 
     // ── Fluid accessors (for GUI) ─────────────────────────────────────────────
@@ -429,13 +415,11 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
         @Override public long getCapacityAsLong(int i, FluidResource r){ return INPUT_TANK_CAPACITY; }
         @Override public boolean isValid(int i, FluidResource r)      { return true; }
         @Override public int insert(int i, FluidResource res, int amt, TransactionContext tx) {
-            if (res.isEmpty() || (!inputFluid.isEmpty() && !res.matches(inputFluid))) return 0;
+            if (res.isEmpty() || (!inputFluid.isEmpty() && !FluidStack.isSameFluid(inputFluid, res.toStack(1)))) return 0;
             int toFill = Math.min(amt, INPUT_TANK_CAPACITY - inputFluid.getAmount());
             if (toFill <= 0) return 0;
             updateSnapshots(tx);
-            inputFluid = inputFluid.isEmpty()
-                    ? res.toStack(toFill)
-                    : inputFluid.copyWithAmount(inputFluid.getAmount() + toFill);
+            inputFluid = FluidNetworkUtil.blendInto(inputFluid, res, toFill);
             return toFill;
         }
         @Override public int extract(int i, FluidResource res, int amt, TransactionContext tx) { return 0; }
@@ -499,6 +483,27 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
             if (solutionFluid.getAmount() <= 0) solutionFluid = FluidStack.EMPTY;
             return toExt;
         }
+    }
+
+    // ── Fluid attribute helpers ───────────────────────────────────────────────
+
+    private static int fluidTemp(FluidStack fs) {
+        if (fs.isEmpty()) return 20;
+        Integer t = fs.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        return t != null ? t : 20;
+    }
+
+    private static int fluidPressure(FluidStack fs) {
+        if (fs.isEmpty()) return 101;
+        Integer p = fs.get(OmniTechDataComponents.FLUID_PRESSURE.get());
+        return p != null ? p : 101;
+    }
+
+    private static void applyAttributes(FluidStack fs, int temp, int pressure) {
+        if (temp != 20) fs.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), temp);
+        else            fs.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        if (pressure != 101) fs.set(OmniTechDataComponents.FLUID_PRESSURE.get(), pressure);
+        else                 fs.remove(OmniTechDataComponents.FLUID_PRESSURE.get());
     }
 
     // ── Persistence ───────────────────────────────────────────────────────────

@@ -2,5 +2,9 @@
   "density": 4510,
   "viscosity": 3000,
   "temperature": 1973,
-  "light_level": 3
+  "light_level": 3,
+  "min_temp": 1668,
+  "max_temp": 3300,
+  "min_pressure": 0,
+  "max_pressure": 500
 }

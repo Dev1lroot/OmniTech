@@ -5,12 +5,14 @@
 package com.dev1lroot.mcmods.omnitech.blocks.thermal.boiler;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.io.IColdReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
 import com.dev1lroot.mcmods.omnitech.blocks.ThermalState;
 import com.dev1lroot.mcmods.omnitech.gui.BoilerMenu;
 import com.dev1lroot.mcmods.omnitech.recipes.BoilerRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.BoilerRecipeManager;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -191,7 +193,7 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
                         ? null
                         : be.waterTank.getFluid();
 
-                dirty |= tryPullAnyFluid(neighbor, be.waterHandler, currentFluid);
+                dirty |= FluidNetworkUtil.tryPullFluid(neighbor, be.waterHandler, currentFluid, TRANSFER_RATE);
             }
         }
 
@@ -254,7 +256,7 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
             ResourceHandler<FluidResource> output = level.getCapability(
                     Capabilities.Fluid.BLOCK, pos.above(), Direction.DOWN);
             if (output != null)
-                dirty |= tryPushFluid(be.steamHandler, output);
+                dirty |= FluidNetworkUtil.tryPushFluid(be.steamHandler, output, TRANSFER_RATE);
         }
 
         // 7. Update LIT and THERMAL blockstates
@@ -274,28 +276,6 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
         }
     }
 
-    private static boolean tryPullAnyFluid(ResourceHandler<FluidResource> from,
-                                           ResourceHandler<FluidResource> to,
-                                           @Nullable net.minecraft.world.level.material.Fluid filter) {
-        try (Transaction tx = Transaction.openRoot()) {
-            for (int i = 0; i < from.size(); i++) {
-                FluidResource res = from.getResource(i);
-                if (!res.isEmpty()) {
-                    // Если фильтр задан, проверяем совпадение. Если null — берем любую.
-                    if (filter == null || res.is(filter)) {
-                        int available = Math.min(TRANSFER_RATE, from.getAmountAsInt(i));
-                        int accepted  = to.insert(res, available, tx);
-                        if (accepted > 0) {
-                            from.extract(res, accepted, tx);
-                            tx.commit();
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
 
     private boolean canProcess() {
         if (currentRecipe == null) return false;
@@ -337,11 +317,22 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
         waterTank = waterTank.copyWithAmount(waterTank.getAmount() - toConsume);
         if (waterTank.getAmount() <= 0) waterTank = FluidStack.EMPTY;
 
-        // Produce output fluid (steam)
+        // Produce output fluid (steam) with temperature based on stored heat
         FluidStack out = currentRecipe.getOutputFluidStack();
         if (!out.isEmpty()) {
-            if (steamTank.isEmpty()) steamTank = out.copy();
-            else steamTank.grow(out.getAmount());
+            int steamTemp = Math.max(100, AMBIENT_TEMPERATURE + storedHeat);
+            FluidStack produced = out.copy();
+            produced.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), steamTemp);
+            if (steamTank.isEmpty()) {
+                steamTank = produced;
+            } else {
+                int existAmt = steamTank.getAmount();
+                Integer existTBox = steamTank.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+                int existTemp = existTBox != null ? existTBox : 100;
+                int blended = (existTemp * existAmt + steamTemp * out.getAmount()) / (existAmt + out.getAmount());
+                steamTank.grow(out.getAmount());
+                steamTank.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), blended);
+            }
         }
 
         // Roll item result
@@ -356,45 +347,6 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
             // If slot is full and item was rolled, it is lost (blocked by canProcess for chance=1.0)
         }
 
-    }
-
-    // ── Fluid transfer helpers ────────────────────────────────────────────────
-
-    private static boolean tryPullFluid(ResourceHandler<FluidResource> from,
-                                        ResourceHandler<FluidResource> to,
-                                        net.minecraft.world.level.material.Fluid filter) {
-        try (Transaction tx = Transaction.openRoot()) {
-            for (int i = 0; i < from.size(); i++) {
-                FluidResource res = from.getResource(i);
-                if (!res.isEmpty() && res.is(filter)) {
-                    int available = Math.min(TRANSFER_RATE, from.getAmountAsInt(i));
-                    int accepted  = to.insert(res, available, tx);
-                    if (accepted > 0) {
-                        from.extract(res, accepted, tx);
-                        tx.commit();
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private static boolean tryPushFluid(ResourceHandler<FluidResource> from,
-                                        ResourceHandler<FluidResource> to) {
-        try (Transaction tx = Transaction.openRoot()) {
-            FluidResource res = from.getResource(0);
-            if (!res.isEmpty()) {
-                int available = Math.min(TRANSFER_RATE, (int) from.getAmountAsLong(0));
-                int accepted  = to.insert(res, available, tx);
-                if (accepted > 0) {
-                    from.extract(res, accepted, tx);
-                    tx.commit();
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     // ── Persistence ───────────────────────────────────────────────────────────
@@ -469,9 +421,7 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity implements IHeat
             int toInsert = Math.min(amount, space);
             if (toInsert <= 0) return 0;
             updateSnapshots(tx);
-            waterTank = waterTank.isEmpty()
-                    ? resource.toStack(toInsert)
-                    : waterTank.copyWithAmount(waterTank.getAmount() + toInsert);
+            waterTank = FluidNetworkUtil.blendInto(waterTank, resource, toInsert);
             return toInsert;
         }
 

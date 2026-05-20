@@ -126,19 +126,18 @@ public class FluidPipeBlockEntity extends BlockEntity {
         @Override
         public boolean isValid(int index, FluidResource resource) {
             if (index != 0) return false;
-            return fluid.isEmpty() || resource.matches(fluid);
+            return fluid.isEmpty() || FluidStack.isSameFluid(fluid, resource.toStack(1));
         }
 
         @Override
         public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
             if (index != 0 || resource.isEmpty() || amount <= 0) return 0;
-            if (!fluid.isEmpty() && !resource.matches(fluid)) return 0;
+            if (!fluid.isEmpty() && !FluidStack.isSameFluid(fluid, resource.toStack(1))) return 0;
             int space = CAPACITY - fluid.getAmount();
             int toInsert = Math.min(amount, space);
             if (toInsert <= 0) return 0;
             updateSnapshots(tx);
-            fluid = fluid.isEmpty() ? resource.toStack(toInsert)
-                    : fluid.copyWithAmount(fluid.getAmount() + toInsert);
+            fluid = FluidNetworkUtil.blendInto(fluid, resource, toInsert);
             return toInsert;
         }
 

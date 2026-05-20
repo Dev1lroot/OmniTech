@@ -39,13 +39,10 @@ import java.util.Set;
  *       supply to the shared network total.</li>
  * </ul>
  *
- * <p><b>Supply/demand accounting:</b> the BFS first collects every node reachable
- * from {@code source}, sums up total supply (own + all other generators found) and
- * total demand (from all {@link IKineticReceiver} nodes).  If supply ≥ demand,
- * every receiver gets {@link IKineticReceiver#addKineticForce} called and every
- * pipe's rotation speed is set proportional to the total KF.  If supply &lt;
- * demand, receivers are <em>not</em> powered (the network stalls) but pipes still
- * animate so the player can see the generator is running.
+ * <p><b>Supply accounting:</b> the BFS sums up total supply (own source + all
+ * other generators found), then delivers that total to every receiver unconditionally.
+ * Machines accumulate KF tick-by-tick and fire when their buffer reaches the cycle
+ * cost, so a low-supply network simply runs slower rather than stalling.
  *
  * <p>KF values use a fixed-point scale: <b>10 units = 1 KF</b>.
  */
@@ -60,9 +57,8 @@ public final class KineticNetworkUtil {
     /**
      * BFS from {@code source} through the kinetic pipe network.
      *
-     * <p>Phase 1 collects all reachable nodes and computes total supply vs demand.
-     * Phase 2 dispatches force if supply ≥ demand, or withholds it to stall
-     * machines when the network is overloaded.
+     * <p>Phase 1 collects all reachable nodes and sums total supply.
+     * Phase 2 delivers that supply to every receiver unconditionally.
      *
      * @param level        the server-side level
      * @param source       position of the KF source (generator / stirling engine)
@@ -78,7 +74,6 @@ public final class KineticNetworkUtil {
         List<IKineticReceiver> receivers = new ArrayList<>();
 
         float totalSupply = ownKfUnits;
-        float totalDemand = 0;
 
         // ── Phase 1: BFS collection ────────────────────────────────────────────
 
@@ -141,33 +136,26 @@ public final class KineticNetworkUtil {
 
                 if (be instanceof IKineticReceiver receiver) {
                     receivers.add(receiver);
-                    totalDemand += receiver.getKfDemand();
                 }
             }
         }
 
         // ── Phase 2: dispatch ──────────────────────────────────────────────────
 
-        boolean powered = totalSupply >= totalDemand;
-
-        // Always refresh pipe animations (so they spin whenever a generator is running,
-        // even if the network is stalled — player can see supply is available)
+        // Pipes and reductors animate whenever any KF is flowing
         for (PipeNode pn : pipes) {
             BlockState pipeState = level.getBlockState(pn.pos());
-            pn.be().refreshPoweredTimer(level, pn.pos(), pipeState, powered ? totalSupply : 0);
+            pn.be().refreshPoweredTimer(level, pn.pos(), pipeState, totalSupply);
         }
 
-        // Reductors animate whenever KF passes through them
         for (ReductorNode rn : reductors) {
             BlockState rState = level.getBlockState(rn.pos());
-            rn.be().refreshPoweredTimer(level, rn.pos(), rState);
+            rn.be().refreshPoweredTimer(level, rn.pos(), rState, totalSupply);
         }
 
-        // Only deliver force to machines if supply is sufficient
-        if (powered) {
-            for (IKineticReceiver receiver : receivers) {
-                receiver.addKineticForce(totalSupply);
-            }
+        // Always deliver KF so machines can accumulate when supply < demand
+        for (IKineticReceiver receiver : receivers) {
+            receiver.addKineticForce(totalSupply);
         }
     }
 }

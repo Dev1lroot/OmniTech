@@ -57,20 +57,11 @@ public class OmniTechJeiPlugin implements IModPlugin {
     public static final RecipeType<ChemicalReactorRecipe> CHEMICAL_REACTOR =
             RecipeType.create(OmniTech.MODID, "chemical_reactor", ChemicalReactorRecipe.class);
 
-    public static final RecipeType<HeatExchangerRecipe> HEAT_EXCHANGER =
-            RecipeType.create(OmniTech.MODID, "heat_exchanger", HeatExchangerRecipe.class);
-
-    public static final RecipeType<DecompressorRecipe> DECOMPRESSOR =
-            RecipeType.create(OmniTech.MODID, "decompressor", DecompressorRecipe.class);
-
     public static final RecipeType<ElectrolysisRecipe> ELECTROLYSIS =
             RecipeType.create(OmniTech.MODID, "electrolysis", ElectrolysisRecipe.class);
 
     public static final RecipeType<FractionalDistillationRecipe> FRACTIONAL_DISTILLATION =
             RecipeType.create(OmniTech.MODID, "fractional_distillation", FractionalDistillationRecipe.class);
-
-    public static final RecipeType<RotaryCompressionRecipe> COMPRESSION =
-            RecipeType.create(OmniTech.MODID, "compression", RotaryCompressionRecipe.class);
 
     public static final RecipeType<SolvationRecipe> SOLVATION =
             RecipeType.create(OmniTech.MODID, "solvation", SolvationRecipe.class);
@@ -100,11 +91,8 @@ public class OmniTechJeiPlugin implements IModPlugin {
                 new BoilerCategory(gui),
                 new FoundryCategory(gui),
                 new ChemicalReactorCategory(gui),
-                new HeatExchangerCategory(gui),
-                new DecompressorCategory(gui),
                 new ElectrolysisCategory(gui),
                 new FractionalDistillationCategory(gui),
-                new CompressionCategory(gui),
                 new SolvationCategory(gui),
                 new FluidCollectorCategory(gui)
         );
@@ -121,11 +109,8 @@ public class OmniTechJeiPlugin implements IModPlugin {
         registration.addRecipes(BOILER,                   BoilerRecipeManager.getAllRecipes());
         registration.addRecipes(FOUNDRY,                  FoundryRecipeManager.getAllRecipes());
         registration.addRecipes(CHEMICAL_REACTOR,         ChemicalReactorRecipeManager.getAllRecipes());
-        registration.addRecipes(HEAT_EXCHANGER,           HeatExchangerRecipeManager.getAllRecipes());
-        registration.addRecipes(DECOMPRESSOR,             DecompressorRecipeManager.getAllRecipes());
         registration.addRecipes(ELECTROLYSIS,             ElectrolysisRecipeManager.getAllRecipes());
         registration.addRecipes(FRACTIONAL_DISTILLATION,  FractionalDistillationRecipeManager.getAllRecipes());
-        registration.addRecipes(COMPRESSION,              RotaryCompressionRecipeManager.getAllRecipes());
         registration.addRecipes(SOLVATION,                SolvationRecipeManager.getAllRecipes());
         registration.addRecipes(FLUID_COLLECTOR,          FluidCollectorRecipeManager.getAllRecipes());
     }
@@ -141,11 +126,8 @@ public class OmniTechJeiPlugin implements IModPlugin {
         registration.addRecipeCatalysts(BOILER,                  OmniTechBlocks.BOILER.get());
         registration.addRecipeCatalysts(FOUNDRY,                 OmniTechBlocks.FOUNDRY.get());
         registration.addRecipeCatalysts(CHEMICAL_REACTOR,        OmniTechBlocks.CHEMICAL_REACTOR.get());
-        registration.addRecipeCatalysts(HEAT_EXCHANGER,          OmniTechBlocks.HEAT_EXCHANGER.get());
-        registration.addRecipeCatalysts(DECOMPRESSOR,            OmniTechBlocks.DECOMPRESSOR.get());
         registration.addRecipeCatalysts(ELECTROLYSIS,            OmniTechBlocks.ELECTROLYSIS_MACHINE.get());
         registration.addRecipeCatalysts(FRACTIONAL_DISTILLATION, OmniTechBlocks.FRACTIONAL_DISTILLER.get());
-        registration.addRecipeCatalysts(COMPRESSION,             OmniTechBlocks.ROTARY_COMPRESSOR.get());
         registration.addRecipeCatalysts(SOLVATION,               OmniTechBlocks.SOLVATION_MACHINE.get());
         registration.addRecipeCatalysts(FLUID_COLLECTOR,         OmniTechBlocks.FLUID_COLLECTOR.get());
     }
@@ -456,84 +438,6 @@ public class OmniTechJeiPlugin implements IModPlugin {
         }
     }
 
-    // ── Heat Exchanger: fluid in → fluid out + heat ───────────────────────────
-
-    static class HeatExchangerCategory implements IRecipeCategory<HeatExchangerRecipe> {
-        private final IDrawable background;
-        private final IDrawable icon;
-        private final IDrawable arrow;
-
-        HeatExchangerCategory(IGuiHelper gui) {
-            this.background = gui.createBlankDrawable(160, 65);
-            this.icon       = gui.createDrawableItemLike(OmniTechBlocks.HEAT_EXCHANGER.get());
-            this.arrow      = gui.getRecipeArrow();
-        }
-
-        @Override public RecipeType<HeatExchangerRecipe> getRecipeType() { return HEAT_EXCHANGER; }
-        @Override public Component getTitle() { return Component.translatable("jei.omnitech.heat_exchanger"); }
-        @Override public int getWidth()  { return 160; }
-        @Override public int getHeight() { return 65; }
-        @Override public IDrawable getIcon() { return icon; }
-
-        @Override
-        public void setRecipe(IRecipeLayoutBuilder builder, HeatExchangerRecipe recipe, IFocusGroup focuses) {
-            FluidStack in = recipe.getInputFluid();
-            if (!in.isEmpty())
-                builder.addInputSlot(0, 2).addFluidStack(in.getFluid(), in.getAmount()).setFluidRenderer(in.getAmount(), false, 16, 36);
-
-            FluidStack out = recipe.getOutputFluid();
-            if (!out.isEmpty())
-                builder.addOutputSlot(116, 2).addFluidStack(out.getFluid(), out.getAmount()).setFluidRenderer(out.getAmount(), false, 16, 36);
-        }
-
-        @Override
-        public void draw(HeatExchangerRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
-            Font font = Minecraft.getInstance().font;
-            arrow.draw(graphics, 56, 12);
-            graphics.text(font, "+" + recipe.getProductionHeat() + "°C/batch", 0, 46, 0x555555, false);
-            graphics.text(font, "Max: " + recipe.getMaxHeat() + "°C", 0, 56, 0x555555, false);
-        }
-    }
-
-    // ── Decompressor: fluid in → fluid out + cold ─────────────────────────────
-
-    static class DecompressorCategory implements IRecipeCategory<DecompressorRecipe> {
-        private final IDrawable background;
-        private final IDrawable icon;
-        private final IDrawable arrow;
-
-        DecompressorCategory(IGuiHelper gui) {
-            this.background = gui.createBlankDrawable(160, 65);
-            this.icon       = gui.createDrawableItemLike(OmniTechBlocks.DECOMPRESSOR.get());
-            this.arrow      = gui.getRecipeArrow();
-        }
-
-        @Override public RecipeType<DecompressorRecipe> getRecipeType() { return DECOMPRESSOR; }
-        @Override public Component getTitle() { return Component.translatable("jei.omnitech.decompressor"); }
-        @Override public int getWidth()  { return 160; }
-        @Override public int getHeight() { return 65; }
-        @Override public IDrawable getIcon() { return icon; }
-
-        @Override
-        public void setRecipe(IRecipeLayoutBuilder builder, DecompressorRecipe recipe, IFocusGroup focuses) {
-            FluidStack in = recipe.getInputFluid();
-            if (!in.isEmpty())
-                builder.addInputSlot(0, 2).addFluidStack(in.getFluid(), in.getAmount()).setFluidRenderer(in.getAmount(), false, 16, 36);
-
-            FluidStack out = recipe.getOutputFluid();
-            if (!out.isEmpty())
-                builder.addOutputSlot(116, 2).addFluidStack(out.getFluid(), out.getAmount()).setFluidRenderer(out.getAmount(), false, 16, 36);
-        }
-
-        @Override
-        public void draw(DecompressorRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
-            Font font = Minecraft.getInstance().font;
-            arrow.draw(graphics, 56, 12);
-            graphics.text(font, "+" + recipe.getProductionCold() + "°C cold/batch", 0, 46, 0x555555, false);
-            graphics.text(font, "Max: " + recipe.getMaxCold() + "°C cold", 0, 56, 0x555555, false);
-        }
-    }
-
     // ── Electrolysis: fluid + anode + cathode → 3 fluids + energy ────────────
 
     static class ElectrolysisCategory implements IRecipeCategory<ElectrolysisRecipe> {
@@ -625,44 +529,6 @@ public class OmniTechJeiPlugin implements IModPlugin {
             arrow.draw(graphics, 56, 12);
             graphics.text(font, recipe.getRequiredTemperature() + "°C", 0, 46, 0x555555, false);
             graphics.text(font, recipe.getProductionTime() + "t", 0, 56, 0x555555, false);
-        }
-    }
-
-    // ── Compression: fluid in → fluid out + kinetic force ────────────────────
-
-    static class CompressionCategory implements IRecipeCategory<RotaryCompressionRecipe> {
-        private final IDrawable background;
-        private final IDrawable icon;
-        private final IDrawable arrow;
-
-        CompressionCategory(IGuiHelper gui) {
-            this.background = gui.createBlankDrawable(160, 65);
-            this.icon       = gui.createDrawableItemLike(OmniTechBlocks.ROTARY_COMPRESSOR.get());
-            this.arrow      = gui.getRecipeArrow();
-        }
-
-        @Override public RecipeType<RotaryCompressionRecipe> getRecipeType() { return COMPRESSION; }
-        @Override public Component getTitle() { return Component.translatable("jei.omnitech.compression"); }
-        @Override public int getWidth()  { return 160; }
-        @Override public int getHeight() { return 65; }
-        @Override public IDrawable getIcon() { return icon; }
-
-        @Override
-        public void setRecipe(IRecipeLayoutBuilder builder, RotaryCompressionRecipe recipe, IFocusGroup focuses) {
-            FluidStack in = recipe.getInputFluid();
-            if (!in.isEmpty())
-                builder.addInputSlot(0, 2).addFluidStack(in.getFluid(), in.getAmount()).setFluidRenderer(in.getAmount(), false, 16, 36);
-
-            FluidStack out = recipe.getOutputFluid();
-            if (!out.isEmpty())
-                builder.addOutputSlot(116, 2).addFluidStack(out.getFluid(), out.getAmount()).setFluidRenderer(out.getAmount(), false, 16, 36);
-        }
-
-        @Override
-        public void draw(RotaryCompressionRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
-            Font font = Minecraft.getInstance().font;
-            arrow.draw(graphics, 56, 12);
-            graphics.text(font, "KF: " + recipe.getRequiredKineticForce(), 0, 46, 0x555555, false);
         }
     }
 

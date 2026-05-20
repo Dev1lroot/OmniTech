@@ -37,7 +37,6 @@ import com.dev1lroot.mcmods.omnitech.recipes.ManualMaceratorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.SmelterRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ElectrolysisRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.SolvationRecipeManager;
-import com.dev1lroot.mcmods.omnitech.recipes.RotaryCompressionRecipeManager;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.ElectrolysisMachineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.ElectrolysisMachineBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.SolvationMachineBlockEntity;
@@ -49,10 +48,8 @@ import com.dev1lroot.mcmods.omnitech.blocks.plumbing.FluidCollectorBlock;
 import com.dev1lroot.mcmods.omnitech.recipes.FluidCollectorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.HeatExchangerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.HeatExchangerBlock;
-import com.dev1lroot.mcmods.omnitech.recipes.HeatExchangerRecipeManager;
 import com.dev1lroot.mcmods.omnitech.blocks.pressure.decompressor.DecompressorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.pressure.decompressor.DecompressorBlock;
-import com.dev1lroot.mcmods.omnitech.recipes.DecompressorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.FractionalDistillerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.FractionalDistillerBlock;
 import com.dev1lroot.mcmods.omnitech.recipes.FractionalDistillationRecipeManager;
@@ -89,6 +86,7 @@ import com.dev1lroot.mcmods.omnitech.network.SpeakerTonePacket;
 import com.dev1lroot.mcmods.omnitech.network.DepressurizeReactorPacket;
 import com.dev1lroot.mcmods.omnitech.network.ScramReactorPacket;
 import com.dev1lroot.mcmods.omnitech.network.StartReactorPacket;
+import com.dev1lroot.mcmods.omnitech.network.SetMachineValuePacket;
 import com.dev1lroot.mcmods.omnitech.network.SetControlRodPacket;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.keyboard.KeyboardBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
@@ -537,6 +535,10 @@ public class OmniTech {
                 StartReactorPacket.TYPE,
                 StartReactorPacket.CODEC,
                 StartReactorPacket::handle);
+        event.registrar("1").playToServer(
+                SetMachineValuePacket.TYPE,
+                SetMachineValuePacket.CODEC,
+                SetMachineValuePacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -733,39 +735,12 @@ public class OmniTech {
                 }, taskExecutor).thenCompose(barrier::wait);
             }
         });
-        event.addListener(Identifier.fromNamespaceAndPath(MODID, "compression_recipes"), new PreparableReloadListener() {
-            @Override
-            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
-                    PreparationBarrier barrier, Executor reloadExecutor) {
-                return CompletableFuture.runAsync(() -> {
-                    RotaryCompressionRecipeManager.loadRecipes(sharedState.resourceManager());
-                }, taskExecutor).thenCompose(barrier::wait);
-            }
-        });
         event.addListener(Identifier.fromNamespaceAndPath(MODID, "electrolysis_recipes"), new PreparableReloadListener() {
             @Override
             public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
                     PreparationBarrier barrier, Executor reloadExecutor) {
                 return CompletableFuture.runAsync(() -> {
                     ElectrolysisRecipeManager.loadRecipes(sharedState.resourceManager());
-                }, taskExecutor).thenCompose(barrier::wait);
-            }
-        });
-        event.addListener(Identifier.fromNamespaceAndPath(MODID, "heat_exchanger_recipes"), new PreparableReloadListener() {
-            @Override
-            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
-                    PreparationBarrier barrier, Executor reloadExecutor) {
-                return CompletableFuture.runAsync(() -> {
-                    HeatExchangerRecipeManager.loadRecipes(sharedState.resourceManager());
-                }, taskExecutor).thenCompose(barrier::wait);
-            }
-        });
-        event.addListener(Identifier.fromNamespaceAndPath(MODID, "decompressor_recipes"), new PreparableReloadListener() {
-            @Override
-            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
-                    PreparationBarrier barrier, Executor reloadExecutor) {
-                return CompletableFuture.runAsync(() -> {
-                    DecompressorRecipeManager.loadRecipes(sharedState.resourceManager());
                 }, taskExecutor).thenCompose(barrier::wait);
             }
         });

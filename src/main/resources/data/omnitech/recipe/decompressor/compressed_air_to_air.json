@@ -1,6 +1,0 @@
-{
-  "maxCold": 200,
-  "productionCold": 50,
-  "inputFluid":  { "fluid": "omnitech:compressed_air", "amount": 1000 },
-  "outputFluid": { "fluid": "omnitech:air",             "amount": 1000 }
-}

@@ -17,6 +17,8 @@ import net.minecraft.world.entity.player.Inventory;
 public class HeatExchangerScreen extends AbstractContainerScreen<HeatExchangerMenu> {
 
     private static final GuiLayout LAYOUT = GuiLayoutLoader.load("heat_exchanger");
+    private static final int AMBIENT = 20;
+
     private GuiDataContext dataCtx;
 
     public HeatExchangerScreen(HeatExchangerMenu menu, Inventory playerInventory, Component title) {
@@ -47,49 +49,26 @@ public class HeatExchangerScreen extends AbstractContainerScreen<HeatExchangerMe
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractLabels(graphics, mouseX, mouseY);
 
-        // Heat display (centre)
-        int stored  = menu.getStoredHeat();
-        int maxHeat = menu.getMaxHeat();
+        int machineTemp = menu.getMachineTemp();
 
-        int heatColor;
-        if (maxHeat <= 0 || stored == 0) {
-            heatColor = 0xFF888888;
-        } else {
-            float ratio = stored / (float) maxHeat;
-            if (ratio < 0.5f)      heatColor = 0xFF44AAFF;
-            else if (ratio < 0.8f) heatColor = 0xFFFF8800;
-            else                    heatColor = 0xFFFF2200;
-        }
+        int tempColor;
+        if (machineTemp == AMBIENT)      tempColor = 0xFF888888;
+        else if (machineTemp > AMBIENT)  tempColor = machineTemp > 500 ? 0xFFFF2200 : 0xFFFF8800;
+        else                             tempColor = machineTemp < -200 ? 0xFF00CCFF : 0xFF44AAFF;
 
-        String tempStr = stored + " °C";
+        String tempStr = machineTemp + " °C";
         int textW = this.font.width(tempStr);
         new HudWriter(graphics, this.font, (LAYOUT.width - textW) / 2, 22, 10, false)
-                .setColor(heatColor).write(tempStr);
+                .setColor(tempColor).write(tempStr);
 
-        if (maxHeat > 0) {
-            String threshStr = "max " + maxHeat + " °C";
-            int threshW = this.font.width(threshStr);
-            HudWriter threshWriter = new HudWriter(graphics, this.font,
-                    (LAYOUT.width - threshW) / 2, 32, 10, false);
-            if (stored >= maxHeat) {
-                threshWriter.setColor(0xFFFF2200).write("OVERHEATED");
-            } else {
-                threshWriter.setColor(0xFF606060).write(threshStr);
-            }
-        }
-
-        // Process label
-        HudWriter procWriter = new HudWriter(graphics, this.font, 52, 60, 10, false);
-        if (maxHeat > 0 && stored < maxHeat) {
+        HudWriter procWriter = new HudWriter(graphics, this.font, 52, 47, 10, false);
+        if (menu.getProcessTimer() > 0) {
             procWriter.setColor(0xFF44AA44)
                     .write(String.format("%.0f%%", menu.getProcessProgressScaled()))
                     .setColor(0xFF606060).write(" processing");
-        } else if (maxHeat > 0) {
-            procWriter.setColor(0xFFFF2200).write("cooling down...");
         } else {
-            procWriter.setColor(0xFF888888).write("no recipe");
+            procWriter.setColor(0xFF888888).write("idle");
         }
-
     }
 
     @Override

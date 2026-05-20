@@ -5,8 +5,10 @@
 package com.dev1lroot.mcmods.omnitech.blocks.plumbing;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.gui.FluidFillerMenu;
 import com.dev1lroot.mcmods.omnitech.items.FluidCanisterItem;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -147,7 +149,7 @@ public class FluidFillerBlockEntity extends BaseContainerBlockEntity implements 
         if (be.inputFluid.getAmount() < INPUT_TANK_CAPACITY) {
             var src = level.getCapability(Capabilities.Fluid.BLOCK,
                     pos.relative(facing), facing.getOpposite());
-            if (src != null) changed |= tryPullFluid(src, be.inputFluidHandler);
+            if (src != null) changed |= FluidNetworkUtil.tryPullFluid(src, be.inputFluidHandler);
         }
 
         // 2. Process canister
@@ -189,7 +191,7 @@ public class FluidFillerBlockEntity extends BaseContainerBlockEntity implements 
             Direction back = facing.getOpposite();
             var nb = level.getCapability(Capabilities.Fluid.BLOCK,
                     pos.relative(back), back.getOpposite());
-            if (nb != null) changed |= tryPushFluid(be.outputFluidHandler, nb);
+            if (nb != null) changed |= FluidNetworkUtil.tryPushFluid(be.outputFluidHandler, nb);
         }
 
         if (changed) {
@@ -221,7 +223,11 @@ public class FluidFillerBlockEntity extends BaseContainerBlockEntity implements 
         if (outputFluid.isEmpty()) {
             outputFluid = canisterFluid.copyWithAmount(drained);
         } else {
+            int existAmt = outputFluid.getAmount();
+            int mixTemp  = (fluidTemp(outputFluid) * existAmt + fluidTemp(canisterFluid) * drained) / (existAmt + drained);
+            int mixPres  = (fluidPressure(outputFluid) * existAmt + fluidPressure(canisterFluid) * drained) / (existAmt + drained);
             outputFluid.grow(drained);
+            applyAttributes(outputFluid, mixTemp, mixPres);
         }
         FluidCanisterItem.setFluid(canister, FluidStack.EMPTY);
         items.set(SLOT_INPUT_CANISTER, ItemStack.EMPTY);
@@ -234,43 +240,6 @@ public class FluidFillerBlockEntity extends BaseContainerBlockEntity implements 
         if (tank.isEmpty()) return true;
         if (!tank.is(incoming.getFluid())) return false;
         return (OUTPUT_TANK_CAPACITY - tank.getAmount()) >= incoming.getAmount();
-    }
-
-    // ── Fluid transfer utilities ──────────────────────────────────────────────
-
-    private static boolean tryPullFluid(ResourceHandler<FluidResource> from,
-            ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            for (int i = 0; i < from.size(); i++) {
-                FluidResource res = from.getResource(i);
-                if (!res.isEmpty()) {
-                    int avail    = Math.min(1000, (int) from.getAmountAsLong(i));
-                    int accepted = to.insert(res, avail, tx);
-                    if (accepted > 0) {
-                        from.extract(res, accepted, tx);
-                        tx.commit();
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private static boolean tryPushFluid(ResourceHandler<FluidResource> from,
-            ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            FluidResource res = from.getResource(0);
-            if (res.isEmpty()) return false;
-            int avail    = Math.min(1000, (int) from.getAmountAsLong(0));
-            int accepted = to.insert(res, avail, tx);
-            if (accepted > 0) {
-                from.extract(res, accepted, tx);
-                tx.commit();
-                return true;
-            }
-        }
-        return false;
     }
 
     // ── WorldlyContainer ──────────────────────────────────────────────────────
@@ -310,13 +279,11 @@ public class FluidFillerBlockEntity extends BaseContainerBlockEntity implements 
         @Override public long getCapacityAsLong(int i, FluidResource r){ return INPUT_TANK_CAPACITY; }
         @Override public boolean isValid(int i, FluidResource r)       { return true; }
         @Override public int insert(int i, FluidResource res, int amt, TransactionContext tx) {
-            if (res.isEmpty() || (!inputFluid.isEmpty() && !res.matches(inputFluid))) return 0;
+            if (res.isEmpty() || (!inputFluid.isEmpty() && !FluidStack.isSameFluid(inputFluid, res.toStack(1)))) return 0;
             int toFill = Math.min(amt, INPUT_TANK_CAPACITY - inputFluid.getAmount());
             if (toFill <= 0) return 0;
             updateSnapshots(tx);
-            inputFluid = inputFluid.isEmpty()
-                    ? res.toStack(toFill)
-                    : inputFluid.copyWithAmount(inputFluid.getAmount() + toFill);
+            inputFluid = FluidNetworkUtil.blendInto(inputFluid, res, toFill);
             return toFill;
         }
         @Override public int extract(int i, FluidResource res, int amt, TransactionContext tx) { return 0; }
@@ -340,6 +307,27 @@ public class FluidFillerBlockEntity extends BaseContainerBlockEntity implements 
             if (outputFluid.getAmount() <= 0) outputFluid = FluidStack.EMPTY;
             return toExt;
         }
+    }
+
+    // ── Fluid attribute helpers ───────────────────────────────────────────────
+
+    private static int fluidTemp(FluidStack fs) {
+        if (fs.isEmpty()) return 20;
+        Integer t = fs.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        return t != null ? t : 20;
+    }
+
+    private static int fluidPressure(FluidStack fs) {
+        if (fs.isEmpty()) return 101;
+        Integer p = fs.get(OmniTechDataComponents.FLUID_PRESSURE.get());
+        return p != null ? p : 101;
+    }
+
+    private static void applyAttributes(FluidStack fs, int temp, int pressure) {
+        if (temp != 20) fs.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), temp);
+        else            fs.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        if (pressure != 101) fs.set(OmniTechDataComponents.FLUID_PRESSURE.get(), pressure);
+        else                 fs.remove(OmniTechDataComponents.FLUID_PRESSURE.get());
     }
 
     // ── Persistence ───────────────────────────────────────────────────────────

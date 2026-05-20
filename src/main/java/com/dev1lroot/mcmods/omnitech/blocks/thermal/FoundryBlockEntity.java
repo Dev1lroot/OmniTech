@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.thermal;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.gui.FoundryMenu;
+import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.io.IColdReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
 import com.dev1lroot.mcmods.omnitech.recipes.FoundryRecipe;
@@ -185,25 +186,6 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
         return absorbed;
     }
 
-    private static boolean tryPullFluid(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to) {
-        try (var tx = Transaction.openRoot()) {
-            for (int i = 0; i < from.size(); i++) {
-                FluidResource res = from.getResource(i);
-                if (!res.isEmpty() && to.isValid(0, res)) {
-                    // Try to pull up to 1000mB (or whatever your preferred throughput is)
-                    int available = (int) Math.min(1000, from.getAmountAsLong(i));
-                    int accepted = to.insert(res, available, tx);
-                    if (accepted > 0) {
-                        from.extract(res, accepted, tx);
-                        tx.commit();
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
     // ── Server tick ───────────────────────────────────────────────────────────
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, FoundryBlockEntity be) {
@@ -226,7 +208,7 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
             var topPos = pos.above();
             var fluidSource = level.getCapability(Capabilities.Fluid.BLOCK, topPos, Direction.DOWN);
             if (fluidSource != null) {
-                changed |= tryPullFluid(fluidSource, be.fluidHandler);
+                changed |= FluidNetworkUtil.tryPullFluid(fluidSource, be.fluidHandler);
             }
         }
 
@@ -404,20 +386,18 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
         @Override
         public boolean isValid(int index, FluidResource resource) {
             if (index != 0) return false;
-            return inputFluid.isEmpty() || resource.matches(inputFluid);
+            return inputFluid.isEmpty() || FluidStack.isSameFluid(inputFluid, resource.toStack(1));
         }
 
         @Override
         public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
             if (index != 0 || resource.isEmpty() || amount <= 0) return 0;
-            if (!inputFluid.isEmpty() && !resource.matches(inputFluid)) return 0;
+            if (!inputFluid.isEmpty() && !FluidStack.isSameFluid(inputFluid, resource.toStack(1))) return 0;
             int space = INPUT_TANK_CAPACITY - inputFluid.getAmount();
             int toInsert = Math.min(amount, space);
             if (toInsert <= 0) return 0;
             updateSnapshots(tx);
-            inputFluid = inputFluid.isEmpty()
-                    ? resource.toStack(toInsert)
-                    : inputFluid.copyWithAmount(inputFluid.getAmount() + toInsert);
+            inputFluid = FluidNetworkUtil.blendInto(inputFluid, resource, toInsert);
             return toInsert;
         }
 

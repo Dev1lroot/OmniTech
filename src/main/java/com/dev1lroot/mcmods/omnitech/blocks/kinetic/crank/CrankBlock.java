@@ -106,7 +106,7 @@ public class CrankBlock extends BaseEntityBlock {
             // KF reaches every machine connected through the network.
             BlockEntity reductorBe = level.getBlockEntity(belowPos);
             if (reductorBe instanceof KineticReductorBlockEntity reductor) {
-                reductor.refreshPoweredTimer(level, belowPos, belowState);
+                reductor.refreshPoweredTimer(level, belowPos, belowState, 1);
             }
             KineticNetworkUtil.propagateKineticForce(level, belowPos, 1);
             crank.startSpin();
