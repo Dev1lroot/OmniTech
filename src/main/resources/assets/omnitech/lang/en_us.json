@@ -285,7 +285,6 @@
   "fluid.omnitech.steam": "Steam",
   "fluid.omnitech.distilled_water": "Distilled Water",
   "fluid.omnitech.nitrogen": "Nitrogen",
-  "fluid.omnitech.liquefied_air": "Liquefied Air",
   "key.omnitech.open_rocket_gui": "Open Rocket GUI",
   "key.omnitech.push_to_talk": "Push to Talk",
   "key.categories.omnitech": "OmniTech",
@@ -797,5 +796,19 @@
   "effect.omnitech.radiation": "Radiation",
 
   "entity.omnitech.penguin":   "Penguin",
-  "item.omnitech.penguin_egg": "Penguin Egg"
+  "item.omnitech.penguin_egg": "Penguin Egg",
+
+  "omnitech.fluid.phase.solid":         "Solid",
+  "omnitech.fluid.phase.liquid":        "Liquid",
+  "omnitech.fluid.phase.vapour":        "Vapour",
+  "omnitech.fluid.phase.gas":           "Gas",
+  "omnitech.fluid.phase.supercritical": "Supercritical Fluid",
+  "omnitech.fluid.phase.plasma":        "Plasma",
+
+  "omnitech.fluid.distilled_water.solid":         "Ice",
+  "omnitech.fluid.distilled_water.vapour":        "Steam",
+  "omnitech.fluid.distilled_water.supercritical": "Supercritical Water",
+  "omnitech.fluid.steam.vapour":                  "Vapour",
+  "omnitech.fluid.steam.gas":                     "Superheated Steam",
+  "omnitech.fluid.steam.supercritical":           "Supercritical Steam"
 }

@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.items;
 
+import com.dev1lroot.mcmods.omnitech.FluidPhaseUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -96,7 +97,12 @@ public class FluidCanisterItem extends Item {
     public Component getName(ItemStack stack) {
         FluidStack fluid = getFluid(stack);
         if (fluid.isEmpty()) return Component.literal("Empty Fluid Canister");
-        return Component.literal(fluid.getHoverName().getString() + " Canister");
+        Component phase = FluidPhaseUtil.getPhaseLabelComponent(fluid);
+        if (phase == null) return fluid.getHoverName().copy().append(Component.literal(" Canister"));
+        return fluid.getHoverName().copy()
+                .append(Component.literal(" ("))
+                .append(phase)
+                .append(Component.literal(") Canister"));
     }
 
     // ── Tooltip ───────────────────────────────────────────────────────────────

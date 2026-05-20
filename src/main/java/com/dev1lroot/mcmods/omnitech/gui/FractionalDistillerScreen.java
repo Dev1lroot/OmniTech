@@ -16,6 +16,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+import java.util.List;
+import java.util.Optional;
+
 /**
  * GUI screen for the Fractional Distiller multiblock.
  *
@@ -26,6 +29,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
  *   <li>Right column — one output tank per structure segment (up to 4),
  *       stacked vertically.</li>
  * </ul>
+ * Fluid details are shown as hover tooltips via {@link GuiUtil#buildFluidTooltip}.
  */
 public class FractionalDistillerScreen extends AbstractContainerScreen<FractionalDistillerMenu> {
 
@@ -36,11 +40,10 @@ public class FractionalDistillerScreen extends AbstractContainerScreen<Fractiona
     private static final int IN_X = 8,  IN_Y = 17, IN_W = 16, IN_H = 52;
 
     // Output tanks column (right side) — one per structure segment
-    private static final int OUT_X    = 152;
-    private static final int OUT_Y0   = 10; // top of first output slot
-    private static final int OUT_W    = 16;
-    private static final int OUT_H    = 14; // height per slot (shrinks as height grows)
-    private static final int OUT_GAP  = 2;  // gap between output tanks
+    private static final int OUT_X   = 152;
+    private static final int OUT_Y0  = 10;
+    private static final int OUT_W   = 16;
+    private static final int OUT_GAP = 2;
 
     // Process bar (centre bottom)
     private static final int PROC_X = 52, PROC_Y = 50, PROC_W = 72;
@@ -61,7 +64,6 @@ public class FractionalDistillerScreen extends AbstractContainerScreen<Fractiona
         super.extractBackground(graphics, mouseX, mouseY, pt);
         int x = this.leftPos, y = this.topPos;
 
-        // GUI background
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,
                 x, y, 0f, 0f, this.imageWidth, this.imageHeight, 256, 256);
 
@@ -94,38 +96,24 @@ public class FractionalDistillerScreen extends AbstractContainerScreen<Fractiona
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractLabels(graphics, mouseX, mouseY);
 
-        // ── Input fluid label ─────────────────────────────────────────────────
-        HudWriter inW = new HudWriter(graphics, font, IN_X + IN_W + 2, 20, 10, false);
-        int inAmt = menu.getInputFluidAmount();
-        if (inAmt > 0) {
-            inW.setColor(0xFF4488FF).write(menu.getInputFluid().getHoverName().getString())
-               .newLine()
-               .setColor(0xFF4488FF).write(inAmt + "")
-               .setColor(0xFF606060).write("/" + FractionalDistillerBlockEntity.INPUT_TANK_CAPACITY + " mB");
-        } else {
-            inW.setColor(0xFF888888).write("Empty");
-        }
+        // Temperature readout
+        float temp    = menu.getTemperature();
+        int   reqTemp = menu.getRequiredTemp();
 
-        // ── Temperature display ───────────────────────────────────────────────
-        int stored   = menu.getStoredHeat();
-        int reqTemp  = menu.getRequiredTemp();
-
-        int heatColor = tempColor(stored);
-        String tempStr = stored + " \u00b0C";
+        String tempStr = String.format("%.1f °C", temp);
         int textW = font.width(tempStr);
         new HudWriter(graphics, font, (imageWidth - textW) / 2, 22, 10, false)
-                .setColor(heatColor).write(tempStr);
+                .setColor(tempColor(temp)).write(tempStr);
 
-        // Required threshold
         if (reqTemp != 0) {
-            boolean met = reqTemp >= 0 ? stored >= reqTemp : stored <= reqTemp;
-            String reqStr = (reqTemp >= 0 ? "need \u2265 " : "need \u2264 ") + reqTemp + " \u00b0C";
+            boolean met = reqTemp >= 0 ? temp >= reqTemp : temp <= reqTemp;
+            String reqStr = (reqTemp >= 0 ? "need ≥ " : "need ≤ ") + reqTemp + " °C";
             int reqW = font.width(reqStr);
             new HudWriter(graphics, font, (imageWidth - reqW) / 2, 32, 10, false)
                     .setColor(met ? 0xFF44AA44 : 0xFFFF2200).write(reqStr);
         }
 
-        // ── Process bar label ─────────────────────────────────────────────────
+        // Process status
         HudWriter procW = new HudWriter(graphics, font, PROC_X, PROC_Y + 10, 10, false);
         if (menu.getProcessTotalTime() > 0 && menu.getStructureHeight() > 0) {
             float pct = menu.getProcessProgressScaled();
@@ -138,40 +126,54 @@ public class FractionalDistillerScreen extends AbstractContainerScreen<Fractiona
         } else {
             procW.setColor(0xFF888888).write("no recipe");
         }
+    }
 
-        // ── Output fluid labels (right column) ────────────────────────────────
+    @Override
+    protected void extractTooltip(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+        super.extractTooltip(g, mouseX, mouseY);
+        if (hoveredSlot != null) return;
+
+        int x = this.leftPos, y = this.topPos;
+
+        // Input tank
+        if (mouseX >= x + IN_X && mouseX < x + IN_X + IN_W
+                && mouseY >= y + IN_Y && mouseY < y + IN_Y + IN_H) {
+            List<Component> lines = GuiUtil.buildFluidTooltip(
+                    menu.getInputFluid(),
+                    menu.getInputFluidAmount(),
+                    FractionalDistillerBlockEntity.INPUT_TANK_CAPACITY);
+            g.setTooltipForNextFrame(this.font, lines, Optional.empty(), mouseX, mouseY);
+            return;
+        }
+
+        // Output tanks
         int height = Math.max(1, Math.min(menu.getStructureHeight(),
                 FractionalDistillerBlockEntity.MAX_HEIGHT));
         int slotH  = computeSlotHeight(height);
 
         for (int i = 0; i < height; i++) {
-            FluidStack fluid = menu.getOutputFluid(i);
-            int tY = OUT_Y0 + i * (slotH + OUT_GAP);
-            HudWriter outW = new HudWriter(graphics, font, OUT_X - 2, tY, 10, true);
-            if (!fluid.isEmpty()) {
-                outW.setColor(0xFFFF8800).write(fluid.getHoverName().getString())
-                    .newLine()
-                    .setColor(0xFFFF8800).write(fluid.getAmount() + "")
-                    .setColor(0xFF606060).write(" mB");
-            } else {
-                outW.setColor(0xFF888888).write("slot " + (i + 1));
+            int tY = y + OUT_Y0 + i * (slotH + OUT_GAP);
+            if (mouseX >= x + OUT_X && mouseX < x + OUT_X + OUT_W
+                    && mouseY >= tY && mouseY < tY + slotH) {
+                FluidStack fluid = menu.getOutputFluid(i);
+                List<Component> lines = GuiUtil.buildFluidTooltip(
+                        fluid, fluid.getAmount(),
+                        FractionalDistillerBlockEntity.OUTPUT_TANK_CAPACITY);
+                g.setTooltipForNextFrame(this.font, lines, Optional.empty(), mouseX, mouseY);
+                return;
             }
         }
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
-    /** Distribute the available right-column height equally among segments. */
     private static int computeSlotHeight(int count) {
-        // Total usable height ≈ 60px, shared among count slots with OUT_GAP gaps
         int totalGap = (count - 1) * OUT_GAP;
         return Math.max(8, (60 - totalGap) / count);
     }
 
-    private static int tempColor(int t) {
-        if (t <= 0)  return 0xFF44AAFF; // cold — blue
-        if (t <= 50) return 0xFF888888; // ambient — grey
-        if (t <= 200) return 0xFFFFAA00; // warm — orange
-        return 0xFFFF2200;              // hot — red
+    private static int tempColor(float t) {
+        if (t <= 0f)   return 0xFF44AAFF;
+        if (t <= 50f)  return 0xFF888888;
+        if (t <= 200f) return 0xFFFFAA00;
+        return 0xFFFF2200;
     }
 }

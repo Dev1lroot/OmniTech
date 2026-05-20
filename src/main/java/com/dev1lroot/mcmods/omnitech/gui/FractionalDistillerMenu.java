@@ -23,7 +23,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
  *
  * <h3>ContainerData layout (6 indices)</h3>
  * <pre>
- *   0  storedHeat
+ *   0  temperature×10 (0.1 °C resolution)
  *   1  requiredTemperature
  *   2  processTimer
  *   3  processTotalTime
@@ -85,8 +85,9 @@ public class FractionalDistillerMenu extends AbstractContainerMenu {
 
     // ── ContainerData accessors ───────────────────────────────────────────────
 
-    public int getStoredHeat()       { return data.get(0); }
-    public int getRequiredTemp()     { return data.get(1); }
+    /** Current machine temperature in °C (0.1 °C resolution). */
+    public float getTemperature()    { return data.get(0) / 10f; }
+    public int   getRequiredTemp()   { return data.get(1); }
     public int getProcessTimer()     { return data.get(2); }
     public int getProcessTotalTime() { return data.get(3); }
     public int getInputFluidAmount() { return data.get(4); }

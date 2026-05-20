@@ -44,18 +44,27 @@ public class FractionalDistillationRecipeManager {
                     int    reqTemp = json.get("requiredTemperature").getAsInt();
                     int    time    = json.get("productionTime").getAsInt();
 
-                    JsonObject inputObj  = json.getAsJsonObject("input");
+                    JsonObject inputObj    = json.getAsJsonObject("input");
                     String     inputFluid  = inputObj.get("fluid").getAsString();
                     int        inputAmount = inputObj.get("amount").getAsInt();
 
-                    JsonArray       outputArr    = json.getAsJsonArray("outputs");
-                    List<String>    outputFluids = new ArrayList<>();
+                    Integer minInputTemp     = inputObj.has("min_temp")     ? inputObj.get("min_temp").getAsInt()     : null;
+                    Integer maxInputTemp     = inputObj.has("max_temp")     ? inputObj.get("max_temp").getAsInt()     : null;
+                    Integer minInputPressure = inputObj.has("min_pressure") ? inputObj.get("min_pressure").getAsInt() : null;
+                    Integer maxInputPressure = inputObj.has("max_pressure") ? inputObj.get("max_pressure").getAsInt() : null;
+
+                    JsonArray       outputArr     = json.getAsJsonArray("outputs");
+                    List<String>    outputFluids  = new ArrayList<>();
                     List<Integer>   outputAmounts = new ArrayList<>();
+                    int[]           outputTemps     = new int[outputArr.size()];
+                    int[]           outputPressures = new int[outputArr.size()];
 
                     for (int i = 0; i < outputArr.size(); i++) {
                         JsonObject o = outputArr.get(i).getAsJsonObject();
                         outputFluids.add(o.get("fluid").getAsString());
                         outputAmounts.add(o.get("amount").getAsInt());
+                        outputTemps[i]     = o.has("temp")     ? o.get("temp").getAsInt()     : Integer.MIN_VALUE;
+                        outputPressures[i] = o.has("pressure") ? o.get("pressure").getAsInt() : Integer.MIN_VALUE;
                     }
 
                     String recipeId = id.getPath()
@@ -65,7 +74,10 @@ public class FractionalDistillationRecipeManager {
                     FractionalDistillationRecipe recipe = new FractionalDistillationRecipe(
                             recipeId, reqTemp, time,
                             inputFluid, inputAmount,
-                            outputFluids, outputAmounts);
+                            minInputTemp, maxInputTemp,
+                            minInputPressure, maxInputPressure,
+                            outputFluids, outputAmounts,
+                            outputTemps, outputPressures);
 
                     RECIPES.put(recipeId, recipe);
                     OmniTech.LOGGER.info(
@@ -93,11 +105,11 @@ public class FractionalDistillationRecipeManager {
      * </ul>
      */
     public static Optional<FractionalDistillationRecipe> findRecipe(
-            FluidStack inputTank, int storedHeat, int outputCount) {
+            FluidStack inputTank, float temperature, int outputCount) {
         for (FractionalDistillationRecipe recipe : RECIPES.values()) {
             if (recipe.getOutputCount() == outputCount
                     && recipe.matchesInput(inputTank)
-                    && recipe.temperatureMet(storedHeat)) {
+                    && recipe.temperatureMet(temperature)) {
                 return Optional.of(recipe);
             }
         }

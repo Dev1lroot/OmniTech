@@ -14,21 +14,31 @@ import net.neoforged.neoforge.fluids.FluidType;
  * Reads every {@code data/omnitech/fluid/<name>.json} from the mod JAR at startup
  * and registers a fluid into {@link OmniTechFluids} for each one.
  *
- * <p>Must be called before {@link OmniTechFluids#register} so that all
- * DeferredRegister entries are queued before the RegisterEvent fires.
- *
  * <p>JSON schema (all fields optional, defaults shown):
  * <pre>{@code
  * {
- *   "density":     1000,   // kg/m³, negative = lighter than air (rises)
- *   "viscosity":   1000,   // higher = thicker, slower-moving
+ *   "density":     1000,   // kg/m³, negative = lighter than air
+ *   "viscosity":   1000,
  *   "temperature":  300,   // Kelvin
- *   "light_level":   0    // 0–15, light emitted when placed as a block
+ *   "light_level":   0,    // 0–15
+ *   "min_temp":    -273,   // °C
+ *   "max_temp":   10000,   // °C
+ *   "min_pressure":   0,   // kPa
+ *   "max_pressure": 100000,
+ *
+ *   "phase_diagram": {
+ *     "melting_point":       0,      // normal melting point at 101 kPa (°C)
+ *     "boiling_point":     100,      // normal boiling point at 101 kPa (°C)
+ *     "boiling_slope":      51,      // d(T_boil)/d(ln P), °C per unit
+ *     "critical_temp":     374,      // critical point temperature (°C)
+ *     "critical_pressure": 22064,    // critical point pressure (kPa)
+ *     "triple_point_temp":    0,     // triple point temperature (°C)
+ *     "triple_point_pressure": 1,    // triple point pressure (kPa)
+ *     "plasma_temp":       -1,       // plasma onset °C; -1 = none
+ *     "has_solid":         true
+ *   }
  * }
  * }</pre>
- *
- * The registry name is taken from the filename without extension.
- * The translation key is automatically set to {@code fluid.omnitech.<name>}.
  */
 public class FluidLoader {
     private static final Gson GSON = new Gson();
@@ -41,12 +51,11 @@ public class FluidLoader {
                 .getContents();
 
         contents.visitContent(FLUID_DATA_PATH, (relativePath, resource) -> {
-            // Only direct children: data/omnitech/fluid/<name>.json
             if (!relativePath.endsWith(".json")) return;
             String remainder = relativePath.substring(FLUID_DATA_PATH.length() + 1);
-            if (remainder.contains("/")) return; // skip sub-directories
+            if (remainder.contains("/")) return;
 
-            String name = remainder.substring(0, remainder.length() - 5); // strip .json
+            String name = remainder.substring(0, remainder.length() - 5);
 
             try (var reader = resource.bufferedReader()) {
                 JsonObject json = GSON.fromJson(reader, JsonObject.class);
@@ -61,6 +70,26 @@ public class FluidLoader {
                 int minPressure = json.has("min_pressure") ? json.get("min_pressure").getAsInt() : 0;
                 int maxPressure = json.has("max_pressure") ? json.get("max_pressure").getAsInt() : 100_000;
 
+                FluidPhysicsRegistry.PhaseDiagram phaseDiagram = null;
+                if (json.has("phase_diagram")) {
+                    JsonObject pd = json.getAsJsonObject("phase_diagram");
+                    int   meltingPoint     = pd.has("melting_point")       ? pd.get("melting_point").getAsInt()       : -273;
+                    int   boilingPoint     = pd.has("boiling_point")       ? pd.get("boiling_point").getAsInt()       : 100;
+                    float boilingSlope     = pd.has("boiling_slope")       ? pd.get("boiling_slope").getAsFloat()     : 0f;
+                    int   criticalTemp     = pd.has("critical_temp")       ? pd.get("critical_temp").getAsInt()       : boilingPoint + 1000;
+                    int   criticalPressure = pd.has("critical_pressure")   ? pd.get("critical_pressure").getAsInt()   : 100_000;
+                    int   tripleTemp       = pd.has("triple_point_temp")   ? pd.get("triple_point_temp").getAsInt()   : meltingPoint;
+                    int   triplePressure   = pd.has("triple_point_pressure")? pd.get("triple_point_pressure").getAsInt(): 1;
+                    int   plasmaTemp       = pd.has("plasma_temp")         ? pd.get("plasma_temp").getAsInt()         : -1;
+                    boolean hasSolid       = !pd.has("has_solid") || pd.get("has_solid").getAsBoolean();
+
+                    phaseDiagram = new FluidPhysicsRegistry.PhaseDiagram(
+                            meltingPoint, boilingPoint, boilingSlope,
+                            criticalTemp, criticalPressure,
+                            tripleTemp, triplePressure,
+                            plasmaTemp, hasSolid);
+                }
+
                 FluidType.Properties props = FluidType.Properties.create()
                         .density(density)
                         .viscosity(viscosity)
@@ -69,9 +98,7 @@ public class FluidLoader {
 
                 OmniTechFluids.registerFluid(name, props);
                 FluidPhysicsRegistry.register(name,
-                        new FluidPhysicsRegistry.FluidPhysics(minTemp, maxTemp, minPressure, maxPressure));
-                OmniTech.LOGGER.debug("[FluidLoader] Registered: {} (density={}, viscosity={}, temp={}K, T=[{},{}] P=[{},{}])",
-                        name, density, viscosity, temperature, minTemp, maxTemp, minPressure, maxPressure);
+                        new FluidPhysicsRegistry.FluidPhysics(minTemp, maxTemp, minPressure, maxPressure, phaseDiagram));
 
             } catch (Exception e) {
                 OmniTech.LOGGER.error("[FluidLoader] Failed to parse fluid '{}': {}", name, e.getMessage());

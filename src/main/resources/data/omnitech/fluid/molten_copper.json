@@ -6,5 +6,15 @@
   "min_temp": 1085,
   "max_temp": 2600,
   "min_pressure": 0,
-  "max_pressure": 500
+  "max_pressure": 500,
+  "phase_diagram": {
+    "melting_point": 1085,
+    "boiling_point": 2562,
+    "boiling_slope": 290,
+    "critical_temp": 4562,
+    "critical_pressure": 100000,
+    "triple_point_temp": 1085,
+    "triple_point_pressure": 1,
+    "has_solid": true
+  }
 }

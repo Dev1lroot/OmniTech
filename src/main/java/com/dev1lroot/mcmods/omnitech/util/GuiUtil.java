@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.util;
 
+import com.dev1lroot.mcmods.omnitech.FluidPhaseUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTech;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import net.minecraft.ChatFormatting;
@@ -105,7 +106,15 @@ public class GuiUtil
                 lines.add(Component.literal("0 / " + capacity + " mB")
                         .withStyle(ChatFormatting.DARK_GRAY));
         } else {
-            lines.add(fluid.getHoverName().copy());
+            Component phaseSuffix = FluidPhaseUtil.getPhaseLabelComponent(fluid);
+            net.minecraft.network.chat.MutableComponent nameLine = fluid.getHoverName().copy();
+            if (phaseSuffix != null) {
+                nameLine = nameLine
+                        .append(Component.literal(" (").withStyle(ChatFormatting.DARK_GRAY))
+                        .append(phaseSuffix.copy().withStyle(ChatFormatting.DARK_GRAY))
+                        .append(Component.literal(")").withStyle(ChatFormatting.DARK_GRAY));
+            }
+            lines.add(nameLine);
             lines.add(Component.literal(amount + " / " + capacity + " mB")
                     .withStyle(ChatFormatting.GRAY));
             Integer tempBox = fluid.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());

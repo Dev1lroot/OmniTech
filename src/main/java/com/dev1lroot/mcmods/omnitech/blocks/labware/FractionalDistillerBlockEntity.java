@@ -8,9 +8,11 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.blocks.ThermalState;
+import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.FractionalDistillerMenu;
 import com.dev1lroot.mcmods.omnitech.io.IColdReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
+import com.dev1lroot.mcmods.omnitech.io.IThermalNode;
 import com.dev1lroot.mcmods.omnitech.recipes.FractionalDistillationRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.FractionalDistillationRecipeManager;
 import com.mojang.logging.LogUtils;
@@ -56,7 +58,7 @@ import java.util.Optional;
  *   <li>Only the master runs the full server tick (processing, recipe matching,
  *       heat management, output distribution).  Upper segments return early.</li>
  *   <li>Each segment has its own {@link #outputFluid} tank exposed on the back face.</li>
- *   <li>The master holds {@link #inputFluid} and {@link #storedHeat}.</li>
+ *   <li>The master holds {@link #inputFluid} and {@link #temperature}.</li>
  * </ul>
  *
  * <h3>Recipe matching</h3>
@@ -79,10 +81,8 @@ public class FractionalDistillerBlockEntity extends BlockEntity
     public static final int OUTPUT_TANK_CAPACITY =  8_000;
     public static final int MAX_HEIGHT           = 4;
 
-    public static final int MAX_HEAT         =  1000;
-    public static final int MIN_HEAT         = -1000;
-    private static final int AMBIENT_TEMPERATURE = 15;
-    private static final int DECAY_INTERVAL      = 20;
+    /** Ambient bleed rate (°C/tick) applied when no conductor is connected. */
+    private static final float AMBIENT_BLEED = 0.5f;
 
     // ── State shared by all segments ──────────────────────────────────────────
 
@@ -94,9 +94,8 @@ public class FractionalDistillerBlockEntity extends BlockEntity
     /** Fluid being processed. Only meaningful on the master. */
     FluidStack inputFluid  = FluidStack.EMPTY;
 
-    /** Thermal energy store.  Positive = hot, negative = cold. */
-    int storedHeat    = 0;
-    private int decayTimer    = 0;
+    /** Current temperature in °C, driven by the adjacent thermal conductor. */
+    float temperature = IThermalNode.AMBIENT_TEMP;
     private int processTimer  = 0;
     private int processTotalTime = 20;
     /** Cached structure height updated every tick by the master. */
@@ -113,13 +112,13 @@ public class FractionalDistillerBlockEntity extends BlockEntity
     public final ResourceHandler<FluidResource> outputFluidHandler = new OutputTankHandler();
 
     // ── ContainerData (synced from master to GUI) ─────────────────────────────
-    // Index: 0=storedHeat  1=requiredTemp  2=processTimer  3=processTotalTime
+    // Index: 0=temperature×10  1=requiredTemp  2=processTimer  3=processTotalTime
     //        4=inputFluidAmount  5=structureHeight
 
     private final ContainerData dataAccess = new ContainerData() {
         @Override public int get(int i) {
             return switch (i) {
-                case 0 -> storedHeat;
+                case 0 -> (int)(temperature * 10f);
                 case 1 -> currentRecipe != null ? currentRecipe.getRequiredTemperature() : 0;
                 case 2 -> processTimer;
                 case 3 -> processTotalTime;
@@ -130,8 +129,8 @@ public class FractionalDistillerBlockEntity extends BlockEntity
         }
         @Override public void set(int i, int v) {
             switch (i) {
-                case 0 -> storedHeat     = v;
-                case 2 -> processTimer   = v;
+                case 0 -> temperature      = v / 10f;
+                case 2 -> processTimer     = v;
                 case 3 -> processTotalTime = v;
                 case 5 -> structureHeight  = v;
             }
@@ -158,27 +157,12 @@ public class FractionalDistillerBlockEntity extends BlockEntity
     }
 
     // ── IHeatReceiver / IColdReceiver ─────────────────────────────────────────
-    // Any segment in the structure can receive heat/cold; it always routes to the master.
+    // Implemented so ThermalConductorBlock.canConnectTo() recognises this block
+    // and renders the connector arm.  Temperature is read directly from the
+    // conductor each tick in serverTick(); push-based accumulation is not used.
 
-    @Override
-    public int addHeat(int celsius) {
-        FractionalDistillerBlockEntity master = isBottomBlock() ? this : findBottomBlock();
-        if (master == null) return 0;
-        if (master.storedHeat >= MAX_HEAT) return 0;
-        int absorbed = Math.min(celsius, MAX_HEAT - master.storedHeat);
-        master.storedHeat += absorbed;
-        return absorbed;
-    }
-
-    @Override
-    public int addCold(int celsius) {
-        FractionalDistillerBlockEntity master = isBottomBlock() ? this : findBottomBlock();
-        if (master == null) return 0;
-        if (master.storedHeat <= MIN_HEAT) return 0;
-        int absorbed = Math.min(celsius, master.storedHeat - MIN_HEAT);
-        master.storedHeat -= absorbed;
-        return absorbed;
-    }
+    @Override public int addHeat(int celsius) { return 0; }
+    @Override public int addCold(int celsius) { return 0; }
 
     // ── Multiblock helpers ────────────────────────────────────────────────────
 
@@ -266,10 +250,38 @@ public class FractionalDistillerBlockEntity extends BlockEntity
         List<FractionalDistillerBlockEntity> structure = be.getStructure();
         be.structureHeight = structure.size();
 
-        // 3. Recipe matching — input + temperature + output count must align
+        // 3. Sync temperature from the most extreme adjacent conductor (any segment)
+        float bestTemp = Float.NaN;
+        for (FractionalDistillerBlockEntity seg : structure) {
+            for (Direction scanDir : Direction.values()) {
+                BlockEntity nb = level.getBlockEntity(seg.worldPosition.relative(scanDir));
+                if (nb instanceof ThermalConductorBlockEntity tc) {
+                    float t = tc.getTemperature();
+                    if (Float.isNaN(bestTemp)
+                            || Math.abs(t - IThermalNode.AMBIENT_TEMP) > Math.abs(bestTemp - IThermalNode.AMBIENT_TEMP)) {
+                        bestTemp = t;
+                    }
+                }
+            }
+        }
+        if (!Float.isNaN(bestTemp)) {
+            if (be.temperature != bestTemp) { be.temperature = bestTemp; dirty = true; }
+        } else {
+            // No conductor — drift back to ambient
+            float diff = be.temperature - IThermalNode.AMBIENT_TEMP;
+            if (Math.abs(diff) > AMBIENT_BLEED) {
+                be.temperature -= Math.signum(diff) * AMBIENT_BLEED;
+                dirty = true;
+            } else if (diff != 0f) {
+                be.temperature = IThermalNode.AMBIENT_TEMP;
+                dirty = true;
+            }
+        }
+
+        // 4. Recipe matching — input + temperature + output count must align
         Optional<FractionalDistillationRecipe> found =
                 FractionalDistillationRecipeManager.findRecipe(
-                        be.inputFluid, be.storedHeat, be.structureHeight);
+                        be.inputFluid, be.temperature, be.structureHeight);
 
         if (found.isPresent()) {
             FractionalDistillationRecipe recipe = found.get();
@@ -289,7 +301,7 @@ public class FractionalDistillerBlockEntity extends BlockEntity
             }
         }
 
-        // 4. Advance processing timer
+        // 5. Advance processing timer
         boolean canRun = be.currentRecipe != null && be.canProcess(be.currentRecipe, structure);
         if (canRun) {
             be.processTimer++;
@@ -303,21 +315,8 @@ public class FractionalDistillerBlockEntity extends BlockEntity
             dirty = true;
         }
 
-        // 5. Ambient thermal decay — storedHeat drifts 1°C toward 15 every 20 ticks
-        if (be.storedHeat != AMBIENT_TEMPERATURE) {
-            be.decayTimer++;
-            if (be.decayTimer >= DECAY_INTERVAL) {
-                be.decayTimer = 0;
-                if (be.storedHeat > AMBIENT_TEMPERATURE) be.storedHeat--;
-                else be.storedHeat++;
-                dirty = true;
-            }
-        } else {
-            be.decayTimer = 0;
-        }
-
         // 6. Update THERMAL_STATE blockstate for every segment in the structure
-        ThermalState targetThermal = ThermalState.of(be.storedHeat);
+        ThermalState targetThermal = ThermalState.of((int) be.temperature);
         for (FractionalDistillerBlockEntity seg : structure) {
             BlockState segState = level.getBlockState(seg.worldPosition);
             if (segState.getBlock() instanceof FractionalDistillerBlock
@@ -349,7 +348,7 @@ public class FractionalDistillerBlockEntity extends BlockEntity
     private boolean canProcess(FractionalDistillationRecipe recipe,
                                 List<FractionalDistillerBlockEntity> structure) {
         if (!recipe.matchesInput(inputFluid))   return false;
-        if (!recipe.temperatureMet(storedHeat)) return false;
+        if (!recipe.temperatureMet(temperature)) return false;
 
         // Verify there is enough space in each segment's output tank
         for (int i = 0; i < recipe.getOutputCount() && i < structure.size(); i++) {
@@ -365,20 +364,25 @@ public class FractionalDistillerBlockEntity extends BlockEntity
     private void process(Level level, List<FractionalDistillerBlockEntity> structure) {
         if (currentRecipe == null) return;
 
-        int outTemp = AMBIENT_TEMPERATURE + storedHeat;
+        int machineTemp = (int) temperature;
 
         // Consume input
         inputFluid.shrink(currentRecipe.getInputAmount());
         if (inputFluid.getAmount() <= 0) inputFluid = FluidStack.EMPTY;
 
-        // Distribute outputs to each segment's tank with temperature stamped
+        // Distribute outputs to each segment's tank with temperature and pressure stamped
         for (int i = 0; i < currentRecipe.getOutputCount() && i < structure.size(); i++) {
             FluidStack out = currentRecipe.getOutputStack(i);
             FractionalDistillerBlockEntity seg = structure.get(i);
 
+            int outTemp     = currentRecipe.hasOutputTemp(i)     ? currentRecipe.getOutputTemp(i)     : machineTemp;
+            int outPressure = currentRecipe.hasOutputPressure(i) ? currentRecipe.getOutputPressure(i) : 101;
+
             FluidStack produced = out.copy();
             if (outTemp != 20) produced.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), outTemp);
             else               produced.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+            if (outPressure != 101) produced.set(OmniTechDataComponents.FLUID_PRESSURE.get(), outPressure);
+            else                    produced.remove(OmniTechDataComponents.FLUID_PRESSURE.get());
 
             if (seg.outputFluid.isEmpty()) {
                 seg.outputFluid = produced;
@@ -386,10 +390,17 @@ public class FractionalDistillerBlockEntity extends BlockEntity
                 int existAmt = seg.outputFluid.getAmount();
                 Integer existTBox = seg.outputFluid.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
                 int existTemp = existTBox != null ? existTBox : 20;
-                int blended = (existTemp * existAmt + outTemp * out.getAmount()) / (existAmt + out.getAmount());
+                Integer existPBox = seg.outputFluid.get(OmniTechDataComponents.FLUID_PRESSURE.get());
+                int existPressure = existPBox != null ? existPBox : 101;
+
+                int blendedTemp     = (existTemp     * existAmt + outTemp     * out.getAmount()) / (existAmt + out.getAmount());
+                int blendedPressure = (existPressure * existAmt + outPressure * out.getAmount()) / (existAmt + out.getAmount());
+
                 seg.outputFluid.grow(out.getAmount());
-                if (blended != 20) seg.outputFluid.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), blended);
-                else               seg.outputFluid.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+                if (blendedTemp != 20) seg.outputFluid.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), blendedTemp);
+                else                   seg.outputFluid.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+                if (blendedPressure != 101) seg.outputFluid.set(OmniTechDataComponents.FLUID_PRESSURE.get(), blendedPressure);
+                else                        seg.outputFluid.remove(OmniTechDataComponents.FLUID_PRESSURE.get());
             }
 
             seg.setChanged();
@@ -403,9 +414,9 @@ public class FractionalDistillerBlockEntity extends BlockEntity
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 
-    public FluidStack getInputFluid()  { return inputFluid; }
-    public FluidStack getOutputFluid() { return outputFluid; }
-    public int        getStoredHeat()  { return storedHeat; }
+    public FluidStack getInputFluid()   { return inputFluid; }
+    public FluidStack getOutputFluid()  { return outputFluid; }
+    public float      getTemperature()  { return temperature; }
     public ContainerData getContainerData() { return dataAccess; }
 
     // ── Sync & persistence ────────────────────────────────────────────────────
@@ -429,12 +440,11 @@ public class FractionalDistillerBlockEntity extends BlockEntity
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        outputFluid    = input.read("OutputFluid", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
-        inputFluid     = input.read("InputFluid",  FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
-        storedHeat     = input.getIntOr("StoredHeat",    0);
-        decayTimer     = input.getIntOr("DecayTimer",    0);
-        processTimer   = input.getIntOr("ProcessTimer",  0);
-        processTotalTime = input.getIntOr("ProcessTotalTime", 20);
+        outputFluid      = input.read("OutputFluid", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
+        inputFluid       = input.read("InputFluid",  FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
+        temperature      = input.getFloatOr("Temperature",     IThermalNode.AMBIENT_TEMP);
+        processTimer     = input.getIntOr("ProcessTimer",      0);
+        processTotalTime = input.getIntOr("ProcessTotalTime",  20);
     }
 
     @Override
@@ -442,10 +452,9 @@ public class FractionalDistillerBlockEntity extends BlockEntity
         super.saveAdditional(output);
         output.store("OutputFluid", FluidStack.OPTIONAL_CODEC, outputFluid);
         output.store("InputFluid",  FluidStack.OPTIONAL_CODEC, inputFluid);
-        output.putInt("StoredHeat",     storedHeat);
-        output.putInt("DecayTimer",     decayTimer);
-        output.putInt("ProcessTimer",   processTimer);
-        output.putInt("ProcessTotalTime", processTotalTime);
+        output.putFloat("Temperature",       temperature);
+        output.putInt("ProcessTimer",        processTimer);
+        output.putInt("ProcessTotalTime",    processTotalTime);
     }
 
     // ── Inner tank handlers ───────────────────────────────────────────────────
