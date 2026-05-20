@@ -269,11 +269,12 @@ public class SmelterBlockEntity extends BaseContainerBlockEntity implements IHea
             }
         }
 
-        // Fill output fluid tank
+        // Fill output fluid tank, stamping the melting temperature from the recipe
         FluidStack out = currentRecipe.getOutput();
         if (!out.isEmpty()) {
+            applyAttributes(out, currentRecipe.getRequiredMinimalTemperature(), 101);
             if (outputFluid.isEmpty()) {
-                outputFluid = out.copy();
+                outputFluid = out;
             } else {
                 int existAmt = outputFluid.getAmount();
                 int newAmt   = out.getAmount();
