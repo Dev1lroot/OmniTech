@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.plumbing;
 
 import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.gui.FluidTankMenu;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
@@ -205,10 +206,29 @@ public class FluidTankBlockEntity extends BaseContainerBlockEntity {
             int space = CAPACITY - fluid.getAmount();
             int toInsert = Math.min(amount, space);
             if (toInsert <= 0) return 0;
+
+            // Weighted temperature blend before committing
+            int existingAmount = fluid.getAmount();
+            int existingTemp   = fluidTemp(fluid);
+            int incomingTemp   = fluidTemp(resource.toStack(1));
+            int blendedTemp    = existingAmount > 0
+                    ? (existingTemp * existingAmount + incomingTemp * toInsert) / (existingAmount + toInsert)
+                    : incomingTemp;
+
             updateSnapshots(tx);
             fluid = fluid.isEmpty() ? resource.toStack(toInsert)
                     : fluid.copyWithAmount(fluid.getAmount() + toInsert);
+
+            if (blendedTemp != 20) fluid.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), blendedTemp);
+            else                   fluid.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+
             return toInsert;
+        }
+
+        private static int fluidTemp(FluidStack stack) {
+            if (stack.isEmpty()) return 20;
+            Integer t = stack.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+            return t != null ? t : 20;
         }
 
         @Override

@@ -14,7 +14,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-/** Sent by the client when the player clicks the "VENT" button in the reactor GUI. */
+/** Sent by the client when the player clicks the "FLUSH" button in the reactor GUI. */
 public record DepressurizeReactorPacket(int containerId) implements CustomPacketPayload {
 
     public static final Type<DepressurizeReactorPacket> TYPE =
@@ -34,7 +34,7 @@ public record DepressurizeReactorPacket(int containerId) implements CustomPacket
             if (!(ctx.player() instanceof ServerPlayer sp)) return;
             if (sp.containerMenu.containerId != pkt.containerId()) return;
             if (!(sp.containerMenu instanceof ReactorMenu menu)) return;
-            if (menu.reactorBE != null) menu.reactorBE.depressurize();
+            if (menu.reactorBE != null) menu.reactorBE.flush();
         });
     }
 }

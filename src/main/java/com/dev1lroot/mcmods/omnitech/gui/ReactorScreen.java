@@ -5,19 +5,23 @@
 package com.dev1lroot.mcmods.omnitech.gui;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorStructure;
 import com.dev1lroot.mcmods.omnitech.items.ReactorControlRodItem;
+import com.dev1lroot.mcmods.omnitech.items.ReactorFuelRodItem;
+import com.dev1lroot.mcmods.omnitech.items.ReactorRodItem;
 import com.dev1lroot.mcmods.omnitech.network.DepressurizeReactorPacket;
 import com.dev1lroot.mcmods.omnitech.network.ScramReactorPacket;
 import com.dev1lroot.mcmods.omnitech.network.SetControlRodPacket;
+import com.dev1lroot.mcmods.omnitech.network.StartReactorPacket;
 import com.dev1lroot.mcmods.omnitech.util.GuiUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.fluids.FluidStack;
 
@@ -40,7 +44,13 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
         this.inventoryLabelY = menu.invOffsetY - 10;
 
         addRenderableWidget(Button.builder(
-                Component.literal("VENT"),
+                Component.literal("START"),
+                btn -> ClientPacketDistributor.sendToServer(new StartReactorPacket(menu.containerId)))
+                .bounds(leftPos + menu.scramBtnX, topPos + menu.startBtnY,
+                        menu.scramBtnW, ReactorMenu.SCRAM_BTN_H)
+                .build());
+        addRenderableWidget(Button.builder(
+                Component.literal("FLUSH"),
                 btn -> ClientPacketDistributor.sendToServer(new DepressurizeReactorPacket(menu.containerId)))
                 .bounds(leftPos + menu.scramBtnX, topPos + menu.ventBtnY,
                         menu.scramBtnW, ReactorMenu.SCRAM_BTN_H)
@@ -68,7 +78,7 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
         g.fill(gx - 1, gy - 1, gx + gw + 1, gy + gh + 1, 0xFF999999);
         g.fill(gx,     gy,     gx + gw,     gy + gh,     0xFFC6C6C6);
 
-        // Cell slot backgrounds (centred within the max grid)
+        // Cell slot backgrounds
         for (int[] lp : menu.cellLocalPositions) {
             int sx = leftPos + menu.gridOffsetX
                     + (lp[0] + menu.cellDisplayOffsetX) * ReactorMenu.SLOT_SIZE + 1;
@@ -89,17 +99,17 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
         for (int col = 0; col < 9; col++)
             GuiUtil.renderSlot(g, iox + col * ReactorMenu.SLOT_SIZE + 1, hotbarY + 1);
 
-        // Coolant tank bar
         renderTankBar(g);
-        // Core temperature bar
         renderHeatBar(g);
+        renderTempGraph(g);
+        renderFlowGraph(g);
     }
 
     private void renderTankBar(GuiGraphicsExtractor g) {
-        int tx   = leftPos + menu.tankBarX;
-        int ty   = topPos  + menu.tankBarY;
-        int th   = menu.tankBarH;
-        int tw   = ReactorMenu.TANK_BAR_W;
+        int tx = leftPos + menu.tankBarX;
+        int ty = topPos  + menu.tankBarY;
+        int th = menu.tankBarH;
+        int tw = ReactorMenu.TANK_BAR_W;
 
         GuiUtil.renderFrame(g, tx, ty, tw, th);
 
@@ -109,7 +119,6 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
 
         FluidStack fs = menu.getWaterFluid();
         if (fs.isEmpty()) {
-            // Fallback: construct a FluidStack just for rendering the water sprite
             var fo = OmniTechFluids.get("distilled_water");
             if (fo != null) fs = new FluidStack(fo.source.get(), water * 1000);
         }
@@ -141,6 +150,94 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
         g.fill(tx, startY, tx + tw, ty + th, color);
     }
 
+    // Temperature mini-graph: dark blue (cold) → orange/red (hot)
+    private void renderTempGraph(GuiGraphicsExtractor g) {
+        int ox = leftPos + menu.tempGraphX;
+        int oy = topPos  + menu.tempGraphY;
+        int s  = ReactorMenu.MINI_GRAPH_SIZE;
+
+        // Background
+        g.fill(ox - 1, oy - 1, ox + s + 1, oy + s + 1, 0xFF666666);
+        g.fill(ox, oy, ox + s, oy + s, 0xFF222222);
+
+        int maxTemp = ReactorBlockEntity.MAX_TEMPERATURE;
+        for (int i = 0; i < menu.cellLocalPositions.size(); i++) {
+            int[] lp  = menu.cellLocalPositions.get(i);
+            int px = ox + (lp[0] + menu.cellDisplayOffsetX) * ReactorMenu.MINI_CELL_PX;
+            int py = oy + (lp[1] + menu.cellDisplayOffsetY) * ReactorMenu.MINI_CELL_PX;
+
+            int temp = 0;
+            ItemStack stack = menu.getSlot(i).getItem();
+            if (!stack.isEmpty() && stack.getItem() instanceof ReactorRodItem) {
+                temp = Math.max(0, ReactorRodItem.getTemperature(stack));
+            }
+
+            int color = tempToColor(temp, maxTemp, !stack.isEmpty() && stack.getItem() instanceof ReactorRodItem);
+            g.fill(px, py, px + ReactorMenu.MINI_CELL_PX, py + ReactorMenu.MINI_CELL_PX, color);
+        }
+    }
+
+    // Neutron flow mini-graph: black (0%) → light blue (100%), lime green dot = rod present
+    private void renderFlowGraph(GuiGraphicsExtractor g) {
+        int ox = leftPos + menu.flowGraphX;
+        int oy = topPos  + menu.flowGraphY;
+        int s  = ReactorMenu.MINI_GRAPH_SIZE;
+        int c  = ReactorMenu.MINI_CELL_PX;
+
+        // Background
+        g.fill(ox - 1, oy - 1, ox + s + 1, oy + s + 1, 0xFF666666);
+        g.fill(ox, oy, ox + s, oy + s, 0xFF000000);
+
+        for (int i = 0; i < menu.cellLocalPositions.size(); i++) {
+            int[] lp = menu.cellLocalPositions.get(i);
+            int px = ox + (lp[0] + menu.cellDisplayOffsetX) * c;
+            int py = oy + (lp[1] + menu.cellDisplayOffsetY) * c;
+
+            // Flow intensity as background color (shows for all cells, rod or empty)
+            int pct   = menu.getNeutronFlowPct(i);
+            int color = flowToColor(pct);
+            g.fill(px, py, px + c, py + c, color);
+
+            // Lime green full-cell overlay for fuel rods only
+            ItemStack stack = menu.getSlot(i).getItem();
+            if (!stack.isEmpty() && stack.getItem() instanceof ReactorFuelRodItem) {
+                g.fill(px, py, px + c, py + c, 0xFF55FF55);
+            }
+        }
+    }
+
+    // ── Color helpers ─────────────────────────────────────────────────────────
+
+    private static int tempToColor(int temp, int maxTemp, boolean hasRod) {
+        if (!hasRod) return 0xFF444444; // empty slot: dark gray
+        if (temp <= 0) return 0xFF000066; // cold rod: dark blue
+        float f = Math.min(1f, (float) temp / maxTemp);
+        int r, g, b;
+        if (f < 0.15f) {
+            float t = f / 0.15f;
+            r = 0; g = 0; b = (int)(66 + 165 * t);
+        } else if (f < 0.40f) {
+            float t = (f - 0.15f) / 0.25f;
+            r = 0; g = (int)(120 * t); b = (int)(231 - 231 * t);
+        } else if (f < 0.65f) {
+            float t = (f - 0.40f) / 0.25f;
+            r = (int)(255 * t); g = (int)(120 + 135 * (1f - t)); b = 0;
+        } else {
+            float t = Math.min(1f, (f - 0.65f) / 0.35f);
+            r = 255; g = (int)(120 * (1f - t)); b = 0;
+        }
+        return ARGB.color(0xFF, r, g, b);
+    }
+
+    private static int flowToColor(int pct) {
+        if (pct <= 0) return 0xFF111111;
+        float f = Math.min(1f, pct / 100f);
+        int r = 0;
+        int g = (int)(170 * f);
+        int b = (int)(44 + 211 * f);
+        return ARGB.color(0xFF, r, g, b);
+    }
+
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractLabels(g, mouseX, mouseY);
@@ -151,7 +248,7 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
         super.extractTooltip(g, mouseX, mouseY);
         if (hoveredSlot != null) return;
 
-        // Tooltip for the coolant tank bar
+        // Coolant tank bar tooltip
         int tx = leftPos + menu.tankBarX;
         int ty = topPos  + menu.tankBarY;
         if (mouseX >= tx && mouseX < tx + ReactorMenu.TANK_BAR_W
@@ -159,7 +256,6 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
             int amount   = menu.getWaterBuckets()         * 1000;
             int capacity = menu.getWaterCapacityBuckets() * 1000;
             List<Component> lines = GuiUtil.buildFluidTooltip(menu.getWaterFluid(), amount, capacity);
-            // Pressure line
             int pressure = menu.getPressure();
             if (amount > 0) {
                 net.minecraft.ChatFormatting pFmt = pressure >= 700 ? net.minecraft.ChatFormatting.RED
@@ -182,7 +278,7 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
             return;
         }
 
-        // Tooltip for the core temperature bar
+        // Core temperature bar tooltip
         int hx = leftPos + menu.heatBarX;
         int hy = topPos  + menu.heatBarY;
         if (mouseX >= hx && mouseX < hx + ReactorMenu.HEAT_BAR_W
@@ -202,6 +298,40 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
                         .withStyle(s -> s.withColor(0xFFFFAA00)));
             }
             g.setTooltipForNextFrame(this.font, lines, Optional.empty(), mouseX, mouseY);
+            return;
+        }
+
+        // Temperature mini-graph tooltip
+        int tgx = leftPos + menu.tempGraphX;
+        int tgy = topPos  + menu.tempGraphY;
+        int gs  = ReactorMenu.MINI_GRAPH_SIZE;
+        if (mouseX >= tgx && mouseX < tgx + gs && mouseY >= tgy && mouseY < tgy + gs) {
+            List<Component> lines = new ArrayList<>();
+            lines.add(Component.literal("Cell Temperatures")
+                    .withStyle(s -> s.withColor(0xFFFF8800)));
+            lines.add(Component.literal("Dark blue = cold   Orange/red = hot")
+                    .withStyle(s -> s.withColor(0xFFAAAAAA)));
+            lines.add(Component.literal("Coolant: " + menu.getCoolantTemperature() + " °C")
+                    .withStyle(s -> s.withColor(0xFF88CCFF)));
+            g.setTooltipForNextFrame(this.font, lines, Optional.empty(), mouseX, mouseY);
+            return;
+        }
+
+        // Neutron flow mini-graph tooltip
+        int fgx = leftPos + menu.flowGraphX;
+        int fgy = topPos  + menu.flowGraphY;
+        if (mouseX >= fgx && mouseX < fgx + gs && mouseY >= fgy && mouseY < fgy + gs) {
+            List<Component> lines = new ArrayList<>();
+            lines.add(Component.literal("Neutron Flux Field")
+                    .withStyle(s -> s.withColor(0xFF00AAFF)));
+            lines.add(Component.literal("Black = no flux   Light blue = peak flux")
+                    .withStyle(s -> s.withColor(0xFFAAAAAA)));
+            lines.add(Component.literal("Relative — brightest cell = 100%")
+                    .withStyle(s -> s.withColor(0xFF888888)));
+            lines.add(Component.literal("Lime green = rod inserted")
+                    .withStyle(s -> s.withColor(0xFF55FF55)));
+            g.setTooltipForNextFrame(this.font, lines, Optional.empty(), mouseX, mouseY);
+            return;
         }
     }
 

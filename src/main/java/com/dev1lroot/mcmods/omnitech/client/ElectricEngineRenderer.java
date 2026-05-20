@@ -82,8 +82,8 @@ public class ElectricEngineRenderer
             case SOUTH -> poseStack.mulPose(Axis.YP.rotationDegrees(180f));
             case EAST  -> poseStack.mulPose(Axis.YP.rotationDegrees(-90f));
             case WEST  -> poseStack.mulPose(Axis.YP.rotationDegrees(90f));
-            case UP    -> poseStack.mulPose(Axis.XP.rotationDegrees(-90f));
-            case DOWN  -> poseStack.mulPose(Axis.XP.rotationDegrees(90f));
+            case UP    -> poseStack.mulPose(Axis.XP.rotationDegrees(90f));
+            case DOWN  -> poseStack.mulPose(Axis.XP.rotationDegrees(-90f));
             default    -> {} // NORTH: +Z already aligns with facing
         }
         // Spin around local +Z (which is the shaft axis after alignment)

@@ -32,23 +32,23 @@ import java.util.List;
 
 public class ReactorMenu extends AbstractContainerMenu {
 
-    public static final int  SLOT_SIZE   = 18;
-    public static final int  PAD         = 7;
-    public static final int  TANK_BAR_W  = 12;
-    public static final int  HEAT_BAR_W  = 12;
-    public static final int  SCRAM_BTN_H = 20;
+    public static final int  SLOT_SIZE       = 18;
+    public static final int  PAD             = 7;
+    public static final int  TANK_BAR_W      = 12;
+    public static final int  HEAT_BAR_W      = 12;
+    public static final int  SCRAM_BTN_H     = 20;
+    public static final int  MINI_CELL_PX    = 2;
+    public static final int  MINI_GRAPH_SIZE = MINI_CELL_PX * ReactorStructure.MAX_SIZE; // 22
+
     private static final int TANK_MARGIN = 6;
     private static final int BAR_GAP     = 4;
-    private static final int INV_W       = 9 * SLOT_SIZE;                 // 162
-    private static final int INV_H       = 3 * SLOT_SIZE + 4 + SLOT_SIZE; // 76
+    private static final int INV_W       = 9 * SLOT_SIZE;
+    private static final int INV_H       = 3 * SLOT_SIZE + 4 + SLOT_SIZE;
 
     public final int structWidth;
     public final int structDepth;
 
-    /** [localX, localZ] pairs, same order as cell slots (sorted Z then X). */
     public final List<int[]> cellLocalPositions;
-
-    /** Offset to centre a sub-max reactor inside the fixed MAX_SIZE grid display. */
     public final int cellDisplayOffsetX;
     public final int cellDisplayOffsetY;
 
@@ -59,23 +59,31 @@ public class ReactorMenu extends AbstractContainerMenu {
     public final int invOffsetX;
     public final int invOffsetY;
 
-    /** Position and height of the coolant tank bar (width = TANK_BAR_W). */
     public final int tankBarX;
     public final int tankBarY;
     public final int tankBarH;
 
-    /** Position and height of the core temperature bar (width = HEAT_BAR_W). */
     public final int heatBarX;
     public final int heatBarY;
     public final int heatBarH;
 
-    /** Position and size of the SCRAM button (height = SCRAM_BTN_H). */
     public final int scramBtnX;
     public final int scramBtnY;
     public final int scramBtnW;
 
-    /** Y position of the VENT (depressurize) button — same X and W as SCRAM. */
+    /** Y position of the FLUSH (drain coolant) button. */
     public final int ventBtnY;
+
+    /** Y position of the START (all rods to 0%) button. */
+    public final int startBtnY;
+
+    /** X/Y of the temperature mini-graph (MINI_GRAPH_SIZE × MINI_GRAPH_SIZE). */
+    public final int tempGraphX;
+    public final int tempGraphY;
+
+    /** X/Y of the neutron flow mini-graph. */
+    public final int flowGraphX;
+    public final int flowGraphY;
 
     @Nullable public final ReactorBlockEntity reactorBE;
     private final ContainerData fluidData;
@@ -105,19 +113,25 @@ public class ReactorMenu extends AbstractContainerMenu {
         this.cellDisplayOffsetX = (ReactorStructure.MAX_SIZE - structWidth)  / 2;
         this.cellDisplayOffsetY = (ReactorStructure.MAX_SIZE - structDepth) / 2;
 
-        int[] layout = layout();
-        imageWidth  = layout[0]; imageHeight  = layout[1];
-        gridOffsetX = layout[2]; gridOffsetY  = layout[3];
-        invOffsetX  = layout[4]; invOffsetY   = layout[5];
-        tankBarX    = layout[6]; tankBarY     = layout[7]; tankBarH = layout[8];
+        int[] L = computeLayout();
+        imageWidth  = L[0]; imageHeight  = L[1];
+        gridOffsetX = L[2]; gridOffsetY  = L[3];
+        invOffsetX  = L[4]; invOffsetY   = L[5];
+        tankBarX    = L[6]; tankBarY     = L[7]; tankBarH = L[8];
+        scramBtnX   = L[9]; scramBtnY   = L[10]; scramBtnW = L[11];
         heatBarX    = tankBarX + TANK_BAR_W + BAR_GAP;
         heatBarY    = tankBarY;
         heatBarH    = tankBarH;
-        scramBtnX   = layout[9]; scramBtnY   = layout[10]; scramBtnW = layout[11];
         ventBtnY    = scramBtnY - SCRAM_BTN_H - BAR_GAP;
+        startBtnY   = ventBtnY  - SCRAM_BTN_H - BAR_GAP;
+        tempGraphX  = heatBarX  + HEAT_BAR_W  + BAR_GAP;
+        tempGraphY  = tankBarY;
+        flowGraphX  = tempGraphX + MINI_GRAPH_SIZE + BAR_GAP;
+        flowGraphY  = tankBarY;
 
-        // Sync coolant amount, capacity, core temperature, coolant temperature, pressure
+        // Sync: indices 0-4 = coolant/temp/pressure, 5..5+cells-1 = neutron flow %
         final ReactorBlockEntity theBe = be;
+        final int cellCount = cellSlotCount;
         this.fluidData = new ContainerData() {
             @Override public int get(int i) {
                 return switch (i) {
@@ -126,11 +140,15 @@ public class ReactorMenu extends AbstractContainerMenu {
                     case 2 -> theBe.getCoreTemperature();
                     case 3 -> theBe.getCoolantTemperature();
                     case 4 -> theBe.getPressure();
-                    default -> 0;
+                    default -> {
+                        int ci = i - 5;
+                        int[] flows = theBe.getCellNeutronFlowPct();
+                        yield (ci >= 0 && flows != null && ci < flows.length) ? flows[ci] : 0;
+                    }
                 };
             }
             @Override public void set(int i, int v) {}
-            @Override public int getCount() { return 5; }
+            @Override public int getCount() { return 5 + cellCount; }
         };
         addDataSlots(fluidData);
 
@@ -171,18 +189,23 @@ public class ReactorMenu extends AbstractContainerMenu {
         this.cellDisplayOffsetX = (ReactorStructure.MAX_SIZE - structWidth)  / 2;
         this.cellDisplayOffsetY = (ReactorStructure.MAX_SIZE - structDepth) / 2;
 
-        int[] layout = layout();
-        imageWidth  = layout[0]; imageHeight  = layout[1];
-        gridOffsetX = layout[2]; gridOffsetY  = layout[3];
-        invOffsetX  = layout[4]; invOffsetY   = layout[5];
-        tankBarX    = layout[6]; tankBarY     = layout[7]; tankBarH = layout[8];
+        int[] L = computeLayout();
+        imageWidth  = L[0]; imageHeight  = L[1];
+        gridOffsetX = L[2]; gridOffsetY  = L[3];
+        invOffsetX  = L[4]; invOffsetY   = L[5];
+        tankBarX    = L[6]; tankBarY     = L[7]; tankBarH = L[8];
+        scramBtnX   = L[9]; scramBtnY   = L[10]; scramBtnW = L[11];
         heatBarX    = tankBarX + TANK_BAR_W + BAR_GAP;
         heatBarY    = tankBarY;
         heatBarH    = tankBarH;
-        scramBtnX   = layout[9]; scramBtnY   = layout[10]; scramBtnW = layout[11];
         ventBtnY    = scramBtnY - SCRAM_BTN_H - BAR_GAP;
+        startBtnY   = ventBtnY  - SCRAM_BTN_H - BAR_GAP;
+        tempGraphX  = heatBarX  + HEAT_BAR_W  + BAR_GAP;
+        tempGraphY  = tankBarY;
+        flowGraphX  = tempGraphX + MINI_GRAPH_SIZE + BAR_GAP;
+        flowGraphY  = tankBarY;
 
-        this.fluidData = new SimpleContainerData(5);
+        this.fluidData = new SimpleContainerData(5 + cellCount);
         addDataSlots(fluidData);
 
         Container container = new SimpleContainer(cellCount);
@@ -195,29 +218,22 @@ public class ReactorMenu extends AbstractContainerMenu {
         addPlayerSlots(playerInventory, invOffsetX, invOffsetY);
     }
 
-    // ── Fluid accessors (synced via ContainerData) ────────────────────────────
+    // ── Data accessors (synced via ContainerData) ─────────────────────────────
 
-    /** Current coolant in the tank, in bucket units (mb / 1000). */
     public int getWaterBuckets()         { return fluidData.get(0); }
-    /** Tank capacity, in bucket units (mb / 1000). */
     public int getWaterCapacityBuckets() { return fluidData.get(1); }
-    /** Max rod temperature across all active cells (°C, 0..MAX_TEMPERATURE). */
     public int getCoreTemperature()      { return fluidData.get(2); }
-    /** Current coolant temperature (°C, 20..MAX_COOLANT_TEMP). */
     public int getCoolantTemperature()   { return fluidData.get(3); }
-    /** Current reactor pressure (0..MAX_PRESSURE); 0 when vented or empty. */
     public int getPressure()             { return fluidData.get(4); }
-    /**
-     * Returns the coolant FluidStack for rendering/tooltip, with the synced
-     * coolant temperature stamped as a {@link OmniTechDataComponents#FLUID_TEMPERATURE}
-     * component so that {@link com.dev1lroot.mcmods.omnitech.util.GuiUtil#buildFluidTooltip}
-     * can display it automatically.
-     */
-    /** Returns the coolant FluidStack (water or steam) with temperature and pressure stamped. */
+
+    /** Neutron flow percentage (0..100) for cell at index {@code i}. */
+    public int getNeutronFlowPct(int i) {
+        return (i >= 0 && i < cellSlotCount) ? fluidData.get(5 + i) : 0;
+    }
+
     public FluidStack getWaterFluid() {
         FluidStack fs = (reactorBE != null) ? reactorBE.getCoolantTank() : FluidStack.EMPTY;
         if (fs.isEmpty()) {
-            // Fallback: reconstruct from synced ContainerData (water only — steam is always live)
             var fo = OmniTechFluids.get("distilled_water");
             int water = getWaterBuckets();
             if (fo != null && water > 0) fs = new FluidStack(fo.source.get(), water * 1000);
@@ -230,25 +246,28 @@ public class ReactorMenu extends AbstractContainerMenu {
         return fs;
     }
 
-    // ── Layout ───────────────────────────────────────────────────────────────
+    // ── Layout ────────────────────────────────────────────────────────────────
 
     // returns [imgW, imgH, gox, goy, iox, ioy, tankX, tankY, tankH, scramX, scramY, scramW]
-    // Layout is fixed to MAX_SIZE grid; smaller reactors are centred within it.
-    private static int[] layout() {
-        int gridW  = ReactorStructure.MAX_SIZE * SLOT_SIZE; // 11*18 = 198
-        int gridH  = ReactorStructure.MAX_SIZE * SLOT_SIZE; // 198
-        int mainW  = Math.max(gridW, INV_W);                // 198
-        int imgW   = 2 * PAD + mainW + TANK_MARGIN + TANK_BAR_W + BAR_GAP + HEAT_BAR_W; // 246
-        int imgH   = PAD + gridH + 6 + INV_H + PAD;        // 294
-        int gox    = PAD + (mainW - gridW) / 2;
-        int iox    = PAD + (mainW - INV_W) / 2;
-        int ioy    = PAD + gridH + 6;
-        int tankX  = PAD + mainW + TANK_MARGIN;
-        // Reserve room for SCRAM and VENT buttons stacked at the bottom of the right column
-        int scramY = imgH - PAD - SCRAM_BTN_H;
-        int ventY  = scramY - SCRAM_BTN_H - BAR_GAP;
-        int tankH  = ventY - PAD - BAR_GAP;
-        int scramW = TANK_BAR_W + BAR_GAP + HEAT_BAR_W;
+    // Right column: tank bar | heat bar | temp graph | flow graph
+    // Three buttons at bottom: START, FLUSH, SCRAM
+    private static int[] computeLayout() {
+        int gridW     = ReactorStructure.MAX_SIZE * SLOT_SIZE;  // 198
+        int gridH     = ReactorStructure.MAX_SIZE * SLOT_SIZE;  // 198
+        int mainW     = Math.max(gridW, INV_W);                 // 198
+        int rightColW = TANK_BAR_W + BAR_GAP + HEAT_BAR_W + BAR_GAP + MINI_GRAPH_SIZE + BAR_GAP + MINI_GRAPH_SIZE;
+        int imgW      = 2 * PAD + mainW + TANK_MARGIN + rightColW;
+        int imgH      = PAD + gridH + 6 + INV_H + PAD;
+        int gox       = PAD + (mainW - gridW) / 2;
+        int iox       = PAD + (mainW - INV_W) / 2;
+        int ioy       = PAD + gridH + 6;
+        int tankX     = PAD + mainW + TANK_MARGIN;
+        // Three buttons stacked at the bottom (SCRAM at bottom, FLUSH above, START above that)
+        int scramY    = imgH - PAD - SCRAM_BTN_H;
+        int ventY     = scramY - SCRAM_BTN_H - BAR_GAP;
+        int startY    = ventY  - SCRAM_BTN_H - BAR_GAP;
+        int tankH     = startY - PAD - BAR_GAP;
+        int scramW    = TANK_BAR_W + BAR_GAP + HEAT_BAR_W;
         return new int[]{imgW, imgH, gox, PAD, iox, ioy, tankX, PAD, tankH, tankX, scramY, scramW};
     }
 

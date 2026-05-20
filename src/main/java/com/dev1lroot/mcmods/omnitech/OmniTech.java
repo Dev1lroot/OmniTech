@@ -88,6 +88,7 @@ import com.dev1lroot.mcmods.omnitech.network.MinesweeperResultPacket;
 import com.dev1lroot.mcmods.omnitech.network.SpeakerTonePacket;
 import com.dev1lroot.mcmods.omnitech.network.DepressurizeReactorPacket;
 import com.dev1lroot.mcmods.omnitech.network.ScramReactorPacket;
+import com.dev1lroot.mcmods.omnitech.network.StartReactorPacket;
 import com.dev1lroot.mcmods.omnitech.network.SetControlRodPacket;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.keyboard.KeyboardBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.FrequencyBand;
@@ -532,6 +533,10 @@ public class OmniTech {
                 DepressurizeReactorPacket.TYPE,
                 DepressurizeReactorPacket.CODEC,
                 DepressurizeReactorPacket::handle);
+        event.registrar("1").playToServer(
+                StartReactorPacket.TYPE,
+                StartReactorPacket.CODEC,
+                StartReactorPacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

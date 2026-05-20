@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.util;
 
+import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.blocks.plumbing.FluidPipeBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.plumbing.FluidPipeBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.plumbing.FluidTankBlockEntity;
@@ -53,8 +54,18 @@ public final class FluidNetworkUtil {
             return;
         }
 
+        // Bake the weighted-average temperature into the reference stack so every
+        // node in the network ends up with the same blended temperature after redistribution.
+        FluidStack ref = data.reference();
+        if (!ref.isEmpty()) {
+            ref = ref.copy();
+            int temp = data.blendedTemp();
+            if (temp != 20) ref.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), temp);
+            else            ref.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        }
+
         Map<Integer, List<BlockEntity>> levels = groupNodesByHeight(data.nodes());
-        distributeFluids(level, levels, data.totalAmount(), data.reference());
+        distributeFluids(level, levels, data.totalAmount(), ref);
     }
 
     /**
@@ -202,7 +213,7 @@ public final class FluidNetworkUtil {
 
     // ── Network collection ────────────────────────────────────────────────────
 
-    private record NetworkData(List<BlockEntity> nodes, long totalAmount, FluidStack reference) {}
+    private record NetworkData(List<BlockEntity> nodes, long totalAmount, FluidStack reference, int blendedTemp) {}
 
     private static NetworkData collectNetwork(Level level, BlockPos startPos) {
         Set<BlockPos> visited = new HashSet<>();
@@ -213,6 +224,7 @@ public final class FluidNetworkUtil {
         visited.add(startPos);
 
         long totalAmount = 0;
+        long totalWeightedTemp = 0;
         FluidStack referenceStack = FluidStack.EMPTY;
 
         while (!queue.isEmpty()) {
@@ -231,7 +243,9 @@ public final class FluidNetworkUtil {
                 referenceStack = fs;
             }
 
-            totalAmount += fs.getAmount();
+            int fsAmount = fs.getAmount();
+            totalAmount += fsAmount;
+            totalWeightedTemp += (long) getFluidTemp(fs) * fsAmount;
             nodes.add(be);
 
             for (BlockPos nextPos : getConnectedNeighbors(level, pos, be)) {
@@ -241,7 +255,8 @@ public final class FluidNetworkUtil {
                 }
             }
         }
-        return new NetworkData(nodes, totalAmount, referenceStack);
+        int blendedTemp = totalAmount > 0 ? (int) (totalWeightedTemp / totalAmount) : 20;
+        return new NetworkData(nodes, totalAmount, referenceStack, blendedTemp);
     }
 
     // ── Gravity distribution ──────────────────────────────────────────────────
@@ -343,6 +358,12 @@ public final class FluidNetworkUtil {
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private static int getFluidTemp(FluidStack fs) {
+        if (fs.isEmpty()) return 20;
+        Integer t = fs.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        return t != null ? t : 20;
+    }
 
     private static boolean isValidNode(BlockEntity be, FluidStack reference) {
         return be instanceof FluidPipeBlockEntity || be instanceof FluidTankBlockEntity;
