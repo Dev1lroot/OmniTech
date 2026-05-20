@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,powered=false": { "model": "omnitech:block/power_relay" },
+    "facing=south,powered=false": { "model": "omnitech:block/power_relay",    "y": 180 },
+    "facing=west,powered=false":  { "model": "omnitech:block/power_relay",    "y": 270 },
+    "facing=east,powered=false":  { "model": "omnitech:block/power_relay",    "y": 90  },
+    "facing=north,powered=true":  { "model": "omnitech:block/power_relay_on" },
+    "facing=south,powered=true":  { "model": "omnitech:block/power_relay_on", "y": 180 },
+    "facing=west,powered=true":   { "model": "omnitech:block/power_relay_on", "y": 270 },
+    "facing=east,powered=true":   { "model": "omnitech:block/power_relay_on", "y": 90  }
+  }
+}

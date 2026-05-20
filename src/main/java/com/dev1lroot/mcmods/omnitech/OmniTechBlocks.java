@@ -9,6 +9,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.thermal.alloy_furnace.AlloyFurnaceBl
 import com.dev1lroot.mcmods.omnitech.blocks.processing.centrifuge.ManualCentrifugeBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.processing.centrifuge.ManualCentrifugeRotorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_engine.ElectricEngineStatorBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_relay.PowerRelayBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticGeneratorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticPipeBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticReductorBlock;
@@ -134,6 +135,7 @@ public class OmniTechBlocks {
 
     public static final DeferredBlock<Block> ELECTRIC_ENGINE;
     public static final DeferredBlock<Block> ELECTRIC_ENGINE_STATOR;
+    public static final DeferredBlock<Block> POWER_RELAY;
     public static final DeferredBlock<Block> ELECTRIC_CAPACITOR;
     public static final DeferredBlock<Block> ELECTRIC_WIRE;
     public static final DeferredBlock<Block> ELECTRIC_FURNACE;
@@ -275,6 +277,9 @@ public class OmniTechBlocks {
         ELECTRIC_ENGINE_STATOR = register("electric_engine_stator",
                 p -> new ElectricEngineStatorBlock(p.mapColor(MapColor.METAL).strength(3.5F).noOcclusion()
                         .sound(SoundType.METAL).noLootTable()));
+        POWER_RELAY = register("power_relay",
+                p -> new PowerRelayBlock(p.mapColor(MapColor.METAL).strength(2.0F)
+                        .sound(SoundType.METAL).noOcclusion()));
         ELECTRIC_CAPACITOR = register("electric_capacitor",
                 p -> new ElectricCapacitorBlock(p.mapColor(MapColor.METAL).strength(3.0F)
                         .sound(SoundType.METAL)));

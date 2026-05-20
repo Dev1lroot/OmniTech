@@ -5,6 +5,7 @@
 package com.dev1lroot.mcmods.omnitech.util;
 
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_wire.ElectricWireBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_relay.PowerRelayBlock;
 import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -70,6 +71,14 @@ public final class ElectricNetworkUtil {
 
             if (state.getBlock() instanceof ElectricWireBlock) {
                 for (Direction dir : Direction.values()) {
+                    BlockPos next = pos.relative(dir);
+                    if (!visited.contains(next)) {
+                        visited.add(next);
+                        queue.add(next);
+                    }
+                }
+            } else if (state.getBlock() instanceof PowerRelayBlock && !state.getValue(PowerRelayBlock.POWERED)) {
+                for (Direction dir : PowerRelayBlock.passthroughDirections(state)) {
                     BlockPos next = pos.relative(dir);
                     if (!visited.contains(next)) {
                         visited.add(next);

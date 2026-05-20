@@ -5,6 +5,7 @@
 package com.dev1lroot.mcmods.omnitech.util;
 
 import com.dev1lroot.mcmods.omnitech.blocks.analog.AnalogCableBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_relay.PowerRelayBlock;
 import com.dev1lroot.mcmods.omnitech.io.IAnalogInput;
 import com.dev1lroot.mcmods.omnitech.io.IAudioInput;
 import net.minecraft.core.BlockPos;
@@ -56,6 +57,11 @@ public final class AnalogNetworkUtil {
                     BlockPos next = pos.relative(dir);
                     if (visited.add(next)) queue.add(next);
                 }
+            } else if (state.getBlock() instanceof PowerRelayBlock && !state.getValue(PowerRelayBlock.POWERED)) {
+                for (Direction dir : PowerRelayBlock.passthroughDirections(state)) {
+                    BlockPos next = pos.relative(dir);
+                    if (visited.add(next)) queue.add(next);
+                }
             } else {
                 BlockEntity be = level.getBlockEntity(pos);
                 if (be instanceof IAnalogInput input) {
@@ -89,6 +95,11 @@ public final class AnalogNetworkUtil {
 
             if (state.getBlock() instanceof AnalogCableBlock) {
                 for (Direction dir : Direction.values()) {
+                    BlockPos next = pos.relative(dir);
+                    if (visited.add(next)) queue.add(next);
+                }
+            } else if (state.getBlock() instanceof PowerRelayBlock && !state.getValue(PowerRelayBlock.POWERED)) {
+                for (Direction dir : PowerRelayBlock.passthroughDirections(state)) {
                     BlockPos next = pos.relative(dir);
                     if (visited.add(next)) queue.add(next);
                 }

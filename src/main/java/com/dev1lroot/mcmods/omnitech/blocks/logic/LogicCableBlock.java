@@ -5,6 +5,7 @@
 package com.dev1lroot.mcmods.omnitech.blocks.logic;
 
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_wire.ElectricWireBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_relay.PowerRelayBlock;
 import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IElectricSupplier;
 import net.minecraft.core.BlockPos;
@@ -66,7 +67,7 @@ public class LogicCableBlock extends Block
                                   ScheduledTickAccess scheduledTickAccess, BlockPos pos,
                                   Direction direction, BlockPos neighborPos, BlockState neighborState,
                                   RandomSource random) {
-        return state.setValue(propertyFor(direction), canConnectTo(level, neighborPos));
+        return state.setValue(propertyFor(direction), canConnectTo(level, neighborPos, direction, neighborState));
     }
 
     // ── VoxelShape ────────────────────────────────────────────────────────────
@@ -86,21 +87,20 @@ public class LogicCableBlock extends Block
 
     // ── Connection logic ──────────────────────────────────────────────────────
 
-    private static boolean canConnectTo(LevelReader level, BlockPos neighborPos) {
-        BlockState neighborState = level.getBlockState(neighborPos);
+    private static boolean canConnectTo(LevelReader level, BlockPos neighborPos,
+            Direction fromCableToNeighbor, BlockState neighborState) {
         if (neighborState.getBlock() instanceof LogicCableBlock) return true;
-
-        return false; // remove after interfaces finished
-
-        // TODO: Logic interfaces for logic cable based on electric cable interfaces
-        // BlockEntity be = level.getBlockEntity(neighborPos);
-        // return be instanceof IElectricReceiver || be instanceof IElectricSupplier;
+        if (neighborState.getBlock() instanceof PowerRelayBlock)
+            return PowerRelayBlock.allowsConnection(neighborState, fromCableToNeighbor);
+        return false; // TODO: logic machine / GPIO port interfaces
     }
 
     /** Recomputes all 6 connection properties from the current level state. */
     private static BlockState calculateState(BlockState state, LevelReader level, BlockPos pos) {
         for (Direction dir : Direction.values()) {
-            state = state.setValue(propertyFor(dir), canConnectTo(level, pos.relative(dir)));
+            BlockPos neighborPos = pos.relative(dir);
+            state = state.setValue(propertyFor(dir),
+                    canConnectTo(level, neighborPos, dir, level.getBlockState(neighborPos)));
         }
         return state;
     }

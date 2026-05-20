@@ -121,6 +121,8 @@ public class OmniTechItems
 
     public static final DeferredItem<BlockItem> ELECTRIC_ENGINE_ITEM = REGISTRY.registerSimpleBlockItem(
             "electric_engine", OmniTechBlocks.ELECTRIC_ENGINE);
+    public static final DeferredItem<BlockItem> POWER_RELAY_ITEM = REGISTRY.registerSimpleBlockItem(
+            "power_relay", OmniTechBlocks.POWER_RELAY);
     public static final DeferredItem<BlockItem> ELECTRIC_CAPACITOR_ITEM = REGISTRY.registerSimpleBlockItem(
             "electric_capacitor", OmniTechBlocks.ELECTRIC_CAPACITOR);
     public static final DeferredItem<BlockItem> ELECTRIC_WIRE_ITEM = REGISTRY.registerSimpleBlockItem(

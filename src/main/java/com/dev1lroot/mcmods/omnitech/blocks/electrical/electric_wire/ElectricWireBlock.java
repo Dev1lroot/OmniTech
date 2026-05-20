@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_wire;
 
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_relay.PowerRelayBlock;
 import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IElectricSupplier;
 import com.mojang.serialization.MapCodec;
@@ -83,7 +84,7 @@ public class ElectricWireBlock extends Block {
             ScheduledTickAccess scheduledTickAccess, BlockPos pos,
             Direction direction, BlockPos neighborPos, BlockState neighborState,
             RandomSource random) {
-        return state.setValue(propertyFor(direction), canConnectTo(level, neighborPos));
+        return state.setValue(propertyFor(direction), canConnectTo(level, neighborPos, direction, neighborState));
     }
 
     // ── VoxelShape ────────────────────────────────────────────────────────────
@@ -105,13 +106,16 @@ public class ElectricWireBlock extends Block {
 
     /**
      * Returns {@code true} if the wire should connect toward the block at
-     * {@code neighborPos}.  Connects to other wires and to block entities that
-     * produce or consume EU.
+     * {@code neighborPos}.  Connects to other wires, power relays on their
+     * front/back faces, and to block entities that produce or consume EU.
+     *
+     * @param fromWireToNeighbor direction from this wire toward the neighbor
      */
-    private static boolean canConnectTo(LevelReader level, BlockPos neighborPos) {
-        BlockState neighborState = level.getBlockState(neighborPos);
+    private static boolean canConnectTo(LevelReader level, BlockPos neighborPos,
+            Direction fromWireToNeighbor, BlockState neighborState) {
         if (neighborState.getBlock() instanceof ElectricWireBlock) return true;
-
+        if (neighborState.getBlock() instanceof PowerRelayBlock)
+            return PowerRelayBlock.allowsConnection(neighborState, fromWireToNeighbor);
         BlockEntity be = level.getBlockEntity(neighborPos);
         return be instanceof IElectricReceiver || be instanceof IElectricSupplier;
     }
@@ -119,7 +123,9 @@ public class ElectricWireBlock extends Block {
     /** Recomputes all 6 connection properties from the current level state. */
     private static BlockState calculateState(BlockState state, LevelReader level, BlockPos pos) {
         for (Direction dir : Direction.values()) {
-            state = state.setValue(propertyFor(dir), canConnectTo(level, pos.relative(dir)));
+            BlockPos neighborPos = pos.relative(dir);
+            state = state.setValue(propertyFor(dir),
+                    canConnectTo(level, neighborPos, dir, level.getBlockState(neighborPos)));
         }
         return state;
     }
