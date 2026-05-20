@@ -5,6 +5,8 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.client.*;
+import com.dev1lroot.mcmods.omnitech.gui.tooltip.PhaseDiagramClientTooltipComponent;
+import com.dev1lroot.mcmods.omnitech.gui.tooltip.PhaseDiagramTooltipData;
 import com.dev1lroot.mcmods.omnitech.client.KeyboardCaptureManager;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlockEntity;
@@ -45,6 +47,7 @@ import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRender
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
@@ -78,6 +81,7 @@ public class OmniTechClient
         modEventBus.addListener(this::registerItemColors);
         modEventBus.addListener(this::registerItemModels);
         modEventBus.addListener(this::registerGuiLayers);
+        modEventBus.addListener(this::registerTooltipComponents);
         modEventBus.register(OmniTechClient.class);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onClientTick);
         NeoForge.EVENT_BUS.addListener(KeyboardCaptureManager::onKeyInput);
@@ -87,6 +91,10 @@ public class OmniTechClient
         NeoForge.EVENT_BUS.addListener(SpaceSuitHudOverlay::onRenderGui);
         NeoForge.EVENT_BUS.addListener(RadioLocatorHudOverlay::onRenderGui);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onItemTooltip);
+    }
+
+    void registerTooltipComponents(RegisterClientTooltipComponentFactoriesEvent event) {
+        event.register(PhaseDiagramTooltipData.class, PhaseDiagramClientTooltipComponent::new);
     }
 
     void onClientSetup(FMLClientSetupEvent event) {

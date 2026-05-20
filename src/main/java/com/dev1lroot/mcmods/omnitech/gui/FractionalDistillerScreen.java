@@ -138,11 +138,12 @@ public class FractionalDistillerScreen extends AbstractContainerScreen<Fractiona
         // Input tank
         if (mouseX >= x + IN_X && mouseX < x + IN_X + IN_W
                 && mouseY >= y + IN_Y && mouseY < y + IN_Y + IN_H) {
+            FluidStack inFluid = menu.getInputFluid();
             List<Component> lines = GuiUtil.buildFluidTooltip(
-                    menu.getInputFluid(),
-                    menu.getInputFluidAmount(),
+                    inFluid, menu.getInputFluidAmount(),
                     FractionalDistillerBlockEntity.INPUT_TANK_CAPACITY);
-            g.setTooltipForNextFrame(this.font, lines, Optional.empty(), mouseX, mouseY);
+            g.setTooltipForNextFrame(this.font, lines,
+                    GuiUtil.buildPhaseDiagramComponent(inFluid), mouseX, mouseY);
             return;
         }
 
@@ -159,7 +160,8 @@ public class FractionalDistillerScreen extends AbstractContainerScreen<Fractiona
                 List<Component> lines = GuiUtil.buildFluidTooltip(
                         fluid, fluid.getAmount(),
                         FractionalDistillerBlockEntity.OUTPUT_TANK_CAPACITY);
-                g.setTooltipForNextFrame(this.font, lines, Optional.empty(), mouseX, mouseY);
+                g.setTooltipForNextFrame(this.font, lines,
+                        GuiUtil.buildPhaseDiagramComponent(fluid), mouseX, mouseY);
                 return;
             }
         }

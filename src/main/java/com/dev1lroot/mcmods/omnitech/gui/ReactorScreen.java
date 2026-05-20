@@ -255,7 +255,8 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
                 && mouseY >= ty && mouseY < ty + menu.tankBarH) {
             int amount   = menu.getWaterBuckets()         * 1000;
             int capacity = menu.getWaterCapacityBuckets() * 1000;
-            List<Component> lines = GuiUtil.buildFluidTooltip(menu.getWaterFluid(), amount, capacity);
+            FluidStack waterFluid = menu.getWaterFluid();
+            List<Component> lines = GuiUtil.buildFluidTooltip(waterFluid, amount, capacity);
             int pressure = menu.getPressure();
             if (amount > 0) {
                 net.minecraft.ChatFormatting pFmt = pressure >= 700 ? net.minecraft.ChatFormatting.RED
@@ -274,7 +275,8 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
                 lines.add(Component.literal("Cooling reduced — replace coolant!")
                         .withStyle(s -> s.withColor(0xFFFF4444)));
             }
-            g.setTooltipForNextFrame(this.font, lines, Optional.empty(), mouseX, mouseY);
+            g.setTooltipForNextFrame(this.font, lines,
+                    GuiUtil.buildPhaseDiagramComponent(waterFluid), mouseX, mouseY);
             return;
         }
 

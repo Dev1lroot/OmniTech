@@ -5,8 +5,11 @@
 package com.dev1lroot.mcmods.omnitech.util;
 
 import com.dev1lroot.mcmods.omnitech.FluidPhaseUtil;
+import com.dev1lroot.mcmods.omnitech.FluidPhysicsRegistry;
 import com.dev1lroot.mcmods.omnitech.OmniTech;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
+import com.dev1lroot.mcmods.omnitech.gui.tooltip.PhaseDiagramTooltipData;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -20,6 +23,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class GuiUtil
 {
@@ -133,6 +137,23 @@ public class GuiUtil
             lines.add(Component.literal(pressure + " kPa").withStyle(pressFmt));
         }
         return lines;
+    }
+
+    /**
+     * Returns a {@link PhaseDiagramTooltipData} wrapped in an Optional for use
+     * as the {@code Optional<TooltipComponent>} argument of
+     * {@code setTooltipForNextFrame}.  Returns {@link Optional#empty()} when the
+     * fluid is empty or has no phase diagram registered.
+     */
+    public static Optional<TooltipComponent> buildPhaseDiagramComponent(FluidStack fluid) {
+        if (fluid.isEmpty()) return Optional.empty();
+        var diagram = FluidPhysicsRegistry.get(fluid.getFluid()).phaseDiagram();
+        if (diagram == null) return Optional.empty();
+        Integer tempBox     = fluid.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        Integer pressureBox = fluid.get(OmniTechDataComponents.FLUID_PRESSURE.get());
+        int temp     = tempBox     != null ? tempBox     : 20;
+        int pressure = pressureBox != null ? pressureBox : 101;
+        return Optional.of(new PhaseDiagramTooltipData(diagram, temp, pressure));
     }
 
     /**

@@ -136,7 +136,8 @@ public final class GuiLayoutRenderer {
 
             List<Component> lines = GuiUtil.buildFluidTooltip(fluid, amount, capacity);
 
-            graphics.setTooltipForNextFrame(font, lines, Optional.empty(), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(font, lines,
+                    GuiUtil.buildPhaseDiagramComponent(fluid), mouseX, mouseY);
             return true;
         }
         return false;
