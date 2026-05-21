@@ -15,6 +15,7 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -76,8 +77,18 @@ public class RadiationSavedData extends SavedData {
         pendingZones.add(new PendingZoneEvent(fireTick, zone, center));
     }
 
-    /** Queue block positions for gradual destruction (zone 2). */
-    public void queueExplosion(List<BlockPos> blocks) {
+    /**
+     * Queue block positions for gradual destruction, sorted nearest-first so
+     * the destruction wave propagates outward from the explosion centre.
+     */
+    public void queueExplosion(List<BlockPos> blocks, BlockPos center) {
+        final long cx = center.getX(), cy = center.getY(), cz = center.getZ();
+        blocks.sort(Comparator.comparingLong(pos -> {
+            long dx = pos.getX() - cx;
+            long dy = pos.getY() - cy;
+            long dz = pos.getZ() - cz;
+            return dx * dx + dy * dy + dz * dz;
+        }));
         pending.addAll(blocks);
     }
 
@@ -87,7 +98,7 @@ public class RadiationSavedData extends SavedData {
         pendingZones.removeIf(event -> {
             if (now < event.fireTick()) return false;
             switch (event.zone()) {
-                case 1 -> NuclearExplosion.executeZone1(level, event.center());
+                case 1 -> NuclearExplosion.executeZone1(level, event.center(), this);
                 case 2 -> NuclearExplosion.executeZone2(level, event.center(), this);
                 case 3 -> NuclearExplosion.spawnZone3Tnt(level, event.center());
                 case 4 -> NuclearExplosion.applyBiomeChange(level, event.center());

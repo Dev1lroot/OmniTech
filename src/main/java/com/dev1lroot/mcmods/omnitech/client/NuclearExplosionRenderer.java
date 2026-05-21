@@ -11,11 +11,13 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 
 /**
@@ -85,13 +87,68 @@ public final class NuclearExplosionRenderer {
             final long el = elapsed;
             nodes.submitCustomGeometry(poseStack, RenderTypes.eyes(atlasLoc), (pose, buf) -> {
                 renderFlash(pose, buf, el, umid, vmid);
+                renderBlastColumn(pose, buf, el, umid, vmid);
                 renderFireball(pose, buf, el, umid, vmid);
                 renderShockwave(pose, buf, el, umid, vmid);
+                renderBiomeRing(pose, buf, el, umid, vmid);
                 renderStem(pose, buf, el, umid, vmid);
                 renderMushroomCap(pose, buf, el, umid, vmid);
             });
 
             poseStack.popPose();
+        }
+    }
+
+    // ── Particle shockwave (game thread) ─────────────────────────────────────
+
+    /**
+     * Spawns a single spherical burst of {@link ParticleTypes#FIREWORK} sparks
+     * at the explosion centre the first game tick after each detonation.
+     *
+     * <p>All particles originate at the explosion centre and fly outward with
+     * velocities calculated to carry them to {@link NuclearExplosionEffect#BURST_RADIUS_BLOCKS}
+     * before drag halts them (firework drag ≈ 0.91/tick →
+     * v₀ = radius × (1 − 0.91) = radius × 0.09).
+     *
+     * <p>Direction is derived from a Fibonacci sphere (golden-angle spiral) so
+     * coverage is perfectly uniform across the full sphere with no pole bunching.
+     *
+     * <p>Safe to call from {@link ClientTickEvent.Post} (game thread).
+     */
+    public static void onClientTick(ClientTickEvent.Post event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || NuclearExplosionEffect.ACTIVE.isEmpty()) return;
+
+        // v₀ to travel (BURST_RADIUS_BLOCKS − BURST_START_RADIUS) before drag halts it.
+        // Firework drag ≈ 0.91/tick → Σ v·0.91^n = v/(1−0.91) → v = travel × 0.09
+        final double travel = NuclearExplosionEffect.BURST_RADIUS_BLOCKS
+                            - NuclearExplosionEffect.BURST_START_RADIUS;  // 96 blocks
+        final double speed  = travel * (1.0 - 0.91);
+        final double startR = NuclearExplosionEffect.BURST_START_RADIUS;
+        final int    n      = NuclearExplosionEffect.BURST_PARTICLE_COUNT;
+        // Golden angle in radians — drives the Fibonacci sphere distribution
+        final double goldenAngle = Math.PI * (3.0 - Math.sqrt(5.0));
+
+        for (NuclearExplosionEffect.ActiveEffect effect : NuclearExplosionEffect.ACTIVE) {
+            if (effect.burstFired) continue;
+            effect.burstFired = true;
+
+            Vec3 c = effect.center();
+            for (int i = 0; i < n; i++) {
+                // Uniform Y from 1 → -1 gives equal-area latitude bands
+                double cosφ = 1.0 - 2.0 * (i + 0.5) / n;
+                double sinφ = Math.sqrt(Math.max(0.0, 1.0 - cosφ * cosφ));
+                double θ    = goldenAngle * i;
+                double dx   = sinφ * Math.cos(θ);
+                double dy   = cosφ;
+                double dz   = sinφ * Math.sin(θ);
+                // Spawn on the surface of the start sphere, velocity pointing outward
+                mc.level.addParticle(ParticleTypes.FIREWORK,
+                        c.x + dx * startR,
+                        c.y + dy * startR,
+                        c.z + dz * startR,
+                        dx * speed, dy * speed, dz * speed);
+            }
         }
     }
 
@@ -105,6 +162,43 @@ public final class NuclearExplosionRenderer {
         float radius = easeOut(t) * NuclearExplosionEffect.FLASH_MAX_R;
         int   alpha  = (int)(255 * (1f - t));
         renderSphere(pose, buf, radius, 0f, ARGB.color(alpha, 255, 255, 255), u, v);
+    }
+
+    /**
+     * Layer 1b — Sky-clearing blast column.
+     * A bright white cylinder of {@value NuclearExplosionEffect#BLAST_COL_RADIUS}-block
+     * radius rises from the explosion height to the sky during the flash window (0–800 ms).
+     * It represents the nuclear fireball column vaporising the atmosphere above the burst.
+     */
+    private static void renderBlastColumn(PoseStack.Pose pose, VertexConsumer buf,
+                                           long elapsed, float u, float v) {
+        if (elapsed >= NuclearExplosionEffect.FLASH_END_MS) return;
+        float t     = elapsed / (float) NuclearExplosionEffect.FLASH_END_MS;
+        int   alpha = (int)(220 * (1f - t));
+        renderCylinder(pose, buf,
+                NuclearExplosionEffect.BLAST_COL_RADIUS,
+                NuclearExplosionEffect.BLAST_COL_HEIGHT,
+                ARGB.color(alpha, 255, 255, 255), u, v);
+    }
+
+    /**
+     * Layer 3b — Biome-change sweep ring.
+     * A large torus expands from 0 to {@value NuclearExplosionEffect#BIOME_RING_MAX_R} blocks
+     * over 10 seconds, fading linearly to transparent.  It marks the outer boundary of the
+     * area affected by the nuclear event (fallout radius / biome mutation zone).
+     */
+    private static void renderBiomeRing(PoseStack.Pose pose, VertexConsumer buf,
+                                         long elapsed, float u, float v) {
+        if (elapsed < NuclearExplosionEffect.BIOME_RING_START_MS
+                || elapsed >= NuclearExplosionEffect.BIOME_RING_END_MS) return;
+        float t      = (elapsed - NuclearExplosionEffect.BIOME_RING_START_MS)
+                     / (float)(NuclearExplosionEffect.BIOME_RING_END_MS
+                               - NuclearExplosionEffect.BIOME_RING_START_MS);
+        float majorR = easeOut(t) * NuclearExplosionEffect.BIOME_RING_MAX_R;
+        // Linear fade: opaque at t=0, transparent at t=1
+        int   alpha  = (int)(160 * (1f - t));
+        renderTorus(pose, buf, majorR, NuclearExplosionEffect.BIOME_RING_MINOR_R, 0f,
+                ARGB.color(alpha, 160, 80, 40), u, v);
     }
 
     /**

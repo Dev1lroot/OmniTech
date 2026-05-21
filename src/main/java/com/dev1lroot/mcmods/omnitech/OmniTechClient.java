@@ -93,6 +93,7 @@ public class OmniTechClient
         NeoForge.EVENT_BUS.addListener(RadioLocatorHudOverlay::onRenderGui);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onItemTooltip);
         NeoForge.EVENT_BUS.addListener(NuclearExplosionRenderer::onSubmitGeometry);
+        NeoForge.EVENT_BUS.addListener(NuclearExplosionRenderer::onClientTick);
     }
 
     void registerTooltipComponents(RegisterClientTooltipComponentFactoriesEvent event) {

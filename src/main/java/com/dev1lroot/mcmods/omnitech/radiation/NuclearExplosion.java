@@ -32,6 +32,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Comparator;
 
 /**
  * Nuclear explosion: three-zone spherical block destruction.
@@ -46,6 +47,9 @@ public class NuclearExplosion {
     private static final int R1 = 32;
     private static final int R2 = 64;
     private static final int R3 = 192;
+
+    /** Radius of the sky-clearing cylinder queued at zone-1 time (32-block diameter). */
+    private static final int BLAST_COL_R = 16;
 
     private static final int ZONE3_TNT_COUNT = 96;
 
@@ -94,7 +98,7 @@ public class NuclearExplosion {
 
     // ── Zone executors (called by RadiationSavedData.tick) ───────────────────
 
-    static void executeZone1(ServerLevel level, BlockPos center) {
+    static void executeZone1(ServerLevel level, BlockPos center, RadiationSavedData data) {
         int kr = KILL_RADIUS;
         AABB killBox = new AABB(
                 center.getX() - kr, center.getY() - kr, center.getZ() - kr,
@@ -118,6 +122,21 @@ public class NuclearExplosion {
                         level.setBlock(target, Blocks.AIR.defaultBlockState(),
                                 Block.UPDATE_CLIENTS | Block.UPDATE_SUPPRESS_DROPS);
                 }
+
+        // Sky-clearing column: 32-block diameter cylinder from explosion height to world ceiling.
+        // Queued nearest-first so blocks clear from the ground upward.
+        int colRsq = BLAST_COL_R * BLAST_COL_R;
+        int maxY   = level.getMaxY();
+        List<BlockPos> column = new ArrayList<>();
+        for (int dx = -BLAST_COL_R; dx <= BLAST_COL_R; dx++) {
+            for (int dz = -BLAST_COL_R; dz <= BLAST_COL_R; dz++) {
+                if (dx * dx + dz * dz > colRsq) continue;
+                for (int y = center.getY(); y < maxY; y++) {
+                    column.add(new BlockPos(center.getX() + dx, y, center.getZ() + dz));
+                }
+            }
+        }
+        data.queueExplosion(column, center);
     }
 
     static void executeZone2(ServerLevel level, BlockPos center, RadiationSavedData data) {
@@ -132,7 +151,7 @@ public class NuclearExplosion {
                     if (level.getRandom().nextFloat() < 0.75f)
                         zone2.add(center.offset(dx, dy, dz));
                 }
-        data.queueExplosion(zone2);
+        data.queueExplosion(zone2, center);
     }
 
     static void spawnZone3Tnt(ServerLevel level, BlockPos center) {
@@ -194,7 +213,7 @@ public class NuclearExplosion {
                 }
             }
         }
-        data.queueExplosion(toRemove);
+        data.queueExplosion(toRemove, center);
     }
 
     static void applyBiomeChange(ServerLevel level, BlockPos center) {
