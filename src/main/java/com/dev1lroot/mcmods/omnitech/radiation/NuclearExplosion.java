@@ -8,6 +8,7 @@ import com.dev1lroot.mcmods.omnitech.OmniTechSounds;
 import com.dev1lroot.mcmods.omnitech.network.NuclearExplosionFxPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -18,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -51,6 +53,13 @@ public class NuclearExplosion {
     /** Biome conversion radius (XZ) applied at zone 3 time. */
     private static final int BIOME_RADIUS = 320;
 
+    /** Leaf strip radius (3D sphere) applied at zone 2 time. */
+    private static final int LEAF_RADIUS       = 300;
+    /** Within this radius all leaves are removed (100%); beyond it 50% are removed. */
+    private static final int LEAF_FULL_RADIUS  = 96;
+    /** All flowers removed within this radius (100%). */
+    private static final int FLOWER_RADIUS     = 192;
+
     // Destruction fires when each visual phase ends (20 ticks/s)
     private static final long ZONE1_DELAY_TICKS = 100L; // phase 1: 5s
     private static final long ZONE2_DELAY_TICKS = 120L; // phase 1 + phase 2: 6s
@@ -73,6 +82,7 @@ public class NuclearExplosion {
         data.scheduleZone(2, center.immutable(), now + ZONE2_DELAY_TICKS);
         data.scheduleZone(3, center.immutable(), now + ZONE3_DELAY_TICKS);
         data.scheduleZone(4, center.immutable(), now + ZONE3_DELAY_TICKS);
+        data.scheduleZone(5, center.immutable(), now + ZONE2_DELAY_TICKS);
     }
 
     // ── Zone executors (called by RadiationSavedData.tick) ───────────────────
@@ -130,6 +140,54 @@ public class NuclearExplosion {
             tnt.setFuse(40);
             level.addFreshEntity(tnt);
         }
+    }
+
+    static void executeLeafStrip(ServerLevel level, BlockPos center, RadiationSavedData data) {
+        double radiusSq = (double) LEAF_RADIUS * LEAF_RADIUS;
+        int chunkMinX = (center.getX() - LEAF_RADIUS) >> 4;
+        int chunkMaxX = (center.getX() + LEAF_RADIUS) >> 4;
+        int chunkMinZ = (center.getZ() - LEAF_RADIUS) >> 4;
+        int chunkMaxZ = (center.getZ() + LEAF_RADIUS) >> 4;
+
+        double flowerRadiusSq = (double) FLOWER_RADIUS * FLOWER_RADIUS;
+        double leafFullRadiusSq = (double) LEAF_FULL_RADIUS * LEAF_FULL_RADIUS;
+
+        List<BlockPos> toRemove = new ArrayList<>();
+        for (int cx = chunkMinX; cx <= chunkMaxX; cx++) {
+            for (int cz = chunkMinZ; cz <= chunkMaxZ; cz++) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
+                if (chunk == null) continue;
+                LevelChunkSection[] sections = chunk.getSections();
+                for (int si = 0; si < sections.length; si++) {
+                    LevelChunkSection section = sections[si];
+                    if (section.hasOnlyAir()) continue;
+                    int sectionMinY = SectionPos.sectionToBlockCoord(chunk.getSectionYFromSectionIndex(si));
+                    for (int lx = 0; lx < 16; lx++) {
+                        for (int ly = 0; ly < 16; ly++) {
+                            for (int lz = 0; lz < 16; lz++) {
+                                var state = section.getBlockState(lx, ly, lz);
+                                boolean isLeaf   = state.is(BlockTags.LEAVES);
+                                boolean isFlower = state.is(BlockTags.FLOWERS);
+                                if (!isLeaf && !isFlower) continue;
+                                double dx  = (cx << 4) + lx - center.getX();
+                                double dy  = sectionMinY + ly - center.getY();
+                                double dz  = (cz << 4) + lz - center.getZ();
+                                double dsq = dx*dx + dy*dy + dz*dz;
+                                if (isLeaf) {
+                                    if (dsq > radiusSq) continue;
+                                    if (dsq <= leafFullRadiusSq || level.getRandom().nextFloat() < 0.5f)
+                                        toRemove.add(new BlockPos((cx << 4) + lx, sectionMinY + ly, (cz << 4) + lz));
+                                } else { // flower
+                                    if (dsq <= flowerRadiusSq)
+                                        toRemove.add(new BlockPos((cx << 4) + lx, sectionMinY + ly, (cz << 4) + lz));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        data.queueExplosion(toRemove);
     }
 
     static void applyBiomeChange(ServerLevel level, BlockPos center) {
