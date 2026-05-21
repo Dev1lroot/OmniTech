@@ -150,6 +150,7 @@ public class OmniTech {
         OmniTechDataComponents.register(modEventBus);
         OmniTechAttachments.register(modEventBus);
         OmniTechMobEffects.register(modEventBus);
+        OmniTechSounds.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(com.dev1lroot.mcmods.omnitech.radiation.RadiationTick.class);

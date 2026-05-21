@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.radiation;
 
+import com.dev1lroot.mcmods.omnitech.OmniTechSounds;
 import com.dev1lroot.mcmods.omnitech.network.NuclearExplosionFxPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -16,6 +17,7 @@ import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -32,16 +34,16 @@ import java.util.List;
  * Destruction is deferred to match the visual phase transitions:
  *   Zone 1 (0–32 blocks):   100% destruction + entity kills, fires when phase 1 ends (5s / 100 ticks).
  *   Zone 2 (32–64 blocks):  75% destruction, queued when phase 2 ends (6s / 120 ticks).
- *   Zone 3 (64–128 blocks): 32 primed TNT, spawned when phase 3 ends (11s / 220 ticks).
+ *   Zone 3 (64–192 blocks): 96 primed TNT, spawned when phase 3 ends (11s / 220 ticks).
  *   Zone 4:                 320-block biome conversion to nuclear_wastelands, at the same moment as zone 3.
  */
 public class NuclearExplosion {
 
     private static final int R1 = 32;
     private static final int R2 = 64;
-    private static final int R3 = 128;
+    private static final int R3 = 192;
 
-    private static final int ZONE3_TNT_COUNT = 32;
+    private static final int ZONE3_TNT_COUNT = 96;
 
     /** Kill radius: all non-creative living entities within this many blocks die at zone 1 time. */
     private static final int KILL_RADIUS = 96;
@@ -62,6 +64,9 @@ public class NuclearExplosion {
                 center.getX(), center.getY(), center.getZ(),
                 KILL_RADIUS * 2.0,
                 new NuclearExplosionFxPacket(center.getX() + 0.5, center.getY() + 0.5, center.getZ() + 0.5));
+
+        level.playSound(null, center.getX(), center.getY(), center.getZ(),
+                OmniTechSounds.NUCLEAR_EXPLOSION.get(), SoundSource.NEUTRAL, 1.0f, 1.0f);
 
         long now = level.getGameTime();
         data.scheduleZone(1, center.immutable(), now + ZONE1_DELAY_TICKS);
