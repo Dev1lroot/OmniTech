@@ -15,5 +15,6 @@
   "temperature_amplitude": 10.0,
   "surface_pressure": 101325.0,
   "pressure_gradient": 12.0,
-  "surface_y": 64
+  "surface_y": 64,
+  "surface_gravity": 9.807
 }

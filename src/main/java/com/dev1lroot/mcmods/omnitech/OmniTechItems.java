@@ -18,6 +18,7 @@ import com.dev1lroot.mcmods.omnitech.items.MicrocontrollerItem;
 import com.dev1lroot.mcmods.omnitech.items.RomItem;
 import com.dev1lroot.mcmods.omnitech.items.RadioLocatorItem;
 import com.dev1lroot.mcmods.omnitech.items.RamCardItem;
+import com.dev1lroot.mcmods.omnitech.items.HazmatSuitItem;
 import com.dev1lroot.mcmods.omnitech.items.SpaceSuitItem;
 import com.dev1lroot.mcmods.omnitech.items.TruthTableItem;
 import com.dev1lroot.mcmods.omnitech.util.LogicGate;
@@ -440,6 +441,54 @@ public class OmniTechItems
             REGISTRY.registerItem("space_suit_boots",
                     props -> new SpaceSuitItem(ArmorType.BOOTS, props),
                     props -> props.humanoidArmor(SPACE_SUIT_MATERIAL, ArmorType.BOOTS));
+
+    // ── Hazmat Suit ────────────────────────────────────────────────────────────
+
+    private static final ResourceKey<EquipmentAsset> HAZMAT_SUIT_ASSET =
+            ResourceKey.create(EquipmentAssets.ROOT_ID,
+                    Identifier.fromNamespaceAndPath(OmniTech.MODID, "hazmat_suit"));
+
+    /**
+     * Hazmat Suit material — zero physical defence, fragile (20 durability per
+     * piece enforced via {@link Item.Properties#durability}).  Its only purpose
+     * is radiation shielding when the full set is worn.
+     */
+    public static final ArmorMaterial HAZMAT_SUIT_MATERIAL = new ArmorMaterial(
+            1,    // multiplier (actual durability overridden to 20 per piece below)
+            Maps.newEnumMap(Map.of(
+                    ArmorType.BOOTS,      0,
+                    ArmorType.LEGGINGS,   0,
+                    ArmorType.CHESTPLATE, 0,
+                    ArmorType.HELMET,     0,
+                    ArmorType.BODY,       0
+            )),
+            1,    // not enchantable
+            SoundEvents.ARMOR_EQUIP_LEATHER,
+            0.0f, // no toughness
+            0.0f, // no knockback resistance
+            ItemTags.REPAIRS_LEATHER_ARMOR,
+            HAZMAT_SUIT_ASSET
+    );
+
+    public static final DeferredItem<HazmatSuitItem> HAZMAT_SUIT_HELMET =
+            REGISTRY.registerItem("hazmat_suit_helmet",
+                    props -> new HazmatSuitItem(ArmorType.HELMET, props),
+                    props -> props.humanoidArmor(HAZMAT_SUIT_MATERIAL, ArmorType.HELMET).durability(20));
+
+    public static final DeferredItem<HazmatSuitItem> HAZMAT_SUIT_CHESTPLATE =
+            REGISTRY.registerItem("hazmat_suit_chestplate",
+                    props -> new HazmatSuitItem(ArmorType.CHESTPLATE, props),
+                    props -> props.humanoidArmor(HAZMAT_SUIT_MATERIAL, ArmorType.CHESTPLATE).durability(20));
+
+    public static final DeferredItem<HazmatSuitItem> HAZMAT_SUIT_LEGGINGS =
+            REGISTRY.registerItem("hazmat_suit_leggings",
+                    props -> new HazmatSuitItem(ArmorType.LEGGINGS, props),
+                    props -> props.humanoidArmor(HAZMAT_SUIT_MATERIAL, ArmorType.LEGGINGS).durability(20));
+
+    public static final DeferredItem<HazmatSuitItem> HAZMAT_SUIT_BOOTS =
+            REGISTRY.registerItem("hazmat_suit_boots",
+                    props -> new HazmatSuitItem(ArmorType.BOOTS, props),
+                    props -> props.humanoidArmor(HAZMAT_SUIT_MATERIAL, ArmorType.BOOTS).durability(20));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

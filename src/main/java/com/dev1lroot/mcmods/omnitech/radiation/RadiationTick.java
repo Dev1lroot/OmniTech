@@ -6,6 +6,8 @@ package com.dev1lroot.mcmods.omnitech.radiation;
 
 import com.dev1lroot.mcmods.omnitech.OmniTech;
 import com.dev1lroot.mcmods.omnitech.OmniTechMobEffects;
+import com.dev1lroot.mcmods.omnitech.items.HazmatSuitItem;
+import com.dev1lroot.mcmods.omnitech.items.SpaceSuitItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
@@ -91,6 +93,14 @@ public class RadiationTick {
 
     private static void applyRadiationEffect(ServerPlayer player, int amplifier) {
         Holder<MobEffect> effect = OmniTechMobEffects.RADIATION;
+
+        if (SpaceSuitItem.isWearingFullSuit(player) || HazmatSuitItem.isWearingFullSuit(player)) {
+            if (amplifier < 2) return; // full suit blocks Radiation I and II
+            // Radiation III zone: downgrade to Radiation I for 10 seconds
+            player.removeEffectNoUpdate(effect);
+            player.addEffect(new MobEffectInstance(effect, EFFECT_DURATION, 0, false, true));
+            return;
+        }
 
         // Radiation III gets "permanent" duration (Integer.MAX_VALUE / 2).
         // Lower tiers get EFFECT_DURATION (10 seconds), refreshed each cycle.

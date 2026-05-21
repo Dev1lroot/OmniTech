@@ -63,6 +63,10 @@ public class RadiationSavedData extends SavedData {
         return level.getServer().overworld().getDataStorage().computeIfAbsent(TYPE);
     }
 
+    public List<BlockPos> getCenters() {
+        return centers;
+    }
+
     public void addCenter(BlockPos center) {
         centers.add(center.immutable());
         setDirty();

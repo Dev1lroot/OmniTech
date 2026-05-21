@@ -15,10 +15,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Client-side utility that calculates temperature (°C) and pressure (Pa) for
- * the player's current position in any dimension.
+ * Client-side utility that calculates temperature (°C), pressure (Pa), and
+ * surface gravity (m/s²) for the player's current position in any dimension.
  *
- * <p>Data comes from {@link CelestialBody} entries in {@code space_map.json}.
+ * <p>Data comes from {@link CelestialBody} entries in the celestial body JSONs.
  * Vanilla dimensions ({@code minecraft:overworld}, {@code minecraft:the_nether},
  * {@code minecraft:the_end}) are handled by a built-in fallback table.
  *
@@ -33,6 +33,11 @@ import java.util.Map;
  *   P = max( 0,  surface_pressure  +  pressure_gradient × (surface_y − posY) )
  * </pre>
  * Positive gradient → pressure rises going deeper; 0 gradient → flat (vacuum).
+ *
+ * <h3>Gravity</h3>
+ * <pre>
+ *   g = surface_gravity  (constant per dimension, in m/s²)
+ * </pre>
  */
 public final class DimensionEnvironment {
 
@@ -41,12 +46,13 @@ public final class DimensionEnvironment {
     // ── Fallback table for vanilla dimensions ─────────────────────────────────
 
     private record Env(double baseTemp, double tempAmp, double surfacePressure,
-                       double pressureGradient, int surfaceY) {}
+                       double pressureGradient, int surfaceY, double gravity) {}
 
     private static final Map<String, Env> FALLBACK = Map.of(
-            "minecraft:overworld",  new Env(15,   10,  101_325,  12,     64),
-            "minecraft:the_nether", new Env(300,  20,  500_000,  5_000,  64),
-            "minecraft:the_end",    new Env(-270,  0,       0,      0,  64)
+            //                                baseT  amp    surfPa    grad     sY   g (m/s²)
+            "minecraft:overworld",  new Env(  15,   10,  101_325,     12,     64,   9.807),
+            "minecraft:the_nether", new Env( 300,   20,  500_000,  5_000,    64,   9.807),
+            "minecraft:the_end",    new Env(-270,    0,        0,      0,    64,   4.9  )
     );
 
     // ── Lazy-loaded body map: dimensionId → CelestialBody ─────────────────────
@@ -114,6 +120,21 @@ public final class DimensionEnvironment {
             return calcPressure(fallback.surfacePressure(), fallback.pressureGradient(), fallback.surfaceY(), pos.getY());
 
         return 101_325.0;
+    }
+
+    /**
+     * Surface gravitational acceleration in m/s² for the given dimension.
+     * Constant per dimension — independent of position.
+     */
+    public static double getGravity(Level level) {
+        String dimId = level.dimension().identifier().toString();
+        CelestialBody body = bodies().get(dimId);
+        if (body != null) return body.surface_gravity;
+
+        Env fallback = FALLBACK.get(dimId);
+        if (fallback != null) return fallback.gravity();
+
+        return 9.807; // unknown dimension — Earth default
     }
 
     /** Human-readable dimension name (uses the path component, title-cased). */

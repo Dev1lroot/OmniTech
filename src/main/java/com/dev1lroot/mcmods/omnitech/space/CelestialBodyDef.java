@@ -28,4 +28,6 @@ public class CelestialBodyDef {
     public double surface_pressure = 101_325.0;
     public double pressure_gradient = 12.0;
     public int surface_y = 64;
+    /** Surface gravitational acceleration in m/s². Earth standard = 9.807. */
+    public double surface_gravity = 9.807;
 }

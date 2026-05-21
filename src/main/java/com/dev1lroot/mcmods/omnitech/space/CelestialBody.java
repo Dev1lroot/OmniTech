@@ -90,6 +90,12 @@ public class CelestialBody {
      */
     public int surface_y = 64;
 
+    /**
+     * Surface gravitational acceleration in m/s². Earth = 9.807, Moon = 1.62,
+     * Mars = 3.72, Europa = 1.315, Jupiter = 24.79.
+     */
+    public double surface_gravity = 9.807;
+
     /** Child moons (empty list for moons themselves). */
     public List<CelestialBody> moons = List.of();
 

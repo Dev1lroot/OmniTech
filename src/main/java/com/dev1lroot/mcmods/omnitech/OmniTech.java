@@ -62,6 +62,8 @@ import com.dev1lroot.mcmods.omnitech.recipes.CokingRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ChemicalInfuserRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ExtractorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.network.NuclearExplosionFxPacket;
+import com.dev1lroot.mcmods.omnitech.network.RadiationSyncPacket;
+import com.dev1lroot.mcmods.omnitech.radiation.RadiationSavedData;
 import com.dev1lroot.mcmods.omnitech.network.OpenRocketGuiPacket;
 import com.dev1lroot.mcmods.omnitech.network.RocketOrbitPacket;
 import com.dev1lroot.mcmods.omnitech.network.SpaceTravelPacket;
@@ -113,6 +115,7 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import com.dev1lroot.mcmods.omnitech.client.FluidCanisterResourceHandler;
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -545,6 +548,10 @@ public class OmniTech {
                 NuclearExplosionFxPacket.TYPE,
                 NuclearExplosionFxPacket.CODEC,
                 NuclearExplosionFxPacket::handle);
+        event.registrar("1").playToClient(
+                RadiationSyncPacket.TYPE,
+                RadiationSyncPacket.CODEC,
+                RadiationSyncPacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -641,6 +648,10 @@ public class OmniTech {
         if (!sp.getData(OmniTechAttachments.GUIDEBOOK_GIVEN)) {
             sp.getInventory().add(new ItemStack(OmniTechItems.GUIDEBOOK.get()));
             sp.setData(OmniTechAttachments.GUIDEBOOK_GIVEN, true);
+        }
+        RadiationSavedData radData = RadiationSavedData.get((ServerLevel) sp.level());
+        if (!radData.getCenters().isEmpty()) {
+            PacketDistributor.sendToPlayer(sp, new RadiationSyncPacket(new ArrayList<>(radData.getCenters())));
         }
     }
 

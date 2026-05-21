@@ -5,6 +5,7 @@
 package com.dev1lroot.mcmods.omnitech.client;
 
 import com.dev1lroot.mcmods.omnitech.items.SpaceSuitItem;
+import com.dev1lroot.mcmods.omnitech.radiation.ClientRadiationData;
 import com.dev1lroot.mcmods.omnitech.space.DimensionEnvironment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -20,13 +21,16 @@ import net.neoforged.neoforge.client.event.RenderGuiEvent;
  * Renders the Space Suit HUD panel in the bottom-left corner of the screen.
  *
  * <p>The overlay is shown whenever the player has a {@link SpaceSuitItem} helmet
- * equipped.  It displays three lines:
+ * equipped.  It displays four lines:
  * <ol>
  *   <li>Current planet / dimension name</li>
  *   <li>Atmospheric pressure in Pascals (colour-coded: white = breathable,
  *       yellow = dangerous, red = lethal)</li>
  *   <li>Ambient temperature in °C (colour-coded: cyan = cold, white = normal,
  *       orange = hot)</li>
+ *   <li>Radiation dose rate in μSv/h / mSv/h / Sv/h on a logarithmic scale
+ *       (colour-coded: green = background, yellow = low, orange = moderate,
+ *       red = high, purple = lethal)</li>
  * </ol>
  *
  * <p>Register via {@link net.neoforged.common.NeoForge#EVENT_BUS}:
@@ -43,6 +47,9 @@ public final class SpaceSuitHudOverlay {
     private static final int C_TEMP_COLD= 0xFF66DDFF;   // very cold
     private static final int C_TEMP_OK  = 0xFFCCDDEE;   // comfortable
     private static final int C_TEMP_HOT = 0xFFFF8833;   // hot
+    private static final int C_GRAV_LOW = 0xFF66DDFF;   // < 3 m/s² — microgravity
+    private static final int C_GRAV_OK  = 0xFFCCDDEE;   // 3–14 m/s² — normal
+    private static final int C_GRAV_HIGH= 0xFFFF8833;   // > 14 m/s² — crushing
 
     private static final int PANEL_X    = 4;
     private static final int LINE_H     = 10;
@@ -61,21 +68,30 @@ public final class SpaceSuitHudOverlay {
 
         double temperature = DimensionEnvironment.getTemperature(level, pos);
         double pressure    = DimensionEnvironment.getPressure(level, pos);
+        double gravity     = DimensionEnvironment.getGravity(level);
         String dimName     = DimensionEnvironment.getDimensionName(level);
+
+        float radLevel    = ClientRadiationData.getRadiationLevel(player);
+        String radDoseStr = ClientRadiationData.getDoseRate(radLevel);
+        int    radColor   = ClientRadiationData.getLabelColor(radLevel);
+
+        ClientRadiationData.tickCrackSound(radLevel);
 
         GuiGraphicsExtractor g    = event.getGuiGraphics();
         int screenH = mc.getWindow().getGuiScaledHeight();
 
         // Panel anchored 4 px above the hotbar area (hotbar is ~22 px tall)
-        int panelY = screenH - 22 - LINE_H * 3 - 6;
+        int panelY = screenH - 22 - LINE_H * 5 - 6;
 
         // ── Background pill ───────────────────────────────────────────────────
         int labelW  = font.width("Pressure: ");
         int maxValW = Math.max(
                 font.width(formatPressure(pressure)),
-                Math.max(font.width(formatTemp(temperature)), font.width(dimName)));
+                Math.max(font.width(formatTemp(temperature)),
+                Math.max(font.width(formatGravity(gravity)),
+                Math.max(font.width(dimName), font.width(radDoseStr)))));
         int panelW  = labelW + maxValW + 8;
-        g.fill(PANEL_X - 2, panelY - 2, PANEL_X + panelW + 2, panelY + LINE_H * 3 + 2, 0x88010108);
+        g.fill(PANEL_X - 2, panelY - 2, PANEL_X + panelW + 2, panelY + LINE_H * 5 + 2, 0x88010108);
 
         // ── Line 1: dimension name ─────────────────────────────────────────────
         g.text(font, "Location: ", PANEL_X, panelY, C_LABEL);
@@ -94,6 +110,17 @@ public final class SpaceSuitHudOverlay {
                       : C_TEMP_OK;
         g.text(font, "Temp:     ", PANEL_X, panelY + LINE_H * 2, C_LABEL);
         g.text(font, formatTemp(temperature), PANEL_X + labelW, panelY + LINE_H * 2, tempColor);
+
+        // ── Line 4: gravity ────────────────────────────────────────────────────
+        int gravColor = gravity < 3.0  ? C_GRAV_LOW
+                      : gravity > 14.0 ? C_GRAV_HIGH
+                      : C_GRAV_OK;
+        g.text(font, "Gravity:  ", PANEL_X, panelY + LINE_H * 3, C_LABEL);
+        g.text(font, formatGravity(gravity), PANEL_X + labelW, panelY + LINE_H * 3, gravColor);
+
+        // ── Line 5: radiation ──────────────────────────────────────────────────
+        g.text(font, "Radiation:", PANEL_X, panelY + LINE_H * 4, C_LABEL);
+        g.text(font, radDoseStr, PANEL_X + labelW, panelY + LINE_H * 4, radColor);
     }
 
     // ── Formatters ─────────────────────────────────────────────────────────────
@@ -107,5 +134,9 @@ public final class SpaceSuitHudOverlay {
 
     private static String formatTemp(double celsius) {
         return String.format("%+.1f \u00B0C", celsius);  // e.g. "+15.0 °C"
+    }
+
+    private static String formatGravity(double mps2) {
+        return String.format("%.2f m/s²", mps2);
     }
 }

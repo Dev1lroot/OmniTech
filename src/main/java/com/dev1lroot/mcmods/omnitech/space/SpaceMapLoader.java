@@ -141,6 +141,7 @@ public class SpaceMapLoader {
         b.surface_pressure = def.surface_pressure;
         b.pressure_gradient = def.pressure_gradient;
         b.surface_y = def.surface_y;
+        b.surface_gravity = def.surface_gravity;
         b.moons = new ArrayList<>();
         return b;
     }

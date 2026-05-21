@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech.radiation;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechSounds;
 import com.dev1lroot.mcmods.omnitech.network.NuclearExplosionFxPacket;
+import com.dev1lroot.mcmods.omnitech.network.RadiationSyncPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.SectionPos;
@@ -13,6 +14,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
@@ -68,6 +70,11 @@ public class NuclearExplosion {
     public static void trigger(ServerLevel level, BlockPos center) {
         RadiationSavedData data = RadiationSavedData.get(level);
         data.addCenter(center.immutable());
+
+        RadiationSyncPacket syncPkt = new RadiationSyncPacket(new ArrayList<>(data.getCenters()));
+        for (ServerPlayer sp : level.getServer().getPlayerList().getPlayers()) {
+            PacketDistributor.sendToPlayer(sp, syncPkt);
+        }
 
         PacketDistributor.sendToPlayersNear(level, null,
                 center.getX(), center.getY(), center.getZ(),
