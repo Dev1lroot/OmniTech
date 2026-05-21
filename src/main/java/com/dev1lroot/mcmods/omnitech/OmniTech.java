@@ -61,6 +61,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.plumbing.FluidFillerBlock;
 import com.dev1lroot.mcmods.omnitech.recipes.CokingRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ChemicalInfuserRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ExtractorRecipeManager;
+import com.dev1lroot.mcmods.omnitech.network.NuclearExplosionFxPacket;
 import com.dev1lroot.mcmods.omnitech.network.OpenRocketGuiPacket;
 import com.dev1lroot.mcmods.omnitech.network.RocketOrbitPacket;
 import com.dev1lroot.mcmods.omnitech.network.SpaceTravelPacket;
@@ -539,6 +540,10 @@ public class OmniTech {
                 SetMachineValuePacket.TYPE,
                 SetMachineValuePacket.CODEC,
                 SetMachineValuePacket::handle);
+        event.registrar("1").playToClient(
+                NuclearExplosionFxPacket.TYPE,
+                NuclearExplosionFxPacket.CODEC,
+                NuclearExplosionFxPacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

@@ -23,7 +23,7 @@ import java.util.UUID;
 
 public class RadiationSavedData extends SavedData {
 
-    public static final int BLOCKS_PER_TICK = 500;
+    public static final int BLOCKS_PER_TICK = 14_000;
 
     private static final Codec<RadiationSavedData> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
@@ -51,9 +51,13 @@ public class RadiationSavedData extends SavedData {
             null
     );
 
-    final List<BlockPos>            centers    = new ArrayList<>();
-    final Map<UUID, PlayerRadData>  playerData = new HashMap<>();
-    private final Deque<BlockPos>   pending    = new ArrayDeque<>();
+    final List<BlockPos>            centers      = new ArrayList<>();
+    final Map<UUID, PlayerRadData>  playerData   = new HashMap<>();
+    private final Deque<BlockPos>   pending      = new ArrayDeque<>();
+    // Not persisted — max lifetime is 220 ticks (11s); server restarts in that window are acceptable
+    private final List<PendingZoneEvent> pendingZones = new ArrayList<>();
+
+    record PendingZoneEvent(long fireTick, int zone, BlockPos center) {}
 
     public static RadiationSavedData get(ServerLevel level) {
         return level.getServer().overworld().getDataStorage().computeIfAbsent(TYPE);
@@ -64,13 +68,28 @@ public class RadiationSavedData extends SavedData {
         setDirty();
     }
 
-    /** Queue block positions for gradual destruction (zones 2 and 3). */
+    public void scheduleZone(int zone, BlockPos center, long fireTick) {
+        pendingZones.add(new PendingZoneEvent(fireTick, zone, center));
+    }
+
+    /** Queue block positions for gradual destruction (zone 2). */
     public void queueExplosion(List<BlockPos> blocks) {
         pending.addAll(blocks);
     }
 
     /** Called from RadiationTick every server tick. Returns true if work was done. */
     public boolean tick(ServerLevel level) {
+        long now = level.getGameTime();
+        pendingZones.removeIf(event -> {
+            if (now < event.fireTick()) return false;
+            switch (event.zone()) {
+                case 1 -> NuclearExplosion.executeZone1(level, event.center());
+                case 2 -> NuclearExplosion.executeZone2(level, event.center(), this);
+                case 3 -> NuclearExplosion.spawnZone3Tnt(level, event.center());
+            }
+            return true;
+        });
+
         if (pending.isEmpty()) return false;
         int processed = 0;
         while (!pending.isEmpty() && processed < BLOCKS_PER_TICK) {

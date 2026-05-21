@@ -193,6 +193,14 @@ public class OmniTechDataComponents {
                             .networkSynchronized(ByteBufCodecs.INT)
                             .build());
 
+    /** Peak temperature (°C) a fuel rod has ever reached in a reactor. Absent = 0. */
+    public static final Supplier<DataComponentType<Integer>> ROD_PEAK_TEMPERATURE =
+            REGISTRY.register("rod_peak_temperature", () ->
+                    DataComponentType.<Integer>builder()
+                            .persistent(Codec.INT)
+                            .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
     /** Control rod insertion percentage (0–100). Present only on a control rod while inserted. */
     public static final Supplier<DataComponentType<Integer>> ROD_CONTROL =
             REGISTRY.register("rod_control", () ->

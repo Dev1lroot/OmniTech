@@ -5,6 +5,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.client.*;
+import com.dev1lroot.mcmods.omnitech.client.NuclearExplosionRenderer;
 import com.dev1lroot.mcmods.omnitech.gui.tooltip.PhaseDiagramClientTooltipComponent;
 import com.dev1lroot.mcmods.omnitech.gui.tooltip.PhaseDiagramTooltipData;
 import com.dev1lroot.mcmods.omnitech.client.KeyboardCaptureManager;
@@ -91,6 +92,7 @@ public class OmniTechClient
         NeoForge.EVENT_BUS.addListener(SpaceSuitHudOverlay::onRenderGui);
         NeoForge.EVENT_BUS.addListener(RadioLocatorHudOverlay::onRenderGui);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onItemTooltip);
+        NeoForge.EVENT_BUS.addListener(NuclearExplosionRenderer::onSubmitGeometry);
     }
 
     void registerTooltipComponents(RegisterClientTooltipComponentFactoriesEvent event) {
@@ -240,6 +242,8 @@ public class OmniTechClient
             }
         }
 
+        ReactorCoolantOverlay.tick(mc);
+
         long gameTime = mc.level.getGameTime();
         // Microphone block and voice chat capture — runs every 4 ticks
         if (gameTime % 4 == 0) tickMicrophoneCapture(mc);
@@ -310,6 +314,9 @@ public class OmniTechClient
         event.registerAboveAll(
                 net.minecraft.resources.Identifier.fromNamespaceAndPath(OmniTech.MODID, "radiation_overlay"),
                 new RadiationOverlay());
+        event.registerAboveAll(
+                net.minecraft.resources.Identifier.fromNamespaceAndPath(OmniTech.MODID, "reactor_coolant_overlay"),
+                new ReactorCoolantOverlay());
     }
 
     private void onAddClientReloadListeners(AddClientReloadListenersEvent event) {

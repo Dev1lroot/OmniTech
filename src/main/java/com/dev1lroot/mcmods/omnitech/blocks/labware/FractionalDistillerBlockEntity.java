@@ -478,7 +478,7 @@ public class FractionalDistillerBlockEntity extends BlockEntity
         @Override
         public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
             if (resource.isEmpty()) return 0;
-            if (!inputFluid.isEmpty() && !FluidStack.isSameFluid(inputFluid, resource.toStack(1))) return 0;
+            if (!inputFluid.isEmpty() && !resource.is(inputFluid.getFluid())) return 0;
             int toFill = Math.min(amount, INPUT_TANK_CAPACITY - inputFluid.getAmount());
             if (toFill <= 0) return 0;
             updateSnapshots(tx);

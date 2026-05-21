@@ -39,6 +39,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station.ProgrammingStationBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.research_table.ResearchTableBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.keyboard.KeyboardBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.logic.NuclearBombBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorPort;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorCell;
@@ -187,6 +188,9 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> REACTOR_BLOCK;
     public static final DeferredBlock<Block> REACTOR_PORT;
     public static final DeferredBlock<Block> REACTOR_CELL;
+
+    // ── Nuclear bomb ──────────────────────────────────────────────────────────
+    public static final DeferredBlock<Block> NUCLEAR_BOMB;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -426,6 +430,10 @@ public class OmniTechBlocks {
                         .sound(SoundType.METAL)));
         REACTOR_CELL  = register("reactor_cell",
                 p -> new ReactorCell(p.mapColor(MapColor.METAL).strength(5.0F).noOcclusion()
+                        .sound(SoundType.METAL)));
+
+        NUCLEAR_BOMB = register("nuclear_bomb",
+                p -> new NuclearBombBlock(p.mapColor(MapColor.COLOR_RED).strength(5.0F)
                         .sound(SoundType.METAL)));
     }
 

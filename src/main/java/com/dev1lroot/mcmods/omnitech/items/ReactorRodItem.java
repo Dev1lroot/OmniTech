@@ -22,6 +22,9 @@ public abstract class ReactorRodItem extends Item {
 
     public abstract ReactorCellType getCellType();
 
+    /** Returns true when this rod is too hot for the player to eject from a cell. */
+    public boolean isTooHotToEject(ItemStack stack) { return isHot(stack); }
+
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext ctx, TooltipDisplay display,
                                 Consumer<Component> tooltip, TooltipFlag flag) {
@@ -47,6 +50,15 @@ public abstract class ReactorRodItem extends Item {
     public static boolean isHot(ItemStack stack) {
         Integer t = stack.get(OmniTechDataComponents.ROD_TEMPERATURE.get());
         return t != null && t >= 100;
+    }
+
+    public static int getPeakTemperature(ItemStack stack) {
+        Integer t = stack.get(OmniTechDataComponents.ROD_PEAK_TEMPERATURE.get());
+        return t != null ? t : 0;
+    }
+
+    public static void setPeakTemperature(ItemStack stack, int celsius) {
+        stack.set(OmniTechDataComponents.ROD_PEAK_TEMPERATURE.get(), celsius);
     }
 
     /** Strip all reactor-only tags so the item is safe to carry in inventory. */

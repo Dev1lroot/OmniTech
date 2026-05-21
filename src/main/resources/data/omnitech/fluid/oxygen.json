@@ -15,5 +15,6 @@
     "triple_point_temp": -219,
     "triple_point_pressure": 0,
     "has_solid": true
-  }
+  },
+  "neutron_slowing": 0.04
 }

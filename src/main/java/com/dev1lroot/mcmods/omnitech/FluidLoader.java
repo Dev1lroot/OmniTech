@@ -65,10 +65,11 @@ public class FluidLoader {
                 int temperature = json.has("temperature") ? json.get("temperature").getAsInt() : 300;
                 int lightLevel  = json.has("light_level") ? json.get("light_level").getAsInt() : 0;
 
-                int minTemp     = json.has("min_temp")     ? json.get("min_temp").getAsInt()     : -273;
-                int maxTemp     = json.has("max_temp")     ? json.get("max_temp").getAsInt()     : 10_000;
-                int minPressure = json.has("min_pressure") ? json.get("min_pressure").getAsInt() : 0;
-                int maxPressure = json.has("max_pressure") ? json.get("max_pressure").getAsInt() : 100_000;
+                int   minTemp       = json.has("min_temp")        ? json.get("min_temp").getAsInt()        : -273;
+                int   maxTemp       = json.has("max_temp")        ? json.get("max_temp").getAsInt()        : 10_000;
+                int   minPressure   = json.has("min_pressure")    ? json.get("min_pressure").getAsInt()    : 0;
+                int   maxPressure   = json.has("max_pressure")    ? json.get("max_pressure").getAsInt()    : 100_000;
+                float neutronSlowing = json.has("neutron_slowing") ? json.get("neutron_slowing").getAsFloat() : 0.0f;
 
                 FluidPhysicsRegistry.PhaseDiagram phaseDiagram = null;
                 if (json.has("phase_diagram")) {
@@ -98,7 +99,7 @@ public class FluidLoader {
 
                 OmniTechFluids.registerFluid(name, props);
                 FluidPhysicsRegistry.register(name,
-                        new FluidPhysicsRegistry.FluidPhysics(minTemp, maxTemp, minPressure, maxPressure, phaseDiagram));
+                        new FluidPhysicsRegistry.FluidPhysics(minTemp, maxTemp, minPressure, maxPressure, phaseDiagram, neutronSlowing));
 
             } catch (Exception e) {
                 OmniTech.LOGGER.error("[FluidLoader] Failed to parse fluid '{}': {}", name, e.getMessage());
@@ -106,5 +107,40 @@ public class FluidLoader {
         });
 
         OmniTech.LOGGER.info("[FluidLoader] {} fluids registered from JSON", OmniTechFluids.all().size());
+
+        registerVanillaPhysics();
+    }
+
+    /**
+     * Registers physics data for vanilla Minecraft fluids so that machines,
+     * the phase-diagram tooltip, and the reactor treat them correctly.
+     */
+    private static void registerVanillaPhysics() {
+        // Shared water phase diagram (identical to distilled_water)
+        FluidPhysicsRegistry.PhaseDiagram waterDiagram = new FluidPhysicsRegistry.PhaseDiagram(
+                0,    // melting point °C
+                100,  // boiling point °C
+                51f,  // boiling slope
+                374,  // critical temp °C
+                22064,// critical pressure kPa
+                0,    // triple point temp °C
+                1,    // triple point pressure kPa
+                -1,   // no plasma
+                true  // has solid
+        );
+
+        // Regular water: same phase as pure water; ~8 % lower neutron moderation than
+        // distilled water (dissolved minerals increase neutron absorption slightly).
+        FluidPhysicsRegistry.registerExternal("minecraft", "water",
+                new FluidPhysicsRegistry.FluidPhysics(0, 374, 0, 22_064, waterDiagram, 0.92f));
+
+        // Lava: liquid basalt at ~1000–1200 °C; heavy Si/Al/Fe atoms are poor moderators.
+        FluidPhysicsRegistry.registerExternal("minecraft", "lava",
+                new FluidPhysicsRegistry.FluidPhysics(700, 10_000, 0, 100_000,
+                        new FluidPhysicsRegistry.PhaseDiagram(
+                                700, 2000, 180f, 4000, 100_000, 700, 1, -1, true),
+                        0.02f));
+
+        OmniTech.LOGGER.info("[FluidLoader] Vanilla fluid physics registered (water, lava)");
     }
 }

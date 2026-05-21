@@ -103,7 +103,7 @@ public class FluidCollectorBlockEntity extends BlockEntity {
         if (!be.outputFluid.isEmpty()) {
             FluidResource outRes = FluidResource.of(be.outputFluid);
             ResourceHandler<FluidResource> target =
-                    FluidNetworkUtil.findOutputTarget(level, pos.relative(facing), outRes);
+                    FluidNetworkUtil.findOutputTarget(level, pos.relative(facing), outRes, facing);
             if (target != null) {
                 changed |= FluidNetworkUtil.tryPushFluid(be.outputFluidHandler, target);
             }

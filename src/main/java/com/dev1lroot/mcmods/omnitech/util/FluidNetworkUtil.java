@@ -237,11 +237,24 @@ public final class FluidNetworkUtil {
      */
     public static @Nullable ResourceHandler<FluidResource> findOutputTarget(
             Level level, BlockPos startPos, FluidResource resource) {
+        return findOutputTarget(level, startPos, resource, null);
+    }
+
+    /**
+     * Same as {@link #findOutputTarget(Level, BlockPos, FluidResource)} but the caller
+     * supplies the direction the fluid is travelling when it arrives at {@code startPos}.
+     * This direction is used to query directional machine capabilities (e.g. a Heat
+     * Exchanger that only exposes its input on its front face) with the correct side.
+     */
+    public static @Nullable ResourceHandler<FluidResource> findOutputTarget(
+            Level level, BlockPos startPos, FluidResource resource, @Nullable Direction startDir) {
+
+        record Entry(BlockPos pos, Direction fromDir) {}
 
         Set<BlockPos> visited = new HashSet<>();
-        ArrayDeque<BlockPos> queue = new ArrayDeque<>();
+        ArrayDeque<Entry> queue = new ArrayDeque<>();
         visited.add(startPos);
-        queue.add(startPos);
+        queue.add(new Entry(startPos, startDir));
 
         // Collect all reachable nodes that can accept the fluid, split by type
         // so we can prefer tanks over pipes.
@@ -249,7 +262,9 @@ public final class FluidNetworkUtil {
         List<ResourceHandler<FluidResource>> pipeTargets = new ArrayList<>();
 
         while (!queue.isEmpty()) {
-            BlockPos pos = queue.poll();
+            Entry entry = queue.poll();
+            BlockPos pos = entry.pos();
+            Direction fromDir = entry.fromDir();
             BlockEntity be = level.getBlockEntity(pos);
 
             if (be instanceof FluidPipeBlockEntity pipe) {
@@ -257,21 +272,24 @@ public final class FluidNetworkUtil {
                     pipeTargets.add(pipe.fluidHandler);
                 }
                 for (BlockPos next : getConnectedNeighbors(level, pos, be)) {
-                    if (visited.add(next)) queue.add(next);
+                    if (visited.add(next)) queue.add(new Entry(next, directionBetween(pos, next)));
                 }
             } else if (be instanceof FluidTankBlockEntity tank) {
                 if (hasSpace(tank.fluidHandler, resource)) {
                     tankTargets.add(tank.fluidHandler);
                 }
                 for (BlockPos next : getConnectedNeighbors(level, pos, be)) {
-                    if (visited.add(next)) queue.add(next);
+                    if (visited.add(next)) queue.add(new Entry(next, directionBetween(pos, next)));
                 }
             } else {
                 // Any other block (machine, etc.) — check if it can accept fluid via
                 // the capability system. These are terminal insertion targets; BFS
                 // does not traverse further from them (no pipe/network inside machines).
+                // Query the face of the machine that is adjacent to our network: the face
+                // looking back toward where we came from (fromDir.getOpposite()).
+                Direction insertFace = fromDir != null ? fromDir.getOpposite() : null;
                 ResourceHandler<FluidResource> capHandler =
-                        level.getCapability(Capabilities.Fluid.BLOCK, pos, null);
+                        level.getCapability(Capabilities.Fluid.BLOCK, pos, insertFace);
                 if (capHandler != null && hasSpace(capHandler, resource)) {
                     tankTargets.add(capHandler); // prefer machines over pipes
                 }
@@ -384,7 +402,7 @@ public final class FluidNetworkUtil {
 
             FluidStack fs = getFluidFromEntity(be);
 
-            if (!referenceStack.isEmpty() && !fs.isEmpty() && !FluidStack.isSameFluid(referenceStack, fs)) {
+            if (!referenceStack.isEmpty() && !fs.isEmpty() && referenceStack.getFluid() != fs.getFluid()) {
                 continue;
             }
 
@@ -574,7 +592,9 @@ public final class FluidNetworkUtil {
 
     private static void updateBlockFluid(BlockEntity be, int amount, FluidStack ref, Level level) {
         FluidStack current = getFluidFromEntity(be);
-        if (current.getAmount() == amount && !current.isEmpty()) return;
+        if (!current.isEmpty() && current.getAmount() == amount
+                && fluidTemp(current) == fluidTemp(ref)
+                && fluidPressure(current) == fluidPressure(ref)) return;
 
         FluidStack nextStack = (amount <= 0) ? FluidStack.EMPTY : ref.copyWithAmount(amount);
 
@@ -596,5 +616,13 @@ public final class FluidNetworkUtil {
         long total = 0;
         for (BlockEntity be : nodes) total += getCapacity(be);
         return total;
+    }
+
+    @Nullable
+    private static Direction directionBetween(BlockPos from, BlockPos to) {
+        for (Direction d : Direction.values()) {
+            if (from.relative(d).equals(to)) return d;
+        }
+        return null;
     }
 }

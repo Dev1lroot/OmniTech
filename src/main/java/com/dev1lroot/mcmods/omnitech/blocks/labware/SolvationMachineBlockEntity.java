@@ -259,7 +259,7 @@ public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
         @Override public long getCapacityAsLong(int index, FluidResource res) { return INPUT_TANK_CAPACITY; }
         @Override public boolean isValid(int index, FluidResource resource) { return true; }
         @Override public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
-            if (resource.isEmpty() || (!inputFluid.isEmpty() && !FluidStack.isSameFluid(inputFluid, resource.toStack(1)))) return 0;
+            if (resource.isEmpty() || (!inputFluid.isEmpty() && !resource.is(inputFluid.getFluid()))) return 0;
             int toFill = Math.min(amount, INPUT_TANK_CAPACITY - inputFluid.getAmount());
             if (toFill <= 0) return 0;
             updateSnapshots(tx);

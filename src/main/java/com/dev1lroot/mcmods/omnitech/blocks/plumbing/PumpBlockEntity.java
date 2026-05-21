@@ -118,7 +118,7 @@ public class PumpBlockEntity extends BlockEntity implements IKineticReceiver {
         // This lets the pump route past a full adjacent pipe to reach empty space
         // further along, enabling fluid to travel against gravity.
         ResourceHandler<FluidResource> outputHandler =
-                FluidNetworkUtil.findOutputTarget(level, pos.relative(outputDir), available);
+                FluidNetworkUtil.findOutputTarget(level, pos.relative(outputDir), available, outputDir);
         if (outputHandler == null) return;
 
         // ── Simulate then execute ──────────────────────────────────────────────

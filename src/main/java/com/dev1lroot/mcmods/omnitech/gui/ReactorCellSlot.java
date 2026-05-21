@@ -32,7 +32,9 @@ public class ReactorCellSlot extends Slot {
 
     @Override
     public boolean mayPickup(Player player) {
-        return !ReactorRodItem.isHot(getItem());
+        ItemStack stack = getItem();
+        if (stack.getItem() instanceof ReactorRodItem rod) return !rod.isTooHotToEject(stack);
+        return true;
     }
 
     // ── Gate: only rod items may enter a reactor cell ─────────────────────────

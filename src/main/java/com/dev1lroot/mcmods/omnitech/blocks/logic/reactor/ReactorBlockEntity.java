@@ -4,14 +4,18 @@
  */
 package com.dev1lroot.mcmods.omnitech.blocks.logic.reactor;
 
+import com.dev1lroot.mcmods.omnitech.FluidPhysicsRegistry;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
 import com.dev1lroot.mcmods.omnitech.OmniTechMobEffects;
 import com.dev1lroot.mcmods.omnitech.gui.ReactorMenu;
+import com.dev1lroot.mcmods.omnitech.OmniTechItems;
+import com.dev1lroot.mcmods.omnitech.items.DepletedReactorFuelRodItem;
 import com.dev1lroot.mcmods.omnitech.items.ReactorControlRodItem;
 import com.dev1lroot.mcmods.omnitech.items.ReactorFuelRodItem;
 import com.dev1lroot.mcmods.omnitech.items.ReactorRodItem;
+import com.dev1lroot.mcmods.omnitech.radiation.NuclearExplosion;
 import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
@@ -99,6 +103,7 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
     private int     heatTick        = 0;
     private int     radTick         = 0;
     private int     persistTick     = 0;
+    private int     slowCoolTick    = 0;
     private boolean tempDirty       = false;
     private int     coreTemperature = 0;
     private boolean hasExploded     = false;
@@ -217,6 +222,10 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
         if (!formed) return;
         Level lv = getLevel();
         if (lv != null && !lv.isClientSide()) {
+            if (!hasExploded && lv instanceof ServerLevel sl && isHotOnBreak(lv)) {
+                hasExploded = true;
+                NuclearExplosion.trigger(sl, getBlockPos());
+            }
             resetCellStates(lv);
         }
         formed            = false;
@@ -224,6 +233,19 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
         tankCapacity      = 0;
         cellNeutronFlowPct = null;
         setChanged();
+    }
+
+    private boolean isHotOnBreak(Level lv) {
+        if (coolantTemperature >= 300) return true;
+        if (structure == null) return false;
+        for (BlockPos cellPos : structure.cells) {
+            BlockEntity be = lv.getBlockEntity(cellPos);
+            if (!(be instanceof ReactorCellBlockEntity cbe)) continue;
+            ItemStack stack = cbe.getItem(0);
+            if (stack.isEmpty() || !(stack.getItem() instanceof ReactorRodItem)) continue;
+            if (ReactorRodItem.getTemperature(stack) >= 300) return true;
+        }
+        return false;
     }
 
     private void resetCellStates(Level lv) {
@@ -266,6 +288,7 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
 
             if (++be.heatTick >= HEAT_TICK_INTERVAL) {
                 be.heatTick = 0;
+                if (++be.slowCoolTick >= 10) be.slowCoolTick = 0;
                 be.tickTemperature(level);
             }
 
@@ -428,8 +451,18 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
             if (cbe == null || stack.isEmpty() || !(stack.getItem() instanceof ReactorFuelRodItem)) continue;
 
             int temp = Math.max(0, ReactorRodItem.getTemperature(stack));
-            if (receivedFlow[i] > 0.25f) temp = Math.min(MAX_TEMPERATURE, temp + 1);
-            else                          temp = Math.max(0, temp - 1);
+            int peak = ReactorRodItem.getPeakTemperature(stack);
+            if (receivedFlow[i] > 0.25f) {
+                temp = Math.min(MAX_TEMPERATURE, temp + 1);
+                if (temp > peak) {
+                    peak = temp;
+                    ReactorRodItem.setPeakTemperature(stack, peak);
+                }
+            } else {
+                // Fast cooling stops at the floor: min(peakTemp, 300)
+                int floor = Math.min(peak, 300);
+                if (temp > floor) temp--;
+            }
             ReactorRodItem.setTemperature(stack, temp);
             cbe.setChanged();
             changed = true;
@@ -442,11 +475,15 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
             ItemStack stack = stacks[i];
             ReactorCellBlockEntity cbe = cellBEs[i];
             if (cbe == null || stack.isEmpty() || !(stack.getItem() instanceof ReactorFuelRodItem)) continue;
-            if (receivedFlow[i] > 0.25f && hurtRod(stack)) {
-                cbe.setItem(0, ItemStack.EMPTY);
-                resetCell(level, cells.get(i));
-                stacks[i] = ItemStack.EMPTY;
-                changed = true;
+            if (receivedFlow[i] > 0.25f) {
+                int rodTemp = ReactorRodItem.getTemperature(stack);
+                if (hurtRod(stack)) {
+                    ItemStack depleted = new ItemStack(OmniTechItems.DEPLETED_REACTOR_FUEL_ROD.get());
+                    ReactorRodItem.setTemperature(depleted, Math.max(0, rodTemp));
+                    cbe.setItem(0, depleted);
+                    stacks[i] = depleted;
+                    changed = true;
+                }
             }
         }
 
@@ -486,15 +523,48 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
         }
 
         // Phase 6: rod cooling — rod is 5+ degrees hotter than coolant → rod –1°C
+        // Does not cross the floor: min(peakTemp, 300)
         for (int i = 0; i < count; i++) {
             ItemStack stack = stacks[i];
             ReactorCellBlockEntity cbe = cellBEs[i];
             if (cbe == null || stack.isEmpty() || !(stack.getItem() instanceof ReactorFuelRodItem)) continue;
-            int temp = ReactorRodItem.getTemperature(stack);
-            if (temp - coolantTemperature >= 5) {
+            int temp  = ReactorRodItem.getTemperature(stack);
+            int floor = Math.min(ReactorRodItem.getPeakTemperature(stack), 300);
+            if (temp - coolantTemperature >= 5 && temp > floor) {
                 ReactorRodItem.setTemperature(stack, temp - 1);
                 cbe.setChanged();
                 changed = true;
+            }
+        }
+
+        // Phase 6b: slow floor decay for fuel rods — 1°C per 200 ticks (every 10 heat cycles)
+        if (slowCoolTick == 0) {
+            for (int i = 0; i < count; i++) {
+                ItemStack stack = stacks[i];
+                ReactorCellBlockEntity cbe = cellBEs[i];
+                if (cbe == null || !(stack.getItem() instanceof ReactorFuelRodItem)) continue;
+                int temp  = ReactorRodItem.getTemperature(stack);
+                int floor = Math.min(ReactorRodItem.getPeakTemperature(stack), 300);
+                if (temp > 0 && temp <= floor) {
+                    ReactorRodItem.setTemperature(stack, temp - 1);
+                    cbe.setChanged();
+                    changed = true;
+                }
+            }
+        }
+
+        // Phase 6c: depleted rod cooling — 1°C per 40 ticks (every 2 heat cycles)
+        if (slowCoolTick % 2 == 0) {
+            for (int i = 0; i < count; i++) {
+                ItemStack stack = stacks[i];
+                ReactorCellBlockEntity cbe = cellBEs[i];
+                if (cbe == null || !(stack.getItem() instanceof DepletedReactorFuelRodItem)) continue;
+                int temp = ReactorRodItem.getTemperature(stack);
+                if (temp > 0) {
+                    ReactorRodItem.setTemperature(stack, temp - 1);
+                    cbe.setChanged();
+                    changed = true;
+                }
             }
         }
 
@@ -509,7 +579,9 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
             boolean hasRod = cellBEs[i] != null && !stack.isEmpty() && stack.getItem() instanceof ReactorRodItem;
             int temp = hasRod ? ReactorRodItem.getTemperature(stack) : 0;
             if (temp > maxCoreTemp) maxCoreTemp = temp;
-            updateCellState(level, cells.get(i), temp, hasRod);
+            ReactorCellType type = (hasRod && stack.getItem() instanceof ReactorRodItem rod)
+                    ? rod.getCellType() : ReactorCellType.EMPTY;
+            updateCellState(level, cells.get(i), temp, hasRod, type);
         }
         coreTemperature = maxCoreTemp;
 
@@ -562,7 +634,7 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
                                 && outside.getZ() >= minZ && outside.getZ() <= maxZ) continue;
 
                         ResourceHandler<FluidResource> outputHandler =
-                                FluidNetworkUtil.findOutputTarget(lv, outside, fluidResource);
+                                FluidNetworkUtil.findOutputTarget(lv, outside, fluidResource, dir);
                         if (outputHandler == null) continue;
 
                         int amount = coolantTank.getAmount();
@@ -596,20 +668,19 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
 
     // ── Pressure and moderation helpers ──────────────────────────────────────
 
-    private boolean isSteamCoolant() {
-        if (coolantTank.isEmpty()) return false;
-        var fo = OmniTechFluids.get("steam");
-        return fo != null && coolantTank.getFluid() == fo.source.get();
+    private boolean isCoolantGas() {
+        return !coolantTank.isEmpty() && coolantTank.getFluid().getFluidType().isLighterThanAir();
     }
 
     private float getModerationFactor() {
         if (coolantTank.isEmpty() || tankCapacity == 0) return 0f;
-        float fillFraction = (float) coolantTank.getAmount() / tankCapacity;
-        return isSteamCoolant() ? 0.1f * fillFraction : fillFraction;
+        float fillFraction   = (float) coolantTank.getAmount() / tankCapacity;
+        float neutronSlowing = FluidPhysicsRegistry.get(coolantTank.getFluid()).neutronSlowing();
+        return fillFraction * neutronSlowing;
     }
 
     private void updatePressure() {
-        if (coolantTank.isEmpty() || isSteamCoolant()) {
+        if (coolantTank.isEmpty() || isCoolantGas()) {
             pressure = 0;
             return;
         }
@@ -639,21 +710,26 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
                 .setValue(ReactorCell.CELL_TYPE,  ReactorCellType.EMPTY), 3);
     }
 
-    private static void updateCellState(Level level, BlockPos cellPos, int temp, boolean hasRod) {
+    private static void updateCellState(Level level, BlockPos cellPos, int temp, boolean hasRod, ReactorCellType type) {
         BlockState state = level.getBlockState(cellPos);
         if (!(state.getBlock() instanceof ReactorCell)) return;
 
-        ReactorCellState next;
+        ReactorCellState nextState;
         if (!hasRod || temp < TEMP_HEAT_THRESHOLD) {
-            next = ReactorCellState.COOL;
+            nextState = ReactorCellState.COOL;
         } else if (temp < TEMP_MELTDOWN_THRESHOLD) {
-            next = ReactorCellState.HEAT;
+            nextState = ReactorCellState.HEAT;
         } else {
-            next = ReactorCellState.MELTDOWN;
+            nextState = ReactorCellState.MELTDOWN;
         }
 
-        if (state.getValue(ReactorCell.CELL_STATE) != next) {
-            level.setBlock(cellPos, state.setValue(ReactorCell.CELL_STATE, next), 3);
+        boolean stateChanged = state.getValue(ReactorCell.CELL_STATE) != nextState;
+        boolean typeChanged  = state.getValue(ReactorCell.CELL_TYPE)  != type;
+
+        if (stateChanged || typeChanged) {
+            level.setBlock(cellPos, state
+                    .setValue(ReactorCell.CELL_STATE, nextState)
+                    .setValue(ReactorCell.CELL_TYPE,  type), 3);
         }
     }
 
@@ -661,13 +737,6 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
 
     private class CoolantHandler extends SnapshotJournal<FluidStack>
             implements ResourceHandler<FluidResource> {
-
-        private static boolean isDistilledWater(FluidResource resource) {
-            if (resource.isEmpty()) return false;
-            var fo = OmniTechFluids.get("distilled_water");
-            if (fo == null) return false;
-            return resource.toStack(1).getFluid() == fo.source.get();
-        }
 
         @Override protected FluidStack createSnapshot()              { return coolantTank; }
         @Override protected void revertToSnapshot(FluidStack snap)   { coolantTank = snap; }
@@ -688,13 +757,14 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
 
         @Override
         public boolean isValid(int index, FluidResource resource) {
-            if (index != 0 || !formed) return false;
-            return isDistilledWater(resource);
+            return index == 0 && formed && !resource.isEmpty();
         }
 
         @Override
         public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
-            if (index != 0 || !formed || !isDistilledWater(resource) || amount <= 0) return 0;
+            if (index != 0 || !formed || resource.isEmpty() || amount <= 0) return 0;
+            // Only allow inserting the same fluid type that is already in the tank
+            if (!coolantTank.isEmpty() && coolantTank.getFluid() != resource.toStack(1).getFluid()) return 0;
             int space    = tankCapacity - coolantTank.getAmount();
             int toInsert = Math.min(amount, space);
             if (toInsert <= 0) return 0;
@@ -741,6 +811,9 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
         output.putInt("CoolantTemperature", coolantTemperature);
         output.putInt("Pressure",           pressure);
         output.store("Coolant", FluidStack.OPTIONAL_CODEC, coolantTank);
+        if (cellNeutronFlowPct != null && cellNeutronFlowPct.length > 0) {
+            output.putIntArray("CellFlowPct", cellNeutronFlowPct);
+        }
     }
 
     @Override
@@ -757,5 +830,6 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
         coolantTemperature = input.getIntOr("CoolantTemperature", AMBIENT_TEMP);
         pressure           = input.getIntOr("Pressure", 0);
         coolantTank        = input.read("Coolant", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
+        cellNeutronFlowPct = input.getIntArray("CellFlowPct").orElse(null);
     }
 }

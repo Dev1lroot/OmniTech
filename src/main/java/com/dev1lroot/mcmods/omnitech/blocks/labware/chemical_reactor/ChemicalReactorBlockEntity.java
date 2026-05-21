@@ -447,7 +447,7 @@ public class ChemicalReactorBlockEntity extends BaseContainerBlockEntity
         @Override public long getCapacityAsLong(int i, FluidResource r){ return INPUT_TANK_CAPACITY; }
         @Override public boolean isValid(int i, FluidResource r)      { return true; }
         @Override public int insert(int i, FluidResource res, int amt, TransactionContext tx) {
-            if (res.isEmpty() || (!inputFluid1.isEmpty() && !FluidStack.isSameFluid(inputFluid1, res.toStack(1)))) return 0;
+            if (res.isEmpty() || (!inputFluid1.isEmpty() && !res.is(inputFluid1.getFluid()))) return 0;
             int toFill = Math.min(amt, INPUT_TANK_CAPACITY - inputFluid1.getAmount());
             if (toFill <= 0) return 0;
             updateSnapshots(tx);
@@ -467,7 +467,7 @@ public class ChemicalReactorBlockEntity extends BaseContainerBlockEntity
         @Override public long getCapacityAsLong(int i, FluidResource r){ return INPUT_TANK_CAPACITY; }
         @Override public boolean isValid(int i, FluidResource r)      { return true; }
         @Override public int insert(int i, FluidResource res, int amt, TransactionContext tx) {
-            if (res.isEmpty() || (!inputFluid2.isEmpty() && !FluidStack.isSameFluid(inputFluid2, res.toStack(1)))) return 0;
+            if (res.isEmpty() || (!inputFluid2.isEmpty() && !res.is(inputFluid2.getFluid()))) return 0;
             int toFill = Math.min(amt, INPUT_TANK_CAPACITY - inputFluid2.getAmount());
             if (toFill <= 0) return 0;
             updateSnapshots(tx);

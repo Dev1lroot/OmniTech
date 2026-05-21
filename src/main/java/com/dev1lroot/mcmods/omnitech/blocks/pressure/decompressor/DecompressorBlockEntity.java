@@ -177,7 +177,7 @@ public class DecompressorBlockEntity extends BlockEntity implements MenuProvider
         if (inputFluid.isEmpty() || inputFluid.getAmount() < BATCH_SIZE) return false;
         if (fluidPressure(inputFluid) <= targetPressure) return false;
         if (outputFluid.isEmpty()) return true;
-        if (!FluidStack.isSameFluid(outputFluid, inputFluid)) return false;
+        if (outputFluid.getFluid() != inputFluid.getFluid()) return false;
         return (OUTPUT_TANK_CAPACITY - outputFluid.getAmount()) >= BATCH_SIZE;
     }
 
@@ -260,7 +260,7 @@ public class DecompressorBlockEntity extends BlockEntity implements MenuProvider
         @Override public long getCapacityAsLong(int i, FluidResource r) { return INPUT_TANK_CAPACITY; }
         @Override public boolean isValid(int i, FluidResource r) { return true; }
         @Override public int insert(int i, FluidResource resource, int amount, TransactionContext tx) {
-            if (resource.isEmpty() || (!inputFluid.isEmpty() && !FluidStack.isSameFluid(inputFluid, resource.toStack(1)))) return 0;
+            if (resource.isEmpty() || (!inputFluid.isEmpty() && !resource.is(inputFluid.getFluid()))) return 0;
             int toFill = Math.min(amount, INPUT_TANK_CAPACITY - inputFluid.getAmount());
             if (toFill <= 0) return 0;
             updateSnapshots(tx);

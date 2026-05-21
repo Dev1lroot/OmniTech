@@ -279,7 +279,7 @@ public class FluidFillerBlockEntity extends BaseContainerBlockEntity implements 
         @Override public long getCapacityAsLong(int i, FluidResource r){ return INPUT_TANK_CAPACITY; }
         @Override public boolean isValid(int i, FluidResource r)       { return true; }
         @Override public int insert(int i, FluidResource res, int amt, TransactionContext tx) {
-            if (res.isEmpty() || (!inputFluid.isEmpty() && !FluidStack.isSameFluid(inputFluid, res.toStack(1)))) return 0;
+            if (res.isEmpty() || (!inputFluid.isEmpty() && !res.is(inputFluid.getFluid()))) return 0;
             int toFill = Math.min(amt, INPUT_TANK_CAPACITY - inputFluid.getAmount());
             if (toFill <= 0) return 0;
             updateSnapshots(tx);

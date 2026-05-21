@@ -386,13 +386,13 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
         @Override
         public boolean isValid(int index, FluidResource resource) {
             if (index != 0) return false;
-            return inputFluid.isEmpty() || FluidStack.isSameFluid(inputFluid, resource.toStack(1));
+            return inputFluid.isEmpty() || resource.is(inputFluid.getFluid());
         }
 
         @Override
         public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
             if (index != 0 || resource.isEmpty() || amount <= 0) return 0;
-            if (!inputFluid.isEmpty() && !FluidStack.isSameFluid(inputFluid, resource.toStack(1))) return 0;
+            if (!inputFluid.isEmpty() && !resource.is(inputFluid.getFluid())) return 0;
             int space = INPUT_TANK_CAPACITY - inputFluid.getAmount();
             int toInsert = Math.min(amount, space);
             if (toInsert <= 0) return 0;
