@@ -86,6 +86,7 @@ public class RadiationSavedData extends SavedData {
                 case 1 -> NuclearExplosion.executeZone1(level, event.center());
                 case 2 -> NuclearExplosion.executeZone2(level, event.center(), this);
                 case 3 -> NuclearExplosion.spawnZone3Tnt(level, event.center());
+                case 4 -> NuclearExplosion.applyBiomeChange(level, event.center());
             }
             return true;
         });

@@ -6,12 +6,21 @@ package com.dev1lroot.mcmods.omnitech.radiation;
 
 import com.dev1lroot.mcmods.omnitech.network.NuclearExplosionFxPacket;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -21,9 +30,10 @@ import java.util.List;
 /**
  * Nuclear explosion: three-zone spherical block destruction.
  * Destruction is deferred to match the visual phase transitions:
- *   Zone 1 (0–32 blocks):   100% destruction, fires when phase 1 ends (5s / 100 ticks).
+ *   Zone 1 (0–32 blocks):   100% destruction + entity kills, fires when phase 1 ends (5s / 100 ticks).
  *   Zone 2 (32–64 blocks):  75% destruction, queued when phase 2 ends (6s / 120 ticks).
  *   Zone 3 (64–128 blocks): 32 primed TNT, spawned when phase 3 ends (11s / 220 ticks).
+ *   Zone 4:                 320-block biome conversion to nuclear_wastelands, at the same moment as zone 3.
  */
 public class NuclearExplosion {
 
@@ -35,6 +45,9 @@ public class NuclearExplosion {
 
     /** Kill radius: all non-creative living entities within this many blocks die at zone 1 time. */
     private static final int KILL_RADIUS = 96;
+
+    /** Biome conversion radius (XZ) applied at zone 3 time. */
+    private static final int BIOME_RADIUS = 320;
 
     // Destruction fires when each visual phase ends (20 ticks/s)
     private static final long ZONE1_DELAY_TICKS = 100L; // phase 1: 5s
@@ -54,6 +67,7 @@ public class NuclearExplosion {
         data.scheduleZone(1, center.immutable(), now + ZONE1_DELAY_TICKS);
         data.scheduleZone(2, center.immutable(), now + ZONE2_DELAY_TICKS);
         data.scheduleZone(3, center.immutable(), now + ZONE3_DELAY_TICKS);
+        data.scheduleZone(4, center.immutable(), now + ZONE3_DELAY_TICKS);
     }
 
     // ── Zone executors (called by RadiationSavedData.tick) ───────────────────
@@ -110,6 +124,53 @@ public class NuclearExplosion {
             PrimedTnt tnt = new PrimedTnt(level, x, y, z, null);
             tnt.setFuse(40);
             level.addFreshEntity(tnt);
+        }
+    }
+
+    static void applyBiomeChange(ServerLevel level, BlockPos center) {
+        ResourceKey<Biome> biomeKey = ResourceKey.create(Registries.BIOME,
+                Identifier.fromNamespaceAndPath("omnitech", "nuclear_wastelands"));
+        Holder<Biome> biomeHolder = level.registryAccess()
+                .lookup(Registries.BIOME)
+                .flatMap(reg -> reg.get(biomeKey))
+                .orElse(null);
+        if (biomeHolder == null) return;
+
+        double radiusSq = (double) BIOME_RADIUS * BIOME_RADIUS;
+        int chunkMinX = (center.getX() - BIOME_RADIUS) >> 4;
+        int chunkMaxX = (center.getX() + BIOME_RADIUS) >> 4;
+        int chunkMinZ = (center.getZ() - BIOME_RADIUS) >> 4;
+        int chunkMaxZ = (center.getZ() + BIOME_RADIUS) >> 4;
+
+        List<ChunkAccess> modified = new ArrayList<>();
+        for (int cx = chunkMinX; cx <= chunkMaxX; cx++) {
+            for (int cz = chunkMinZ; cz <= chunkMaxZ; cz++) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
+                if (chunk == null) continue;
+                boolean changed = false;
+                for (LevelChunkSection section : chunk.getSections()) {
+                    for (int bx = 0; bx < 4; bx++) {
+                        for (int bz = 0; bz < 4; bz++) {
+                            double dx = (cx << 4) + (bx << 2) + 2 - center.getX();
+                            double dz = (cz << 4) + (bz << 2) + 2 - center.getZ();
+                            if (dx * dx + dz * dz > radiusSq) continue;
+                            for (int by = 0; by < 4; by++) {
+                                if (section.getBiomes() instanceof PalettedContainer<Holder<Biome>> container) {
+                                    container.set(bx, by, bz, biomeHolder);
+                                    changed = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (changed) {
+                    chunk.markUnsaved();
+                    modified.add(chunk);
+                }
+            }
+        }
+        if (!modified.isEmpty()) {
+            level.getChunkSource().chunkMap.resendBiomesForChunks(modified);
         }
     }
 }
