@@ -142,6 +142,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> NUCLEAR_BOMB_ITEM = REGISTRY.registerSimpleBlockItem(
             "nuclear_bomb", OmniTechBlocks.NUCLEAR_BOMB);
 
+    public static final DeferredItem<BlockItem> ORRERY_ITEM = REGISTRY.registerSimpleBlockItem(
+            "orrery", OmniTechBlocks.ORRERY);
+
     public static final DeferredItem<ReactorFuelRodItem> REACTOR_FUEL_ROD =
             REGISTRY.registerItem("reactor_fuel_rod", ReactorFuelRodItem::new);
     public static final DeferredItem<ReactorControlRodItem> REACTOR_CONTROL_ROD =

@@ -332,6 +332,12 @@ public class OmniTechBlockEntities {
                             com.dev1lroot.mcmods.omnitech.blocks.logic.expansion_slot.ExpansionSlotBlockEntity::new,
                             OmniTechBlocks.EXPANSION_SLOT.get()));
 
+    public static final Supplier<BlockEntityType<com.dev1lroot.mcmods.omnitech.blocks.space.OrreryBlockEntity>> ORRERY =
+            REGISTRY.register("orrery",
+                    () -> new BlockEntityType<>(
+                            com.dev1lroot.mcmods.omnitech.blocks.space.OrreryBlockEntity::new,
+                            OmniTechBlocks.ORRERY.get()));
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }

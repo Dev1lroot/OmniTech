@@ -794,6 +794,8 @@
   "item.omnitech.reactor_cell":   "Reactor Cell",
   "block.omnitech.nuclear_bomb":  "Nuclear Bomb",
   "item.omnitech.nuclear_bomb":   "Nuclear Bomb",
+  "block.omnitech.orrery":        "Orrery",
+  "item.omnitech.orrery":         "Orrery",
   "container.omnitech.reactor":   "Reactor",
   "block.omnitech.reactor_block.invalid": "Invalid reactor structure.",
   "item.omnitech.reactor_fuel_rod":         "Reactor Fuel Rod",

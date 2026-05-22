@@ -192,6 +192,9 @@ public class OmniTechBlocks {
     // ── Nuclear bomb ──────────────────────────────────────────────────────────
     public static final DeferredBlock<Block> NUCLEAR_BOMB;
 
+    // ── Space ─────────────────────────────────────────────────────────────────
+    public static final DeferredBlock<Block> ORRERY;
+
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
         MANUAL_MACERATOR = register("manual_macerator",
@@ -435,6 +438,10 @@ public class OmniTechBlocks {
         NUCLEAR_BOMB = register("nuclear_bomb",
                 p -> new NuclearBombBlock(p.mapColor(MapColor.COLOR_RED).strength(5.0F)
                         .sound(SoundType.METAL)));
+
+        ORRERY = register("orrery",
+                p -> new com.dev1lroot.mcmods.omnitech.blocks.space.OrreryBlock(
+                        p.mapColor(MapColor.COLOR_BLACK).strength(3.0F).sound(SoundType.METAL).noOcclusion()));
     }
 
     // ── Registration helpers ───────────────────────────────────────────────

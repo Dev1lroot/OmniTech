@@ -129,6 +129,7 @@ public class OmniTechClient
         event.registerBlockEntityRenderer(OmniTechBlockEntities.DISPLAY.get(), DisplayBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.DISPLAY_MK2.get(), DisplayBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.DISPLAY_MK3.get(), DisplayBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(OmniTechBlockEntities.ORRERY.get(), OrreryBlockEntityRenderer::new);
         event.registerEntityRenderer(OmniTechEntities.ROCKET.get(), RocketEntityRenderer::new);
         event.registerEntityRenderer(OmniTechEntities.PENGUIN.get(), PenguinRenderer::new);
         event.registerEntityRenderer(OmniTechEntities.ABYSSAL_EEL.get(), AbyssalEelRenderer::new);
