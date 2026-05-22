@@ -239,12 +239,12 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
     // -------------------------------------------------------------------------
 
     /**
-     * Normalizes {@code raw} and applies the planet's diurnal rotation around Y.
+     * Normalizes {@code raw} and applies the planet's diurnal rotation around Z.
      *
-     * <p>The planet spins, so in the planet-fixed frame all celestial bodies appear to
-     * rotate in the opposite direction. Rotating every sky direction by {@code -sunAngle}
-     * around Y achieves this: bodies rise in the east, transit overhead, set in the west,
-     * exactly as the vanilla sun does with the same {@code sunAngle} value.
+     * <p>Minecraft's diurnal arc runs east (+X) → zenith (+Y) → west (-X), which is
+     * rotation in the XY plane, i.e. around the Z axis.  Rotating every sky direction
+     * by {@code -sunAngle} around Z achieves this: bodies rise in the east, transit
+     * overhead, set in the west, exactly as the vanilla sun does.
      *
      * @param raw    direction vector from viewer to body in inertial (heliocentric) space
      * @param sinRot {@code sin(-sunAngle)} — pre-computed to avoid repeated trig
@@ -253,9 +253,11 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
     private static Vector3f skyDir(Vector3f raw, float sinRot, float cosRot) {
         if (raw.lengthSquared() < 1e-10f) return new Vector3f(0f, 1f, 0f);
         raw.normalize();
-        float x2 =  raw.x * cosRot + raw.z * sinRot;
-        float z2 = -raw.x * sinRot + raw.z * cosRot;
-        return new Vector3f(x2, raw.y, z2);
+        // Orbits lie in the XZ plane, so rotate X and Z (not X and Y) to produce
+        // elevation change; heliocentric Y (inclination tilt) stays as sky Z.
+        float x2 = raw.x * cosRot - raw.z * sinRot;
+        float y2 = raw.x * sinRot + raw.z * cosRot;
+        return new Vector3f(x2, y2, raw.y);
     }
 
     // -------------------------------------------------------------------------
@@ -274,6 +276,11 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
 
         poseStack.pushPose();
 
+        // Spin around world Y first (planet's polar axis in inertial space).
+        // This must happen before the direction quaternion so it is a world-space
+        // rotation (texture scrolls horizontally), not a local Roll.
+        poseStack.mulPose(Axis.YP.rotation(axialAngle));
+
         Vector3f up = new Vector3f(0f, 1f, 0f);
         float dot = direction.dot(up);
         if (dot < 0.9999f && dot > -0.9999f) {
@@ -282,7 +289,6 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
         } else if (dot < 0f) {
             poseStack.mulPose(Axis.XP.rotationDegrees(180f));
         }
-        poseStack.mulPose(Axis.YP.rotation(axialAngle));
 
         Matrix4fStack mv = RenderSystem.getModelViewStack();
         mv.pushMatrix();
@@ -359,9 +365,11 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
             viewerPos.add(SolarSystemScene.moonOffset(loc.body(), gameTime));
         }
 
-        // Pre-compute the diurnal rotation (planet spin = -sunAngle around Y).
-        float sinRot = (float) Math.sin(-skyRenderState.sunAngle);
-        float cosRot = (float) Math.cos(-skyRenderState.sunAngle);
+        // Diurnal rotation: sunAngle=0 at noon (sun at zenith), π/2 at sunset, π at midnight.
+        // skyDir rotates in the XY plane (around Z) by angle (SA - π/2), matching vanilla's
+        // Ry(-90)×Rx(SA) transform: cosRot=sin(SA), sinRot=-cos(SA).
+        float sinRot = (float) -Math.cos(skyRenderState.sunAngle);
+        float cosRot = (float)  Math.sin(skyRenderState.sunAngle);
 
         // ── Star apparent scale ───────────────────────────────────────────────
         float starSize = loc.starSystem() != null && loc.starSystem().size > 0
