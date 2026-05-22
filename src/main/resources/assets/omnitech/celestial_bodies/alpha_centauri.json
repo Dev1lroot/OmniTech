@@ -6,5 +6,6 @@
   "background": "omnitech:textures/space/background/alpha_centauri.png",
   "orbital_radius": 320,
   "orbital_speed": 0,
-  "size": 120.0
+  "size": 120.0,
+  "day_length_ticks": 528000
 }

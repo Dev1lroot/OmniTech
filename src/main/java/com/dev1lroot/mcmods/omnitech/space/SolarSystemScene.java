@@ -91,6 +91,25 @@ public final class SolarSystemScene {
     }
 
     /**
+     * Axial rotation angle (radians) of a planet/moon at {@code animTime} (ticks, may be
+     * fractional for sub-tick interpolation). Returns 0 if {@code day_length_ticks} is not set.
+     * Negative {@code day_length_ticks} produces retrograde rotation (e.g. Venus, Uranus).
+     */
+    public static float axialAngle(CelestialBody body, double animTime) {
+        if (body.day_length_ticks == 0f) return 0f;
+        return (float)(animTime * 2.0 * Math.PI / body.day_length_ticks) + phaseOffset(body.id);
+    }
+
+    /**
+     * Axial rotation angle (radians) of a star at {@code animTime}. Returns 0 if
+     * {@code day_length_ticks} is not set in the star's config.
+     */
+    public static float axialAngle(StarSystem system, double animTime) {
+        if (system.day_length_ticks == 0f) return 0f;
+        return (float)(animTime * 2.0 * Math.PI / system.day_length_ticks);
+    }
+
+    /**
      * Deterministic phase offset in radians derived from the body's ID string.
      * Ensures bodies with the same orbital speed start at different positions
      * (avoids a "planet parade" where everything lines up at angle 0).

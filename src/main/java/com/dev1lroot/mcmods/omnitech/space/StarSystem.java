@@ -23,6 +23,11 @@ public class StarSystem {
      * 0 means "use Sol as default".
      */
     public float size = 0f;
+    /**
+     * Sidereal rotation period of the star in game ticks.
+     * 0 = default (648 000 ticks ≈ 27 Minecraft days, matching Sol's equatorial rotation).
+     */
+    public float day_length_ticks = 0f;
     public List<CelestialBody> bodies = List.of();
 
     /** Optional background texture shown when browsing this system's planets. */

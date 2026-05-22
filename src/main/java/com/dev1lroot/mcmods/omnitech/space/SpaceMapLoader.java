@@ -118,6 +118,7 @@ public class SpaceMapLoader {
         s.orbital_radius = def.orbital_radius;
         s.orbital_speed = def.orbital_speed;
         s.size = def.size;
+        s.day_length_ticks = def.day_length_ticks;
         s.bodies = new ArrayList<>();
         return s;
     }
@@ -142,6 +143,7 @@ public class SpaceMapLoader {
         b.pressure_gradient = def.pressure_gradient;
         b.surface_y = def.surface_y;
         b.surface_gravity = def.surface_gravity;
+        b.day_length_ticks = def.day_length_ticks;
         b.moons = new ArrayList<>();
         return b;
     }

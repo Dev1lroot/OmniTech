@@ -13,6 +13,8 @@ import com.dev1lroot.mcmods.omnitech.space.SpaceMapLoader;
 import com.dev1lroot.mcmods.omnitech.space.StarSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -113,6 +115,7 @@ public class OrreryBlockEntityRenderer
         state.sceneScale = DISPLAY_R / maxR;
 
         long snapTime = gameTick; // integer ticks for position snapshot
+        double animTimeD = state.animTime; // sub-tick precision for rotation
 
         // Star — physical half-radius = starSize × Earth_radius × PLANET_K
         Identifier starSprite = system.texture != null
@@ -120,7 +123,8 @@ public class OrreryBlockEntityRenderer
                 : SpaceMapSkyboxRenderer.textureSpriteId("omnitech:textures/space/star/sun.png");
         float starHalf = (system.size > 0f ? system.size : 109f) * SIZE_TO_SCENE;
         state.bodies.add(new OrreryRenderState.BodyEntry(
-                starSprite, 0f, 0f, 0f, starHalf, 0xFFFFCC44, true));
+                starSprite, 0f, 0f, 0f, starHalf, 0xFFFFCC44, true,
+                SolarSystemScene.axialAngle(system, animTimeD)));
 
         // Planets + moons
         for (CelestialBody planet : system.bodies) {
@@ -131,7 +135,8 @@ public class OrreryBlockEntityRenderer
                     ? SpaceMapSkyboxRenderer.textureSpriteId(planet.texture) : null;
             float planetHalf = (planet.size > 0f ? planet.size : 1.0f) * SIZE_TO_SCENE;
             state.bodies.add(new OrreryRenderState.BodyEntry(
-                    planetSprite, pPos.x, pPos.y, pPos.z, planetHalf, planetColor, false));
+                    planetSprite, pPos.x, pPos.y, pPos.z, planetHalf, planetColor, false,
+                    SolarSystemScene.axialAngle(planet, animTimeD)));
 
             // Orbit ring for planet — radius matches bodyPosition exactly
             state.orbits.add(new OrreryRenderState.OrbitEntry(
@@ -149,7 +154,8 @@ public class OrreryBlockEntityRenderer
                     state.bodies.add(new OrreryRenderState.BodyEntry(
                             moonSprite,
                             pPos.x + mOff.x, pPos.y + mOff.y, pPos.z + mOff.z,
-                            moonHalf, 0xFFAAAAAA, false));
+                            moonHalf, 0xFFAAAAAA, false,
+                            SolarSystemScene.axialAngle(moon, animTimeD)));
                 }
             }
         }
@@ -204,19 +210,22 @@ public class OrreryBlockEntityRenderer
             float bx = body.x() * s, by = body.y() * s, bz = body.z() * s;
             float h = body.halfSize() * s * (body.isStar() ? STAR_SIZE_MULT : PLANET_SIZE_MULT);
 
+            pose.pushPose();
+            pose.translate(bx, by, bz);
+            pose.mulPose(Axis.YP.rotation(body.axialAngle()));
+
             if (body.spriteId() != null) {
                 TextureAtlasSprite sp = atlas.getSprite(body.spriteId());
                 float u0 = sp.getU0(), u1 = sp.getU1();
                 float v0 = sp.getV0(), v1 = sp.getV1();
                 nodes.submitCustomGeometry(pose, RenderTypes.eyes(atlas.location()), (p, buf) ->
-                        box(p, buf, bx - h, by - h, bz - h, bx + h, by + h, bz + h,
-                                u0, v0, u1, v1, -1, LIGHT));
+                        box(p, buf, -h, -h, -h, h, h, h, u0, v0, u1, v1, -1, LIGHT));
             } else {
-                // Fallback: solid color using white wool
                 nodes.submitCustomGeometry(pose, RenderTypes.eyes(whiteAtlas), (p, buf) ->
-                        box(p, buf, bx - h, by - h, bz - h, bx + h, by + h, bz + h,
-                                wu0, wv0, wu1, wv1, body.color(), LIGHT));
+                        box(p, buf, -h, -h, -h, h, h, h, wu0, wv0, wu1, wv1, body.color(), LIGHT));
             }
+
+            pose.popPose();
         }
 
         pose.popPose();

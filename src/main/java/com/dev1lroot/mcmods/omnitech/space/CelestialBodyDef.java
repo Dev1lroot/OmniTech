@@ -30,4 +30,9 @@ public class CelestialBodyDef {
     public int surface_y = 64;
     /** Surface gravitational acceleration in m/s². Earth standard = 9.807. */
     public double surface_gravity = 9.807;
+    /**
+     * Sidereal rotation period in game ticks (24 000 ticks = 1 Earth day).
+     * Negative = retrograde. 0 = no rotation rendered.
+     */
+    public float day_length_ticks = 0f;
 }

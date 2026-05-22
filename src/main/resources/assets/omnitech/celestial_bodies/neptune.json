@@ -8,5 +8,6 @@
   "size": 3.9,
   "orbital_distance_km": 4498252000,
   "orbital_inclination": 1.77,
-  "ascending_node": 131.78
+  "ascending_node": 131.78,
+  "day_length_ticks": 16110
 }

@@ -96,6 +96,13 @@ public class CelestialBody {
      */
     public double surface_gravity = 9.807;
 
+    /**
+     * Sidereal rotation period in game ticks — how long one full axial spin takes.
+     * Positive = prograde (same direction as orbit), negative = retrograde (Venus-like).
+     * 0 = use default (24 000 ticks = one Minecraft day).
+     */
+    public float day_length_ticks = 0f;
+
     /** Child moons (empty list for moons themselves). */
     public List<CelestialBody> moons = List.of();
 

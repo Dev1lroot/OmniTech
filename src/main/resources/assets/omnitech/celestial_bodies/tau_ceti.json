@@ -6,5 +6,6 @@
   "background": "omnitech:textures/space/background/tau_ceti.png",
   "orbital_radius": 240,
   "orbital_speed": 0,
-  "size": 86.0
+  "size": 86.0,
+  "day_length_ticks": 816000
 }

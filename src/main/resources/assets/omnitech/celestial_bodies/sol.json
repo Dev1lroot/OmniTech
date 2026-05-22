@@ -6,5 +6,6 @@
   "background": "omnitech:textures/space/background/sol.png",
   "orbital_radius": 140,
   "orbital_speed": 0,
-  "size": 109.0
+  "size": 109.0,
+  "day_length_ticks": 609120
 }

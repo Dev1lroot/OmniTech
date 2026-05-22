@@ -13,5 +13,6 @@
   "temperature_amplitude": 2.0,
   "surface_pressure": 146000.0,
   "pressure_gradient": 15.0,
-  "surface_y": 64
+  "surface_y": 64,
+  "day_length_ticks": 382680
 }

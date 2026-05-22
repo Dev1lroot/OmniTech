@@ -11,7 +11,6 @@ import com.dev1lroot.mcmods.omnitech.space.SolarSystemScene;
 import com.dev1lroot.mcmods.omnitech.space.SpaceMap;
 import com.dev1lroot.mcmods.omnitech.space.SpaceMapLoader;
 import com.dev1lroot.mcmods.omnitech.space.StarSystem;
-import com.dev1lroot.mcmods.omnitech.space.TravelDistanceCalculator;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.BlendFunction;
@@ -88,16 +87,17 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
 
     // ---- Scale constants -------------------------------------------------------
 
-    /** Sol's size in Earth-diameter units. */
-    private static final float SOL_SIZE           = 109f;
-    /** Vanilla sun renders at scale 30f when viewed from 1 AU. */
-    private static final float VANILLA_SUN_SCALE  = 30f;
-    /** Base scale for a parent planet with Earth's diameter at Earth-Moon distance. */
-    private static final float BASE_PARENT_SCALE  = 40f;
-    /** Base scale for distant planets at DISTANT_REF_KM with Earth's diameter. */
-    private static final float BASE_DISTANT_SCALE = 3f;
-    /** Reference distance for distant-body scale normalization (100 M km). */
-    private static final long  DISTANT_REF_KM     = 100_000_000L;
+    /**
+     * Converts a physical size (Earth-radius units) to scene-space units —
+     * matches the orrery renderer exactly.
+     */
+    private static final float SIZE_TO_SCENE  = (float)(6_371.0 * SolarSystemScene.PLANET_K);
+    /** Sky-sphere radius (units). Bodies are translated to this distance from the camera. */
+    private static final float SKY_SPHERE_R   = 100f;
+    /** Angular size multiplier applied to the star. */
+    private static final float STAR_SIZE_MULT  = 20f;
+    /** Angular size multiplier applied to planets and moons. */
+    private static final float PLANET_SIZE_MULT = 400f;
 
     // --- Mixin suppression flags (read by SkyRendererMixin) ---
     private static boolean suppressVanillaMoon = false;
@@ -130,7 +130,8 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
             Vector3f   direction,
             float      scale,
             float      brightness,
-            long       viewerDistKm
+            long       viewerDistKm,
+            float      axialAngle
     ) {}
 
     // -------------------------------------------------------------------------
@@ -188,18 +189,46 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
             TextureAtlas atlas = Minecraft.getInstance()
                     .getAtlasManager().getAtlasOrThrow(AtlasIds.CELESTIALS);
             TextureAtlasSprite sprite = atlas.getSprite(id);
+            float u0 = sprite.getU0(), u1 = sprite.getU1();
+            float v0 = sprite.getV0(), v1 = sprite.getV1();
 
             try (ByteBufferBuilder bb = ByteBufferBuilder.exactlySized(
-                    4 * DefaultVertexFormat.POSITION_TEX.getVertexSize())) {
+                    24 * DefaultVertexFormat.POSITION_TEX.getVertexSize())) {
                 BufferBuilder buf = new BufferBuilder(bb, VertexFormat.Mode.QUADS,
                         DefaultVertexFormat.POSITION_TEX);
-                buf.addVertex(-1.0f, 0.0f, -1.0f).setUv(sprite.getU0(), sprite.getV0());
-                buf.addVertex( 1.0f, 0.0f, -1.0f).setUv(sprite.getU1(), sprite.getV0());
-                buf.addVertex( 1.0f, 0.0f,  1.0f).setUv(sprite.getU1(), sprite.getV1());
-                buf.addVertex(-1.0f, 0.0f,  1.0f).setUv(sprite.getU0(), sprite.getV1());
+                // +Y
+                buf.addVertex(-1f,+1f,-1f).setUv(u0,v0);
+                buf.addVertex(+1f,+1f,-1f).setUv(u1,v0);
+                buf.addVertex(+1f,+1f,+1f).setUv(u1,v1);
+                buf.addVertex(-1f,+1f,+1f).setUv(u0,v1);
+                // -Y
+                buf.addVertex(-1f,-1f,+1f).setUv(u0,v0);
+                buf.addVertex(+1f,-1f,+1f).setUv(u1,v0);
+                buf.addVertex(+1f,-1f,-1f).setUv(u1,v1);
+                buf.addVertex(-1f,-1f,-1f).setUv(u0,v1);
+                // +Z
+                buf.addVertex(+1f,-1f,+1f).setUv(u0,v0);
+                buf.addVertex(-1f,-1f,+1f).setUv(u1,v0);
+                buf.addVertex(-1f,+1f,+1f).setUv(u1,v1);
+                buf.addVertex(+1f,+1f,+1f).setUv(u0,v1);
+                // -Z
+                buf.addVertex(-1f,-1f,-1f).setUv(u0,v0);
+                buf.addVertex(+1f,-1f,-1f).setUv(u1,v0);
+                buf.addVertex(+1f,+1f,-1f).setUv(u1,v1);
+                buf.addVertex(-1f,+1f,-1f).setUv(u0,v1);
+                // +X
+                buf.addVertex(+1f,-1f,-1f).setUv(u0,v0);
+                buf.addVertex(+1f,-1f,+1f).setUv(u1,v0);
+                buf.addVertex(+1f,+1f,+1f).setUv(u1,v1);
+                buf.addVertex(+1f,+1f,-1f).setUv(u0,v1);
+                // -X
+                buf.addVertex(-1f,-1f,+1f).setUv(u0,v0);
+                buf.addVertex(-1f,-1f,-1f).setUv(u1,v0);
+                buf.addVertex(-1f,+1f,-1f).setUv(u1,v1);
+                buf.addVertex(-1f,+1f,+1f).setUv(u0,v1);
                 try (MeshData mesh = buf.buildOrThrow()) {
                     return RenderSystem.getDevice().createBuffer(
-                            () -> "Sky body quad [" + id + "]", 32, mesh.vertexBuffer());
+                            () -> "Sky body cube [" + id + "]", 32, mesh.vertexBuffer());
                 }
             }
         });
@@ -239,7 +268,7 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
      * radius (100 units) and scaled by {@code scale}.
      */
     private void renderBodyDir(Identifier spriteId, Vector3f direction, float scale,
-                                float brightness, PoseStack poseStack) {
+                                float brightness, float axialAngle, PoseStack poseStack) {
         TextureAtlas atlas = Minecraft.getInstance()
                 .getAtlasManager().getAtlasOrThrow(AtlasIds.CELESTIALS);
 
@@ -248,19 +277,17 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
         Vector3f up = new Vector3f(0f, 1f, 0f);
         float dot = direction.dot(up);
         if (dot < 0.9999f && dot > -0.9999f) {
-            // General case: shortest-arc quaternion from +Y to direction.
             Quaternionf q = new Quaternionf().rotationTo(up, direction);
             poseStack.mulPose(q);
         } else if (dot < 0f) {
-            // Exactly -Y: 180° around X to avoid degenerate rotationTo.
             poseStack.mulPose(Axis.XP.rotationDegrees(180f));
         }
-        // dot ≈ +1 → direction ≈ +Y → identity (no rotation needed)
+        poseStack.mulPose(Axis.YP.rotation(axialAngle));
 
         Matrix4fStack mv = RenderSystem.getModelViewStack();
         mv.pushMatrix();
         mv.mul(poseStack.last().pose());
-        mv.translate(0.0f, 100.0f, 0.0f);
+        mv.translate(0.0f, SKY_SPHERE_R, 0.0f);
         mv.scale(scale, 1.0f, scale);
 
         GpuBufferSlice dyn = RenderSystem.getDynamicUniforms()
@@ -277,8 +304,8 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
             pass.setUniform("DynamicTransforms", dyn);
             pass.bindTexture("Sampler0", atlas.getTextureView(), atlas.getSampler());
             pass.setVertexBuffer(0, getOrCreateBuffer(spriteId));
-            pass.setIndexBuffer(quadIndices.getBuffer(6), quadIndices.type());
-            pass.drawIndexed(0, 0, 6, 1);
+            pass.setIndexBuffer(quadIndices.getBuffer(36), quadIndices.type());
+            pass.drawIndexed(0, 0, 36, 1);
         }
 
         mv.popMatrix();
@@ -337,14 +364,13 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
         float cosRot = (float) Math.cos(-skyRenderState.sunAngle);
 
         // ── Star apparent scale ───────────────────────────────────────────────
-        long viewerStarDistKm = viewerPlanet.orbital_distance_km > 0
-                ? viewerPlanet.orbital_distance_km : TravelDistanceCalculator.SOL_EARTH_DIST_KM;
         float starSize = loc.starSystem() != null && loc.starSystem().size > 0
-                ? loc.starSystem().size : SOL_SIZE;
+                ? loc.starSystem().size : 109f;
+        float starPhysHalf = starSize * SIZE_TO_SCENE;
+        float starSceneDist = viewerPos.length(); // viewer to origin (star)
         float sunScale = clamp(
-                VANILLA_SUN_SCALE * (starSize / SOL_SIZE)
-                        * (float) TravelDistanceCalculator.SOL_EARTH_DIST_KM / viewerStarDistKm,
-                4f, 70f);
+                (starPhysHalf / Math.max(starSceneDist, 1e-3f)) * SKY_SPHERE_R * STAR_SIZE_MULT,
+                2f, 70f);
 
         // ── Collect render tasks ──────────────────────────────────────────────
         List<SkyBodyRenderTask> tasks = new ArrayList<>();
@@ -355,7 +381,9 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
                 : textureSpriteId("omnitech:textures/space/star/sun.png");
         Vector3f starDir = skyDir(new Vector3f(-viewerPos.x, -viewerPos.y, -viewerPos.z),
                 sinRot, cosRot);
-        tasks.add(new SkyBodyRenderTask(starSprite, starDir, sunScale, 1.0f, viewerStarDistKm));
+        long starDistKm = (long)(starSceneDist / SolarSystemScene.PLANET_K);
+        tasks.add(new SkyBodyRenderTask(starSprite, starDir, sunScale, 1.0f, starDistKm,
+                SolarSystemScene.axialAngle(loc.starSystem(), gameTime)));
 
         // Parent planet (when standing on a moon)
         if (loc.parentPlanet() != null) {
@@ -363,17 +391,18 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
             Vector3f parentPos = SolarSystemScene.bodyPosition(parent, gameTime);
             Vector3f parentDir = skyDir(new Vector3f(parentPos).sub(viewerPos), sinRot, cosRot);
 
-            float parentSize  = parent.size > 0f ? parent.size : 1.0f;
-            long  parentDistKm = loc.body().parent_distance_km > 0
+            float parentPhysHalf = (parent.size > 0f ? parent.size : 1.0f) * SIZE_TO_SCENE;
+            long  parentDistKm   = loc.body().parent_distance_km > 0
                     ? loc.body().parent_distance_km : 384_400L;
+            float parentSceneDist = (float)(parentDistKm * SolarSystemScene.PLANET_K);
             float parentScale = clamp(
-                    BASE_PARENT_SCALE * parentSize
-                            * (float) TravelDistanceCalculator.EARTH_MOON_DIST_KM / parentDistKm,
-                    18f, 120f);
+                    (parentPhysHalf / Math.max(parentSceneDist, 1e-3f)) * SKY_SPHERE_R * PLANET_SIZE_MULT,
+                    10f, 120f);
 
             tasks.add(new SkyBodyRenderTask(
                     textureSpriteId(parent.texture), parentDir, parentScale,
-                    skyRenderState.rainBrightness, parentDistKm));
+                    skyRenderState.rainBrightness, parentDistKm,
+                    SolarSystemScene.axialAngle(parent, gameTime)));
         }
 
         // Distant planets
@@ -389,28 +418,15 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
                 float    sceneDistUnits = toPlanet.length();
                 Vector3f planetDir = skyDir(toPlanet, sinRot, cosRot);
 
-                float bodySize = planet.size > 0f ? planet.size : 1.0f;
-                long  viewerDistKm;
-                float distantScale;
-
-                if (planet.orbital_distance_km > 0 && viewerStarDistKm > 0) {
-                    long orbitDeltaKm = Math.max(1_000_000L,
-                            Math.abs(planet.orbital_distance_km - viewerStarDistKm));
-                    distantScale = clamp(
-                            BASE_DISTANT_SCALE
-                                    * (float) Math.pow(bodySize, 0.7)
-                                    * (float) Math.pow((double) DISTANT_REF_KM / orbitDeltaKm, 0.4),
-                            1.0f, 15f);
-                    viewerDistKm = orbitDeltaKm;
-                } else {
-                    distantScale = clamp(
-                            BASE_DISTANT_SCALE * bodySize * (20f / Math.max(1f, sceneDistUnits)),
-                            1.0f, 15f);
-                    viewerDistKm = (long)(sceneDistUnits * 1_000_000L);
-                }
+                float physHalf = (planet.size > 0f ? planet.size : 1.0f) * SIZE_TO_SCENE;
+                float distantScale = clamp(
+                        (physHalf / Math.max(sceneDistUnits, 1e-3f)) * SKY_SPHERE_R * PLANET_SIZE_MULT,
+                        0.5f, 20f);
+                long viewerDistKm = (long)(sceneDistUnits / SolarSystemScene.PLANET_K);
 
                 tasks.add(new SkyBodyRenderTask(
-                        textureSpriteId(planet.texture), planetDir, distantScale, 1.0f, viewerDistKm));
+                        textureSpriteId(planet.texture), planetDir, distantScale, 1.0f, viewerDistKm,
+                        SolarSystemScene.axialAngle(planet, gameTime)));
             }
         }
 
@@ -419,7 +435,7 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
 
         for (SkyBodyRenderTask task : tasks) {
             renderBodyDir(task.spriteId(), task.direction(), task.scale(),
-                    task.brightness(), poseStack);
+                    task.brightness(), task.axialAngle(), poseStack);
         }
 
         if (skyRenderState.shouldRenderDarkDisc) skyRenderer.renderDarkDisc();
