@@ -83,7 +83,7 @@ public class OrreryBlockEntityRenderer
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
 
-        long gameTick = mc.level.getGameTime();
+        long gameTick = mc.level.getOverworldClockTime();
         state.animTime = gameTick + partialTicks;
 
         SpaceMap spaceMap = SpaceMapLoader.load(mc.getResourceManager());

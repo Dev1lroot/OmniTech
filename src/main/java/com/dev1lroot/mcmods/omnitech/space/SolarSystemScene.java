@@ -27,23 +27,35 @@ public final class SolarSystemScene {
 
     // ── Public position queries ────────────────────────────────────────────────
 
-    /** Heliocentric 3-D position of a planet at {@code gameTime}. */
-    public static Vector3f bodyPosition(CelestialBody body, long gameTime) {
+    /** Heliocentric 3-D position of a planet at {@code clockTime} (use {@code level.getOverworldClockTime()}). */
+    public static Vector3f bodyPosition(CelestialBody body, long clockTime) {
         float r     = body.orbital_radius > 0 ? body.orbital_radius : 150f;
         float speed = body.orbital_speed  > 0f ? body.orbital_speed : 1.0f;
-        float theta = (float)(gameTime * speed * ORBIT_SPEED_RAD_PER_TICK);
+        float phase = phaseOffset(body.id);
+        float theta = (float)(clockTime * speed * ORBIT_SPEED_RAD_PER_TICK) + phase;
         return cartesian(r, theta, body.orbital_inclination, body.ascending_node);
     }
 
     /**
-     * Parent-centric offset of a moon at {@code gameTime}.
+     * Parent-centric offset of a moon at {@code clockTime}.
      * Add to the parent planet's heliocentric position to get the moon's heliocentric position.
      */
-    public static Vector3f moonOffset(CelestialBody moon, long gameTime) {
+    public static Vector3f moonOffset(CelestialBody moon, long clockTime) {
         float r     = moon.orbital_radius > 0 ? moon.orbital_radius : 40f;
         float speed = moon.orbital_speed  > 0f ? moon.orbital_speed : 2.0f;
-        float theta = (float)(gameTime * speed * ORBIT_SPEED_RAD_PER_TICK);
+        float phase = phaseOffset(moon.id);
+        float theta = (float)(clockTime * speed * ORBIT_SPEED_RAD_PER_TICK) + phase;
         return cartesian(r, theta, moon.orbital_inclination, moon.ascending_node);
+    }
+
+    /**
+     * Deterministic phase offset in radians derived from the body's ID string.
+     * Ensures bodies with the same orbital speed start at different positions
+     * (avoids a "planet parade" where everything lines up at angle 0).
+     */
+    private static float phaseOffset(String id) {
+        if (id == null || id.isEmpty()) return 0f;
+        return (Math.abs(id.hashCode()) % 628) / 100f; // 0 … ~2π
     }
 
     // ── Core orbital-elements → Cartesian ─────────────────────────────────────

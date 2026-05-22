@@ -298,7 +298,7 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
         BodyLocation loc = findCurrentLocation();
 
         Minecraft mc = Minecraft.getInstance();
-        long gameTime = mc.level != null ? mc.level.getGameTime() : 0;
+        long gameTime = mc.level != null ? mc.level.getOverworldClockTime() : 0;
 
         setupFog.run();
         skyRenderer.renderSkyDisc(0xFF000000);
