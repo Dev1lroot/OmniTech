@@ -18,11 +18,10 @@ import org.joml.Vector3f;
  * reference (ecliptic) plane is XZ. Inclinations tilt orbits toward ±Y using
  * the Rodrigues rotation formula around the ascending-node axis.
  *
- * <p><b>Scale model</b>: 3D scene radii are derived from real km distances via a
- * power-0.6 compression law that preserves proportional ordering while keeping all
- * bodies visually distinguishable. Neptune (4 498 252 000 km) maps to 500 scene units.
- * Moon orbits get a 5× boost so they remain visible at solar-system scale while still
- * appearing clearly close to their parent planet.
+ * <p><b>Scale model</b>: 3D scene radii are derived from real km distances using a
+ * true linear scale. Neptune (4 498 252 000 km) maps to 500 scene units; all other
+ * distances are strictly proportional. Moon orbits are therefore tiny compared to
+ * planetary orbits — as they are in reality.
  * The legacy {@code orbital_radius} field is still used by the 2D SpaceNavigationScreen
  * but is <em>not</em> used here for 3D rendering.
  */
@@ -33,23 +32,13 @@ public final class SolarSystemScene {
 
     // ── Scale constants ────────────────────────────────────────────────────────
 
-    /** Power applied to km distances before scaling — compresses 78:1 range to ~14:1. */
-    private static final double KM_EXPONENT = 0.6;
-
     /**
-     * Scale factor: Neptune's semi-major axis (4 498 252 000 km) → 500 scene units.
-     * All planet-from-star distances use this constant.
+     * True linear scale factor: Neptune's semi-major axis (4 498 252 000 km) → 500 scene units.
+     * Applied identically to planets (orbital_distance_km) and moons (parent_distance_km),
+     * so all distances are strictly proportional to reality.
+     * Moon orbits will appear tiny at solar-system scale — as they are in reality.
      */
-    public static final double PLANET_K =
-            500.0 / Math.pow(4_498_252_000.0, KM_EXPONENT);
-
-    /**
-     * Moon orbits are ~0.26% the size of Earth's orbit — at solar-system scale they
-     * would be sub-pixel. A 5× boost keeps them visually attached to their parent
-     * while preserving correct relative ordering among moons of the same planet.
-     */
-    private static final double MOON_BOOST = 5.0;
-    private static final double MOON_K     = PLANET_K * MOON_BOOST;
+    public static final double PLANET_K = 500.0 / 4_498_252_000.0;
 
     private SolarSystemScene() {}
 
@@ -57,23 +46,24 @@ public final class SolarSystemScene {
 
     /**
      * Scene-space orbital radius of a planet/body around its star.
-     * Derived from {@link CelestialBody#orbital_distance_km} via the power-0.6 law.
+     * Derived from {@link CelestialBody#orbital_distance_km} via true linear scale.
      * Falls back to {@link CelestialBody#orbital_radius} only when km data is absent.
      */
     public static float planetSceneRadius(CelestialBody body) {
         if (body.orbital_distance_km > 0)
-            return (float)(Math.pow(body.orbital_distance_km, KM_EXPONENT) * PLANET_K);
+            return (float)(body.orbital_distance_km * PLANET_K);
         return body.orbital_radius > 0 ? body.orbital_radius : 150f;
     }
 
     /**
      * Scene-space orbital radius of a moon around its parent planet.
-     * Derived from {@link CelestialBody#parent_distance_km} with a 5× boost.
+     * Uses the same linear scale as {@link #planetSceneRadius}, so moon orbits
+     * are proportionally tiny — exactly as they are relative to planetary orbits in reality.
      * Falls back to {@link CelestialBody#orbital_radius} only when km data is absent.
      */
     public static float moonSceneRadius(CelestialBody moon) {
         if (moon.parent_distance_km > 0)
-            return (float)(Math.pow(moon.parent_distance_km, KM_EXPONENT) * MOON_K);
+            return (float)(moon.parent_distance_km * PLANET_K);
         return moon.orbital_radius > 0 ? moon.orbital_radius : 40f;
     }
 

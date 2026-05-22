@@ -37,7 +37,7 @@ import org.joml.Vector3f;
  * <p>The display uses the same {@link SolarSystemScene} orbital mechanics as the
  * sky renderer, so the miniature and the actual sky are always synchronized.
  * Bodies are rendered as textured cubes using the celestials atlas.
- * Orbit paths are shown as dotted rings of tiny cubes.
+ * Orbit paths are smooth ribbon curves lying in each orbit's inclined plane.
  *
  * <p>The whole scene slowly rotates on the Y axis and is tilted 20° toward the
  * viewer for depth cue.
@@ -46,19 +46,19 @@ public class OrreryBlockEntityRenderer
         implements BlockEntityRenderer<OrreryBlockEntity, OrreryRenderState> {
 
     /** How far above the block surface the hologram floats (in block units). */
-    private static final float DISPLAY_Y = 2.05f;
+    private static final float DISPLAY_Y = 5.0f;
     /** Half-size of the orrery display volume (radius from center in block units). */
-    private static final float DISPLAY_R = 1.90f;
-    /** Size of star cube (half-extent in scene units before scaling). */
-    private static final float STAR_HALF  = 14f;
-    /** Size of planet cube. */
-    private static final float PLANET_HALF = 6f;
-    /** Size of moon cube. */
-    private static final float MOON_HALF   = 3f;
-    /** Dots per orbit ring. */
-    private static final int   RING_DOTS   = 24;
-    /** Half-size of each orbit ring dot cube. */
-    private static final float DOT_HALF    = 1.5f;
+    private static final float DISPLAY_R = 500.0f;
+    /**
+     * Converts a physical size (Earth-relative diameter) to scene-space half-extent
+     * using the SAME linear scale factor as orbital distances.
+     * Earth radius = 6 371 km; PLANET_K maps Neptune's orbit (4 498 252 000 km) → 500 su.
+     * Sun half-size ≈ 0.077 su, Mercury orbit ≈ 6.44 su → Sun is ~1.2 % of Mercury's orbital
+     * radius, exactly as in reality.
+     */
+    private static final float SIZE_TO_SCENE = (float)(6_371.0 * SolarSystemScene.PLANET_K);
+    /** Segments per orbit circle — higher = smoother. */
+    private static final int RING_SEGS = 128;
     /** Rotation speed of the whole scene (degrees per tick). */
     private static final float SCENE_ROT_SPEED = 0.3f;
     /** Tilt of the scene toward the viewer (degrees). */
@@ -115,12 +115,13 @@ public class OrreryBlockEntityRenderer
 
         long snapTime = gameTick; // integer ticks for position snapshot
 
-        // Star
+        // Star — physical half-radius = starSize × Earth_radius × PLANET_K
         Identifier starSprite = system.texture != null
                 ? SpaceMapSkyboxRenderer.textureSpriteId(system.texture)
                 : SpaceMapSkyboxRenderer.textureSpriteId("omnitech:textures/space/star/sun.png");
+        float starHalf = (system.size > 0f ? system.size : 109f) * SIZE_TO_SCENE;
         state.bodies.add(new OrreryRenderState.BodyEntry(
-                starSprite, 0f, 0f, 0f, STAR_HALF, 0xFFFFCC44));
+                starSprite, 0f, 0f, 0f, starHalf, 0xFFFFCC44));
 
         // Planets + moons
         for (CelestialBody planet : system.bodies) {
@@ -129,11 +130,11 @@ public class OrreryBlockEntityRenderer
             int planetColor = bodyColor(planet.id);
             Identifier planetSprite = planet.texture != null
                     ? SpaceMapSkyboxRenderer.textureSpriteId(planet.texture) : null;
-            float planetHalf = PLANET_HALF * (float)Math.sqrt(Math.max(0.1, planet.size > 0 ? planet.size : 1.0));
+            float planetHalf = (planet.size > 0f ? planet.size : 1.0f) * SIZE_TO_SCENE;
             state.bodies.add(new OrreryRenderState.BodyEntry(
                     planetSprite, pPos.x, pPos.y, pPos.z, planetHalf, planetColor));
 
-            // Orbit ring for planet — use km-derived scene radius to match bodyPosition
+            // Orbit ring for planet — radius matches bodyPosition exactly
             state.orbits.add(new OrreryRenderState.OrbitEntry(
                     SolarSystemScene.planetSceneRadius(planet),
                     planet.orbital_inclination, planet.ascending_node,
@@ -145,7 +146,7 @@ public class OrreryBlockEntityRenderer
                     Vector3f mOff = SolarSystemScene.moonOffset(moon, snapTime);
                     Identifier moonSprite = moon.texture != null
                             ? SpaceMapSkyboxRenderer.textureSpriteId(moon.texture) : null;
-                    float moonHalf = MOON_HALF * (float)Math.sqrt(Math.max(0.1, moon.size > 0 ? moon.size : 0.27));
+                    float moonHalf = (moon.size > 0f ? moon.size : 0.27f) * SIZE_TO_SCENE;
                     state.bodies.add(new OrreryRenderState.BodyEntry(
                             moonSprite,
                             pPos.x + mOff.x, pPos.y + mOff.y, pPos.z + mOff.z,
@@ -182,18 +183,23 @@ public class OrreryBlockEntityRenderer
         // Tilt toward viewer
         pose.mulPose(Axis.XP.rotationDegrees(SCENE_TILT));
 
-        // ── Orbit rings ────────────────────────────────────────────────────────
-        nodes.submitCustomGeometry(pose, RenderTypes.eyes(whiteAtlas), (p, buf) -> {
+        // ── Orbit lines ────────────────────────────────────────────────────────
+        nodes.submitCustomGeometry(pose, RenderTypes.LINES, (p, buf) -> {
             for (OrreryRenderState.OrbitEntry ring : state.orbits) {
-                float speed = (float)(SolarSystemScene.ORBIT_SPEED_RAD_PER_TICK); // one step per tick
-                for (int d = 0; d < RING_DOTS; d++) {
-                    float theta = (float)(2 * Math.PI * d / RING_DOTS);
-                    Vector3f dp = SolarSystemScene.cartesian(ring.r(), theta,
+                for (int seg = 0; seg < RING_SEGS; seg++) {
+                    float t1 = (float)(2 * Math.PI *  seg      / RING_SEGS);
+                    float t2 = (float)(2 * Math.PI * (seg + 1) / RING_SEGS);
+                    Vector3f q1 = SolarSystemScene.cartesian(ring.r(), t1,
                             ring.inclinationDeg(), ring.ascendingNodeDeg());
-                    float bx = dp.x * s, by = dp.y * s, bz = dp.z * s;
-                    float h = DOT_HALF * s;
-                    box(p, buf, bx - h, by - h, bz - h, bx + h, by + h, bz + h,
-                            wu0, wv0, wu1, wv1, ring.color(), LIGHT);
+                    Vector3f q2 = SolarSystemScene.cartesian(ring.r(), t2,
+                            ring.inclinationDeg(), ring.ascendingNodeDeg());
+                    float x1 = q1.x * s, y1 = q1.y * s, z1 = q1.z * s;
+                    float x2 = q2.x * s, y2 = q2.y * s, z2 = q2.z * s;
+                    float dx = x2-x1, dy = y2-y1, dz = z2-z1;
+                    float len = Math.max(1e-6f, (float)Math.sqrt(dx*dx + dy*dy + dz*dz));
+                    float nx = dx/len, ny = dy/len, nz = dz/len;
+                    buf.addVertex(p, x1, y1, z1).setColor(0xFFFFFFFF).setNormal(p, nx, ny, nz).setLineWidth(2.0f);
+                    buf.addVertex(p, x2, y2, z2).setColor(0xFFFFFFFF).setNormal(p, nx, ny, nz).setLineWidth(2.0f);
                 }
             }
         });
