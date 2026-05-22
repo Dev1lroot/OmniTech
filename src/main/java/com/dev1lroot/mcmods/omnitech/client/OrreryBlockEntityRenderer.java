@@ -104,10 +104,11 @@ public class OrreryBlockEntityRenderer
         }
         if (system == null) return;
 
-        // Find max orbital radius for scaling.
+        // Find max orbital radius for scaling (use km-derived scene radii, same as bodyPosition).
         float maxR = 1f;
         for (CelestialBody body : system.bodies) {
-            if (body.orbital_radius > maxR) maxR = body.orbital_radius;
+            float r = SolarSystemScene.planetSceneRadius(body);
+            if (r > maxR) maxR = r;
         }
         // Scale so maxR → DISPLAY_R in block units (scene units → block units).
         state.sceneScale = DISPLAY_R / maxR;
@@ -128,12 +129,13 @@ public class OrreryBlockEntityRenderer
             int planetColor = bodyColor(planet.id);
             Identifier planetSprite = planet.texture != null
                     ? SpaceMapSkyboxRenderer.textureSpriteId(planet.texture) : null;
+            float planetHalf = PLANET_HALF * (float)Math.sqrt(Math.max(0.1, planet.size > 0 ? planet.size : 1.0));
             state.bodies.add(new OrreryRenderState.BodyEntry(
-                    planetSprite, pPos.x, pPos.y, pPos.z, PLANET_HALF, planetColor));
+                    planetSprite, pPos.x, pPos.y, pPos.z, planetHalf, planetColor));
 
-            // Orbit ring for planet
+            // Orbit ring for planet — use km-derived scene radius to match bodyPosition
             state.orbits.add(new OrreryRenderState.OrbitEntry(
-                    planet.orbital_radius > 0 ? planet.orbital_radius : 150f,
+                    SolarSystemScene.planetSceneRadius(planet),
                     planet.orbital_inclination, planet.ascending_node,
                     (planetColor & 0x00FFFFFF) | 0x55000000));
 
@@ -143,10 +145,11 @@ public class OrreryBlockEntityRenderer
                     Vector3f mOff = SolarSystemScene.moonOffset(moon, snapTime);
                     Identifier moonSprite = moon.texture != null
                             ? SpaceMapSkyboxRenderer.textureSpriteId(moon.texture) : null;
+                    float moonHalf = MOON_HALF * (float)Math.sqrt(Math.max(0.1, moon.size > 0 ? moon.size : 0.27));
                     state.bodies.add(new OrreryRenderState.BodyEntry(
                             moonSprite,
                             pPos.x + mOff.x, pPos.y + mOff.y, pPos.z + mOff.z,
-                            MOON_HALF, 0xFFAAAAAA));
+                            moonHalf, 0xFFAAAAAA));
                 }
             }
         }
