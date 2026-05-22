@@ -37,7 +37,7 @@ public class OrreryRenderState extends BlockEntityRenderState {
      * @param color     ARGB fallback color (used when sprite is unavailable)
      */
     public record BodyEntry(Identifier spriteId, float x, float y, float z,
-                            float halfSize, int color) {}
+                            float halfSize, int color, boolean isStar) {}
 
     /**
      * A single orbit ring to render as dotted circles.

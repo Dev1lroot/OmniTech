@@ -13,7 +13,6 @@ import com.dev1lroot.mcmods.omnitech.space.SpaceMapLoader;
 import com.dev1lroot.mcmods.omnitech.space.StarSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -48,7 +47,7 @@ public class OrreryBlockEntityRenderer
     /** How far above the block surface the hologram floats (in block units). */
     private static final float DISPLAY_Y = 5.0f;
     /** Half-size of the orrery display volume (radius from center in block units). */
-    private static final float DISPLAY_R = 500.0f;
+    private static final float DISPLAY_R = 100.0f;
     /**
      * Converts a physical size (Earth-relative diameter) to scene-space half-extent
      * using the SAME linear scale factor as orbital distances.
@@ -59,12 +58,12 @@ public class OrreryBlockEntityRenderer
     private static final float SIZE_TO_SCENE = (float)(6_371.0 * SolarSystemScene.PLANET_K);
     /** Segments per orbit circle — higher = smoother. */
     private static final int RING_SEGS = 128;
-    /** Rotation speed of the whole scene (degrees per tick). */
-    private static final float SCENE_ROT_SPEED = 0.3f;
-    /** Tilt of the scene toward the viewer (degrees). */
-    private static final float SCENE_TILT = 20f;
     /** Full-bright light coords for the hologram. */
     private static final int LIGHT = LightCoordsUtil.FULL_BRIGHT;
+    /** Extra size multiplier applied to the star body so it is visible in the miniature. */
+    private static final float STAR_SIZE_MULT = 20f;
+    /** Extra size multiplier applied to planet and moon bodies so they are visible in the miniature. */
+    private static final float PLANET_SIZE_MULT = 400f;
 
     public OrreryBlockEntityRenderer(BlockEntityRendererProvider.Context ctx) {}
 
@@ -121,7 +120,7 @@ public class OrreryBlockEntityRenderer
                 : SpaceMapSkyboxRenderer.textureSpriteId("omnitech:textures/space/star/sun.png");
         float starHalf = (system.size > 0f ? system.size : 109f) * SIZE_TO_SCENE;
         state.bodies.add(new OrreryRenderState.BodyEntry(
-                starSprite, 0f, 0f, 0f, starHalf, 0xFFFFCC44));
+                starSprite, 0f, 0f, 0f, starHalf, 0xFFFFCC44, true));
 
         // Planets + moons
         for (CelestialBody planet : system.bodies) {
@@ -132,7 +131,7 @@ public class OrreryBlockEntityRenderer
                     ? SpaceMapSkyboxRenderer.textureSpriteId(planet.texture) : null;
             float planetHalf = (planet.size > 0f ? planet.size : 1.0f) * SIZE_TO_SCENE;
             state.bodies.add(new OrreryRenderState.BodyEntry(
-                    planetSprite, pPos.x, pPos.y, pPos.z, planetHalf, planetColor));
+                    planetSprite, pPos.x, pPos.y, pPos.z, planetHalf, planetColor, false));
 
             // Orbit ring for planet — radius matches bodyPosition exactly
             state.orbits.add(new OrreryRenderState.OrbitEntry(
@@ -150,7 +149,7 @@ public class OrreryBlockEntityRenderer
                     state.bodies.add(new OrreryRenderState.BodyEntry(
                             moonSprite,
                             pPos.x + mOff.x, pPos.y + mOff.y, pPos.z + mOff.z,
-                            moonHalf, 0xFFAAAAAA));
+                            moonHalf, 0xFFAAAAAA, false));
                 }
             }
         }
@@ -178,10 +177,6 @@ public class OrreryBlockEntityRenderer
         pose.pushPose();
         // Center on top face of the block
         pose.translate(0.5f, DISPLAY_Y, 0.5f);
-        // Scene auto-rotation
-        pose.mulPose(Axis.YP.rotationDegrees(state.animTime * SCENE_ROT_SPEED));
-        // Tilt toward viewer
-        pose.mulPose(Axis.XP.rotationDegrees(SCENE_TILT));
 
         // ── Orbit lines ────────────────────────────────────────────────────────
         nodes.submitCustomGeometry(pose, RenderTypes.LINES, (p, buf) -> {
@@ -207,7 +202,7 @@ public class OrreryBlockEntityRenderer
         // ── Bodies ─────────────────────────────────────────────────────────────
         for (OrreryRenderState.BodyEntry body : state.bodies) {
             float bx = body.x() * s, by = body.y() * s, bz = body.z() * s;
-            float h = body.halfSize() * s;
+            float h = body.halfSize() * s * (body.isStar() ? STAR_SIZE_MULT : PLANET_SIZE_MULT);
 
             if (body.spriteId() != null) {
                 TextureAtlasSprite sp = atlas.getSprite(body.spriteId());
