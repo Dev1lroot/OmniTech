@@ -28,6 +28,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_charger.Electric
 import com.dev1lroot.mcmods.omnitech.blocks.labware.chemical_infuser.ChemicalInfuserBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.extractor.ExtractorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.electric_heater.ElectricHeaterBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.space.gravitation_source.GravitationSourceBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.radiator.RadiatorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_transmitter.RadioTransmitterBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_receiver.RadioReceiverBlockEntity;
@@ -337,6 +338,11 @@ public class OmniTechBlockEntities {
                     () -> new BlockEntityType<>(
                             com.dev1lroot.mcmods.omnitech.blocks.space.OrreryBlockEntity::new,
                             OmniTechBlocks.ORRERY.get()));
+
+    public static final Supplier<BlockEntityType<GravitationSourceBlockEntity>> GRAVITATION_SOURCE =
+            REGISTRY.register("gravitation_source",
+                    () -> new BlockEntityType<>(GravitationSourceBlockEntity::new,
+                            OmniTechBlocks.GRAVITATION_SOURCE.get()));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

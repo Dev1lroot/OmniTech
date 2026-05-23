@@ -45,6 +45,7 @@ import com.dev1lroot.mcmods.omnitech.gui.FluidFillerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.RocketScreen;
 import com.dev1lroot.mcmods.omnitech.gui.SorterScreen;
 import com.dev1lroot.mcmods.omnitech.gui.StirlingEngineScreen;
+import com.dev1lroot.mcmods.omnitech.gui.GravitationSourceScreen;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -105,6 +106,7 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.DISPLAY.get(), DisplayScreen::new);
         event.register(OmniTechMenuTypes.FLOPPY_DRIVE.get(), FloppyDriveScreen::new);
         event.register(OmniTechMenuTypes.EXPANSION_SLOT.get(), ExpansionSlotScreen::new);
+        event.register(OmniTechMenuTypes.GRAVITATION_SOURCE.get(), GravitationSourceScreen::new);
     }
 
     private static void addCreative(BuildCreativeModeTabContentsEvent event)
@@ -137,6 +139,7 @@ public class OmniTechGUI {
             event.accept(OmniTechItems.REACTOR_CONTROL_ROD);
             event.accept(OmniTechItems.REACTOR_NEUTRON_REFLECTOR);
             event.accept(OmniTechItems.BLUEPRINT);
+            event.accept(OmniTechItems.GRAVITATION_SOURCE_ITEM);
             event.accept(OmniTechItems.PROGRAMMING_STATION_ITEM);
             event.accept(OmniTechItems.LOGIC_MACHINE_ITEM);
             event.accept(OmniTechItems.LOGIC_CABLE_ITEM);

@@ -27,6 +27,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.radio.radio_scanner.RadioScannerBloc
 import com.dev1lroot.mcmods.omnitech.blocks.analog.AnalogCableBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.microphone.MicrophoneBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.analog.speaker.SpeakerBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.space.gravitation_source.GravitationSourceBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.LogicCableBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.RedstoneIntersectionBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlock;
@@ -194,6 +195,7 @@ public class OmniTechBlocks {
 
     // ── Space ─────────────────────────────────────────────────────────────────
     public static final DeferredBlock<Block> ORRERY;
+    public static final DeferredBlock<Block> GRAVITATION_SOURCE;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -442,6 +444,11 @@ public class OmniTechBlocks {
         ORRERY = register("orrery",
                 p -> new com.dev1lroot.mcmods.omnitech.blocks.space.OrreryBlock(
                         p.mapColor(MapColor.COLOR_BLACK).strength(3.0F).sound(SoundType.METAL).noOcclusion()));
+
+        GRAVITATION_SOURCE = register("gravitation_source",
+                p -> new GravitationSourceBlock(
+                        p.mapColor(MapColor.COLOR_PURPLE).strength(5.0F).sound(SoundType.METAL)
+                                .lightLevel(state -> 4).requiresCorrectToolForDrops()));
     }
 
     // ── Registration helpers ───────────────────────────────────────────────

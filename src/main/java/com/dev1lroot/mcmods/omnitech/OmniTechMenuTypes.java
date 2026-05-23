@@ -45,6 +45,7 @@ import com.dev1lroot.mcmods.omnitech.gui.FluidFillerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.RocketMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SorterMenu;
 import com.dev1lroot.mcmods.omnitech.gui.StirlingEngineMenu;
+import com.dev1lroot.mcmods.omnitech.gui.GravitationSourceMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.bus.api.IEventBus;
@@ -220,6 +221,10 @@ public class OmniTechMenuTypes {
     public static final Supplier<MenuType<ExpansionSlotMenu>> EXPANSION_SLOT =
             REGISTRY.register("expansion_slot",
                     () -> IMenuTypeExtension.create(ExpansionSlotMenu::new));
+
+    public static final Supplier<MenuType<GravitationSourceMenu>> GRAVITATION_SOURCE =
+            REGISTRY.register("gravitation_source",
+                    () -> IMenuTypeExtension.create(GravitationSourceMenu::new));
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

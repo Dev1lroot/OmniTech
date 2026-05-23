@@ -62,6 +62,8 @@ import com.dev1lroot.mcmods.omnitech.recipes.CokingRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ChemicalInfuserRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ExtractorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.network.NuclearExplosionFxPacket;
+import com.dev1lroot.mcmods.omnitech.network.GravityFieldSyncPacket;
+import com.dev1lroot.mcmods.omnitech.blocks.space.gravitation_source.GravitationSourceBlockEntity;
 import com.dev1lroot.mcmods.omnitech.network.RadiationSyncPacket;
 import com.dev1lroot.mcmods.omnitech.radiation.RadiationSavedData;
 import com.dev1lroot.mcmods.omnitech.network.OpenRocketGuiPacket;
@@ -552,6 +554,10 @@ public class OmniTech {
                 RadiationSyncPacket.TYPE,
                 RadiationSyncPacket.CODEC,
                 RadiationSyncPacket::handle);
+        event.registrar("1").playToClient(
+                GravityFieldSyncPacket.TYPE,
+                GravityFieldSyncPacket.CODEC,
+                GravityFieldSyncPacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -606,6 +612,29 @@ public class OmniTech {
 
     public static void onServerTick(ServerTickEvent.Post event) {
         long tick = event.getServer().getTickCount();
+
+        // Send gravity field data to clients once per second
+        if (tick % 20 == 0) {
+            for (ServerPlayer sp : event.getServer().getPlayerList().getPlayers()) {
+                ArrayList<BlockPos> posList = new ArrayList<>();
+                ArrayList<Integer>  radii   = new ArrayList<>();
+                double px = sp.getX(), py = sp.getY(), pz = sp.getZ();
+                double maxRangeSq = 150.0 * 150.0;
+                for (var entry : GravitationSourceBlockEntity.SERVER_ACTIVE_SOURCES.entrySet()) {
+                    if (!entry.getValue().dimension().equals(sp.level().dimension())) continue;
+                    BlockPos bp = entry.getKey();
+                    double dx = bp.getX() + 0.5 - px;
+                    double dy = bp.getY() + 0.5 - py;
+                    double dz = bp.getZ() + 0.5 - pz;
+                    if (dx*dx + dy*dy + dz*dz <= maxRangeSq) {
+                        posList.add(bp);
+                        radii.add(entry.getValue().radius());
+                    }
+                }
+                PacketDistributor.sendToPlayer(sp, new GravityFieldSyncPacket(posList, radii));
+            }
+        }
+
         if (tick % 10 != 0) return;
 
         for (ServerPlayer sp : event.getServer().getPlayerList().getPlayers()) {

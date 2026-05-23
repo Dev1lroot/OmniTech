@@ -5,6 +5,7 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.client.*;
+import com.dev1lroot.mcmods.omnitech.client.GravityFieldManager;
 import com.dev1lroot.mcmods.omnitech.client.NuclearExplosionRenderer;
 import com.dev1lroot.mcmods.omnitech.gui.tooltip.PhaseDiagramClientTooltipComponent;
 import com.dev1lroot.mcmods.omnitech.gui.tooltip.PhaseDiagramTooltipData;
@@ -213,6 +214,7 @@ public class OmniTechClient
         SpeakerToneManager.closeAll();
         VoiceAudioManager.closeAll();
         DisplayBlockEntityRenderer.cleanupAll();
+        GravityFieldManager.clear();
     }
 
     public static void onClientTick(ClientTickEvent.Post event) {

@@ -6,7 +6,8 @@
     "SkyRendererMixin"
   ],
   "client": [
-    "KeyboardHandlerMixin"
+    "KeyboardHandlerMixin",
+    "EntityGravityRenderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

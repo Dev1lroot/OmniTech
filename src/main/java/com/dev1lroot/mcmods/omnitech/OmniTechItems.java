@@ -145,6 +145,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> ORRERY_ITEM = REGISTRY.registerSimpleBlockItem(
             "orrery", OmniTechBlocks.ORRERY);
 
+    public static final DeferredItem<BlockItem> GRAVITATION_SOURCE_ITEM = REGISTRY.registerSimpleBlockItem(
+            "gravitation_source", OmniTechBlocks.GRAVITATION_SOURCE);
+
     public static final DeferredItem<ReactorFuelRodItem> REACTOR_FUEL_ROD =
             REGISTRY.registerItem("reactor_fuel_rod", ReactorFuelRodItem::new);
     public static final DeferredItem<ReactorControlRodItem> REACTOR_CONTROL_ROD =
