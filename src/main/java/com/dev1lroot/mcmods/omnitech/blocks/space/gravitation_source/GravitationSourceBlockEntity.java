@@ -11,7 +11,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
@@ -21,10 +20,7 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -43,10 +39,6 @@ public class GravitationSourceBlockEntity extends BaseContainerBlockEntity {
     public static final int MIN_RADIUS     = 1;
     public static final int MAX_RADIUS     = 64;
     public static final int DEFAULT_RADIUS = 8;
-    /** Vanilla gravity applied per tick (units: blocks/tick). */
-    private static final double GRAVITY    = 0.08;
-    /** Maximum pull speed, blocks/tick. */
-    private static final double MAX_SPEED  = 1.0;
 
     // ── Button IDs ────────────────────────────────────────────────────────────
 
@@ -122,34 +114,9 @@ public class GravitationSourceBlockEntity extends BaseContainerBlockEntity {
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
                                    GravitationSourceBlockEntity be) {
-        // Register as active (overwrite each tick to keep radius fresh)
+        // Keep SERVER_ACTIVE_SOURCES current so LivingEntityGravityMixin and the
+        // network sync can find this source.  Physics are handled by the mixin.
         SERVER_ACTIVE_SOURCES.put(pos.immutable(), new GravityEntry(level.dimension(), be.radius));
-
-        Vec3 center = Vec3.atCenterOf(pos);
-        double r    = be.radius;
-        AABB aabb   = new AABB(pos).inflate(r);
-
-        List<Entity> entities = level.getEntities((Entity) null, aabb, e -> !e.isSpectator());
-        for (Entity entity : entities) {
-            Vec3 entityCenter = entity.position().add(0, entity.getBbHeight() / 2.0, 0);
-            Vec3 toBlock      = center.subtract(entityCenter);
-            double dist       = toBlock.length();
-
-            if (dist > r || dist < 0.01) continue;
-
-            Vec3 dir    = toBlock.scale(1.0 / dist);
-            Vec3 current = entity.getDeltaMovement();
-
-            // Cancel downward gravity that was already applied this tick, then pull toward block
-            Vec3 newVel = new Vec3(current.x, current.y + GRAVITY, current.z)
-                    .add(dir.scale(GRAVITY));
-
-            double speed = newVel.length();
-            if (speed > MAX_SPEED) newVel = newVel.scale(MAX_SPEED / speed);
-
-            entity.setDeltaMovement(newVel);
-            entity.resetFallDistance();
-        }
     }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────

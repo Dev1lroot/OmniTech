@@ -3,7 +3,8 @@
   "package": "com.dev1lroot.mcmods.omnitech.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "SkyRendererMixin"
+    "SkyRendererMixin",
+    "LivingEntityGravityMixin"
   ],
   "client": [
     "KeyboardHandlerMixin",

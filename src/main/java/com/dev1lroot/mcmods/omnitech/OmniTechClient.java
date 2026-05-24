@@ -53,6 +53,10 @@ import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactori
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.minecraft.client.Camera;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
@@ -69,6 +73,9 @@ public class OmniTechClient
 {
     public static KeyMapping OPEN_ROCKET_GUI;
     public static KeyMapping PUSH_TO_TALK;
+
+    /** Smoothly-interpolated gravity rotation quaternion applied to the camera each frame. */
+    private static final org.joml.Quaternionf cameraGravityQ = new org.joml.Quaternionf();
 
     public OmniTechClient(ModContainer container, IEventBus modEventBus) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
@@ -95,6 +102,7 @@ public class OmniTechClient
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onItemTooltip);
         NeoForge.EVENT_BUS.addListener(NuclearExplosionRenderer::onSubmitGeometry);
         NeoForge.EVENT_BUS.addListener(NuclearExplosionRenderer::onClientTick);
+        NeoForge.EVENT_BUS.addListener(OmniTechClient::onComputeCameraAngles);
     }
 
     void registerTooltipComponents(RegisterClientTooltipComponentFactoriesEvent event) {
@@ -215,6 +223,7 @@ public class OmniTechClient
         VoiceAudioManager.closeAll();
         DisplayBlockEntityRenderer.cleanupAll();
         GravityFieldManager.clear();
+        cameraGravityQ.identity();
     }
 
     public static void onClientTick(ClientTickEvent.Post event) {
@@ -255,6 +264,92 @@ public class OmniTechClient
         SpeakerAudioManager.tick(gameTime);
         SpeakerToneManager.tick(gameTime);
         VoiceAudioManager.tick(gameTime);
+    }
+
+    public static void onComputeCameraAngles(ViewportEvent.ComputeCameraAngles event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) return;
+
+        Camera camera = event.getCamera();
+        Vec3 camPos = camera.position();
+
+        // Build target gravity quaternion (identity when not in field or creative)
+        org.joml.Quaternionf targetQ = new org.joml.Quaternionf(); // identity
+        if (!mc.player.isCreative()) {
+            BlockPos source = GravityFieldManager.getGravitySource(camPos.x, camPos.y, camPos.z);
+            if (source != null) {
+                double dx = source.getX() + 0.5 - camPos.x;
+                double dy = source.getY() + 0.5 - camPos.y;
+                double dz = source.getZ() + 0.5 - camPos.z;
+                double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                if (dist >= 0.01) {
+                    Vector3f gravUp = new Vector3f(
+                            (float)(-dx / dist), (float)(-dy / dist), (float)(-dz / dist));
+                    targetQ = new org.joml.Quaternionf().rotationTo(new Vector3f(0f, 1f, 0f), gravUp);
+                }
+            }
+        }
+
+        // Smoothly slerp toward target (15 % per frame)
+        cameraGravityQ.slerp(targetQ, 0.15f);
+
+        // If essentially identity, nothing to do
+        if (cameraGravityQ.w > 0.9999f) return;
+
+        // ── Apply full quaternion to camera ────────────────────────────────────
+        //
+        // IMPORTANT: camera.forwardVector()/upVector() reflect the PREVIOUS frame's
+        // modified state because Camera.setRotation() is called AFTER this event.
+        // We must compute the vanilla vectors analytically from the event's initial
+        // yaw/pitch (= entity.getViewYRot/XRot, unmodified by us this frame).
+        //
+        // MC convention: forward = (-cos(p)*sin(y), -sin(p), cos(p)*cos(y))
+        //                up      = (-sin(p)*sin(y),  cos(p), sin(p)*cos(y))
+
+        float baseYawRad   = (float) Math.toRadians(event.getYaw());
+        float basePitchRad = (float) Math.toRadians(event.getPitch());
+        float bsp = (float) Math.sin(basePitchRad), bcp = (float) Math.cos(basePitchRad);
+        float bsy = (float) Math.sin(baseYawRad),   bcy = (float) Math.cos(baseYawRad);
+
+        // 1. Rotate vanilla forward and up by the gravity quaternion
+        Vector3f gravFwd = cameraGravityQ.transform(new Vector3f(-bcp * bsy, -bsp,  bcp * bcy));
+        Vector3f gravUp  = cameraGravityQ.transform(new Vector3f(-bsp * bsy,  bcp,  bsp * bcy));
+
+        // 2. Decompose rotated forward into world-frame yaw/pitch
+        //    (MC convention: forward = (-cos(p)*sin(y),  -sin(p),  cos(p)*cos(y)))
+        float clampedFy  = Math.max(-1f, Math.min(1f, gravFwd.y));
+        float newPitchDeg = (float) Math.toDegrees(-Math.asin(clampedFy));
+        float newYawDeg   = (float) Math.toDegrees(Math.atan2(-gravFwd.x, gravFwd.z));
+        event.setYaw(newYawDeg);
+        event.setPitch(newPitchDeg);
+
+        // 3. Compute camera up/left at (newYaw, newPitch, roll=0) in world space
+        //    Derived from Camera.setRotation = Ry(π-yaw)*Rx(-pitch)*Rz(0):
+        //      camera_up   = (-sin(p)*sin(y),  cos(p),  sin(p)*cos(y))
+        //      camera_left = ( cos(y),          0,       sin(y) )   (independent of pitch)
+        float yr  = (float) Math.toRadians(newYawDeg);
+        float pr  = (float) Math.toRadians(newPitchDeg);
+        float sp  = (float) Math.sin(pr),  cp = (float) Math.cos(pr);
+        float sy  = (float) Math.sin(yr),  cy = (float) Math.cos(yr);
+        Vector3f camUp0  = new Vector3f(-sp * sy,  cp,  sp * cy);
+        Vector3f camLeft0 = new Vector3f(cy, 0f, sy);
+
+        // 4. Project desired up (gravUp) perpendicular to the new forward
+        float dotFG = gravUp.dot(gravFwd);
+        Vector3f projUp = new Vector3f(gravFwd).mul(dotFG);
+        gravUp.sub(projUp);
+        float projLen = gravUp.length();
+        if (projLen < 0.001f) {
+            event.setRoll(0f);
+            return;
+        }
+        gravUp.div(projLen);
+
+        // 5. Roll = signed angle from camUp0 to projUp on the screen plane
+        //    NeoForge positive roll = CCW, so negate the camLeft projection
+        float roll = (float) Math.toDegrees(
+                Math.atan2(-gravUp.dot(camLeft0), gravUp.dot(camUp0)));
+        event.setRoll(roll);
     }
 
     private static void tickMicrophoneCapture(Minecraft mc) {
