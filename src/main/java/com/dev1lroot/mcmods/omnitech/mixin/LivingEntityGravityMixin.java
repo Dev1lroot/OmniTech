@@ -26,10 +26,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * 1. getEffectiveGravity → returns 0.0 while in a field, so travel() doesn't
  *    apply vanilla downward gravity.
  *
- * 2. travel() RETURN → adds a pull impulse in the direction of the source
+ * 2. travel() HEAD → forces onGround=true when touching any surface, so the
+ *    entity gets proper block friction instead of air friction while in the field.
+ *    Entity.move() resets onGround based on real collisions after movement runs.
+ *
+ * 3. travel() RETURN → adds a pull impulse in the direction of the source
  *    after movement is resolved for this tick.
  *
- * 3. jumpFromGround() HEAD (cancellable) → when inside a field the vanilla
+ * 4. jumpFromGround() HEAD (cancellable) → when inside a field the vanilla
  *    upward jump impulse is cancelled and replaced by an equivalent impulse
  *    directed away from the gravity source ("up" in the custom gravity frame).
  *
@@ -57,7 +61,26 @@ public abstract class LivingEntityGravityMixin {
         }
     }
 
-    // ── 2. Apply custom gravity pull ───────────────────────────────────────────
+    // ── 2a. Grant surface friction when touching a gravity surface ─────────────
+    //
+    // When the entity is pressed against a wall/ceiling by custom gravity,
+    // isOnGround() is false (no downward-Y block contact), so travel() applies
+    // air-friction physics and the entity can barely move.  Forcing onGround=true
+    // before travelInAir() runs gives it proper block friction and acceleration.
+    // Entity.move() inside travelInAir() resets onGround via setOnGroundWithMovement
+    // (based on actual verticalCollisionBelow), so no manual restore is needed.
+
+    @Inject(method = "travel", at = @At("HEAD"))
+    private void gravityForceGroundFriction(Vec3 travelVec, CallbackInfo ci) {
+        LivingEntity self = (LivingEntity)(Object)this;
+        if (!self.onGround()
+                && findSource(self) != null
+                && (self.horizontalCollision || self.verticalCollision)) {
+            self.setOnGround(true);
+        }
+    }
+
+    // ── 2b. Apply custom gravity pull ─────────────────────────────────────────
 
     @Inject(method = "travel", at = @At("RETURN"))
     private void applyCustomGravity(Vec3 travelVec, CallbackInfo ci) {
