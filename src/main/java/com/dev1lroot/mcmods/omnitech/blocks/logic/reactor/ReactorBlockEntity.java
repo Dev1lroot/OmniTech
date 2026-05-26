@@ -4,6 +4,8 @@
  */
 package com.dev1lroot.mcmods.omnitech.blocks.logic.reactor;
 
+import com.dev1lroot.mcmods.omnitech.FluidPhase;
+import com.dev1lroot.mcmods.omnitech.FluidPhaseUtil;
 import com.dev1lroot.mcmods.omnitech.FluidPhysicsRegistry;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
@@ -669,7 +671,11 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
     // ── Pressure and moderation helpers ──────────────────────────────────────
 
     private boolean isCoolantGas() {
-        return !coolantTank.isEmpty() && coolantTank.getFluid().getFluidType().isLighterThanAir();
+        if (coolantTank.isEmpty()) return false;
+        var diagram = FluidPhysicsRegistry.get(coolantTank.getFluid()).phaseDiagram();
+        var phase   = FluidPhaseUtil.getPhase(coolantTemperature, pressure, diagram);
+        return phase == FluidPhase.VAPOUR || phase == FluidPhase.GAS
+                || phase == FluidPhase.SUPERCRITICAL || phase == FluidPhase.PLASMA;
     }
 
     private float getModerationFactor() {

@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.util;
 
+import com.dev1lroot.mcmods.omnitech.FluidPhase;
 import com.dev1lroot.mcmods.omnitech.FluidPhaseUtil;
 import com.dev1lroot.mcmods.omnitech.FluidPhysicsRegistry;
 import com.dev1lroot.mcmods.omnitech.OmniTech;
@@ -15,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -60,32 +62,56 @@ public class GuiUtil
     {
         if (fluidStack.isEmpty() || amount <= 0 || capacity <= 0) return;
 
-        // Рассчитываем высоту заполнения в пикселях
-        int filledHeight = (int) ((long) amount * height / capacity);
-        if (filledHeight <= 0) return;
+        // ── Phase from T/P ────────────────────────────────────────────────────
+        var physics = FluidPhysicsRegistry.get(fluidStack.getFluid());
+        Integer tempBox     = fluidStack.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        Integer pressureBox = fluidStack.get(OmniTechDataComponents.FLUID_PRESSURE.get());
+        int tempC       = tempBox     != null ? tempBox     : 20;
+        int pressureKPa = pressureBox != null ? pressureBox : 101;
+        FluidPhase phase = FluidPhaseUtil.getPhase(tempC, pressureKPa, physics.phaseDiagram());
 
-        // Получаем модель и спрайт жидкости
+        // ── Sprite selection ──────────────────────────────────────────────────
         var modelSet = Minecraft.getInstance().getModelManager().getFluidStateModelSet();
         FluidModel fluidModel = modelSet.get(fluidStack.getFluid().defaultFluidState());
-        TextureAtlasSprite sprite = fluidModel.stillMaterial().sprite();
-
-        // Получаем цвет тинта
-        int color = -1;
-        if (fluidModel.fluidTintSource() != null) {
-            color = fluidModel.fluidTintSource().colorAsStack(fluidStack);
+        final TextureAtlasSprite sprite;
+        if (phase != null) {
+            Identifier phaseId = Identifier.fromNamespaceAndPath(OmniTech.MODID,
+                    "block/fluid/phase/" + phase.phaseKey() + "_still");
+            sprite = ((TextureAtlas) Minecraft.getInstance()
+                    .getTextureManager()
+                    .getTexture(TextureAtlas.LOCATION_BLOCKS))
+                    .getSprite(phaseId);
+        } else {
+            sprite = fluidModel.stillMaterial().sprite();
         }
 
-        int r = (color >> 16) & 0xFF;
-        int g = (color >> 8) & 0xFF;
-        int b = color & 0xFF;
-        int a = 0xFF;
-        int packedColor = ARGB.color(a, r, g, b);
+        // ── Tint colour ───────────────────────────────────────────────────────
+        int tint = (fluidModel.fluidTintSource() != null)
+                ? fluidModel.fluidTintSource().colorAsStack(fluidStack)
+                : -1;
+        int r = ARGB.red(tint);
+        int g = ARGB.green(tint);
+        int b = ARGB.blue(tint);
 
-        // Bottom-aligned: fluid rises from the bottom of the tank
-        int startY = y + (height - filledHeight);
+        // ── Geometry and alpha driven by phase ────────────────────────────────
+        boolean gasLike = phase == FluidPhase.VAPOUR || phase == FluidPhase.GAS
+                || phase == FluidPhase.SUPERCRITICAL || phase == FluidPhase.PLASMA;
 
-        // One scissor over the filled region handles all partial-tile clipping at edges.
-        // Each tile is drawn full 16×16; the scissor clips anything outside the fill area.
+        final int filledHeight;
+        final int startY;
+        final int alpha;
+        if (gasLike) {
+            filledHeight = height;                                    // gas occupies full column
+            startY       = y;                                         // top-aligned
+            alpha        = Math.max(1, (int)((float) amount / capacity * 204)); // opacity ∝ fill
+        } else {
+            filledHeight = Math.max(1, (int)((long) amount * height / capacity));
+            startY       = y + (height - filledHeight);               // bottom-aligned
+            alpha        = 0xFF;
+        }
+
+        int packedColor = ARGB.color(alpha, r, g, b);
+
         graphics.enableScissor(x, startY, x + width, startY + filledHeight);
         for (int drawX = 0; drawX < width; drawX += 16) {
             for (int drawY = 0; drawY < filledHeight; drawY += 16) {

@@ -442,14 +442,26 @@ public final class FluidNetworkUtil {
             long totalAmount, FluidStack ref) {
         if (ref.isEmpty()) return;
 
-        int density = ref.getFluid().getFluidType().getDensity();
+        var physics = com.dev1lroot.mcmods.omnitech.FluidPhysicsRegistry.get(ref.getFluid());
+        Integer tempBox     = ref.get(com.dev1lroot.mcmods.omnitech.OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        Integer pressureBox = ref.get(com.dev1lroot.mcmods.omnitech.OmniTechDataComponents.FLUID_PRESSURE.get());
+        int tempC       = tempBox     != null ? tempBox     : 20;
+        int pressureKPa = pressureBox != null ? pressureBox : 101;
 
-        if (density == 0) {
-            // Pressurized gas: spreads equally to all containers regardless of height.
+        com.dev1lroot.mcmods.omnitech.FluidPhase phase =
+                com.dev1lroot.mcmods.omnitech.FluidPhaseUtil.getPhase(tempC, pressureKPa, physics.phaseDiagram());
+
+        if (phase == com.dev1lroot.mcmods.omnitech.FluidPhase.GAS
+                || phase == com.dev1lroot.mcmods.omnitech.FluidPhase.SUPERCRITICAL
+                || phase == com.dev1lroot.mcmods.omnitech.FluidPhase.SOLID
+                || phase == null) {
+            // Pressurized gas / supercritical / frozen solid — spreads equally.
             distributeEqually(level, levels, totalAmount, ref);
         } else {
-            // Gravity-driven: steam (density < 0) rises; liquids/molten (density > 0) sink.
-            distributeByGravity(level, levels, totalAmount, ref, density < 0);
+            // LIQUID sinks; VAPOUR and PLASMA rise.
+            boolean rises = phase == com.dev1lroot.mcmods.omnitech.FluidPhase.VAPOUR
+                         || phase == com.dev1lroot.mcmods.omnitech.FluidPhase.PLASMA;
+            distributeByGravity(level, levels, totalAmount, ref, rises);
         }
     }
 
@@ -487,17 +499,17 @@ public final class FluidNetworkUtil {
     }
 
     /**
-     * Distributes fluid level-by-level according to gravity. Gases (density &lt; 0)
-     * accumulate at the top; liquids and molten metals (density &gt; 0) sink to the
-     * bottom. Within a single Y-level nodes share the available fluid proportionally.
+     * Distributes fluid level-by-level according to gravity. Vapour/plasma phases
+     * accumulate at the top; liquids sink to the bottom. Within a single Y-level
+     * nodes share the available fluid proportionally.
      */
     private static void distributeByGravity(Level level, Map<Integer, List<BlockEntity>> levels,
-            long totalAmount, FluidStack ref, boolean isGas) {
+            long totalAmount, FluidStack ref, boolean rises) {
         long remaining = totalAmount;
 
         List<Integer> keys = new ArrayList<>(levels.keySet());
-        if (isGas) {
-            keys.sort(Comparator.reverseOrder()); // rises — highest Y fills first
+        if (rises) {
+            keys.sort(Comparator.reverseOrder()); // vapour/plasma — highest Y fills first
         } else {
             keys.sort(Comparator.naturalOrder());  // sinks — lowest Y fills first
         }
