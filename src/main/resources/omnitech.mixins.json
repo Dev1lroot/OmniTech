@@ -8,7 +8,8 @@
   ],
   "client": [
     "KeyboardHandlerMixin",
-    "EntityGravityRenderMixin"
+    "EntityGravityRenderMixin",
+    "LivingEntityMovementClientMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -292,6 +292,7 @@ public class OmniTechClient
 
         // Always slerp (keeps state current even when camera view changes)
         cameraGravityQ.slerp(targetQ, 0.15f);
+        GravityFieldManager.setGravityQ(cameraGravityQ);
 
         // Only apply gravity camera correction in first-person view
         if (!mc.options.getCameraType().isFirstPerson()) return;

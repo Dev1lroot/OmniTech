@@ -21,8 +21,9 @@ import java.util.List;
  */
 public final class GravityFieldManager {
 
-    private static final List<BlockPos> POSITIONS = new ArrayList<>();
-    private static final List<Integer>  RADII     = new ArrayList<>();
+    private static final List<BlockPos>          POSITIONS  = new ArrayList<>();
+    private static final List<Integer>           RADII      = new ArrayList<>();
+    private static final org.joml.Quaternionf    GRAVITY_Q  = new org.joml.Quaternionf();
 
     private GravityFieldManager() {}
 
@@ -34,10 +35,21 @@ public final class GravityFieldManager {
         RADII.addAll(pkt.radii());
     }
 
+    /** Store the current camera gravity quaternion (called every render frame). */
+    public static synchronized void setGravityQ(org.joml.Quaternionf q) {
+        GRAVITY_Q.set(q);
+    }
+
+    /** Returns a defensive copy of the current camera gravity quaternion. */
+    public static synchronized org.joml.Quaternionf getGravityQ() {
+        return new org.joml.Quaternionf(GRAVITY_Q);
+    }
+
     /** Clear all active sources (call on world unload). */
     public static synchronized void clear() {
         POSITIONS.clear();
         RADII.clear();
+        GRAVITY_Q.identity();
     }
 
     /**
