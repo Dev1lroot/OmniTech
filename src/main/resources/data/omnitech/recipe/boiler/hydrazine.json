@@ -1,8 +1,0 @@
-{
-  "requiredMinimalTemperature": 120,
-  "productionTime": 20,
-  "heatConsumptionPerTick": 1,
-  "input":  { "fluid": "omnitech:hydrazine_hydrate",  "amount": 1000 },
-  "output": { "fluid": "omnitech:hydrazine",   "amount": 700 },
-  "result": { "item": "omnitech:sodium_chlorine", "amount": 1, "chance": 1.0 }
-}

@@ -29,7 +29,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import com.dev1lroot.mcmods.omnitech.datagen.OmniTechDatagen;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.SmelterBlockEntity;
-import com.dev1lroot.mcmods.omnitech.recipes.BoilerRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.AlloyFurnaceRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.FoundryRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualCentrifugeRecipeManager;
@@ -198,14 +197,7 @@ public class OmniTech {
         event.registerBlockEntity(
                 Capabilities.Fluid.BLOCK,
                 OmniTechBlockEntities.BOILER.get(),
-                (be, side) -> {
-                    // Если труба подключена СВЕРХУ — даем доступ к баку пара
-                    if (side == Direction.UP) {
-                        return ((BoilerBlockEntity) be).steamHandler;
-                    }
-                    // Для всех остальных сторон (низ и бока) — даем доступ к баку воды
-                    return ((BoilerBlockEntity) be).waterHandler;
-                }
+                (be, side) -> ((BoilerBlockEntity) be).fluidHandler
         );
         event.registerBlockEntity(
                 Capabilities.Fluid.BLOCK,
@@ -711,15 +703,6 @@ public class OmniTech {
 
     @SubscribeEvent
     public void onAddReloadListener(AddServerReloadListenersEvent event) {
-        event.addListener(Identifier.fromNamespaceAndPath(MODID, "boiler_recipes"), new PreparableReloadListener() {
-            @Override
-            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
-                    PreparationBarrier barrier, Executor reloadExecutor) {
-                return CompletableFuture.runAsync(() -> {
-                    BoilerRecipeManager.loadRecipes(sharedState.resourceManager());
-                }, taskExecutor).thenCompose(barrier::wait);
-            }
-        });
         event.addListener(Identifier.fromNamespaceAndPath(MODID, "alloy_furnace_recipes"), new PreparableReloadListener() {
             @Override
             public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,

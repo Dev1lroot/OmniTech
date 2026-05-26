@@ -6,7 +6,26 @@ package com.dev1lroot.mcmods.omnitech.jei;
 
 import com.dev1lroot.mcmods.omnitech.OmniTech;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
-import com.dev1lroot.mcmods.omnitech.recipes.*;
+import com.dev1lroot.mcmods.omnitech.recipes.AlloyFurnaceRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.AlloyFurnaceRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.ChemicalReactorRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.ChemicalReactorRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.ElectrolysisRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.ElectrolysisRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.FluidCollectorRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.FluidCollectorRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.FoundryRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.FoundryRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.FractionalDistillationRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.FractionalDistillationRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.ManualCentrifugeRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.ManualCentrifugeRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.ManualMaceratorRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.ManualMaceratorRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.SmelterRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.SmelterRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.SolvationRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.SolvationRecipeManager;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -48,9 +67,6 @@ public class OmniTechJeiPlugin implements IModPlugin {
     public static final RecipeType<SmelterRecipe> SMELTING =
             RecipeType.create(OmniTech.MODID, "smelting", SmelterRecipe.class);
 
-    public static final RecipeType<BoilerRecipe> BOILER =
-            RecipeType.create(OmniTech.MODID, "boiler", BoilerRecipe.class);
-
     public static final RecipeType<FoundryRecipe> FOUNDRY =
             RecipeType.create(OmniTech.MODID, "foundry", FoundryRecipe.class);
 
@@ -88,7 +104,6 @@ public class OmniTechJeiPlugin implements IModPlugin {
                 new ManualMaceratorCategory(gui),
                 new ManualCentrifugeCategory(gui),
                 new SmeltingCategory(gui),
-                new BoilerCategory(gui),
                 new FoundryCategory(gui),
                 new ChemicalReactorCategory(gui),
                 new ElectrolysisCategory(gui),
@@ -106,7 +121,6 @@ public class OmniTechJeiPlugin implements IModPlugin {
         registration.addRecipes(MANUAL_MACERATOR,         ManualMaceratorRecipeManager.getAllRecipes());
         registration.addRecipes(MANUAL_CENTRIFUGE,        ManualCentrifugeRecipeManager.getAllRecipes());
         registration.addRecipes(SMELTING,                 SmelterRecipeManager.getAllRecipes());
-        registration.addRecipes(BOILER,                   BoilerRecipeManager.getAllRecipes());
         registration.addRecipes(FOUNDRY,                  FoundryRecipeManager.getAllRecipes());
         registration.addRecipes(CHEMICAL_REACTOR,         ChemicalReactorRecipeManager.getAllRecipes());
         registration.addRecipes(ELECTROLYSIS,             ElectrolysisRecipeManager.getAllRecipes());
@@ -123,7 +137,6 @@ public class OmniTechJeiPlugin implements IModPlugin {
         registration.addRecipeCatalysts(MANUAL_MACERATOR,        OmniTechBlocks.MANUAL_MACERATOR.get());
         registration.addRecipeCatalysts(MANUAL_CENTRIFUGE,       OmniTechBlocks.MANUAL_CENTRIFUGE.get());
         registration.addRecipeCatalysts(SMELTING,                OmniTechBlocks.SMELTER.get());
-        registration.addRecipeCatalysts(BOILER,                  OmniTechBlocks.BOILER.get());
         registration.addRecipeCatalysts(FOUNDRY,                 OmniTechBlocks.FOUNDRY.get());
         registration.addRecipeCatalysts(CHEMICAL_REACTOR,        OmniTechBlocks.CHEMICAL_REACTOR.get());
         registration.addRecipeCatalysts(ELECTROLYSIS,            OmniTechBlocks.ELECTROLYSIS_MACHINE.get());
@@ -303,50 +316,6 @@ public class OmniTechJeiPlugin implements IModPlugin {
             Font font = Minecraft.getInstance().font;
             arrow.draw(graphics, 56, 14);
             graphics.text(font, recipe.getRequiredMinimalTemperature() + "°C min", 0, 52, 0x555555, false);
-        }
-    }
-
-    // ── Boiler: fluid in → fluid out (+ optional item) + temperature + time ──
-
-    static class BoilerCategory implements IRecipeCategory<BoilerRecipe> {
-        private final IDrawable background;
-        private final IDrawable icon;
-        private final IDrawable arrow;
-
-        BoilerCategory(IGuiHelper gui) {
-            this.background = gui.createBlankDrawable(160, 70);
-            this.icon       = gui.createDrawableItemLike(OmniTechBlocks.BOILER.get());
-            this.arrow      = gui.getRecipeArrow();
-        }
-
-        @Override public RecipeType<BoilerRecipe> getRecipeType() { return BOILER; }
-        @Override public Component getTitle() { return Component.translatable("jei.omnitech.boiler"); }
-        @Override public int getWidth()  { return 160; }
-        @Override public int getHeight() { return 70; }
-        @Override public IDrawable getIcon() { return icon; }
-
-        @Override
-        public void setRecipe(IRecipeLayoutBuilder builder, BoilerRecipe recipe, IFocusGroup focuses) {
-            FluidStack in = recipe.getInputFluidStack();
-            if (!in.isEmpty()) {
-                builder.addInputSlot(0, 2)
-                        .addFluidStack(in.getFluid(), in.getAmount())
-                        .setFluidRenderer(in.getAmount(), false, 16, 36);
-            }
-            FluidStack out = recipe.getOutputFluidStack();
-            if (!out.isEmpty()) {
-                builder.addOutputSlot(116, 2)
-                        .addFluidStack(out.getFluid(), out.getAmount())
-                        .setFluidRenderer(out.getAmount(), false, 16, 36);
-            }
-        }
-
-        @Override
-        public void draw(BoilerRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
-            Font font = Minecraft.getInstance().font;
-            arrow.draw(graphics, 56, 12);
-            graphics.text(font, recipe.getRequiredMinimalTemperature() + "°C", 0, 46, 0x555555, false);
-            graphics.text(font, recipe.getProductionTime() + "t", 0, 56, 0x555555, false);
         }
     }
 

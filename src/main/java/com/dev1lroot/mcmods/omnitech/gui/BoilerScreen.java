@@ -30,9 +30,7 @@ public class BoilerScreen extends AbstractContainerScreen<BoilerMenu> {
         this.inventoryLabelY = LAYOUT.inventory.label_y;
 
         this.dataCtx = new GuiDataContext()
-                .fluid("water", menu::getWaterFluid, menu::getWaterAmount, menu::getCapacity)
-                .fluid("steam", menu::getSteamFluid, menu::getSteamAmount, menu::getCapacity)
-                .value("cook_progress", menu::getCookProgressScaled);
+                .fluid("fluid", menu::getFluid, menu::getFluidAmount, menu::getCapacity);
     }
 
     @Override
@@ -47,23 +45,9 @@ public class BoilerScreen extends AbstractContainerScreen<BoilerMenu> {
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractLabels(graphics, mouseX, mouseY);
 
-        int currentTemp  = menu.getTemperature();
-        int requiredTemp = menu.getRequiredTemperature();
-
+        int temp = menu.getTemperature();
         HudWriter writer = new HudWriter(graphics, this.font, 28, 8, 10, false);
-
-        int curColor = getTempColor(currentTemp, requiredTemp);
-        writer.setColor(curColor).write(currentTemp + "°C");
-
-        if (requiredTemp != 0) {
-            boolean conditionMet = requiredTemp >= 0
-                    ? currentTemp >= requiredTemp
-                    : currentTemp <= requiredTemp;
-            int reqColor = conditionMet ? 0xFF00AA00 : 0xFFAA0000;
-            writer.setColor(0xFF404040).write(" / ")
-                  .setColor(reqColor).write(requiredTemp + "°C");
-        }
-
+        writer.setColor(getTempColor(temp)).write(temp + "°C");
     }
 
     @Override
@@ -75,15 +59,10 @@ public class BoilerScreen extends AbstractContainerScreen<BoilerMenu> {
         }
     }
 
-    private int getTempColor(int current, int required) {
-        if (required < 0) {
-            if (current <= required) return 0xFF00AAFF;
-            if (current < 0)        return 0xFF88CCFF;
-            return 0xFFAAAAAA;
-        }
-        if (required > 0 && current >= required) return 0xFFFF6600;
-        if (current > 200) return 0xFFFFAA00;
-        if (current > 100) return 0xFFFFFF00;
+    private int getTempColor(int temp) {
+        if (temp >= 250) return 0xFFFF6600;
+        if (temp >= 100) return 0xFFFFAA00;
+        if (temp >   20) return 0xFFFFFF00;
         return 0xFFAAAAAA;
     }
 }

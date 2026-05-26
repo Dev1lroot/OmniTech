@@ -11,37 +11,13 @@
   },
   "elements": [
     {
-      "id": "water_tank",
+      "id": "fluid_tank",
       "type": "fluid_tank",
-      "x": 8,
+      "x": 80,
       "y": 17,
       "w": 16,
       "h": 52,
-      "source": "water"
-    },
-    {
-      "id": "steam_tank",
-      "type": "fluid_tank",
-      "x": 153,
-      "y": 17,
-      "w": 16,
-      "h": 52,
-      "source": "steam"
-    },
-    {
-      "id": "output_slot",
-      "type": "slot",
-      "x": 110,
-      "y": 50,
-      "slot_index": 0
-    },
-    {
-      "id": "cook_progress",
-      "type": "progressbar",
-      "x": 68,
-      "y": 50,
-      "w": 36,
-      "source": "cook_progress"
+      "source": "fluid"
     }
   ]
 }
