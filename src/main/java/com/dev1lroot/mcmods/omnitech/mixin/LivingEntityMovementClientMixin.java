@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,16 +17,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Client-only mixin that redirects WASD movement to align with the gravity-adjusted
- * camera orientation when the local player is inside a gravity field.
+ * Client-only mixin that redirects WASD movement to align with the actual camera
+ * look/left vectors when the local player is inside a gravity field.
  *
  * <p>Strategy:
  * <ol>
  *   <li>{@code travel()} HEAD — save xxa/zza and zero them so vanilla
  *       {@code moveRelative} contributes no velocity this tick.</li>
- *   <li>{@code travel()} RETURN — rotate the saved input by the smoothed gravity
- *       quaternion, project onto the gravity-horizontal plane (perpendicular to the
- *       combined pull direction), then add the equivalent impulse.</li>
+ *   <li>{@code travel()} RETURN — build worldInput from camera forward/left,
+ *       project onto the gravity-horizontal plane, then add the impulse.</li>
  * </ol>
  */
 @Mixin(LivingEntity.class)
@@ -59,9 +57,6 @@ public abstract class LivingEntityMovementClientMixin {
                 self.getX(), self.getY() + self.getBbHeight() * 0.5, self.getZ());
         if (gv.lengthSqr() < 1e-8) return;
 
-        Quaternionf gQ = GravityFieldManager.getGravityQ();
-        if (gQ.w > 0.9999f) return; // identity — vanilla movement is correct
-
         omnitech$savedXxa = xxa;
         omnitech$savedZza = zza;
         xxa = 0f;
@@ -87,23 +82,20 @@ public abstract class LivingEntityMovementClientMixin {
         Vector3f gravDown = new Vector3f(
                 (float)(gv.x / gLen), (float)(gv.y / gLen), (float)(gv.z / gLen));
 
-        // Vanilla input → world direction (mirrors Entity.getInputVector)
-        // forward = (-sin(yaw), 0, cos(yaw))   right = (cos(yaw), 0, sin(yaw))
-        float yawRad = (float) Math.toRadians(self.getYRot());
-        float sy     = (float) Math.sin(yawRad);
-        float cy2    = (float) Math.cos(yawRad);
-        Vector3f worldInput = new Vector3f(
-                -sy * savedZza + cy2 * savedXxa,
-                0f,
-                cy2 * savedZza + sy * savedXxa);
+        // Camera vectors are gravity-rotated by CameraRotationMixin: gravQ × vanillaVector.
+        // Use them directly — they represent the actual world-space directions the player
+        // sees as forward/left on screen.
+        // Sign: xxa > 0 = A key = strafe LEFT = add camLeft (not subtract).
+        net.minecraft.client.Camera cam = Minecraft.getInstance().gameRenderer.getMainCamera();
+        Vector3f camFwd  = new Vector3f(cam.forwardVector());
+        Vector3f camLeft = new Vector3f(cam.leftVector());
+
+        Vector3f worldInput = new Vector3f(camFwd).mul(savedZza)
+                .add(new Vector3f(camLeft).mul(savedXxa));
 
         float inputLen = worldInput.length();
         if (inputLen < 0.001f) return;
         worldInput.div(inputLen);
-
-        // Rotate by gravity Q → 3-D gravity-adjusted direction
-        Quaternionf gQ = GravityFieldManager.getGravityQ();
-        gQ.transform(worldInput);
 
         // Project onto gravity-horizontal plane (perpendicular to gravDown)
         float dotGD = worldInput.dot(gravDown);

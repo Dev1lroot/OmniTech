@@ -94,6 +94,12 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> EXAMPLE_BLOCK = REGISTRY.registerSimpleBlock(
             "example_block", p -> p.mapColor(MapColor.STONE));
 
+    // ── Kuiper Belt blocks ────────────────────────────────────────────────────
+    /** Rocky/icy body of Kuiper Belt asteroids; sphere material placed by {@link com.dev1lroot.mcmods.omnitech.worldgen.AsteroidFeature}. */
+    public static final DeferredBlock<Block> ASTEROID_BLOCK = REGISTRY.registerSimpleBlock(
+            "asteroid_block", p -> p.mapColor(MapColor.STONE).strength(2.5F).sound(SoundType.STONE)
+                    .requiresCorrectToolForDrops());
+
     // ── Europa blocks ─────────────────────────────────────────────────────────
     /** Deep rocky basement layer (Y=3–22) beneath the Europa ocean. */
     public static final DeferredBlock<Block> EUROPA_STONE = REGISTRY.registerSimpleBlock(

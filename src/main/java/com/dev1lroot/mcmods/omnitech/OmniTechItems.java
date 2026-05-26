@@ -58,6 +58,10 @@ public class OmniTechItems
                     SpawnEggItem::new,
                     props -> props.spawnEgg(OmniTechEntities.PENGUIN.get()));
 
+    // Kuiper Belt block items
+    public static final DeferredItem<BlockItem> ASTEROID_BLOCK_ITEM = REGISTRY.registerSimpleBlockItem(
+            "asteroid_block", OmniTechBlocks.ASTEROID_BLOCK);
+
     // Europa terrain block items
     public static final DeferredItem<BlockItem> EUROPA_STONE_ITEM = REGISTRY.registerSimpleBlockItem(
             "europa_stone", OmniTechBlocks.EUROPA_STONE);

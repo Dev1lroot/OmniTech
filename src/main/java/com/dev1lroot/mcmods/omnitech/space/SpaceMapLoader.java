@@ -71,7 +71,8 @@ public class SpaceMapLoader {
 
                 List<CelestialBody> planets = new ArrayList<>();
                 for (CelestialBodyDef planetDef : byUuid.values()) {
-                    if (!"planet".equals(planetDef.type) || !starDef.uuid.equals(planetDef.parent)) continue;
+                    String t = planetDef.type;
+                    if ((!"planet".equals(t) && !"belt".equals(t)) || !starDef.uuid.equals(planetDef.parent)) continue;
                     CelestialBody planet = toCelestialBody(planetDef);
 
                     List<CelestialBody> moons = new ArrayList<>();

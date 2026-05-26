@@ -10,7 +10,7 @@ public class CelestialBodyDef {
     public String uuid;
     /** UUID of the parent body, or "root" for galaxies. */
     public String parent;
-    /** "galaxy" | "star" | "planet" | "moon" */
+    /** "galaxy" | "star" | "planet" | "moon" | "belt" */
     public String type;
     public String texture;
     public String background;

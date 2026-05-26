@@ -11,7 +11,9 @@
   "client": [
     "KeyboardHandlerMixin",
     "EntityGravityRenderMixin",
-    "LivingEntityMovementClientMixin"
+    "LivingEntityMovementClientMixin",
+    "CameraRotationMixin",
+    "EntityViewVectorGravityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

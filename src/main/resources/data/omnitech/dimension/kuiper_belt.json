@@ -1,0 +1,11 @@
+{
+  "type": "omnitech:kuiper_belt",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "omnitech:kuiper_belt"
+    },
+    "settings": "omnitech:kuiper_belt"
+  }
+}

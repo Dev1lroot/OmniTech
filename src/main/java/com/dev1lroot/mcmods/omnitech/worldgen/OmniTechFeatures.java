@@ -33,6 +33,14 @@ public class OmniTechFeatures {
     public static final java.util.function.Supplier<EuropaStoneSpireFeature> EUROPA_STONE_SPIRE =
             REGISTRY.register("europa_stone_spire", EuropaStoneSpireFeature::new);
 
+    /**
+     * Distorted asteroid sphere (radius 6–24 blocks) filled with asteroid_block,
+     * with a calibrated GravitationSource at the centre.  Scattered sparsely
+     * through the void of the Kuiper Belt dimension.
+     */
+    public static final java.util.function.Supplier<AsteroidFeature> ASTEROID =
+            REGISTRY.register("asteroid", AsteroidFeature::new);
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }

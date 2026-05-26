@@ -1,0 +1,14 @@
+{
+  "uuid": "kuiper_belt",
+  "parent": "sol",
+  "type": "belt",
+  "texture": "omnitech:textures/space/planet/kuiper_belt.png",
+  "orbital_radius": 560,
+  "orbital_speed": 0.00000008,
+  "size": 0.4,
+  "orbital_distance_km": 6700000000,
+  "orbital_inclination": 1.86,
+  "ascending_node": 144.0,
+  "day_length_ticks": 0,
+  "dimension": "omnitech:kuiper_belt"
+}
