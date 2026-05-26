@@ -273,20 +273,20 @@ public class OmniTechClient
         Camera camera = event.getCamera();
         Vec3 camPos = camera.position();
 
-        // Build target gravity quaternion (identity when not in field or creative)
+        // Build target gravity quaternion weighted by combined field strength α.
+        // α = 0 → identity (no tilt); α = 1 → full rotation toward attractor.
         org.joml.Quaternionf targetQ = new org.joml.Quaternionf(); // identity
         if (!mc.player.isCreative()) {
-            BlockPos source = GravityFieldManager.getGravitySource(camPos.x, camPos.y, camPos.z);
-            if (source != null) {
-                double dx = source.getX() + 0.5 - camPos.x;
-                double dy = source.getY() + 0.5 - camPos.y;
-                double dz = source.getZ() + 0.5 - camPos.z;
-                double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-                if (dist >= 0.01) {
-                    Vector3f gravUp = new Vector3f(
-                            (float)(-dx / dist), (float)(-dy / dist), (float)(-dz / dist));
-                    targetQ = new org.joml.Quaternionf().rotationTo(new Vector3f(0f, 1f, 0f), gravUp);
-                }
+            Vec3 gv = GravityFieldManager.computeGravityVec(camPos.x, camPos.y, camPos.z);
+            double gLen = gv.length();
+            if (gLen >= 0.01) {
+                Vector3f gravUp = new Vector3f(
+                        (float)(-gv.x / gLen), (float)(-gv.y / gLen), (float)(-gv.z / gLen));
+                org.joml.Quaternionf fullQ = new org.joml.Quaternionf()
+                        .rotationTo(new Vector3f(0f, 1f, 0f), gravUp);
+                // Slerp from identity to fullQ by α so the tilt fades in the outer zone
+                float alpha = (float) Math.min(1.0, gLen);
+                targetQ = new org.joml.Quaternionf().slerp(fullQ, alpha);
             }
         }
 
@@ -321,17 +321,23 @@ public class OmniTechClient
 
         // 2. Decompose rotated forward into world-frame yaw/pitch
         //    (MC convention: forward = (-cos(p)*sin(y),  -sin(p),  cos(p)*cos(y)))
-        float clampedFy  = Math.max(-1f, Math.min(1f, gravFwd.y));
+        float clampedFy   = Math.max(-1f, Math.min(1f, gravFwd.y));
         float newPitchDeg = (float) Math.toDegrees(-Math.asin(clampedFy));
-        float newYawDeg   = (float) Math.toDegrees(Math.atan2(-gravFwd.x, gravFwd.z));
-        event.setYaw(newYawDeg);
         event.setPitch(newPitchDeg);
+
+        // Guard against gimbal lock: when gravFwd is near-vertical the XZ components
+        // are essentially zero and atan2 becomes undefined, causing rapid yaw flips.
+        // Keep the current (pre-event) yaw when the forward is within ~6° of vertical.
+        float xzLen = (float) Math.sqrt(gravFwd.x * gravFwd.x + gravFwd.z * gravFwd.z);
+        if (xzLen >= 0.1f) {
+            event.setYaw((float) Math.toDegrees(Math.atan2(-gravFwd.x, gravFwd.z)));
+        }
 
         // 3. Compute camera up/left at (newYaw, newPitch, roll=0) in world space
         //    Derived from Camera.setRotation = Ry(π-yaw)*Rx(-pitch)*Rz(0):
         //      camera_up   = (-sin(p)*sin(y),  cos(p),  sin(p)*cos(y))
         //      camera_left = ( cos(y),          0,       sin(y) )   (independent of pitch)
-        float yr  = (float) Math.toRadians(newYawDeg);
+        float yr  = (float) Math.toRadians(event.getYaw());
         float pr  = (float) Math.toRadians(newPitchDeg);
         float sp  = (float) Math.sin(pr),  cp = (float) Math.cos(pr);
         float sy  = (float) Math.sin(yr),  cy = (float) Math.cos(yr);

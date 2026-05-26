@@ -616,8 +616,9 @@ public class OmniTech {
         // Send gravity field data to clients once per second
         if (tick % 20 == 0) {
             for (ServerPlayer sp : event.getServer().getPlayerList().getPlayers()) {
-                ArrayList<BlockPos> posList = new ArrayList<>();
-                ArrayList<Integer>  radii   = new ArrayList<>();
+                ArrayList<BlockPos> posList     = new ArrayList<>();
+                ArrayList<Integer>  outerRadii  = new ArrayList<>();
+                ArrayList<Integer>  innerRadii  = new ArrayList<>();
                 double px = sp.getX(), py = sp.getY(), pz = sp.getZ();
                 double maxRangeSq = 150.0 * 150.0;
                 for (var entry : GravitationSourceBlockEntity.SERVER_ACTIVE_SOURCES.entrySet()) {
@@ -628,10 +629,11 @@ public class OmniTech {
                     double dz = bp.getZ() + 0.5 - pz;
                     if (dx*dx + dy*dy + dz*dz <= maxRangeSq) {
                         posList.add(bp);
-                        radii.add(entry.getValue().radius());
+                        outerRadii.add(entry.getValue().outerRadius());
+                        innerRadii.add(entry.getValue().innerRadius());
                     }
                 }
-                PacketDistributor.sendToPlayer(sp, new GravityFieldSyncPacket(posList, radii));
+                PacketDistributor.sendToPlayer(sp, new GravityFieldSyncPacket(posList, outerRadii, innerRadii));
             }
         }
 

@@ -21,18 +21,19 @@ import net.minecraft.world.entity.player.Inventory;
  *
  * <p>Layout (panel-relative y):
  * <ul>
- *   <li>y=6  – title (by super)</li>
- *   <li>y=22 – "Radius:" label</li>
- *   <li>y=35 – four −5/−1/+1/+5 buttons with current radius displayed between them</li>
- *   <li>y=52 – "Inventory" label (by super)</li>
+ *   <li>y=6   – title</li>
+ *   <li>y=22  – "Outer Radius:" label + value at y=39</li>
+ *   <li>y=35  – outer radius −5/−1/+1/+5 buttons</li>
+ *   <li>y=52  – "Inner Radius:" label + value at y=69</li>
+ *   <li>y=65  – inner radius −5/−1/+1/+5 buttons</li>
+ *   <li>y=82  – "Inventory" label (by super)</li>
  * </ul>
  */
 public class GravitationSourceScreen extends AbstractContainerScreen<GravitationSourceMenu> {
 
     private static final GuiLayout LAYOUT = GuiLayoutLoader.load("gravitation_source");
 
-    // Panel-relative button positions
-    private static final int BTN_Y        = 35;
+    // Shared button geometry
     private static final int BTN_H        = 12;
     private static final int BTN_W        = 20;
     private static final int BTN_MINUS5_X = 6;
@@ -41,6 +42,10 @@ public class GravitationSourceScreen extends AbstractContainerScreen<Gravitation
     private static final int DISP_W       = 72;
     private static final int BTN_PLUS1_X  = 126;
     private static final int BTN_PLUS5_X  = 148;
+
+    // Row Y positions (panel-relative)
+    private static final int OUTER_BTN_Y = 35;
+    private static final int INNER_BTN_Y = 65;
 
     private final GuiDataContext dataCtx = new GuiDataContext();
 
@@ -55,31 +60,39 @@ public class GravitationSourceScreen extends AbstractContainerScreen<Gravitation
         this.titleLabelX     = (LAYOUT.width - this.font.width(this.title)) / 2;
         this.inventoryLabelY = LAYOUT.inventory.label_y;
 
-        int by = this.topPos + BTN_Y;
+        // Outer radius row
+        int oy = this.topPos + OUTER_BTN_Y;
+        addRenderableWidget(Button.builder(Component.literal("-5"),
+                b -> click(GravitationSourceBlockEntity.BTN_MINUS_5))
+                .bounds(this.leftPos + BTN_MINUS5_X, oy, BTN_W, BTN_H).build());
+        addRenderableWidget(Button.builder(Component.literal("-1"),
+                b -> click(GravitationSourceBlockEntity.BTN_MINUS_1))
+                .bounds(this.leftPos + BTN_MINUS1_X, oy, BTN_W, BTN_H).build());
+        addRenderableWidget(Button.builder(Component.literal("+1"),
+                b -> click(GravitationSourceBlockEntity.BTN_PLUS_1))
+                .bounds(this.leftPos + BTN_PLUS1_X, oy, BTN_W, BTN_H).build());
+        addRenderableWidget(Button.builder(Component.literal("+5"),
+                b -> click(GravitationSourceBlockEntity.BTN_PLUS_5))
+                .bounds(this.leftPos + BTN_PLUS5_X, oy, BTN_W, BTN_H).build());
 
-        addRenderableWidget(Button.builder(
-                Component.literal("-5"),
-                b -> Minecraft.getInstance().gameMode
-                        .handleInventoryButtonClick(menu.containerId, GravitationSourceBlockEntity.BTN_MINUS_5))
-                .bounds(this.leftPos + BTN_MINUS5_X, by, BTN_W, BTN_H).build());
+        // Inner radius row
+        int iy = this.topPos + INNER_BTN_Y;
+        addRenderableWidget(Button.builder(Component.literal("-5"),
+                b -> click(GravitationSourceBlockEntity.BTN_INNER_MINUS_5))
+                .bounds(this.leftPos + BTN_MINUS5_X, iy, BTN_W, BTN_H).build());
+        addRenderableWidget(Button.builder(Component.literal("-1"),
+                b -> click(GravitationSourceBlockEntity.BTN_INNER_MINUS_1))
+                .bounds(this.leftPos + BTN_MINUS1_X, iy, BTN_W, BTN_H).build());
+        addRenderableWidget(Button.builder(Component.literal("+1"),
+                b -> click(GravitationSourceBlockEntity.BTN_INNER_PLUS_1))
+                .bounds(this.leftPos + BTN_PLUS1_X, iy, BTN_W, BTN_H).build());
+        addRenderableWidget(Button.builder(Component.literal("+5"),
+                b -> click(GravitationSourceBlockEntity.BTN_INNER_PLUS_5))
+                .bounds(this.leftPos + BTN_PLUS5_X, iy, BTN_W, BTN_H).build());
+    }
 
-        addRenderableWidget(Button.builder(
-                Component.literal("-1"),
-                b -> Minecraft.getInstance().gameMode
-                        .handleInventoryButtonClick(menu.containerId, GravitationSourceBlockEntity.BTN_MINUS_1))
-                .bounds(this.leftPos + BTN_MINUS1_X, by, BTN_W, BTN_H).build());
-
-        addRenderableWidget(Button.builder(
-                Component.literal("+1"),
-                b -> Minecraft.getInstance().gameMode
-                        .handleInventoryButtonClick(menu.containerId, GravitationSourceBlockEntity.BTN_PLUS_1))
-                .bounds(this.leftPos + BTN_PLUS1_X, by, BTN_W, BTN_H).build());
-
-        addRenderableWidget(Button.builder(
-                Component.literal("+5"),
-                b -> Minecraft.getInstance().gameMode
-                        .handleInventoryButtonClick(menu.containerId, GravitationSourceBlockEntity.BTN_PLUS_5))
-                .bounds(this.leftPos + BTN_PLUS5_X, by, BTN_W, BTN_H).build());
+    private void click(int id) {
+        Minecraft.getInstance().gameMode.handleInventoryButtonClick(menu.containerId, id);
     }
 
     @Override
@@ -95,11 +108,16 @@ public class GravitationSourceScreen extends AbstractContainerScreen<Gravitation
         super.extractLabels(graphics, mouseX, mouseY);
         GuiLayoutRenderer.renderLabels(graphics, this.font, LAYOUT, dataCtx, LAYOUT.width);
 
-        graphics.text(this.font, "Radius:", 6, 22, 0xFFAAAAAA, false);
+        // Outer radius
+        graphics.text(this.font, "Outer Radius:", 6, 22, 0xFFAAAAAA, false);
+        String outerStr = menu.getOuterRadius() + " blocks";
+        graphics.text(this.font, outerStr, DISP_X + (DISP_W - this.font.width(outerStr)) / 2, 39,
+                0xFF44FFDD, false);
 
-        String radiusStr = menu.getRadius() + " blocks";
-        int rw = this.font.width(radiusStr);
-        int rx = DISP_X + (DISP_W - rw) / 2;
-        graphics.text(this.font, radiusStr, rx, 39, 0xFF44FFDD, false);
+        // Inner radius
+        graphics.text(this.font, "Inner Radius:", 6, 52, 0xFFAAAAAA, false);
+        String innerStr = menu.getInnerRadius() + " blocks";
+        graphics.text(this.font, innerStr, DISP_X + (DISP_W - this.font.width(innerStr)) / 2, 69,
+                0xFF44FFDD, false);
     }
 }

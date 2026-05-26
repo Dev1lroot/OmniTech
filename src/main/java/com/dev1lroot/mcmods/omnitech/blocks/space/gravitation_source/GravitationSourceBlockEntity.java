@@ -26,31 +26,41 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Block entity for the {@link GravitationSourceBlock}.
  *
- * <p>On each server tick, finds all entities inside a sphere of {@link #radius} blocks
- * and applies an impulse that cancels normal gravity and pulls them toward the block's
- * center.  A static {@link #SERVER_ACTIVE_SOURCES} map is kept up-to-date so the
- * {@link com.dev1lroot.mcmods.omnitech.network.GravityFieldSyncPacket} sender can
- * quickly enumerate all active sources without scanning every block entity.
+ * <p>Gravity within the field is graduated: full strength inside {@link #innerRadius},
+ * zero strength at {@link #outerRadius}, and linearly interpolated between them.
+ * Entities inside the outer sphere are pulled toward this block by a fraction of the
+ * base gravity constant proportional to the falloff factor α ∈ [0, 1].
+ *
+ * <p>Multiple active sources are combined additively (vector sum), so entities
+ * between two sources experience a blended gravity direction.
  */
 public class GravitationSourceBlockEntity extends BaseContainerBlockEntity {
 
     // ── Constants ─────────────────────────────────────────────────────────────
 
-    public static final int MIN_RADIUS     = 1;
-    public static final int MAX_RADIUS     = 64;
-    public static final int DEFAULT_RADIUS = 8;
+    public static final int MIN_RADIUS           = 1;
+    public static final int MAX_RADIUS           = 64;
+    public static final int DEFAULT_OUTER_RADIUS = 8;
+    public static final int DEFAULT_INNER_RADIUS = 4;
 
-    // ── Button IDs ────────────────────────────────────────────────────────────
+    // ── Button IDs (outer radius) ─────────────────────────────────────────────
 
     public static final int BTN_MINUS_5 = 0;
     public static final int BTN_MINUS_1 = 1;
     public static final int BTN_PLUS_1  = 2;
     public static final int BTN_PLUS_5  = 3;
 
+    // ── Button IDs (inner radius) ─────────────────────────────────────────────
+
+    public static final int BTN_INNER_MINUS_5 = 4;
+    public static final int BTN_INNER_MINUS_1 = 5;
+    public static final int BTN_INNER_PLUS_1  = 6;
+    public static final int BTN_INNER_PLUS_5  = 7;
+
     // ── Server-side registry ──────────────────────────────────────────────────
 
-    /** Per-position entry: dimension key + radius. */
-    public record GravityEntry(ResourceKey<Level> dimension, int radius) {}
+    /** Per-position entry: dimension key + outer/inner radii. */
+    public record GravityEntry(ResourceKey<Level> dimension, int outerRadius, int innerRadius) {}
 
     /**
      * All currently loaded, active GravitationSource block entities on the server.
@@ -62,14 +72,24 @@ public class GravitationSourceBlockEntity extends BaseContainerBlockEntity {
     // ── State ─────────────────────────────────────────────────────────────────
 
     private NonNullList<ItemStack> items = NonNullList.withSize(0, ItemStack.EMPTY);
-    private int radius = DEFAULT_RADIUS;
+    private int outerRadius = DEFAULT_OUTER_RADIUS;
+    private int innerRadius = DEFAULT_INNER_RADIUS;
 
-    // ── ContainerData ─────────────────────────────────────────────────────────
+    // ── ContainerData (slots: 0=outerRadius, 1=innerRadius) ──────────────────
 
     protected final ContainerData dataAccess = new ContainerData() {
-        @Override public int get(int i)             { return i == 0 ? radius : 0; }
-        @Override public void set(int i, int val)   { if (i == 0) radius = Math.clamp(val, MIN_RADIUS, MAX_RADIUS); }
-        @Override public int getCount()             { return 1; }
+        @Override
+        public int get(int i) {
+            return switch (i) { case 0 -> outerRadius; case 1 -> innerRadius; default -> 0; };
+        }
+        @Override
+        public void set(int i, int val) {
+            switch (i) {
+                case 0 -> outerRadius = Math.clamp(val, MIN_RADIUS, MAX_RADIUS);
+                case 1 -> innerRadius = Math.clamp(val, 0, outerRadius);
+            }
+        }
+        @Override public int getCount() { return 2; }
     };
 
     // ── Constructor ───────────────────────────────────────────────────────────
@@ -85,9 +105,9 @@ public class GravitationSourceBlockEntity extends BaseContainerBlockEntity {
         return Component.translatable("container.omnitech.gravitation_source");
     }
 
-    @Override protected NonNullList<ItemStack> getItems()                     { return items; }
-    @Override protected void setItems(NonNullList<ItemStack> items)           { this.items = items; }
-    @Override public int getContainerSize()                                   { return 0; }
+    @Override protected NonNullList<ItemStack> getItems()           { return items; }
+    @Override protected void setItems(NonNullList<ItemStack> items)  { this.items = items; }
+    @Override public int getContainerSize()                          { return 0; }
 
     @Override
     protected AbstractContainerMenu createMenu(int containerId, Inventory inv) {
@@ -97,15 +117,19 @@ public class GravitationSourceBlockEntity extends BaseContainerBlockEntity {
     // ── Radius control ────────────────────────────────────────────────────────
 
     public boolean adjustRadius(int buttonId) {
-        int delta = switch (buttonId) {
-            case BTN_MINUS_5 -> -5;
-            case BTN_MINUS_1 -> -1;
-            case BTN_PLUS_1  -> +1;
-            case BTN_PLUS_5  -> +5;
-            default          -> 0;
-        };
-        if (delta == 0) return false;
-        radius = Math.clamp(radius + delta, MIN_RADIUS, MAX_RADIUS);
+        switch (buttonId) {
+            case BTN_MINUS_5 -> outerRadius = Math.clamp(outerRadius - 5, MIN_RADIUS, MAX_RADIUS);
+            case BTN_MINUS_1 -> outerRadius = Math.clamp(outerRadius - 1, MIN_RADIUS, MAX_RADIUS);
+            case BTN_PLUS_1  -> outerRadius = Math.clamp(outerRadius + 1, MIN_RADIUS, MAX_RADIUS);
+            case BTN_PLUS_5  -> outerRadius = Math.clamp(outerRadius + 5, MIN_RADIUS, MAX_RADIUS);
+            case BTN_INNER_MINUS_5 -> innerRadius = Math.clamp(innerRadius - 5, 0, outerRadius);
+            case BTN_INNER_MINUS_1 -> innerRadius = Math.clamp(innerRadius - 1, 0, outerRadius);
+            case BTN_INNER_PLUS_1  -> innerRadius = Math.clamp(innerRadius + 1, 0, outerRadius);
+            case BTN_INNER_PLUS_5  -> innerRadius = Math.clamp(innerRadius + 5, 0, outerRadius);
+            default -> { return false; }
+        }
+        // Clamp inner to not exceed outer if outer was reduced
+        innerRadius = Math.min(innerRadius, outerRadius);
         setChanged();
         return true;
     }
@@ -114,9 +138,8 @@ public class GravitationSourceBlockEntity extends BaseContainerBlockEntity {
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
                                    GravitationSourceBlockEntity be) {
-        // Keep SERVER_ACTIVE_SOURCES current so LivingEntityGravityMixin and the
-        // network sync can find this source.  Physics are handled by the mixin.
-        SERVER_ACTIVE_SOURCES.put(pos.immutable(), new GravityEntry(level.dimension(), be.radius));
+        SERVER_ACTIVE_SOURCES.put(pos.immutable(),
+                new GravityEntry(level.dimension(), be.outerRadius, be.innerRadius));
     }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
@@ -129,7 +152,8 @@ public class GravitationSourceBlockEntity extends BaseContainerBlockEntity {
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 
-    public int getRadius() { return radius; }
+    public int getOuterRadius() { return outerRadius; }
+    public int getInnerRadius() { return innerRadius; }
     public ContainerData getContainerData() { return dataAccess; }
 
     // ── Persistence ───────────────────────────────────────────────────────────
@@ -138,13 +162,18 @@ public class GravitationSourceBlockEntity extends BaseContainerBlockEntity {
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         ContainerHelper.loadAllItems(input, items);
-        radius = Math.clamp(input.getIntOr("Radius", DEFAULT_RADIUS), MIN_RADIUS, MAX_RADIUS);
+        // "Radius" key kept for world-upgrade compatibility from the old single-radius format
+        outerRadius = Math.clamp(input.getIntOr("OuterRadius",
+                input.getIntOr("Radius", DEFAULT_OUTER_RADIUS)), MIN_RADIUS, MAX_RADIUS);
+        innerRadius = Math.clamp(input.getIntOr("InnerRadius", DEFAULT_INNER_RADIUS),
+                0, outerRadius);
     }
 
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         ContainerHelper.saveAllItems(output, items);
-        output.putInt("Radius", radius);
+        output.putInt("OuterRadius", outerRadius);
+        output.putInt("InnerRadius", innerRadius);
     }
 }

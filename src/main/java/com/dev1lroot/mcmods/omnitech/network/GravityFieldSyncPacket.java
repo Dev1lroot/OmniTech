@@ -17,14 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Server → Client: list of active {@link com.dev1lroot.mcmods.omnitech.blocks.space.gravitation_source.GravitationSourceBlock}
- * positions and their radii, filtered to those near the receiving player's dimension and position.
- *
- * <p>Sent every 20 ticks (once per second) from {@link OmniTech#onServerTick}.
- * The client stores this in {@link GravityFieldManager} so the entity-render mixin can
- * tilt entity models toward the nearest active gravity source.
+ * Server → Client: list of active gravity sources near the receiving player.
+ * Each source carries its position, outer radius, and inner radius so the client
+ * can replicate the graduated-gravity falloff for rendering and physics.
  */
-public record GravityFieldSyncPacket(List<BlockPos> positions, List<Integer> radii)
+public record GravityFieldSyncPacket(
+        List<BlockPos> positions,
+        List<Integer>  outerRadii,
+        List<Integer>  innerRadii)
         implements CustomPacketPayload {
 
     public static final Type<GravityFieldSyncPacket> TYPE =
@@ -35,16 +35,19 @@ public record GravityFieldSyncPacket(List<BlockPos> positions, List<Integer> rad
                     (buf, pkt) -> {
                         int size = pkt.positions().size();
                         buf.writeVarInt(size);
-                        for (BlockPos pos : pkt.positions()) buf.writeBlockPos(pos);
-                        for (int r : pkt.radii())            buf.writeVarInt(r);
+                        for (BlockPos pos : pkt.positions())   buf.writeBlockPos(pos);
+                        for (int r : pkt.outerRadii())         buf.writeVarInt(r);
+                        for (int r : pkt.innerRadii())         buf.writeVarInt(r);
                     },
                     buf -> {
                         int size = buf.readVarInt();
-                        List<BlockPos> pos  = new ArrayList<>(size);
+                        List<BlockPos> pos        = new ArrayList<>(size);
+                        List<Integer>  outerRadii = new ArrayList<>(size);
+                        List<Integer>  innerRadii = new ArrayList<>(size);
                         for (int i = 0; i < size; i++) pos.add(buf.readBlockPos());
-                        List<Integer>  radii = new ArrayList<>(size);
-                        for (int i = 0; i < size; i++) radii.add(buf.readVarInt());
-                        return new GravityFieldSyncPacket(pos, radii);
+                        for (int i = 0; i < size; i++) outerRadii.add(buf.readVarInt());
+                        for (int i = 0; i < size; i++) innerRadii.add(buf.readVarInt());
+                        return new GravityFieldSyncPacket(pos, outerRadii, innerRadii);
                     }
             );
 

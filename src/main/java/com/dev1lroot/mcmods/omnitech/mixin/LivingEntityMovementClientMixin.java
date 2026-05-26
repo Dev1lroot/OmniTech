@@ -6,7 +6,6 @@ package com.dev1lroot.mcmods.omnitech.mixin;
 
 import com.dev1lroot.mcmods.omnitech.client.GravityFieldManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -22,17 +21,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Client-only mixin that redirects WASD movement to align with the gravity-adjusted
  * camera orientation when the local player is inside a gravity field.
  *
- * <p>Vanilla {@code moveRelative} rotates input by {@code yRot} in the world-XZ plane.
- * When the player stands on a wall or ceiling relative to a gravity source this produces
- * wrong-direction or inverted movement.
- *
  * <p>Strategy:
  * <ol>
- *   <li>{@code travel()} HEAD – save {@code xxa}/{@code zza}, zero them so vanilla
+ *   <li>{@code travel()} HEAD — save xxa/zza and zero them so vanilla
  *       {@code moveRelative} contributes no velocity this tick.</li>
- *   <li>{@code travel()} RETURN – rotate the saved input by the smoothed gravity
- *       quaternion, project onto the gravity-horizontal plane, and add the equivalent
- *       impulse to {@code deltaMovement}.</li>
+ *   <li>{@code travel()} RETURN — rotate the saved input by the smoothed gravity
+ *       quaternion, project onto the gravity-horizontal plane (perpendicular to the
+ *       combined pull direction), then add the equivalent impulse.</li>
  * </ol>
  */
 @Mixin(LivingEntity.class)
@@ -41,7 +36,6 @@ public abstract class LivingEntityMovementClientMixin {
     @Shadow public float xxa;
     @Shadow public float zza;
 
-    /** Saved at HEAD so RETURN can apply the input in the correct direction. */
     private transient float omnitech$savedXxa;
     private transient float omnitech$savedZza;
 
@@ -61,12 +55,12 @@ public abstract class LivingEntityMovementClientMixin {
         if (self.isSpectator()) return;
         if (self instanceof Player p && p.isCreative()) return;
 
-        BlockPos src = GravityFieldManager.getGravitySource(
+        Vec3 gv = GravityFieldManager.computeGravityVec(
                 self.getX(), self.getY() + self.getBbHeight() * 0.5, self.getZ());
-        if (src == null) return;
+        if (gv.lengthSqr() < 1e-8) return;
 
         Quaternionf gQ = GravityFieldManager.getGravityQ();
-        if (gQ.w > 0.9999f) return; // essentially identity — vanilla movement is correct
+        if (gQ.w > 0.9999f) return; // identity — vanilla movement is correct
 
         omnitech$savedXxa = xxa;
         omnitech$savedZza = zza;
@@ -84,22 +78,16 @@ public abstract class LivingEntityMovementClientMixin {
 
         LivingEntity self = (LivingEntity)(Object)this;
 
-        BlockPos src = GravityFieldManager.getGravitySource(
+        Vec3 gv = GravityFieldManager.computeGravityVec(
                 self.getX(), self.getY() + self.getBbHeight() * 0.5, self.getZ());
-        if (src == null) return;
+        double gLen = gv.length();
+        if (gLen < 0.01) return;
 
-        // ── Gravity-down unit vector (toward source) ──────────────────────────
-        double cx   = self.getX();
-        double cy   = self.getY() + self.getBbHeight() * 0.5;
-        double cz   = self.getZ();
-        double dx   = src.getX() + 0.5 - cx;
-        double dy   = src.getY() + 0.5 - cy;
-        double dz   = src.getZ() + 0.5 - cz;
-        double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-        if (dist < 0.01) return;
-        Vector3f gravDown = new Vector3f((float)(dx / dist), (float)(dy / dist), (float)(dz / dist));
+        // Gravity-down unit vector (toward attractor)
+        Vector3f gravDown = new Vector3f(
+                (float)(gv.x / gLen), (float)(gv.y / gLen), (float)(gv.z / gLen));
 
-        // ── Vanilla input → world direction (mirrors Entity.getInputVector) ───
+        // Vanilla input → world direction (mirrors Entity.getInputVector)
         // forward = (-sin(yaw), 0, cos(yaw))   right = (cos(yaw), 0, sin(yaw))
         float yawRad = (float) Math.toRadians(self.getYRot());
         float sy     = (float) Math.sin(yawRad);
@@ -113,18 +101,18 @@ public abstract class LivingEntityMovementClientMixin {
         if (inputLen < 0.001f) return;
         worldInput.div(inputLen);
 
-        // ── Rotate by gravity Q → 3-D gravity-adjusted direction ─────────────
+        // Rotate by gravity Q → 3-D gravity-adjusted direction
         Quaternionf gQ = GravityFieldManager.getGravityQ();
         gQ.transform(worldInput);
 
-        // ── Project onto gravity-horizontal plane ─────────────────────────────
+        // Project onto gravity-horizontal plane (perpendicular to gravDown)
         float dotGD = worldInput.dot(gravDown);
         worldInput.sub(new Vector3f(gravDown).mul(dotGD));
         float projLen = worldInput.length();
         if (projLen < 0.001f) return;
         worldInput.div(projLen);
 
-        // ── Speed: mirrors vanilla moveRelative scale ─────────────────────────
+        // Speed mirrors vanilla moveRelative
         float normalizedInput = Math.min(inputLen, 1.0f);
         boolean onSurface = self.onGround() || self.horizontalCollision || self.verticalCollision;
         float moveSpeed = normalizedInput

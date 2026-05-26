@@ -4,7 +4,9 @@
   "compatibilityLevel": "JAVA_25",
   "mixins": [
     "SkyRendererMixin",
-    "LivingEntityGravityMixin"
+    "LivingEntityGravityMixin",
+    "EntityGravityPhysicsMixin",
+    "FallingBlockEntityGravityMixin"
   ],
   "client": [
     "KeyboardHandlerMixin",

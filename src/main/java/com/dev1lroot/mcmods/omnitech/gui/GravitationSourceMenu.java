@@ -22,14 +22,15 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 /**
  * Menu for the Gravitation Source.
  *
- * <h3>ContainerData layout (1 entry)</h3>
+ * <h3>ContainerData layout (2 entries)</h3>
  * <ul>
- *   <li>0 – radius in blocks</li>
+ *   <li>0 – outer radius (gravity = 0 at this distance)</li>
+ *   <li>1 – inner radius (gravity = 1 inside this distance)</li>
  * </ul>
  *
  * <h3>Button IDs</h3>
- * Forwarded to {@link GravitationSourceBlockEntity#adjustRadius(int)}:
- * 0 = −5, 1 = −1, 2 = +1, 3 = +5.
+ * Outer radius: 0 = −5, 1 = −1, 2 = +1, 3 = +5.
+ * Inner radius: 4 = −5, 5 = −1, 6 = +1, 7 = +5.
  */
 public class GravitationSourceMenu extends AbstractContainerMenu {
 
@@ -40,7 +41,7 @@ public class GravitationSourceMenu extends AbstractContainerMenu {
     public GravitationSourceMenu(int containerId, Inventory playerInventory, FriendlyByteBuf buf) {
         this(containerId, playerInventory,
                 playerInventory.player.level().getBlockEntity(buf.readBlockPos()),
-                new SimpleContainerData(1));
+                new SimpleContainerData(2));
     }
 
     /** Server-side constructor. */
@@ -56,11 +57,8 @@ public class GravitationSourceMenu extends AbstractContainerMenu {
         layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
-    // ── Data accessors ────────────────────────────────────────────────────────
-
-    public int getRadius() { return data.get(0); }
-
-    // ── Button handling ───────────────────────────────────────────────────────
+    public int getOuterRadius() { return data.get(0); }
+    public int getInnerRadius() { return data.get(1); }
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
@@ -69,8 +67,6 @@ public class GravitationSourceMenu extends AbstractContainerMenu {
         }
         return false;
     }
-
-    // ── Container contract ────────────────────────────────────────────────────
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) { return ItemStack.EMPTY; }
