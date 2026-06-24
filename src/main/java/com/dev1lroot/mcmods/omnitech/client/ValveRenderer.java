@@ -91,7 +91,7 @@ public class ValveRenderer implements BlockEntityRenderer<ValveBlockEntity, Valv
         poseStack.mulPose(Axis.ZP.rotationDegrees(state.wheelAngle));
         poseStack.translate(-0.5, -0.5, -0.5);
 
-        submitNodeCollector.submitMovingBlock(poseStack, state.wheelModel);
+        submitNodeCollector.submitMovingBlock(poseStack, state.wheelModel, 0);
         poseStack.popPose();
     }
 

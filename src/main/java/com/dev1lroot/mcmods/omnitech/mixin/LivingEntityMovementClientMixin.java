@@ -86,7 +86,7 @@ public abstract class LivingEntityMovementClientMixin {
         // Use them directly — they represent the actual world-space directions the player
         // sees as forward/left on screen.
         // Sign: xxa > 0 = A key = strafe LEFT = add camLeft (not subtract).
-        net.minecraft.client.Camera cam = Minecraft.getInstance().gameRenderer.getMainCamera();
+        net.minecraft.client.Camera cam = Minecraft.getInstance().gameRenderer.mainCamera();
         Vector3f camFwd  = new Vector3f(cam.forwardVector());
         Vector3f camLeft = new Vector3f(cam.leftVector());
 

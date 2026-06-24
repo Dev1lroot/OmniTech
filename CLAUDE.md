@@ -4,13 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-OmniTech is a NeoForge Minecraft mod targeting Minecraft 26.1, focused on technological progression from stone-age tools to advanced EUV microchips.
+OmniTech is a NeoForge Minecraft mod targeting Minecraft 26.2, focused on technological progression from stone-age tools to advanced EUV microchips.
 
 **Key Identifiers:**
 - Mod ID: `omnitech`
 - Package: `com.dev1lroot.mcmods.omnitech`
 - Java Version: 25 (required)
-- NeoForge Version: 26.1.0.17-beta
+- NeoForge Version: 26.2.0.6-beta
 
 ## Build Commands
 

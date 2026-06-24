@@ -49,7 +49,7 @@ public class MicrophoneSoundOptionsScreen extends OptionsSubScreen {
         LinearLayout footer = this.layout.addToFooter(LinearLayout.horizontal().spacing(8));
         footer.addChild(Button.builder(
                 Component.translatable("options.omnitech.microphone"),
-                btn -> this.minecraft.setScreen(new MicrophoneOptionsScreen(this, this.options))
+                btn -> this.minecraft.gui.setScreen(new MicrophoneOptionsScreen(this, this.options))
         ).width(150).build());
         footer.addChild(Button.builder(
                 CommonComponents.GUI_DONE,

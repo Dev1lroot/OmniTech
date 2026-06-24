@@ -11,7 +11,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.block.FluidStateModelSet;
@@ -26,7 +26,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.extensions.IBlockEntityRendererExtension;
@@ -130,7 +129,7 @@ public class ReactorBER implements BlockEntityRenderer<ReactorBlockEntity, React
         if (coolant.getFluid().getFluidType().getLightLevel() > 0) {
             state.coolantLight = LightCoordsUtil.FULL_BRIGHT;
         } else if (entity.getLevel() instanceof ClientLevel cl) {
-            state.coolantLight = LevelRenderer.getLightCoords(cl, entity.getBlockPos());
+            state.coolantLight = LightCoordsUtil.getLightCoords(cl, entity.getBlockPos());
         } else {
             state.coolantLight = LightCoordsUtil.FULL_BRIGHT;
         }

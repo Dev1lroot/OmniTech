@@ -50,7 +50,7 @@ public record RadioScannerRowPacket(int bandOrdinal, float[] row) implements Cus
     public static void handle(RadioScannerRowPacket pkt, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             Minecraft mc = Minecraft.getInstance();
-            if (mc.screen instanceof RadioScannerScreen scanner) {
+            if (mc.gui.screen() instanceof RadioScannerScreen scanner) {
                 scanner.receiveRow(pkt.bandOrdinal(), pkt.row());
             }
         });

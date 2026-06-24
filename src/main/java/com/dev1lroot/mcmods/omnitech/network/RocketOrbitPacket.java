@@ -40,8 +40,8 @@ public record RocketOrbitPacket() implements CustomPacketPayload {
     public static void handle(RocketOrbitPacket pkt, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             Minecraft mc = Minecraft.getInstance();
-            if (mc.screen == null) {
-                mc.setScreen(new SpaceNavigationScreen());
+            if (mc.gui.screen() == null) {
+                mc.gui.setScreen(new SpaceNavigationScreen());
             }
         });
     }

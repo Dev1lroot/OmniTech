@@ -34,7 +34,7 @@ base {
     archivesName = mod_id
 }
 
-// Mojang ships Java 25 to end users in 26.1, so mods should target Java 25.
+// Mojang ships Java 25 to end users in 26.2, so mods should target Java 25.
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 neoForge {
@@ -116,7 +116,7 @@ configurations {
 
 dependencies {
     // JEI — compile against the full jar from run/mods, runtime provided by the player
-    compileOnly files("run/mods/jei-26.1-neoforge-29.2.0.20.jar")
+    compileOnly files("run/mods/jei-26.2-neoforge-30.1.0.12.jar")
 
     // Sedna RISC-V emulator + Buildroot Linux image — bundled into our JAR
     // sedna-mc-1.0.70 bundles sedna-2.0.13, sedna-buildroot-0.0.40, and ceres-0.0.4

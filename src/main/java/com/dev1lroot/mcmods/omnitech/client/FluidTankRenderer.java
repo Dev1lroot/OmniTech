@@ -10,7 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.block.FluidStateModelSet;
@@ -26,7 +26,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.Nullable;
@@ -137,7 +136,7 @@ public class FluidTankRenderer
                 || phase == FluidPhase.PLASMA) {
             state.lightCoords = LightCoordsUtil.FULL_BRIGHT;
         } else if (entity.getLevel() instanceof ClientLevel clientLevel) {
-            state.lightCoords = LevelRenderer.getLightCoords(clientLevel, entity.getBlockPos());
+            state.lightCoords = LightCoordsUtil.getLightCoords(clientLevel, entity.getBlockPos());
         } else {
             state.lightCoords = LightCoordsUtil.FULL_BRIGHT;
         }

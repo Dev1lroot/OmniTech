@@ -74,7 +74,7 @@ public class ManualCentrifugeRenderer implements BlockEntityRenderer<ManualCentr
         poseStack.translate(0.5, 0.0, 0.5);
         poseStack.mulPose(Axis.YP.rotationDegrees(state.rotorAngle));
         poseStack.translate(-0.5, 0.0, -0.5);
-        submitNodeCollector.submitMovingBlock(poseStack, state.rotorModel);
+        submitNodeCollector.submitMovingBlock(poseStack, state.rotorModel, 0);
         poseStack.popPose();
     }
 }

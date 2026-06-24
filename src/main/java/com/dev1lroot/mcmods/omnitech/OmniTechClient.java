@@ -201,7 +201,7 @@ public class OmniTechClient
             net.minecraft.commands.Commands.literal("spacemap")
                 .requires(net.minecraft.commands.Commands.hasPermission(net.minecraft.commands.Commands.LEVEL_GAMEMASTERS))
                 .executes(ctx -> {
-                    Minecraft.getInstance().setScreen(new SpaceNavigationScreen());
+                    Minecraft.getInstance().gui.setScreen(new SpaceNavigationScreen());
                     return 1;
                 })
         );
@@ -237,7 +237,7 @@ public class OmniTechClient
             KeyboardCaptureManager.deactivate();
         }
 
-        if (mc.screen != null) {
+        if (mc.gui.screen() != null) {
             // Any open screen (pause menu, inventory, etc.) stops mic capture immediately.
             // This releases the ALSA device well before the level unloads, avoiding a
             // race where our closer daemon thread still holds the device when Minecraft's

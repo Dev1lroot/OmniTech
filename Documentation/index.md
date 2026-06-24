@@ -23,13 +23,13 @@
 
 | Dependency | Version |
 |------------|---------|
-| Minecraft  | 26.1 |
-| NeoForge   | 26.1.0.17-beta or later |
+| Minecraft  | 26.2 |
+| NeoForge   | 26.2.0.6-beta or later |
 | Java       | 25 |
 
 ### Player Installation
 
-1. Install [NeoForge](https://neoforged.net) for Minecraft 26.1.
+1. Install [NeoForge](https://neoforged.net) for Minecraft 26.2.
 2. Drop the OmniTech `.jar` into your `mods/` folder.
 3. Launch the game.
 

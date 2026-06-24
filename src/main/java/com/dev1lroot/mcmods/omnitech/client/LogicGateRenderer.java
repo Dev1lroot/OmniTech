@@ -10,7 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.HashCommon;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -71,7 +71,7 @@ public class LogicGateRenderer
             state.templateItemState = null;
         }
 
-        state.lightCoords = LevelRenderer.getLightCoords(clientLevel, entity.getBlockPos());
+        state.lightCoords = LightCoordsUtil.getLightCoords(clientLevel, entity.getBlockPos());
     }
 
     @Override

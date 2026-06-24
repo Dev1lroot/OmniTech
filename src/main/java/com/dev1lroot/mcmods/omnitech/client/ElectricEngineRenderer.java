@@ -89,7 +89,7 @@ public class ElectricEngineRenderer
         // Spin around local +Z (which is the shaft axis after alignment)
         poseStack.mulPose(Axis.ZP.rotationDegrees(state.statorAngle));
         poseStack.translate(-0.5, -0.5, -0.5);
-        submitNodeCollector.submitMovingBlock(poseStack, state.statorModel);
+        submitNodeCollector.submitMovingBlock(poseStack, state.statorModel, 0);
         poseStack.popPose();
     }
 }

@@ -22,7 +22,7 @@ public class GuidebookItem extends Item {
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         if (level.isClientSide()) {
-            Minecraft.getInstance().setScreen(new GuidebookScreen(GuidebookLoader.getPages()));
+            Minecraft.getInstance().gui.setScreen(new GuidebookScreen(GuidebookLoader.getPages()));
         }
         return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
     }

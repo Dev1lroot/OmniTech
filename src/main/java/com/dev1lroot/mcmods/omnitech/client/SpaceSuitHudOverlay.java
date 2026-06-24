@@ -59,7 +59,7 @@ public final class SpaceSuitHudOverlay {
     public static void onRenderGui(RenderGuiEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
-        if (player == null || mc.options.hideGui) return;
+        if (player == null || mc.gui.hud.isHidden()) return;
         if (!SpaceSuitItem.isWearingHelmet(player)) return;
 
         Level level = player.level();

@@ -29,8 +29,8 @@ assignees: ''
 | Field | Value |
 |-------|-------|
 | OmniTech version | |
-| Minecraft version | 26.1 |
-| NeoForge version | 26.1.0.17-beta |
+| Minecraft version | 26.2 |
+| NeoForge version | 26.2.0.6-beta |
 | Java version | |
 | OS | |
 | Other mods installed | |

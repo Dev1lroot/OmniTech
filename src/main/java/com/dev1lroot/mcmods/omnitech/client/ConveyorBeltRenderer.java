@@ -135,7 +135,7 @@ public class ConveyorBeltRenderer
         // Push/pop so submitMovingBlock cannot leave residual matrix state that
         // would offset the item translation below.
         poseStack.pushPose();
-        submitNodeCollector.submitMovingBlock(poseStack, state.beltModel);
+        submitNodeCollector.submitMovingBlock(poseStack, state.beltModel, 0);
         poseStack.popPose();
 
         // ── Floating item ──────────────────────────────────────────────────────

@@ -89,7 +89,7 @@ public class KineticPipeRenderer
             poseStack.mulPose(rotAxis.rotationDegrees(state.rotationAngle));
         }
         poseStack.translate(-0.5, -0.5, -0.5);
-        submitNodeCollector.submitMovingBlock(poseStack, state.pipeModel);
+        submitNodeCollector.submitMovingBlock(poseStack, state.pipeModel, 0);
         poseStack.popPose();
     }
 }

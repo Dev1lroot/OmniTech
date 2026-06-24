@@ -11,12 +11,13 @@ import com.dev1lroot.mcmods.omnitech.space.SolarSystemScene;
 import com.dev1lroot.mcmods.omnitech.space.SpaceMap;
 import com.dev1lroot.mcmods.omnitech.space.SpaceMapLoader;
 import com.dev1lroot.mcmods.omnitech.space.StarSystem;
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.shaders.UniformType;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTextureView;
@@ -25,9 +26,9 @@ import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BindGroupLayouts;
 import net.minecraft.client.renderer.SkyRenderer;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.client.renderer.state.level.SkyRenderState;
@@ -50,8 +51,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.OptionalInt;
 
 /**
  * Unified sky renderer for all OmniTech space dimensions.
@@ -75,14 +76,15 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
 
     /** Pipeline for all sky body quads — TRANSLUCENT blend for correct occlusion. */
     public static final RenderPipeline SKY_BODY_PIPELINE = RenderPipeline.builder()
-            .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
-            .withUniform("Projection", UniformType.UNIFORM_BUFFER)
+            .withBindGroupLayout(BindGroupLayouts.GLOBALS)
+            .withBindGroupLayout(BindGroupLayouts.MATRICES_PROJECTION)
+            .withBindGroupLayout(BindGroupLayouts.SAMPLER0)
             .withLocation(Identifier.fromNamespaceAndPath(OmniTech.MODID, "pipeline/sky_body"))
             .withVertexShader("core/position_tex")
             .withFragmentShader("core/position_tex")
-            .withSampler("Sampler0")
             .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
-            .withVertexFormat(DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.QUADS)
+            .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX)
+            .withPrimitiveTopology(PrimitiveTopology.QUADS)
             .build();
 
     // ---- Scale constants -------------------------------------------------------
@@ -106,7 +108,7 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
     /** Cached GPU quad buffers keyed by atlas sprite ID. */
     private final Map<Identifier, GpuBuffer> bodyBuffers = new HashMap<>();
     private final RenderSystem.AutoStorageIndexBuffer quadIndices =
-            RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS);
+            RenderSystem.getSequentialBuffer(PrimitiveTopology.QUADS);
 
     public static boolean isSuppressingVanillaMoon() { return suppressVanillaMoon; }
     public static boolean isSuppressingVanillaSun()  { return suppressVanillaSun;  }
@@ -194,7 +196,7 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
 
             try (ByteBufferBuilder bb = ByteBufferBuilder.exactlySized(
                     24 * DefaultVertexFormat.POSITION_TEX.getVertexSize())) {
-                BufferBuilder buf = new BufferBuilder(bb, VertexFormat.Mode.QUADS,
+                BufferBuilder buf = new BufferBuilder(bb, PrimitiveTopology.QUADS,
                         DefaultVertexFormat.POSITION_TEX);
                 // +Y
                 buf.addVertex(-1f,+1f,-1f).setUv(u0,v0);
@@ -299,19 +301,20 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
         GpuBufferSlice dyn = RenderSystem.getDynamicUniforms()
                 .writeTransform(mv, new Vector4f(1.0f, 1.0f, 1.0f, brightness),
                         new Vector3f(), new Matrix4f());
-        GpuTextureView color = Minecraft.getInstance().getMainRenderTarget().getColorTextureView();
-        GpuTextureView depth = Minecraft.getInstance().getMainRenderTarget().getDepthTextureView();
+        RenderTarget mainRenderTarget = Minecraft.getInstance().gameRenderer.mainRenderTarget();
+        GpuTextureView color = mainRenderTarget.getColorTextureView();
+        GpuTextureView depth = mainRenderTarget.getDepthTextureView();
 
         try (RenderPass pass = RenderSystem.getDevice().createCommandEncoder()
                 .createRenderPass(() -> "Sky body [" + spriteId + "]",
-                        color, OptionalInt.empty(), depth, OptionalDouble.empty())) {
+                        color, Optional.empty(), depth, OptionalDouble.empty())) {
             pass.setPipeline(SKY_BODY_PIPELINE);
             RenderSystem.bindDefaultUniforms(pass);
             pass.setUniform("DynamicTransforms", dyn);
             pass.bindTexture("Sampler0", atlas.getTextureView(), atlas.getSampler());
-            pass.setVertexBuffer(0, getOrCreateBuffer(spriteId));
+            pass.setVertexBuffer(0, getOrCreateBuffer(spriteId).slice());
             pass.setIndexBuffer(quadIndices.getBuffer(36), quadIndices.type());
-            pass.drawIndexed(0, 0, 36, 1);
+            pass.drawIndexed(36, 1, 0, 0, 0);
         }
 
         mv.popMatrix();

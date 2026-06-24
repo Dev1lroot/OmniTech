@@ -10,7 +10,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.unimi.dsi.fastutil.HashCommon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.block.FluidStateModelSet;
@@ -150,7 +150,7 @@ public class FoundryRenderer
         }
 
         // ── Lighting ──────────────────────────────────────────────────────────
-        state.lightCoords = LevelRenderer.getLightCoords(clientLevel, entity.getBlockPos());
+        state.lightCoords = LightCoordsUtil.getLightCoords(clientLevel, entity.getBlockPos());
     }
 
     // ── Submission ────────────────────────────────────────────────────────────

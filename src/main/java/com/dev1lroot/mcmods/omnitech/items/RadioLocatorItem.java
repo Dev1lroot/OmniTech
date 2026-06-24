@@ -37,6 +37,6 @@ public class RadioLocatorItem extends Item {
     private static void openScreen(ItemStack stack, InteractionHand hand) {
         int globalKey = stack.getOrDefault(OmniTechDataComponents.RADIO_LOCATOR_FREQ.get(),
                 FrequencyBand.VHF.globalKey(0));
-        Minecraft.getInstance().setScreen(new RadioLocatorScreen(globalKey, hand));
+        Minecraft.getInstance().gui.setScreen(new RadioLocatorScreen(globalKey, hand));
     }
 }

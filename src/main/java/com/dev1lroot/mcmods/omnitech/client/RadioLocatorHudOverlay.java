@@ -35,7 +35,7 @@ public final class RadioLocatorHudOverlay {
     public static void onRenderGui(RenderGuiEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
-        if (player == null || mc.options.hideGui) return;
+        if (player == null || mc.gui.hud.isHidden()) return;
 
         ItemStack held = getHeldLocator(player);
         if (held == null) return;

@@ -12,7 +12,7 @@ import com.dev1lroot.mcmods.omnitech.items.ReactorFuelRodItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -22,7 +22,6 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -79,7 +78,7 @@ public class ReactorCellBER implements BlockEntityRenderer<ReactorCellBlockEntit
         ClientLevel level = entity.getLevel() instanceof ClientLevel cl ? cl : null;
         BlockPos pos = entity.getBlockPos();
         state.light = level != null
-                ? LevelRenderer.getLightCoords(level, pos.above())
+                ? LightCoordsUtil.getLightCoords(level, pos.above())
                 : LightCoordsUtil.FULL_BRIGHT;
     }
 

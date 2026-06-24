@@ -8,6 +8,9 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- Upgraded to NeoForge 26.2.0.6-beta on Minecraft 26.2; bumped JEI to 26.2-neoforge-30.1.0.12.
+
 ### Added — Reactor & Radiation (2026-05-17 – 2026-05-19)
 - Nuclear explosion on meltdown (core ≥ 1200 °C) or reactor destruction while hot (> 300 °C).
   - Zone 1 (0–32 blocks): 100% block destruction, immediate.

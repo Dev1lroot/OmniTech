@@ -111,7 +111,7 @@ public class KineticReductorRenderer
             poseStack.mulPose(preRotation);
         }
         poseStack.translate(-0.5, -0.5, -0.5);
-        collector.submitMovingBlock(poseStack, model);
+        collector.submitMovingBlock(poseStack, model, 0);
         poseStack.popPose();
     }
 }

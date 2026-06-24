@@ -1,8 +1,8 @@
 # OmniTech
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-blue.svg)](LICENSE)
-[![Minecraft 26.1](https://img.shields.io/badge/Minecraft-26.1-brightgreen)](https://www.minecraft.net)
-[![NeoForge](https://img.shields.io/badge/NeoForge-26.1.0.17--beta-orange)](https://neoforged.net)
+[![Minecraft 26.2](https://img.shields.io/badge/Minecraft-26.2-brightgreen)](https://www.minecraft.net)
+[![NeoForge](https://img.shields.io/badge/NeoForge-26.2.0.6--beta-orange)](https://neoforged.net)
 [![Java 25](https://img.shields.io/badge/Java-25-red)](https://adoptium.net)
 
 A global technical mod that covers every part of the game. The name comes from the Latin word _Omnis_ (all, every, each) and the English word _Technology_. Built to be a complete system for all your engineering and exploration needs.
@@ -104,8 +104,8 @@ An in-game RV32I computer with ECALL-based peripheral access, GPIO MMIO at `0xF0
 | Dependency | Version |
 |------------|---------|
 | Java | 25 (Temurin recommended) |
-| Minecraft | 26.1 |
-| NeoForge | 26.1.0.17-beta |
+| Minecraft | 26.2 |
+| NeoForge | 26.2.0.6-beta |
 
 **Build from source**
 

@@ -24,7 +24,7 @@ public class TruthTableItem extends Item {
         if (level.isClientSide()) {
             int bits = player.getItemInHand(hand)
                     .getOrDefault(OmniTechDataComponents.TRUTH_TABLE_BITS.get(), 0);
-            Minecraft.getInstance().setScreen(new TruthTableScreen(hand, bits));
+            Minecraft.getInstance().gui.setScreen(new TruthTableScreen(hand, bits));
         }
         return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
     }
