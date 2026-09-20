@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 986,
+  "input": [
+    "omnitech:berkelium_plate"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_berkelium",
+    "amount": 500
+  }
+}

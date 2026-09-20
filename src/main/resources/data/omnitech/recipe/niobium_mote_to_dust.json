@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:niobium_mote",
+    "omnitech:niobium_mote",
+    "omnitech:niobium_mote",
+    "omnitech:niobium_mote",
+    "omnitech:niobium_mote",
+    "omnitech:niobium_mote",
+    "omnitech:niobium_mote",
+    "omnitech:niobium_mote",
+    "omnitech:niobium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:niobium_dust"
+  }
+}

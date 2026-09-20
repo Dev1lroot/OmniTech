@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 986,
+  "input": [
+    "omnitech:berkelium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_berkelium",
+    "amount": 50
+  }
+}

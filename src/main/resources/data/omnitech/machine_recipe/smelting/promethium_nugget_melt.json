@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1042,
+  "input": [
+    "omnitech:promethium_nugget"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_promethium",
+    "amount": 100
+  }
+}

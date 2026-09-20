@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:niobium_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:niobium_ingot"
+  }
+}

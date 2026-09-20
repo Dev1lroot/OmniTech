@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 28,
+  "input": {
+    "fluid": "omnitech:molten_cesium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:cesium_rod"
+}

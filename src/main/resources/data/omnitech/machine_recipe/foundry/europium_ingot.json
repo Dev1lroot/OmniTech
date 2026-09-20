@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 826,
+  "input": {
+    "fluid": "omnitech:molten_europium",
+    "amount": 1000
+  },
+  "template": "omnitech:ingot_template",
+  "output": "omnitech:europium_ingot"
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 39,
+  "input": {
+    "fluid": "omnitech:molten_rubidium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:rubidium_rod"
+}

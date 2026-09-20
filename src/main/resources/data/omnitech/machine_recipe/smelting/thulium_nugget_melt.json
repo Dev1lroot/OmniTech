@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1545,
+  "input": [
+    "omnitech:thulium_nugget"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_thulium",
+    "amount": 100
+  }
+}

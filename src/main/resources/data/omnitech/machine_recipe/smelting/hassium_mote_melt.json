@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 2100,
+  "input": [
+    "omnitech:hassium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_hassium",
+    "amount": 50
+  }
+}

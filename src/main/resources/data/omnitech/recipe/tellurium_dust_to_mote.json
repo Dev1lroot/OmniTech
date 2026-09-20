@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:tellurium_dust"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:tellurium_mote"
+  }
+}

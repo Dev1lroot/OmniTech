@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 254,
+  "input": {
+    "fluid": "omnitech:molten_polonium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:polonium_rod"
+}

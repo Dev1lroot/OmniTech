@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:neptunium_ingot",
+  "output": [
+    {
+      "item": "omnitech:neptunium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

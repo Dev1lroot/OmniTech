@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1356,
+  "input": [
+    "omnitech:terbium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_terbium",
+    "amount": 50
+  }
+}

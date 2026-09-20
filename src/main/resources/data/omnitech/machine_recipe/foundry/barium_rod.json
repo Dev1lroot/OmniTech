@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 727,
+  "input": {
+    "fluid": "omnitech:molten_barium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:barium_rod"
+}

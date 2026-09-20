@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:calcium_mote",
+    "omnitech:calcium_mote",
+    "omnitech:calcium_mote",
+    "omnitech:calcium_mote",
+    "omnitech:calcium_mote",
+    "omnitech:calcium_mote",
+    "omnitech:calcium_mote",
+    "omnitech:calcium_mote",
+    "omnitech:calcium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:calcium_dust"
+  }
+}

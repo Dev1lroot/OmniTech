@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:osmium_mote",
+    "omnitech:osmium_mote",
+    "omnitech:osmium_mote",
+    "omnitech:osmium_mote",
+    "omnitech:osmium_mote",
+    "omnitech:osmium_mote",
+    "omnitech:osmium_mote",
+    "omnitech:osmium_mote",
+    "omnitech:osmium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:osmium_dust"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 304,
+  "input": [
+    "omnitech:thallium_rod"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_thallium",
+    "amount": 500
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 824,
+  "input": [
+    "omnitech:ytterbium_block"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_ytterbium",
+    "amount": 4500
+  }
+}

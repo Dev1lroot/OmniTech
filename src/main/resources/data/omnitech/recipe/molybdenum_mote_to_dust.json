@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:molybdenum_mote",
+    "omnitech:molybdenum_mote",
+    "omnitech:molybdenum_mote",
+    "omnitech:molybdenum_mote",
+    "omnitech:molybdenum_mote",
+    "omnitech:molybdenum_mote",
+    "omnitech:molybdenum_mote",
+    "omnitech:molybdenum_mote",
+    "omnitech:molybdenum_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:molybdenum_dust"
+  }
+}

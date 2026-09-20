@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:hafnium_carbide_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:hafnium_carbide_ingot"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1568,
+  "input": {
+    "fluid": "omnitech:molten_protactinium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:protactinium_rod"
+}

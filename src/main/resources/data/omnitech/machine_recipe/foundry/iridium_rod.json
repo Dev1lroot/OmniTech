@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 2446,
+  "input": {
+    "fluid": "omnitech:molten_iridium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:iridium_rod"
+}

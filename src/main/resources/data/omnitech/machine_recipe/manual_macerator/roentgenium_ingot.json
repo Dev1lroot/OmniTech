@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:roentgenium_ingot",
+  "output": [
+    {
+      "item": "omnitech:roentgenium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

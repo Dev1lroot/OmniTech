@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:plutonium_mote",
+    "omnitech:plutonium_mote",
+    "omnitech:plutonium_mote",
+    "omnitech:plutonium_mote",
+    "omnitech:plutonium_mote",
+    "omnitech:plutonium_mote",
+    "omnitech:plutonium_mote",
+    "omnitech:plutonium_mote",
+    "omnitech:plutonium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:plutonium_dust"
+  }
+}

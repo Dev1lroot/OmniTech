@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:erbium_mote",
+    "omnitech:erbium_mote",
+    "omnitech:erbium_mote",
+    "omnitech:erbium_mote",
+    "omnitech:erbium_mote",
+    "omnitech:erbium_mote",
+    "omnitech:erbium_mote",
+    "omnitech:erbium_mote",
+    "omnitech:erbium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:erbium_dust"
+  }
+}

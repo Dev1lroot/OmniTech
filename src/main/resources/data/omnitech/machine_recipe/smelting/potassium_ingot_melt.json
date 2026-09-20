@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 63,
+  "input": [
+    "omnitech:potassium_ingot"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_potassium",
+    "amount": 1000
+  }
+}

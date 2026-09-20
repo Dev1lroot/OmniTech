@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1568,
+  "input": [
+    "omnitech:protactinium_ingot"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_protactinium",
+    "amount": 1000
+  }
+}

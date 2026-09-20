@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1652,
+  "input": [
+    "omnitech:lutetium_ingot"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_lutetium",
+    "amount": 1000
+  }
+}

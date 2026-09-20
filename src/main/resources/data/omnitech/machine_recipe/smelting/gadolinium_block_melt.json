@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1312,
+  "input": [
+    "omnitech:gadolinium_block"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_gadolinium",
+    "amount": 4500
+  }
+}

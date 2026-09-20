@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1461,
+  "input": [
+    "omnitech:holmium_rod"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_holmium",
+    "amount": 500
+  }
+}

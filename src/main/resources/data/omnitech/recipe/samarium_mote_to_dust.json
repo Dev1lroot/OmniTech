@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:samarium_mote",
+    "omnitech:samarium_mote",
+    "omnitech:samarium_mote",
+    "omnitech:samarium_mote",
+    "omnitech:samarium_mote",
+    "omnitech:samarium_mote",
+    "omnitech:samarium_mote",
+    "omnitech:samarium_mote",
+    "omnitech:samarium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:samarium_dust"
+  }
+}

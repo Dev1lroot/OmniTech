@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 2157,
+  "input": {
+    "fluid": "omnitech:molten_technetium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:technetium_rod"
+}

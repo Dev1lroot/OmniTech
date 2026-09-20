@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 2100,
+  "input": [
+    "omnitech:seaborgium_dust"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_seaborgium",
+    "amount": 500
+  }
+}

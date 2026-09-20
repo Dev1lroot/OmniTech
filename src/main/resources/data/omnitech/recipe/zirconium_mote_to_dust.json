@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:zirconium_mote",
+    "omnitech:zirconium_mote",
+    "omnitech:zirconium_mote",
+    "omnitech:zirconium_mote",
+    "omnitech:zirconium_mote",
+    "omnitech:zirconium_mote",
+    "omnitech:zirconium_mote",
+    "omnitech:zirconium_mote",
+    "omnitech:zirconium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:zirconium_dust"
+  }
+}

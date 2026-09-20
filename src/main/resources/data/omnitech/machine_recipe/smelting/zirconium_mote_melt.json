@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1855,
+  "input": [
+    "omnitech:zirconium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_zirconium",
+    "amount": 50
+  }
+}

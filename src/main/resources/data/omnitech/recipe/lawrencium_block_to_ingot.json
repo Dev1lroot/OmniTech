@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:lawrencium_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:lawrencium_ingot"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 271,
+  "input": [
+    "omnitech:bismuth_rod"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_bismuth",
+    "amount": 500
+  }
+}

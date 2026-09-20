@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 2477,
+  "input": {
+    "fluid": "omnitech:molten_niobium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:niobium_rod"
+}

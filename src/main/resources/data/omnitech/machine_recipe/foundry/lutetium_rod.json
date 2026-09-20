@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1652,
+  "input": {
+    "fluid": "omnitech:molten_lutetium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:lutetium_rod"
+}

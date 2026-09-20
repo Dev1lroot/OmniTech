@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:selenium_mote",
+    "omnitech:selenium_mote",
+    "omnitech:selenium_mote",
+    "omnitech:selenium_mote",
+    "omnitech:selenium_mote",
+    "omnitech:selenium_mote",
+    "omnitech:selenium_mote",
+    "omnitech:selenium_mote",
+    "omnitech:selenium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:selenium_dust"
+  }
+}

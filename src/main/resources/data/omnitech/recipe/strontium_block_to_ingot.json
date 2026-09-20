@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:strontium_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:strontium_ingot"
+  }
+}

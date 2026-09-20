@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 827,
+  "input": {
+    "fluid": "omnitech:molten_nobelium",
+    "amount": 1000
+  },
+  "template": "omnitech:ingot_template",
+  "output": "omnitech:nobelium_ingot"
+}

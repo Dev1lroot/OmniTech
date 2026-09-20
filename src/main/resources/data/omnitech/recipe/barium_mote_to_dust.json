@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:barium_mote",
+    "omnitech:barium_mote",
+    "omnitech:barium_mote",
+    "omnitech:barium_mote",
+    "omnitech:barium_mote",
+    "omnitech:barium_mote",
+    "omnitech:barium_mote",
+    "omnitech:barium_mote",
+    "omnitech:barium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:barium_dust"
+  }
+}

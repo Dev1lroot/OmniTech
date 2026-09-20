@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:americium_mote",
+    "omnitech:americium_mote",
+    "omnitech:americium_mote",
+    "omnitech:americium_mote",
+    "omnitech:americium_mote",
+    "omnitech:americium_mote",
+    "omnitech:americium_mote",
+    "omnitech:americium_mote",
+    "omnitech:americium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:americium_dust"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1627,
+  "input": [
+    "omnitech:lawrencium_block"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_lawrencium",
+    "amount": 4500
+  }
+}

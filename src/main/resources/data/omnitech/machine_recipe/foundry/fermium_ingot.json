@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1527,
+  "input": {
+    "fluid": "omnitech:molten_fermium",
+    "amount": 1000
+  },
+  "template": "omnitech:ingot_template",
+  "output": "omnitech:fermium_ingot"
+}

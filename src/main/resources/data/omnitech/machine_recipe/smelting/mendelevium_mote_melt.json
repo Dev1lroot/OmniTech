@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 827,
+  "input": [
+    "omnitech:mendelevium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_mendelevium",
+    "amount": 50
+  }
+}

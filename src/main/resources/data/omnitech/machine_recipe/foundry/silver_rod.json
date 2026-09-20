@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 962,
+  "input": {
+    "fluid": "omnitech:molten_silver",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:silver_rod"
+}

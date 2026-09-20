@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:manganese_mote",
+    "omnitech:manganese_mote",
+    "omnitech:manganese_mote",
+    "omnitech:manganese_mote",
+    "omnitech:manganese_mote",
+    "omnitech:manganese_mote",
+    "omnitech:manganese_mote",
+    "omnitech:manganese_mote",
+    "omnitech:manganese_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:manganese_dust"
+  }
+}

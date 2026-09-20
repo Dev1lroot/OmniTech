@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:lithium_mote",
+    "omnitech:lithium_mote",
+    "omnitech:lithium_mote",
+    "omnitech:lithium_mote",
+    "omnitech:lithium_mote",
+    "omnitech:lithium_mote",
+    "omnitech:lithium_mote",
+    "omnitech:lithium_mote",
+    "omnitech:lithium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:lithium_dust"
+  }
+}

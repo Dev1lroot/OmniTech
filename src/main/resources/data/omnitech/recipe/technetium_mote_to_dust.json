@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:technetium_mote",
+    "omnitech:technetium_mote",
+    "omnitech:technetium_mote",
+    "omnitech:technetium_mote",
+    "omnitech:technetium_mote",
+    "omnitech:technetium_mote",
+    "omnitech:technetium_mote",
+    "omnitech:technetium_mote",
+    "omnitech:technetium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:technetium_dust"
+  }
+}

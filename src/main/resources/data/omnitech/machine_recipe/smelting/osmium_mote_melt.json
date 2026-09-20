@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 3033,
+  "input": [
+    "omnitech:osmium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_osmium",
+    "amount": 50
+  }
+}

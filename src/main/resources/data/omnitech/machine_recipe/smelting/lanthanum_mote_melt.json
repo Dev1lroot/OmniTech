@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 920,
+  "input": [
+    "omnitech:lanthanum_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_lanthanum",
+    "amount": 50
+  }
+}

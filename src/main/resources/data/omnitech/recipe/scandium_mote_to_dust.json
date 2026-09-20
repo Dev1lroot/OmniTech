@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:scandium_mote",
+    "omnitech:scandium_mote",
+    "omnitech:scandium_mote",
+    "omnitech:scandium_mote",
+    "omnitech:scandium_mote",
+    "omnitech:scandium_mote",
+    "omnitech:scandium_mote",
+    "omnitech:scandium_mote",
+    "omnitech:scandium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:scandium_dust"
+  }
+}

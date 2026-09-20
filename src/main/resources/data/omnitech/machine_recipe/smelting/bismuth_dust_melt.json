@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 271,
+  "input": [
+    "omnitech:bismuth_dust"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_bismuth",
+    "amount": 500
+  }
+}

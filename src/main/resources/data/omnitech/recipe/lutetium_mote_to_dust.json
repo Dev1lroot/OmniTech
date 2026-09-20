@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:lutetium_mote",
+    "omnitech:lutetium_mote",
+    "omnitech:lutetium_mote",
+    "omnitech:lutetium_mote",
+    "omnitech:lutetium_mote",
+    "omnitech:lutetium_mote",
+    "omnitech:lutetium_mote",
+    "omnitech:lutetium_mote",
+    "omnitech:lutetium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:lutetium_dust"
+  }
+}

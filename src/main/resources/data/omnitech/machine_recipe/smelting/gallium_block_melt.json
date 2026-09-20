@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 30,
+  "input": [
+    "omnitech:gallium_block"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_gallium",
+    "amount": 4500
+  }
+}

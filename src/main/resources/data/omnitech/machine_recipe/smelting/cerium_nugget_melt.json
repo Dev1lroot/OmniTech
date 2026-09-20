@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 795,
+  "input": [
+    "omnitech:cerium_nugget"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_cerium",
+    "amount": 100
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1545,
+  "input": {
+    "fluid": "omnitech:molten_thulium",
+    "amount": 1000
+  },
+  "template": "omnitech:ingot_template",
+  "output": "omnitech:thulium_ingot"
+}

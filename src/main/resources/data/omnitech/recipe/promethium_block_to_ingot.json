@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:promethium_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:promethium_ingot"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:gallium_dust"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:gallium_mote"
+  }
+}

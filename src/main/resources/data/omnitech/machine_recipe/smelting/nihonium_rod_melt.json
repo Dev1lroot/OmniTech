@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 700,
+  "input": [
+    "omnitech:nihonium_rod"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_nihonium",
+    "amount": 500
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:manganese_ingot",
+  "output": [
+    {
+      "item": "omnitech:manganese_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

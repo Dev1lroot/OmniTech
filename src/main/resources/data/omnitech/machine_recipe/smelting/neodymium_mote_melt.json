@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1024,
+  "input": [
+    "omnitech:neodymium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_neodymium",
+    "amount": 50
+  }
+}

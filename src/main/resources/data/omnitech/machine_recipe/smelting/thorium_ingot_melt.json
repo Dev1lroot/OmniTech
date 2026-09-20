@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1750,
+  "input": [
+    "omnitech:thorium_ingot"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_thorium",
+    "amount": 1000
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:fermium_mote",
+    "omnitech:fermium_mote",
+    "omnitech:fermium_mote",
+    "omnitech:fermium_mote",
+    "omnitech:fermium_mote",
+    "omnitech:fermium_mote",
+    "omnitech:fermium_mote",
+    "omnitech:fermium_mote",
+    "omnitech:fermium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:fermium_dust"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:hassium_ingot",
+  "output": [
+    {
+      "item": "omnitech:hassium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

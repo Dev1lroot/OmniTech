@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 63,
+  "input": [
+    "omnitech:potassium_nugget"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_potassium",
+    "amount": 100
+  }
+}

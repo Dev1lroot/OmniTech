@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:arsenic_mote",
+    "omnitech:arsenic_mote",
+    "omnitech:arsenic_mote",
+    "omnitech:arsenic_mote",
+    "omnitech:arsenic_mote",
+    "omnitech:arsenic_mote",
+    "omnitech:arsenic_mote",
+    "omnitech:arsenic_mote",
+    "omnitech:arsenic_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:arsenic_dust"
+  }
+}

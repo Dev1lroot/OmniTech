@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:tennessine_dust"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:tennessine_mote"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:praseodymium_ingot",
+  "output": [
+    {
+      "item": "omnitech:praseodymium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

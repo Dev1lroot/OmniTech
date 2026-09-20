@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1064,
+  "input": {
+    "fluid": "omnitech:molten_gold",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:gold_rod"
+}

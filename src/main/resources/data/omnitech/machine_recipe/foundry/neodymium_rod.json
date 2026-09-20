@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1024,
+  "input": {
+    "fluid": "omnitech:molten_neodymium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:neodymium_rod"
+}

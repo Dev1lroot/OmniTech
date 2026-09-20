@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 650,
+  "input": {
+    "fluid": "omnitech:molten_magnesium",
+    "amount": 1000
+  },
+  "template": "omnitech:ingot_template",
+  "output": "omnitech:magnesium_ingot"
+}

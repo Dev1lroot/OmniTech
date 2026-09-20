@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1407,
+  "input": [
+    "omnitech:dysprosium_ingot"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_dysprosium",
+    "amount": 1000
+  }
+}

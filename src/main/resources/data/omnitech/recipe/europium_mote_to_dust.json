@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:europium_mote",
+    "omnitech:europium_mote",
+    "omnitech:europium_mote",
+    "omnitech:europium_mote",
+    "omnitech:europium_mote",
+    "omnitech:europium_mote",
+    "omnitech:europium_mote",
+    "omnitech:europium_mote",
+    "omnitech:europium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:europium_dust"
+  }
+}

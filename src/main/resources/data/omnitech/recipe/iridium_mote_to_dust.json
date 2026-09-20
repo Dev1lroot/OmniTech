@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:iridium_mote",
+    "omnitech:iridium_mote",
+    "omnitech:iridium_mote",
+    "omnitech:iridium_mote",
+    "omnitech:iridium_mote",
+    "omnitech:iridium_mote",
+    "omnitech:iridium_mote",
+    "omnitech:iridium_mote",
+    "omnitech:iridium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:iridium_dust"
+  }
+}

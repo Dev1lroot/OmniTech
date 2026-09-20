@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:rubidium_ingot",
+  "output": [
+    {
+      "item": "omnitech:rubidium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

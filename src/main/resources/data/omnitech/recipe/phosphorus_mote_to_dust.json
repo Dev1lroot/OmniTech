@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:phosphorus_mote",
+    "omnitech:phosphorus_mote",
+    "omnitech:phosphorus_mote",
+    "omnitech:phosphorus_mote",
+    "omnitech:phosphorus_mote",
+    "omnitech:phosphorus_mote",
+    "omnitech:phosphorus_mote",
+    "omnitech:phosphorus_mote",
+    "omnitech:phosphorus_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:phosphorus_dust"
+  }
+}

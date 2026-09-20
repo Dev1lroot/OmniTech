@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 842,
+  "input": [
+    "omnitech:calcium_dust"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_calcium",
+    "amount": 500
+  }
+}

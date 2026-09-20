@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 39,
+  "input": {
+    "fluid": "omnitech:molten_rubidium",
+    "amount": 1000
+  },
+  "template": "omnitech:ingot_template",
+  "output": "omnitech:rubidium_ingot"
+}

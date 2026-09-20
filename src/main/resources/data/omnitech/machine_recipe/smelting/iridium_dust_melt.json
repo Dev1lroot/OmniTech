@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 2446,
+  "input": [
+    "omnitech:iridium_dust"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_iridium",
+    "amount": 500
+  }
+}

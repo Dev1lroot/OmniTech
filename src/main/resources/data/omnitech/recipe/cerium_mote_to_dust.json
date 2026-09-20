@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:cerium_mote",
+    "omnitech:cerium_mote",
+    "omnitech:cerium_mote",
+    "omnitech:cerium_mote",
+    "omnitech:cerium_mote",
+    "omnitech:cerium_mote",
+    "omnitech:cerium_mote",
+    "omnitech:cerium_mote",
+    "omnitech:cerium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:cerium_dust"
+  }
+}

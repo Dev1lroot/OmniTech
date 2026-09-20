@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:cerium_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:cerium_ingot"
+  }
+}

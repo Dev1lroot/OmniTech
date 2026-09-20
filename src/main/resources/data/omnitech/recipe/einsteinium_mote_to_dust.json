@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:einsteinium_mote",
+    "omnitech:einsteinium_mote",
+    "omnitech:einsteinium_mote",
+    "omnitech:einsteinium_mote",
+    "omnitech:einsteinium_mote",
+    "omnitech:einsteinium_mote",
+    "omnitech:einsteinium_mote",
+    "omnitech:einsteinium_mote",
+    "omnitech:einsteinium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:einsteinium_dust"
+  }
+}

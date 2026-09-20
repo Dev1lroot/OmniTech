@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:silicon_mote",
+    "omnitech:silicon_mote",
+    "omnitech:silicon_mote",
+    "omnitech:silicon_mote",
+    "omnitech:silicon_mote",
+    "omnitech:silicon_mote",
+    "omnitech:silicon_mote",
+    "omnitech:silicon_mote",
+    "omnitech:silicon_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:silicon_dust"
+  }
+}

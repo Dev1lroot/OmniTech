@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:zirconium_ingot",
+  "output": [
+    {
+      "item": "omnitech:zirconium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

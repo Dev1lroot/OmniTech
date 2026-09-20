@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1050,
+  "input": [
+    "omnitech:actinium_block"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_actinium",
+    "amount": 4500
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 860,
+  "input": {
+    "fluid": "omnitech:molten_einsteinium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:einsteinium_rod"
+}

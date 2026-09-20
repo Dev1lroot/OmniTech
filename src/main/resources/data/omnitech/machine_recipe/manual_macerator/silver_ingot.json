@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:silver_ingot",
+  "output": [
+    {
+      "item": "omnitech:silver_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

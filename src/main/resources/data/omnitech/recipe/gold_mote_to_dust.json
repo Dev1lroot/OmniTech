@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:gold_mote",
+    "omnitech:gold_mote",
+    "omnitech:gold_mote",
+    "omnitech:gold_mote",
+    "omnitech:gold_mote",
+    "omnitech:gold_mote",
+    "omnitech:gold_mote",
+    "omnitech:gold_mote",
+    "omnitech:gold_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:gold_dust"
+  }
+}

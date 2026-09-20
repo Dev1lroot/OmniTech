@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:cesium_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:cesium_ingot"
+  }
+}

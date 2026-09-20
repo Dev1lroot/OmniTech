@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:astatine_mote",
+    "omnitech:astatine_mote",
+    "omnitech:astatine_mote",
+    "omnitech:astatine_mote",
+    "omnitech:astatine_mote",
+    "omnitech:astatine_mote",
+    "omnitech:astatine_mote",
+    "omnitech:astatine_mote",
+    "omnitech:astatine_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:astatine_dust"
+  }
+}

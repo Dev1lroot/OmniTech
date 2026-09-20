@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:actinium_mote",
+    "omnitech:actinium_mote",
+    "omnitech:actinium_mote",
+    "omnitech:actinium_mote",
+    "omnitech:actinium_mote",
+    "omnitech:actinium_mote",
+    "omnitech:actinium_mote",
+    "omnitech:actinium_mote",
+    "omnitech:actinium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:actinium_dust"
+  }
+}

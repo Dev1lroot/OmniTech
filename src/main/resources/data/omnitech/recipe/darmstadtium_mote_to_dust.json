@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:darmstadtium_mote",
+    "omnitech:darmstadtium_mote",
+    "omnitech:darmstadtium_mote",
+    "omnitech:darmstadtium_mote",
+    "omnitech:darmstadtium_mote",
+    "omnitech:darmstadtium_mote",
+    "omnitech:darmstadtium_mote",
+    "omnitech:darmstadtium_mote",
+    "omnitech:darmstadtium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:darmstadtium_dust"
+  }
+}

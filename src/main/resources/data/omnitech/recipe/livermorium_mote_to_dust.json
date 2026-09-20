@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:livermorium_mote",
+    "omnitech:livermorium_mote",
+    "omnitech:livermorium_mote",
+    "omnitech:livermorium_mote",
+    "omnitech:livermorium_mote",
+    "omnitech:livermorium_mote",
+    "omnitech:livermorium_mote",
+    "omnitech:livermorium_mote",
+    "omnitech:livermorium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:livermorium_dust"
+  }
+}

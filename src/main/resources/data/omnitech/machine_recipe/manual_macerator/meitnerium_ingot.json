@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:meitnerium_ingot",
+  "output": [
+    {
+      "item": "omnitech:meitnerium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

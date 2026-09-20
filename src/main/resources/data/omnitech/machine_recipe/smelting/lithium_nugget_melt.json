@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 180,
+  "input": [
+    "omnitech:lithium_nugget"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_lithium",
+    "amount": 100
+  }
+}

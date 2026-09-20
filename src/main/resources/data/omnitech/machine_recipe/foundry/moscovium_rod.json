@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 670,
+  "input": {
+    "fluid": "omnitech:molten_moscovium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:moscovium_rod"
+}

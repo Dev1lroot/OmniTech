@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1568,
+  "input": [
+    "omnitech:protactinium_dust"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_protactinium",
+    "amount": 500
+  }
+}

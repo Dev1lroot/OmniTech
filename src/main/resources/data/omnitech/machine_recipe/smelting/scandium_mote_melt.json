@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1541,
+  "input": [
+    "omnitech:scandium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_scandium",
+    "amount": 50
+  }
+}

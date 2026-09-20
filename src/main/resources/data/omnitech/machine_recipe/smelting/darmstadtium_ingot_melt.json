@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 2100,
+  "input": [
+    "omnitech:darmstadtium_ingot"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_darmstadtium",
+    "amount": 1000
+  }
+}

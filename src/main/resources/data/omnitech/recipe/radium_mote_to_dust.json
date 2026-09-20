@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:radium_mote",
+    "omnitech:radium_mote",
+    "omnitech:radium_mote",
+    "omnitech:radium_mote",
+    "omnitech:radium_mote",
+    "omnitech:radium_mote",
+    "omnitech:radium_mote",
+    "omnitech:radium_mote",
+    "omnitech:radium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:radium_dust"
+  }
+}

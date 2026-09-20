@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:magnesium_ingot",
+  "output": [
+    {
+      "item": "omnitech:magnesium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

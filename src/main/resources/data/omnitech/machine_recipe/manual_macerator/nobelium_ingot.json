@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:nobelium_ingot",
+  "output": [
+    {
+      "item": "omnitech:nobelium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

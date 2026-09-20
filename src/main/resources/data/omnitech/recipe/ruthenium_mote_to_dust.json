@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:ruthenium_mote",
+    "omnitech:ruthenium_mote",
+    "omnitech:ruthenium_mote",
+    "omnitech:ruthenium_mote",
+    "omnitech:ruthenium_mote",
+    "omnitech:ruthenium_mote",
+    "omnitech:ruthenium_mote",
+    "omnitech:ruthenium_mote",
+    "omnitech:ruthenium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:ruthenium_dust"
+  }
+}

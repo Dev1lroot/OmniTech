@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:lanthanum_dust"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:lanthanum_mote"
+  }
+}

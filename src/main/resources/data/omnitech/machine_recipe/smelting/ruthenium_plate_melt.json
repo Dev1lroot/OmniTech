@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 2334,
+  "input": [
+    "omnitech:ruthenium_plate"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_ruthenium",
+    "amount": 500
+  }
+}

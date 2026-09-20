@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:moscovium_ingot",
+  "output": [
+    {
+      "item": "omnitech:moscovium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

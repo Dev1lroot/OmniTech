@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:strontium_mote",
+    "omnitech:strontium_mote",
+    "omnitech:strontium_mote",
+    "omnitech:strontium_mote",
+    "omnitech:strontium_mote",
+    "omnitech:strontium_mote",
+    "omnitech:strontium_mote",
+    "omnitech:strontium_mote",
+    "omnitech:strontium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:strontium_dust"
+  }
+}

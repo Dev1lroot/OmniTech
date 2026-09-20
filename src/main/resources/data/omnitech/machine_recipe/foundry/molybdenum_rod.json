@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 2623,
+  "input": {
+    "fluid": "omnitech:molten_molybdenum",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:molybdenum_rod"
+}

@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 640,
+  "input": [
+    "omnitech:plutonium_rod"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_plutonium",
+    "amount": 500
+  }
+}

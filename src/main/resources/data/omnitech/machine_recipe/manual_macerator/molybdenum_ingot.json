@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:molybdenum_ingot",
+  "output": [
+    {
+      "item": "omnitech:molybdenum_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:moscovium_mote",
+    "omnitech:moscovium_mote",
+    "omnitech:moscovium_mote",
+    "omnitech:moscovium_mote",
+    "omnitech:moscovium_mote",
+    "omnitech:moscovium_mote",
+    "omnitech:moscovium_mote",
+    "omnitech:moscovium_mote",
+    "omnitech:moscovium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:moscovium_dust"
+  }
+}

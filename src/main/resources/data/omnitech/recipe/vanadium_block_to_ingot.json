@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:vanadium_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:vanadium_ingot"
+  }
+}

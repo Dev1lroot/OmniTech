@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:osmium_ingot",
+  "output": [
+    {
+      "item": "omnitech:osmium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

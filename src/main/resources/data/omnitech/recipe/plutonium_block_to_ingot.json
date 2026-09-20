@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:plutonium_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:plutonium_ingot"
+  }
+}

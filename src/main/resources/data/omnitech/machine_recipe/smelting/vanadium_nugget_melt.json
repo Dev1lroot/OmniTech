@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1910,
+  "input": [
+    "omnitech:vanadium_nugget"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_vanadium",
+    "amount": 100
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 254,
+  "input": [
+    "omnitech:polonium_dust"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_polonium",
+    "amount": 500
+  }
+}

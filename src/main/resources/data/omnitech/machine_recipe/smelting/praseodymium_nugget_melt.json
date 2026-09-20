@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 935,
+  "input": [
+    "omnitech:praseodymium_nugget"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_praseodymium",
+    "amount": 100
+  }
+}

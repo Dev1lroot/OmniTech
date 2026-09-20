@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 962,
+  "input": [
+    "omnitech:silver_plate"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_silver",
+    "amount": 500
+  }
+}

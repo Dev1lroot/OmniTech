@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 63,
+  "input": {
+    "fluid": "omnitech:molten_potassium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:potassium_rod"
+}

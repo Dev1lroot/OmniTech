@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:erbium_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:erbium_ingot"
+  }
+}

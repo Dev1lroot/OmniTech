@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1529,
+  "input": [
+    "omnitech:erbium_plate"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_erbium",
+    "amount": 500
+  }
+}

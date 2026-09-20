@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:calcium_ingot",
+  "output": [
+    {
+      "item": "omnitech:calcium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

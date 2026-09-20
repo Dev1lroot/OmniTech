@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1555,
+  "input": [
+    "omnitech:palladium_dust"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_palladium",
+    "amount": 500
+  }
+}

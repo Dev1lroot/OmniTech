@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 827,
+  "input": [
+    "omnitech:nobelium_nugget"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_nobelium",
+    "amount": 100
+  }
+}

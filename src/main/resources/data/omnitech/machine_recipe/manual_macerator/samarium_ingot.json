@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:samarium_ingot",
+  "output": [
+    {
+      "item": "omnitech:samarium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

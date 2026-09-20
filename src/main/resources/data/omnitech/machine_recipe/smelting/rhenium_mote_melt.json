@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 3186,
+  "input": [
+    "omnitech:rhenium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_rhenium",
+    "amount": 50
+  }
+}

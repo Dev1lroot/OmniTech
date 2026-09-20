@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:iodine_mote",
+    "omnitech:iodine_mote",
+    "omnitech:iodine_mote",
+    "omnitech:iodine_mote",
+    "omnitech:iodine_mote",
+    "omnitech:iodine_mote",
+    "omnitech:iodine_mote",
+    "omnitech:iodine_mote",
+    "omnitech:iodine_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:iodine_dust"
+  }
+}

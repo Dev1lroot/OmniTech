@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1176,
+  "input": [
+    "omnitech:americium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_americium",
+    "amount": 50
+  }
+}

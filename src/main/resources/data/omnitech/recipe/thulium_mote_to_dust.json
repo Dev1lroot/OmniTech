@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:thulium_mote",
+    "omnitech:thulium_mote",
+    "omnitech:thulium_mote",
+    "omnitech:thulium_mote",
+    "omnitech:thulium_mote",
+    "omnitech:thulium_mote",
+    "omnitech:thulium_mote",
+    "omnitech:thulium_mote",
+    "omnitech:thulium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:thulium_dust"
+  }
+}

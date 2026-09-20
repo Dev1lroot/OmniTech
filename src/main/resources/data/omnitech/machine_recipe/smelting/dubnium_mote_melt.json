@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 2100,
+  "input": [
+    "omnitech:dubnium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_dubnium",
+    "amount": 50
+  }
+}

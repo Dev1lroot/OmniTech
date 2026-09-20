@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 700,
+  "input": [
+    "omnitech:livermorium_nugget"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_livermorium",
+    "amount": 100
+  }
+}

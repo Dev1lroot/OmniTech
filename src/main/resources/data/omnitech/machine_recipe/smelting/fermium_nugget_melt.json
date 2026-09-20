@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1527,
+  "input": [
+    "omnitech:fermium_nugget"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_fermium",
+    "amount": 100
+  }
+}

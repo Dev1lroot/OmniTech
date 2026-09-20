@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:polonium_dust"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:polonium_mote"
+  }
+}

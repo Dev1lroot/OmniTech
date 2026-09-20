@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1042,
+  "input": {
+    "fluid": "omnitech:molten_promethium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:promethium_rod"
+}

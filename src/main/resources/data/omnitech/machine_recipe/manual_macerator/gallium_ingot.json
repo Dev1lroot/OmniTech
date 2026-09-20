@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:gallium_ingot",
+  "output": [
+    {
+      "item": "omnitech:gallium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

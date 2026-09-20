@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 700,
+  "input": [
+    "omnitech:livermorium_ingot"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_livermorium",
+    "amount": 1000
+  }
+}

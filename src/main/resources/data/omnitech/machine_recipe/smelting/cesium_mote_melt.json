@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 28,
+  "input": [
+    "omnitech:cesium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_cesium",
+    "amount": 50
+  }
+}

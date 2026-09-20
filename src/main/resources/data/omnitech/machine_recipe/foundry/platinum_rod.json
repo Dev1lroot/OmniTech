@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1768,
+  "input": {
+    "fluid": "omnitech:molten_platinum",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:platinum_rod"
+}

@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 777,
+  "input": [
+    "omnitech:strontium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_strontium",
+    "amount": 50
+  }
+}

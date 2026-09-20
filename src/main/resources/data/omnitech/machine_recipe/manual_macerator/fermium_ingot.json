@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:fermium_ingot",
+  "output": [
+    {
+      "item": "omnitech:fermium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

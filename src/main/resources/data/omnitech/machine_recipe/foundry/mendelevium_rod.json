@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 827,
+  "input": {
+    "fluid": "omnitech:molten_mendelevium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:mendelevium_rod"
+}

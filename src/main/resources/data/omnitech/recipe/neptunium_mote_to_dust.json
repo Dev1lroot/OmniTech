@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:neptunium_mote",
+    "omnitech:neptunium_mote",
+    "omnitech:neptunium_mote",
+    "omnitech:neptunium_mote",
+    "omnitech:neptunium_mote",
+    "omnitech:neptunium_mote",
+    "omnitech:neptunium_mote",
+    "omnitech:neptunium_mote",
+    "omnitech:neptunium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:neptunium_dust"
+  }
+}

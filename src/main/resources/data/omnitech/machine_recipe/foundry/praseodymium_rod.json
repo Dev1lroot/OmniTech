@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 935,
+  "input": {
+    "fluid": "omnitech:molten_praseodymium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:praseodymium_rod"
+}

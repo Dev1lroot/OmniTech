@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:palladium_ingot",
+  "output": [
+    {
+      "item": "omnitech:palladium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:potassium_mote",
+    "omnitech:potassium_mote",
+    "omnitech:potassium_mote",
+    "omnitech:potassium_mote",
+    "omnitech:potassium_mote",
+    "omnitech:potassium_mote",
+    "omnitech:potassium_mote",
+    "omnitech:potassium_mote",
+    "omnitech:potassium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:potassium_dust"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 644,
+  "input": [
+    "omnitech:neptunium_ingot"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_neptunium",
+    "amount": 1000
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1287,
+  "input": [
+    "omnitech:beryllium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_beryllium",
+    "amount": 50
+  }
+}

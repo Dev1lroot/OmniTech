@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 27,
+  "input": [
+    "omnitech:francium_rod"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_francium",
+    "amount": 500
+  }
+}

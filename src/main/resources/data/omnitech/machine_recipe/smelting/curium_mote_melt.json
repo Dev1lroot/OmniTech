@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1345,
+  "input": [
+    "omnitech:curium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_curium",
+    "amount": 50
+  }
+}

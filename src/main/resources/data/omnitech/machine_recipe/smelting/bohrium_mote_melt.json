@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 2100,
+  "input": [
+    "omnitech:bohrium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_bohrium",
+    "amount": 50
+  }
+}

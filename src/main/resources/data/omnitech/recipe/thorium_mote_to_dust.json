@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:thorium_mote",
+    "omnitech:thorium_mote",
+    "omnitech:thorium_mote",
+    "omnitech:thorium_mote",
+    "omnitech:thorium_mote",
+    "omnitech:thorium_mote",
+    "omnitech:thorium_mote",
+    "omnitech:thorium_mote",
+    "omnitech:thorium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:thorium_dust"
+  }
+}

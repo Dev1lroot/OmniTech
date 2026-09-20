@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:mendelevium_ingot",
+  "output": [
+    {
+      "item": "omnitech:mendelevium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

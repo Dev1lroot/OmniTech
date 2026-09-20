@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 39,
+  "input": [
+    "omnitech:rubidium_block"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_rubidium",
+    "amount": 4500
+  }
+}

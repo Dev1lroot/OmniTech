@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1964,
+  "input": [
+    "omnitech:rhodium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_rhodium",
+    "amount": 50
+  }
+}

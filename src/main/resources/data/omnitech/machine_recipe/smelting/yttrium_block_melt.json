@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1526,
+  "input": [
+    "omnitech:yttrium_block"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_yttrium",
+    "amount": 4500
+  }
+}

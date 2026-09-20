@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 826,
+  "input": [
+    "omnitech:europium_plate"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_europium",
+    "amount": 500
+  }
+}

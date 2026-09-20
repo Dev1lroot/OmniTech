@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 900,
+  "input": {
+    "fluid": "omnitech:molten_californium",
+    "amount": 1000
+  },
+  "template": "omnitech:ingot_template",
+  "output": "omnitech:californium_ingot"
+}

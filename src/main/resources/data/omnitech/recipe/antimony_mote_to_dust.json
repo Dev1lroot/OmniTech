@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:antimony_mote",
+    "omnitech:antimony_mote",
+    "omnitech:antimony_mote",
+    "omnitech:antimony_mote",
+    "omnitech:antimony_mote",
+    "omnitech:antimony_mote",
+    "omnitech:antimony_mote",
+    "omnitech:antimony_mote",
+    "omnitech:antimony_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:antimony_dust"
+  }
+}

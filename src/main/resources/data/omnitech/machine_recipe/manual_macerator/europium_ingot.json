@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:europium_ingot",
+  "output": [
+    {
+      "item": "omnitech:europium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

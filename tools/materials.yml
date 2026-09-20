@@ -635,18 +635,24 @@ materials:
   - name: "platinum"
     formula: "Pt"
     colors: { dark: "#CFE2E6", light: "#FFFFFF", lum: 1.2, sat: 1.3 }
+    melt_temp: 1768
+    density: 21450
+    viscosity: 4182
     burns: false
-    items: []
-    blocks: []
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
     tools: []
     armor: []
 
   - name: "silver"
     formula: "Ag"
     colors: { dark: "#A5BCC2", light: "#F0F8FA", lum: 1.1, sat: 1.5 }
+    melt_temp: 962
+    density: 10490
+    viscosity: 2732
     burns: true
-    items: []
-    blocks: []
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
     tools: []
     armor: []
 
@@ -700,6 +706,920 @@ materials:
     colors: { dark: "#4D4D5C", light: "#9494B0", lum: 1.1, sat: 1.1 }
     burns: true
     items: []
+    blocks: []
+    tools: []
+    armor: []
+
+  # ── Newly added periodic elements (metals, light touch) ──────────────────────
+
+  - name: "beryllium"
+    formula: "Be"
+    colors: { dark: "#A8ACAD", light: "#E0E4E5", lum: 1.1, sat: 1.0 }
+    melt_temp: 1287
+    density: 1850
+    viscosity: 3317
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "magnesium"
+    formula: "Mg"
+    colors: { dark: "#AEB4B8", light: "#F2F5F6", lum: 1.2, sat: 1.1 }
+    melt_temp: 650
+    density: 1740
+    viscosity: 2170
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "calcium"
+    formula: "Ca"
+    colors: { dark: "#A8A090", light: "#E8E0D0", lum: 1.1, sat: 0.9 }
+    melt_temp: 842
+    density: 1550
+    viscosity: 2516
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "scandium"
+    formula: "Sc"
+    colors: { dark: "#B8B0A8", light: "#F0E8DC", lum: 1.1, sat: 1.0 }
+    melt_temp: 1541
+    density: 2985
+    viscosity: 3774
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "vanadium"
+    formula: "V"
+    colors: { dark: "#7A8590", light: "#C4D0DC", lum: 1.0, sat: 1.2 }
+    melt_temp: 1910
+    density: 6110
+    viscosity: 4438
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "manganese"
+    formula: "Mn"
+    colors: { dark: "#8A7A7A", light: "#C4B0B0", lum: 1.0, sat: 1.1 }
+    melt_temp: 1246
+    density: 7470
+    viscosity: 3243
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "gallium"
+    formula: "Ga"
+    colors: { dark: "#A0A8B0", light: "#E8ECF0", lum: 1.2, sat: 1.2 }
+    melt_temp: 30
+    density: 5910
+    viscosity: 1054
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "strontium"
+    formula: "Sr"
+    colors: { dark: "#A89880", light: "#E0D0B0", lum: 1.1, sat: 0.9 }
+    melt_temp: 777
+    density: 2640
+    viscosity: 2399
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "yttrium"
+    formula: "Y"
+    colors: { dark: "#A8ACB0", light: "#E0E4E8", lum: 1.1, sat: 1.0 }
+    melt_temp: 1526
+    density: 4472
+    viscosity: 3747
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "zirconium"
+    formula: "Zr"
+    colors: { dark: "#8A9098", light: "#C8CED4", lum: 1.1, sat: 1.1 }
+    melt_temp: 1855
+    density: 6520
+    viscosity: 4339
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "niobium"
+    formula: "Nb"
+    colors: { dark: "#6A7A8A", light: "#A8BCCC", lum: 1.0, sat: 1.2 }
+    melt_temp: 2477
+    density: 8570
+    viscosity: 5459
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "molybdenum"
+    formula: "Mo"
+    colors: { dark: "#7A7E82", light: "#B8BCC0", lum: 0.9, sat: 1.0 }
+    melt_temp: 2623
+    density: 10280
+    viscosity: 5721
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "technetium"
+    formula: "Tc"
+    colors: { dark: "#7A8088", light: "#B0B8C0", lum: 1.0, sat: 1.1 }
+    melt_temp: 2157
+    density: 11500
+    viscosity: 4883
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "ruthenium"
+    formula: "Ru"
+    colors: { dark: "#8A8E90", light: "#C4C8CA", lum: 0.9, sat: 1.0 }
+    melt_temp: 2334
+    density: 12370
+    viscosity: 5201
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "rhodium"
+    formula: "Rh"
+    colors: { dark: "#C8CACC", light: "#FAFAFA", lum: 1.2, sat: 1.3 }
+    melt_temp: 1964
+    density: 12450
+    viscosity: 4535
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "palladium"
+    formula: "Pd"
+    colors: { dark: "#B8B4AC", light: "#EAE6DC", lum: 1.1, sat: 1.1 }
+    melt_temp: 1555
+    density: 12023
+    viscosity: 3799
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "barium"
+    formula: "Ba"
+    colors: { dark: "#A8A48C", light: "#E4DCC0", lum: 1.0, sat: 0.9 }
+    melt_temp: 727
+    density: 3510
+    viscosity: 2309
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "lanthanum"
+    formula: "La"
+    colors: { dark: "#A8A8A8", light: "#DCDCDC", lum: 1.0, sat: 0.9 }
+    melt_temp: 920
+    density: 6162
+    viscosity: 2656
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "cerium"
+    formula: "Ce"
+    colors: { dark: "#6A6A6A", light: "#ACACAC", lum: 0.9, sat: 0.9 }
+    melt_temp: 795
+    density: 6770
+    viscosity: 2431
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "praseodymium"
+    formula: "Pr"
+    colors: { dark: "#9CA478", light: "#D4E0AC", lum: 1.0, sat: 1.1 }
+    melt_temp: 935
+    density: 6770
+    viscosity: 2683
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "neodymium"
+    formula: "Nd"
+    colors: { dark: "#A8A088", light: "#E0D8B8", lum: 1.0, sat: 1.0 }
+    melt_temp: 1024
+    density: 7010
+    viscosity: 2843
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "promethium"
+    formula: "Pm"
+    colors: { dark: "#9C7A8A", light: "#E0B8C8", lum: 1.1, sat: 1.2 }
+    melt_temp: 1042
+    density: 7260
+    viscosity: 2876
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "samarium"
+    formula: "Sm"
+    colors: { dark: "#A0A0A0", light: "#D8D8D8", lum: 1.0, sat: 0.9 }
+    melt_temp: 1072
+    density: 7520
+    viscosity: 2930
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "europium"
+    formula: "Eu"
+    colors: { dark: "#A8A070", light: "#E0D8A0", lum: 1.0, sat: 1.1 }
+    melt_temp: 826
+    density: 5264
+    viscosity: 2487
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "gadolinium"
+    formula: "Gd"
+    colors: { dark: "#A8ACAC", light: "#E0E4E4", lum: 1.0, sat: 0.9 }
+    melt_temp: 1312
+    density: 7900
+    viscosity: 3362
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "terbium"
+    formula: "Tb"
+    colors: { dark: "#9CA0A4", light: "#D4D8DC", lum: 1.0, sat: 0.9 }
+    melt_temp: 1356
+    density: 8230
+    viscosity: 3441
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "dysprosium"
+    formula: "Dy"
+    colors: { dark: "#A0A4A8", light: "#D8DCE0", lum: 1.0, sat: 0.9 }
+    melt_temp: 1407
+    density: 8540
+    viscosity: 3533
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "holmium"
+    formula: "Ho"
+    colors: { dark: "#A4A8AC", light: "#DCE0E4", lum: 1.0, sat: 0.9 }
+    melt_temp: 1461
+    density: 8790
+    viscosity: 3630
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "erbium"
+    formula: "Er"
+    colors: { dark: "#ACA0A4", light: "#E4D8DC", lum: 1.0, sat: 1.0 }
+    melt_temp: 1529
+    density: 9066
+    viscosity: 3752
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "thulium"
+    formula: "Tm"
+    colors: { dark: "#A8ACAC", light: "#E0E4E4", lum: 1.0, sat: 0.9 }
+    melt_temp: 1545
+    density: 9320
+    viscosity: 3781
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "ytterbium"
+    formula: "Yb"
+    colors: { dark: "#B0B4B4", light: "#E8ECEC", lum: 1.1, sat: 0.9 }
+    melt_temp: 824
+    density: 6900
+    viscosity: 2483
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "lutetium"
+    formula: "Lu"
+    colors: { dark: "#A8ACAC", light: "#E0E4E4", lum: 1.0, sat: 0.9 }
+    melt_temp: 1652
+    density: 9841
+    viscosity: 3974
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "rhenium"
+    formula: "Re"
+    colors: { dark: "#6A6E72", light: "#A8ACB0", lum: 1.0, sat: 1.1 }
+    melt_temp: 3186
+    density: 21020
+    viscosity: 6735
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "osmium"
+    formula: "Os"
+    colors: { dark: "#5A6470", light: "#98A4B4", lum: 1.0, sat: 1.2 }
+    melt_temp: 3033
+    density: 22590
+    viscosity: 6459
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "iridium"
+    formula: "Ir"
+    colors: { dark: "#8A8672", light: "#C8C4AC", lum: 1.0, sat: 1.1 }
+    melt_temp: 2446
+    density: 22560
+    viscosity: 5403
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "thallium"
+    formula: "Tl"
+    colors: { dark: "#6A6E78", light: "#A4A8B4", lum: 0.9, sat: 0.9 }
+    melt_temp: 304
+    density: 11850
+    viscosity: 1547
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "bismuth"
+    formula: "Bi"
+    colors: { dark: "#7A6A80", light: "#D4A8C8", lum: 1.1, sat: 1.3 }
+    melt_temp: 271
+    density: 9780
+    viscosity: 1488
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "polonium"
+    formula: "Po"
+    colors: { dark: "#6A6560", light: "#A8A29C", lum: 0.9, sat: 0.9 }
+    melt_temp: 254
+    density: 9320
+    viscosity: 1457
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "francium"
+    formula: "Fr"
+    colors: { dark: "#7A6060", light: "#B89898", lum: 0.9, sat: 1.0 }
+    melt_temp: 27
+    density: 1870
+    viscosity: 1049
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "radium"
+    formula: "Ra"
+    colors: { dark: "#7A8A78", light: "#B8E0A8", lum: 1.1, sat: 1.2 }
+    melt_temp: 700
+    density: 5500
+    viscosity: 2260
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "actinium"
+    formula: "Ac"
+    colors: { dark: "#6A7A90", light: "#A8C4E0", lum: 1.0, sat: 1.2 }
+    melt_temp: 1050
+    density: 10070
+    viscosity: 2890
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "thorium"
+    formula: "Th"
+    colors: { dark: "#5A5A5A", light: "#9A9A9A", lum: 0.9, sat: 0.9 }
+    melt_temp: 1750
+    density: 11720
+    viscosity: 4150
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "protactinium"
+    formula: "Pa"
+    colors: { dark: "#6A7080", light: "#ACB4C4", lum: 1.0, sat: 1.1 }
+    melt_temp: 1568
+    density: 15370
+    viscosity: 3822
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "neptunium"
+    formula: "Np"
+    colors: { dark: "#6A7278", light: "#A8B0B8", lum: 1.0, sat: 1.0 }
+    melt_temp: 644
+    density: 20450
+    viscosity: 2159
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "plutonium"
+    formula: "Pu"
+    colors: { dark: "#5A6048", light: "#9CA478", lum: 0.9, sat: 1.1 }
+    melt_temp: 640
+    density: 19816
+    viscosity: 2152
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "americium"
+    formula: "Am"
+    colors: { dark: "#8A7078", light: "#C4A0AC", lum: 1.0, sat: 1.1 }
+    melt_temp: 1176
+    density: 12000
+    viscosity: 3117
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "curium"
+    formula: "Cm"
+    colors: { dark: "#906878", light: "#D0A0B4", lum: 1.1, sat: 1.2 }
+    melt_temp: 1345
+    density: 13510
+    viscosity: 3421
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "berkelium"
+    formula: "Bk"
+    colors: { dark: "#7A7A7A", light: "#B8B8B8", lum: 1.0, sat: 0.9 }
+    melt_temp: 986
+    density: 14780
+    viscosity: 2775
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "californium"
+    formula: "Cf"
+    colors: { dark: "#6A8A78", light: "#A0D8B0", lum: 1.0, sat: 1.2 }
+    melt_temp: 900
+    density: 15100
+    viscosity: 2620
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "einsteinium"
+    formula: "Es"
+    colors: { dark: "#7A7472", light: "#B4ACA8", lum: 1.0, sat: 0.9 }
+    melt_temp: 860
+    density: 8840
+    viscosity: 2548
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "fermium"
+    formula: "Fm"
+    colors: { dark: "#78787C", light: "#B4B4B8", lum: 1.0, sat: 0.9 }
+    melt_temp: 1527
+    density: 9700
+    viscosity: 3749
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "mendelevium"
+    formula: "Md"
+    colors: { dark: "#767678", light: "#B0B0B4", lum: 1.0, sat: 0.9 }
+    melt_temp: 827
+    density: 10300
+    viscosity: 2489
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "nobelium"
+    formula: "No"
+    colors: { dark: "#74767A", light: "#AEB0B4", lum: 1.0, sat: 0.9 }
+    melt_temp: 827
+    density: 9900
+    viscosity: 2489
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "lawrencium"
+    formula: "Lr"
+    colors: { dark: "#72747A", light: "#ACB0B6", lum: 1.0, sat: 0.9 }
+    melt_temp: 1627
+    density: 14400
+    viscosity: 3929
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "rutherfordium"
+    formula: "Rf"
+    colors: { dark: "#4A5254", light: "#B8C0C4", lum: 1.1, sat: 1.0 }
+    melt_temp: 2100
+    density: 23200
+    viscosity: 4780
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "dubnium"
+    formula: "Db"
+    colors: { dark: "#3E4550", light: "#8C96A4", lum: 1.0, sat: 1.1 }
+    melt_temp: 2100
+    density: 29300
+    viscosity: 4780
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "seaborgium"
+    formula: "Sg"
+    colors: { dark: "#303438", light: "#585E64", lum: 0.9, sat: 0.8 }
+    melt_temp: 2100
+    density: 35000
+    viscosity: 4780
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "bohrium"
+    formula: "Bh"
+    colors: { dark: "#605E60", light: "#A09EA0", lum: 1.0, sat: 1.1 }
+    melt_temp: 2100
+    density: 37100
+    viscosity: 4780
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "hassium"
+    formula: "Hs"
+    colors: { dark: "#4E5460", light: "#8C96A4", lum: 1.0, sat: 1.2 }
+    melt_temp: 2100
+    density: 40700
+    viscosity: 4780
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "meitnerium"
+    formula: "Mt"
+    colors: { dark: "#7C7868", light: "#B8B4A0", lum: 1.0, sat: 1.1 }
+    melt_temp: 2100
+    density: 37400
+    viscosity: 4780
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "darmstadtium"
+    formula: "Ds"
+    colors: { dark: "#C0C8CC", light: "#FAFAFA", lum: 1.2, sat: 1.3 }
+    melt_temp: 2100
+    density: 34800
+    viscosity: 4780
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "roentgenium"
+    formula: "Rg"
+    colors: { dark: "#B8962E", light: "#FFE680", lum: 1.2, sat: 1.4 }
+    melt_temp: 2100
+    density: 28700
+    viscosity: 4780
+    burns: false
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "nihonium"
+    formula: "Nh"
+    colors: { dark: "#626878", light: "#9CA4B8", lum: 0.9, sat: 0.9 }
+    melt_temp: 700
+    density: 16000
+    viscosity: 2260
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "moscovium"
+    formula: "Mc"
+    colors: { dark: "#6E5E76", light: "#C298BC", lum: 1.0, sat: 1.2 }
+    melt_temp: 670
+    density: 13500
+    viscosity: 2206
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "livermorium"
+    formula: "Lv"
+    colors: { dark: "#605C58", light: "#9E9894", lum: 0.9, sat: 0.9 }
+    melt_temp: 700
+    density: 12900
+    viscosity: 2260
+    burns: true
+    items: ["%_ingot", "%_dust", "%_plate", "%_mote", "%_nugget", "%_rod"]
+    blocks: ["%_block"]
+    tools: []
+    armor: []
+
+  - name: "gold"
+    formula: "Au"
+    colors: { dark: "#B8860B", light: "#FFD966", lum: 1.1, sat: 1.3 }
+    melt_temp: 1064
+    density: 19300
+    viscosity: 2915
+    burns: true
+    vanilla_id: "minecraft:gold_ingot"
+    items: ["%_dust", "%_plate", "%_mote", "%_reductor", "%_wire", "%_coil", "%_rod"]
+    blocks: []
+    tools: []
+    armor: []
+
+  # ── Newly added periodic elements (non-metal / metalloid powders) ────────────
+
+  - name: "boron"
+    formula: "B"
+    colors: { dark: "#2E1A0F", light: "#6B4423", lum: 0.9, sat: 1.0 }
+    burns: true
+    items: ["%_dust", "%_mote"]
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "silicon"
+    formula: "Si"
+    colors: { dark: "#3A3F4A", light: "#8A97AD", lum: 1.0, sat: 1.1 }
+    burns: true
+    items: ["%_dust", "%_mote"]
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "phosphorus"
+    formula: "P"
+    colors: { dark: "#5C1A1A", light: "#B23A3A", lum: 1.0, sat: 1.2 }
+    burns: true
+    items: ["%_dust", "%_mote"]
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "sulfur"
+    formula: "S"
+    colors: { dark: "#C9A82A", light: "#FFF04D", lum: 1.1, sat: 1.3 }
+    burns: true
+    items: ["%_dust", "%_mote"]
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "germanium"
+    formula: "Ge"
+    colors: { dark: "#4A4A52", light: "#9A9AA8", lum: 1.0, sat: 1.0 }
+    burns: true
+    items: ["%_dust", "%_mote"]
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "arsenic"
+    formula: "As"
+    colors: { dark: "#4A4A4A", light: "#8C8C8C", lum: 0.9, sat: 0.9 }
+    burns: true
+    items: ["%_dust", "%_mote"]
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "selenium"
+    formula: "Se"
+    colors: { dark: "#3A2A2A", light: "#8C5A4A", lum: 0.9, sat: 1.1 }
+    burns: true
+    items: ["%_dust", "%_mote"]
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "antimony"
+    formula: "Sb"
+    colors: { dark: "#4A5560", light: "#A8B8C4", lum: 1.0, sat: 1.0 }
+    burns: true
+    items: ["%_dust", "%_mote"]
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "tellurium"
+    formula: "Te"
+    colors: { dark: "#6A6A70", light: "#C4C4CC", lum: 1.0, sat: 0.9 }
+    burns: true
+    items: ["%_dust", "%_mote"]
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "iodine"
+    formula: "I"
+    colors: { dark: "#2A0F30", light: "#6B2A7A", lum: 0.9, sat: 1.2 }
+    burns: true
+    items: ["%_dust", "%_mote"]
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "astatine"
+    formula: "At"
+    colors: { dark: "#1A1A1A", light: "#4A3A50", lum: 0.8, sat: 1.0 }
+    burns: true
+    items: ["%_dust", "%_mote"]
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "tennessine"
+    formula: "Ts"
+    colors: { dark: "#3A2A3A", light: "#7A5A70", lum: 0.9, sat: 1.1 }
+    burns: true
+    items: ["%_dust", "%_mote"]
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "oganesson"
+    formula: "Og"
+    colors: { dark: "#4A4A55", light: "#9AA0B0", lum: 1.0, sat: 1.0 }
+    burns: true
+    items: ["%_dust", "%_mote"]
     blocks: []
     tools: []
     armor: []

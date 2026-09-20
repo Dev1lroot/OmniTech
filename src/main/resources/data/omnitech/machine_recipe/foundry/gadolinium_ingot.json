@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1312,
+  "input": {
+    "fluid": "omnitech:molten_gadolinium",
+    "amount": 1000
+  },
+  "template": "omnitech:ingot_template",
+  "output": "omnitech:gadolinium_ingot"
+}

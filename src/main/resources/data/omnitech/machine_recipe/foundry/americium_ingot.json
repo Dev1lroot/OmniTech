@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1176,
+  "input": {
+    "fluid": "omnitech:molten_americium",
+    "amount": 1000
+  },
+  "template": "omnitech:ingot_template",
+  "output": "omnitech:americium_ingot"
+}

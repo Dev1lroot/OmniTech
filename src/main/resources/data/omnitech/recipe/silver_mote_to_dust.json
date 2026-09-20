@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:silver_mote",
+    "omnitech:silver_mote",
+    "omnitech:silver_mote",
+    "omnitech:silver_mote",
+    "omnitech:silver_mote",
+    "omnitech:silver_mote",
+    "omnitech:silver_mote",
+    "omnitech:silver_mote",
+    "omnitech:silver_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:silver_dust"
+  }
+}

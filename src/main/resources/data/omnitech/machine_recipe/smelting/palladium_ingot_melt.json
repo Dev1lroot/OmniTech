@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1555,
+  "input": [
+    "omnitech:palladium_ingot"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_palladium",
+    "amount": 1000
+  }
+}

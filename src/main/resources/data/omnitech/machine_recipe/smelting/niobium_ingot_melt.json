@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 2477,
+  "input": [
+    "omnitech:niobium_ingot"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_niobium",
+    "amount": 1000
+  }
+}

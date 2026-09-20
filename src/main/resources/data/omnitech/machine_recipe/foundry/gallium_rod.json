@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 30,
+  "input": {
+    "fluid": "omnitech:molten_gallium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:gallium_rod"
+}

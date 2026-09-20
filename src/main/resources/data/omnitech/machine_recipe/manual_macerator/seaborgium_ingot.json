@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:seaborgium_ingot",
+  "output": [
+    {
+      "item": "omnitech:seaborgium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

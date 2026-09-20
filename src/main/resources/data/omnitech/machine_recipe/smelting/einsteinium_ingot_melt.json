@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 860,
+  "input": [
+    "omnitech:einsteinium_ingot"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_einsteinium",
+    "amount": 1000
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:bismuth_mote",
+    "omnitech:bismuth_mote",
+    "omnitech:bismuth_mote",
+    "omnitech:bismuth_mote",
+    "omnitech:bismuth_mote",
+    "omnitech:bismuth_mote",
+    "omnitech:bismuth_mote",
+    "omnitech:bismuth_mote",
+    "omnitech:bismuth_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:bismuth_dust"
+  }
+}

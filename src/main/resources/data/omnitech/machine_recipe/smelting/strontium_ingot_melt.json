@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 777,
+  "input": [
+    "omnitech:strontium_ingot"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_strontium",
+    "amount": 1000
+  }
+}

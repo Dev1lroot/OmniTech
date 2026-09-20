@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:ytterbium_ingot",
+  "output": [
+    {
+      "item": "omnitech:ytterbium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

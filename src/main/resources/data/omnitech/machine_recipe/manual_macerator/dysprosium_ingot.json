@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:dysprosium_ingot",
+  "output": [
+    {
+      "item": "omnitech:dysprosium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 30,
+  "input": "omnitech:darmstadtium_ingot",
+  "output": [
+    {
+      "item": "omnitech:darmstadtium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

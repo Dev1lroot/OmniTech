@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 2100,
+  "input": [
+    "omnitech:meitnerium_mote"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_meitnerium",
+    "amount": 50
+  }
+}

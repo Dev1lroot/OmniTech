@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 727,
+  "input": [
+    "omnitech:barium_plate"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_barium",
+    "amount": 500
+  }
+}

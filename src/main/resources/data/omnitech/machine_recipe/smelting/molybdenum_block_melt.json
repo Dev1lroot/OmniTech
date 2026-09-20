@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 2623,
+  "input": [
+    "omnitech:molybdenum_block"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_molybdenum",
+    "amount": 4500
+  }
+}

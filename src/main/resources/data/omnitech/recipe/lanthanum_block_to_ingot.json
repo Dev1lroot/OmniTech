@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:lanthanum_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:lanthanum_ingot"
+  }
+}

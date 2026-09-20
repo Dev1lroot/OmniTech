@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 1024,
+  "input": [
+    "omnitech:neodymium_plate"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_neodymium",
+    "amount": 500
+  }
+}

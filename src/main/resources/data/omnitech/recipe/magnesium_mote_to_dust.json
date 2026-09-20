@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:magnesium_mote",
+    "omnitech:magnesium_mote",
+    "omnitech:magnesium_mote",
+    "omnitech:magnesium_mote",
+    "omnitech:magnesium_mote",
+    "omnitech:magnesium_mote",
+    "omnitech:magnesium_mote",
+    "omnitech:magnesium_mote",
+    "omnitech:magnesium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:magnesium_dust"
+  }
+}

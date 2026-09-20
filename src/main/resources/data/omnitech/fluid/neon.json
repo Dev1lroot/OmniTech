@@ -1,0 +1,19 @@
+{
+  "density": 0,
+  "viscosity": 10,
+  "temperature": 293,
+  "min_temp": -249,
+  "max_temp": 10000,
+  "min_pressure": 0,
+  "max_pressure": 200000,
+  "phase_diagram": {
+    "melting_point": -249,
+    "boiling_point": -246,
+    "boiling_slope": 8,
+    "critical_temp": -229,
+    "critical_pressure": 2760,
+    "triple_point_temp": -249,
+    "triple_point_pressure": 43,
+    "has_solid": true
+  }
+}

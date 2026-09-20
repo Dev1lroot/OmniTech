@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:neodymium_mote",
+    "omnitech:neodymium_mote",
+    "omnitech:neodymium_mote",
+    "omnitech:neodymium_mote",
+    "omnitech:neodymium_mote",
+    "omnitech:neodymium_mote",
+    "omnitech:neodymium_mote",
+    "omnitech:neodymium_mote",
+    "omnitech:neodymium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:neodymium_dust"
+  }
+}

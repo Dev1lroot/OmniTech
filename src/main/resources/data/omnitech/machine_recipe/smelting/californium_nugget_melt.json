@@ -1,0 +1,10 @@
+{
+  "requiredMinimalTemperature": 900,
+  "input": [
+    "omnitech:californium_nugget"
+  ],
+  "output": {
+    "fluid": "omnitech:molten_californium",
+    "amount": 100
+  }
+}

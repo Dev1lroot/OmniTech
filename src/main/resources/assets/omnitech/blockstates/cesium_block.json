@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "omnitech:block/cesium_block"
+    }
+  }
+}

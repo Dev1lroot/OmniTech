@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1345,
+  "input": {
+    "fluid": "omnitech:molten_curium",
+    "amount": 1000
+  },
+  "template": "omnitech:ingot_template",
+  "output": "omnitech:curium_ingot"
+}

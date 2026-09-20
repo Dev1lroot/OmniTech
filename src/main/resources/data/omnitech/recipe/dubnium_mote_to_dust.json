@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:dubnium_mote",
+    "omnitech:dubnium_mote",
+    "omnitech:dubnium_mote",
+    "omnitech:dubnium_mote",
+    "omnitech:dubnium_mote",
+    "omnitech:dubnium_mote",
+    "omnitech:dubnium_mote",
+    "omnitech:dubnium_mote",
+    "omnitech:dubnium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:dubnium_dust"
+  }
+}

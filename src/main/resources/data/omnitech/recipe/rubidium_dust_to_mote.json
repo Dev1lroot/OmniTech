@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:rubidium_dust"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:rubidium_mote"
+  }
+}

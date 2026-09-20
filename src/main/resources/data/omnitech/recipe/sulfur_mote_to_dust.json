@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:sulfur_mote",
+    "omnitech:sulfur_mote",
+    "omnitech:sulfur_mote",
+    "omnitech:sulfur_mote",
+    "omnitech:sulfur_mote",
+    "omnitech:sulfur_mote",
+    "omnitech:sulfur_mote",
+    "omnitech:sulfur_mote",
+    "omnitech:sulfur_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:sulfur_dust"
+  }
+}

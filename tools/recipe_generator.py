@@ -28,6 +28,14 @@ SCRIPT_DIR   = Path(__file__).parent
 ROOT_DIR     = SCRIPT_DIR.parent
 RES_DIR      = ROOT_DIR / "src/main/resources"
 RECIPE_DIR   = RES_DIR / "data/omnitech/recipe"
+# Smelter/foundry/macerator recipes are read by custom PreparableReloadListeners
+# (SmelterRecipeManager, FoundryRecipeManager, ManualMaceratorRecipeManager) via
+# resourceManager.listResources("machine_recipe/..."), NOT through the vanilla
+# minecraft:recipe registry. They must never be written under RECIPE_DIR — vanilla's
+# RegistryDataLoader also scans that folder and requires every entry to have a
+# "type" key, which these files don't have, crashing registry loading for the
+# whole datapack.
+MACHINE_RECIPE_DIR = RES_DIR / "data/omnitech/machine_recipe"
 FLUID_DIR    = RES_DIR / "data/omnitech/fluid"
 TOOL_MAT_DIR = RES_DIR / "data/omnitech/tool_material"
 ARMOR_MAT_DIR = RES_DIR / "data/omnitech/armor_material"
@@ -176,6 +184,12 @@ def write(dir_path: Path, rel_path: str, data: dict):
 
 def generate_fluid_json(mat: dict):
     name = mat["name"]
+    path = FLUID_DIR / f"molten_{name}.json"
+    if path.exists():
+        # Never clobber — existing molten fluids often carry hand-tuned
+        # phase_diagram/neutron_slowing data this generator doesn't produce.
+        return
+
     # temperature in Kelvin: melt_temp is in Celsius
     temp_c = mat.get("melt_temp", 1000)
     temp_k = temp_c + 273
@@ -274,7 +288,7 @@ def generate():
 
         # ── Macerator: ingot → dust ───────────────────────────────────────────
         if ingot and dust:
-            write(RECIPE_DIR, f"manual_macerator/{name}_ingot.json", r_macerator(ing_id, dust))
+            write(MACHINE_RECIPE_DIR, f"manual_macerator/{name}_ingot.json", r_macerator(ing_id, dust))
             count_recipes += 1
 
         # ── Smelter melt recipes ──────────────────────────────────────────────
@@ -284,7 +298,7 @@ def generate():
                 if mb is None:
                     continue
                 inp = ing_id if pattern == "%_ingot" else item_id(resolved(pattern))
-                write(RECIPE_DIR, f"smelting/{resolved(pattern)}_melt.json",
+                write(MACHINE_RECIPE_DIR, f"smelting/{resolved(pattern)}_melt.json",
                       r_smelter_melt(inp, name, temp, mb))
                 count_recipes += 1
 
@@ -292,34 +306,34 @@ def generate():
                 mb = MELT_MB.get(pattern)
                 if mb is None:
                     continue
-                write(RECIPE_DIR, f"smelting/{resolved(pattern)}_melt.json",
+                write(MACHINE_RECIPE_DIR, f"smelting/{resolved(pattern)}_melt.json",
                       r_smelter_melt(item_id(resolved(pattern)), name, temp, mb))
                 count_recipes += 1
 
             if armor_list:
                 for piece, mb in ARMOR_MELT.items():
-                    write(RECIPE_DIR, f"smelting/{name}_{piece}_melt.json",
+                    write(MACHINE_RECIPE_DIR, f"smelting/{name}_{piece}_melt.json",
                           r_smelter_melt(item_id(f"{name}_{piece}"), name, temp, mb))
                     count_recipes += 1
 
             if tools_list:
                 for tool, mb in TOOL_MELT.items():
-                    write(RECIPE_DIR, f"smelting/{name}_{tool}_melt.json",
+                    write(MACHINE_RECIPE_DIR, f"smelting/{name}_{tool}_melt.json",
                           r_smelter_melt(item_id(f"{name}_{tool}"), name, temp, mb))
                     count_recipes += 1
 
         # ── Foundry ───────────────────────────────────────────────────────────
         if temp is not None:
             if cog:
-                write(RECIPE_DIR, f"foundry/{name}_cog.json",
+                write(MACHINE_RECIPE_DIR, f"foundry/{name}_cog.json",
                       r_foundry(name, temp, 200, "cog_template", cog))
                 count_recipes += 1
             if ingot:
-                write(RECIPE_DIR, f"foundry/{name}_ingot.json",
+                write(MACHINE_RECIPE_DIR, f"foundry/{name}_ingot.json",
                       r_foundry(name, temp, 1000, "ingot_template", ingot))
                 count_recipes += 1
             if rod:
-                write(RECIPE_DIR, f"foundry/{name}_rod.json",
+                write(MACHINE_RECIPE_DIR, f"foundry/{name}_rod.json",
                       r_foundry(name, temp, 1000, "rod_template", rod))
                 count_recipes += 1
 

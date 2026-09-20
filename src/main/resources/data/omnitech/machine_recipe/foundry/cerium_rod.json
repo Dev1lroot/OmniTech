@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 795,
+  "input": {
+    "fluid": "omnitech:molten_cerium",
+    "amount": 1000
+  },
+  "template": "omnitech:rod_template",
+  "output": "omnitech:cerium_rod"
+}

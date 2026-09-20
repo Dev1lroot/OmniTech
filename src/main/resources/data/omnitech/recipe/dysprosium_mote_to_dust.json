@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:dysprosium_mote",
+    "omnitech:dysprosium_mote",
+    "omnitech:dysprosium_mote",
+    "omnitech:dysprosium_mote",
+    "omnitech:dysprosium_mote",
+    "omnitech:dysprosium_mote",
+    "omnitech:dysprosium_mote",
+    "omnitech:dysprosium_mote",
+    "omnitech:dysprosium_mote"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:dysprosium_dust"
+  }
+}
