@@ -75,6 +75,8 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.FLUID_TANK.get(), FluidTankScreen::new);
         event.register(OmniTechMenuTypes.SORTER.get(), SorterScreen::new);
         event.register(OmniTechMenuTypes.SMELTER.get(), SmelterScreen::new);
+        event.register(OmniTechMenuTypes.GLASS_BLOWING_STATION.get(),
+                com.dev1lroot.mcmods.omnitech.gui.GlassBlowingStationScreen::new);
         event.register(OmniTechMenuTypes.FOUNDRY.get(), FoundryScreen::new);
         event.register(OmniTechMenuTypes.ELECTRIC_ENGINE.get(), ElectricEngineScreen::new);
         event.register(OmniTechMenuTypes.ASSEMBLER.get(), AssemblerScreen::new);

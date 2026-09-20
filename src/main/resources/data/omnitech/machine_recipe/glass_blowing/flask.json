@@ -1,0 +1,5 @@
+{
+  "requiredMinimalTemperature": 1700,
+  "input": "minecraft:sand",
+  "output": { "item": "omnitech:flask", "count": 1 }
+}

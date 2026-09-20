@@ -141,6 +141,11 @@ public class OmniTechBlockEntities {
                     () -> new BlockEntityType<>(SmelterBlockEntity::new,
                             OmniTechBlocks.SMELTER.get()));
 
+    public static final Supplier<BlockEntityType<com.dev1lroot.mcmods.omnitech.blocks.thermal.GlassBlowingStationBlockEntity>> GLASS_BLOWING_STATION =
+            REGISTRY.register("glass_blowing_station",
+                    () -> new BlockEntityType<>(com.dev1lroot.mcmods.omnitech.blocks.thermal.GlassBlowingStationBlockEntity::new,
+                            OmniTechBlocks.GLASS_BLOWING_STATION.get()));
+
     public static final Supplier<BlockEntityType<FoundryBlockEntity>> FOUNDRY =
             REGISTRY.register("foundry",
                     () -> new BlockEntityType<>(FoundryBlockEntity::new,

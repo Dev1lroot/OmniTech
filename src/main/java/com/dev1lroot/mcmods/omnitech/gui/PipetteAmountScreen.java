@@ -93,6 +93,12 @@ public class PipetteAmountScreen extends Screen {
     @Override
     public boolean isPauseScreen() { return false; }
 
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        adjust(scrollY > 0 ? 1 : -1);
+        return true;
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private void adjust(int delta) {

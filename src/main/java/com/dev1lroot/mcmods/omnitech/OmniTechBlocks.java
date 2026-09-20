@@ -141,6 +141,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> VALVE_WHEEL;
     public static final DeferredBlock<Block> SORTER;
     public static final DeferredBlock<Block> SMELTER;
+    public static final DeferredBlock<Block> GLASS_BLOWING_STATION;
     public static final DeferredBlock<Block> FOUNDRY;
 
     public static final DeferredBlock<Block> ASSEMBLER;
@@ -291,6 +292,9 @@ public class OmniTechBlocks {
         SMELTER = register("smelter",
                 p -> new SmelterBlock(p.mapColor(MapColor.METAL).strength(4.0F)
                         .sound(SoundType.METAL)));
+        GLASS_BLOWING_STATION = register("glass_blowing_station",
+                p -> new com.dev1lroot.mcmods.omnitech.blocks.thermal.GlassBlowingStationBlock(
+                        p.mapColor(MapColor.METAL).strength(4.0F).sound(SoundType.METAL)));
         FOUNDRY = register("foundry",
                 p -> new FoundryBlock(p.mapColor(MapColor.METAL).strength(4.0F)
                         .sound(SoundType.METAL)));

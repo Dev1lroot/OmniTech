@@ -122,6 +122,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> SMELTER_ITEM = REGISTRY.registerSimpleBlockItem(
             "smelter", OmniTechBlocks.SMELTER);
 
+    public static final DeferredItem<BlockItem> GLASS_BLOWING_STATION_ITEM = REGISTRY.registerSimpleBlockItem(
+            "glass_blowing_station", OmniTechBlocks.GLASS_BLOWING_STATION);
+
     public static final DeferredItem<BlockItem> FOUNDRY_ITEM = REGISTRY.registerSimpleBlockItem(
             "foundry", OmniTechBlocks.FOUNDRY);
 

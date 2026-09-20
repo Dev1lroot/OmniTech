@@ -102,6 +102,7 @@ public class OmniTechClient
         NeoForge.EVENT_BUS.addListener(NuclearExplosionRenderer::onSubmitGeometry);
         NeoForge.EVENT_BUS.addListener(NuclearExplosionRenderer::onClientTick);
         NeoForge.EVENT_BUS.addListener(OmniTechClient::onComputeCameraAngles);
+        NeoForge.EVENT_BUS.addListener(OmniTechClient::onScreenMouseScroll);
     }
 
     void registerTooltipComponents(RegisterClientTooltipComponentFactoriesEvent event) {
@@ -229,6 +230,31 @@ public class OmniTechClient
         DisplayBlockEntityRenderer.cleanupAll();
         GravityFieldManager.clear();
         cameraGravityQ.identity();
+    }
+
+    /**
+     * Scroll wheel while hovering a {@link com.dev1lroot.mcmods.omnitech.items.PipetteItem} in
+     * any open inventory slot (the player's own inventory, a chest, a machine GUI, ...) adjusts
+     * its draw amount by ±1 per notch instead of scrolling that slot's stack size — the same
+     * mechanic as scrolling over a control rod slot in the Reactor screen to change its
+     * insertion (see {@link com.dev1lroot.mcmods.omnitech.network.SetControlRodPacket}).
+     */
+    public static void onScreenMouseScroll(ScreenEvent.MouseScrolled.Pre event) {
+        if (!(event.getScreen() instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> containerScreen)) return;
+
+        net.minecraft.world.inventory.Slot hovered = containerScreen.getHoveredSlot();
+        if (hovered == null || !hovered.hasItem()) return;
+
+        net.minecraft.world.item.ItemStack stack = hovered.getItem();
+        if (!(stack.getItem() instanceof com.dev1lroot.mcmods.omnitech.items.PipetteItem)) return;
+
+        int delta = event.getScrollDeltaY() > 0 ? 1 : -1;
+        com.dev1lroot.mcmods.omnitech.items.PipetteItem.setTargetAmount(stack,
+                com.dev1lroot.mcmods.omnitech.items.PipetteItem.getTargetAmount(stack) + delta); // instant local feedback
+        ClientPacketDistributor.sendToServer(
+                new com.dev1lroot.mcmods.omnitech.network.SetPipetteAmountSlotPacket(
+                        containerScreen.getMenu().containerId, hovered.index, delta));
+        event.setCanceled(true);
     }
 
     public static void onClientTick(ClientTickEvent.Post event) {

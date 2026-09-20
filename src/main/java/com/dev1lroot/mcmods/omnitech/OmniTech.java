@@ -566,6 +566,10 @@ public class OmniTech {
                 com.dev1lroot.mcmods.omnitech.network.SetPipetteAmountPacket.TYPE,
                 com.dev1lroot.mcmods.omnitech.network.SetPipetteAmountPacket.CODEC,
                 com.dev1lroot.mcmods.omnitech.network.SetPipetteAmountPacket::handle);
+        event.registrar("1").playToServer(
+                com.dev1lroot.mcmods.omnitech.network.SetPipetteAmountSlotPacket.TYPE,
+                com.dev1lroot.mcmods.omnitech.network.SetPipetteAmountSlotPacket.CODEC,
+                com.dev1lroot.mcmods.omnitech.network.SetPipetteAmountSlotPacket::handle);
         event.registrar("1").playToClient(
                 NuclearExplosionFxPacket.TYPE,
                 NuclearExplosionFxPacket.CODEC,
@@ -773,6 +777,15 @@ public class OmniTech {
                     PreparationBarrier barrier, Executor reloadExecutor) {
                 return CompletableFuture.runAsync(() -> {
                     FoundryRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "glass_blowing_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    com.dev1lroot.mcmods.omnitech.recipes.GlassBlowingRecipeManager.loadRecipes(sharedState.resourceManager());
                 }, taskExecutor).thenCompose(barrier::wait);
             }
         });

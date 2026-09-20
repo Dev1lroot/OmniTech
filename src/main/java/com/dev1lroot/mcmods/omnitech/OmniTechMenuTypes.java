@@ -98,6 +98,10 @@ public class OmniTechMenuTypes {
             REGISTRY.register("smelter",
                     () -> IMenuTypeExtension.create(SmelterMenu::new));
 
+    public static final Supplier<MenuType<com.dev1lroot.mcmods.omnitech.gui.GlassBlowingStationMenu>> GLASS_BLOWING_STATION =
+            REGISTRY.register("glass_blowing_station",
+                    () -> IMenuTypeExtension.create(com.dev1lroot.mcmods.omnitech.gui.GlassBlowingStationMenu::new));
+
     public static final Supplier<MenuType<FoundryMenu>> FOUNDRY =
             REGISTRY.register("foundry",
                     () -> IMenuTypeExtension.create(FoundryMenu::new));

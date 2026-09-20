@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "lit=false": { "model": "omnitech:block/glass_blowing_station" },
+    "lit=true": { "model": "omnitech:block/glass_blowing_station_on" }
+  }
+}
