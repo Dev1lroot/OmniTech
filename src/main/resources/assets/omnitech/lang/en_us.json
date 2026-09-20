@@ -658,6 +658,8 @@
   "container.omnitech.radio_scanner": "Radio Scanner",
   "item.omnitech.radio_locator": "Radio Locator",
   "screen.omnitech.radio_locator": "Radio Locator",
+  "screen.omnitech.pipette_amount": "Draw Amount",
+  "item.omnitech.pipette": "Pipette Dispenser",
   "advancement.omnitech.root.title": "OmniTech",
   "advancement.omnitech.root.description": "Welcome to the age of technology",
   "advancement.omnitech.radio.radio_pioneer.title": "Radio Pioneer",

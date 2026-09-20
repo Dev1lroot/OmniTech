@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.plumbing;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IFluidContainer;
+import com.dev1lroot.mcmods.omnitech.items.PipetteItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,6 +15,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -139,6 +141,18 @@ public class FluidTankBlock extends BaseEntityBlock implements IFluidContainer
                 boolean interacted = FluidUtil.interactWithFluidHandler(
                         player, hand, level, pos, hit.getDirection());
                 return interacted ? InteractionResult.SUCCESS : InteractionResult.FAIL;
+            }
+        }
+        // Empty pipette → draw its configured amount straight from the tank
+        for (InteractionHand hand : InteractionHand.values()) {
+            ItemStack held = player.getItemInHand(hand);
+            if (held.getItem() instanceof PipetteItem && PipetteItem.isEmpty(held)) {
+                if (level.isClientSide()) return InteractionResult.SUCCESS;
+                BlockEntity be = level.getBlockEntity(pos);
+                if (be instanceof FluidTankBlockEntity tank) {
+                    boolean filled = PipetteItem.tryFillFromTank(held, tank);
+                    return filled ? InteractionResult.SUCCESS : InteractionResult.FAIL;
+                }
             }
         }
         // No bucket → open GUI

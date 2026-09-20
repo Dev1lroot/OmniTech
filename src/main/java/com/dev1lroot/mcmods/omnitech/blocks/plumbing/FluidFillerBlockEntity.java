@@ -7,6 +7,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.plumbing;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.gui.FluidFillerMenu;
+import com.dev1lroot.mcmods.omnitech.items.FlaskItem;
 import com.dev1lroot.mcmods.omnitech.items.FluidCanisterItem;
 import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import net.minecraft.core.BlockPos;
@@ -138,6 +139,31 @@ public class FluidFillerBlockEntity extends BaseContainerBlockEntity implements 
     public FluidStack getInputFluid()  { return inputFluid;  }
     public FluidStack getOutputFluid() { return outputFluid; }
 
+    /**
+     * Transfers up to {@code amount} mB of the current input fluid into the flask sitting in
+     * {@link #SLOT_INPUT_CANISTER}, clamped to what the tank actually has and what the flask
+     * has room for. Driven by {@link com.dev1lroot.mcmods.omnitech.network.FluidFillerInjectPacket}
+     * (the GUI's +/- amount field and Inject button) — never automatic, and never in reverse:
+     * there's no matching "eject" path, per flasks being fill-only for now.
+     */
+    public boolean tryInjectFlask(int amount) {
+        ItemStack stack = items.get(SLOT_INPUT_CANISTER);
+        if (!(stack.getItem() instanceof FlaskItem) || inputFluid.isEmpty() || amount <= 0) return false;
+
+        net.minecraft.world.level.material.Fluid fluid = inputFluid.getFluid();
+        int want = Math.min(amount, inputFluid.getAmount());
+        int added = FlaskItem.addFluid(stack, fluid, want);
+        if (added <= 0) return false;
+
+        inputFluid.shrink(added);
+        if (inputFluid.getAmount() <= 0) inputFluid = FluidStack.EMPTY;
+        setChanged();
+        if (level != null && !level.isClientSide()) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return true;
+    }
+
     // ── Server tick ───────────────────────────────────────────────────────────
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
@@ -152,11 +178,12 @@ public class FluidFillerBlockEntity extends BaseContainerBlockEntity implements 
             if (src != null) changed |= FluidNetworkUtil.tryPullFluid(src, be.inputFluidHandler);
         }
 
-        // 2. Process canister
+        // 2. Process canister (flasks are manual-only — see tryInjectFlask, driven by the
+        //    Fluid Filler's amount-select + Inject GUI action, not by this automatic loop)
         ItemStack inCanister  = be.items.get(SLOT_INPUT_CANISTER);
         ItemStack outCanister = be.items.get(SLOT_OUTPUT_CANISTER);
 
-        if (!inCanister.isEmpty() && outCanister.isEmpty()) {
+        if (inCanister.getItem() instanceof FluidCanisterItem && outCanister.isEmpty()) {
             boolean doFill  = FluidCanisterItem.isEmpty(inCanister)
                     && !be.inputFluid.isEmpty();
             boolean doDrain = !FluidCanisterItem.isEmpty(inCanister)
@@ -259,7 +286,8 @@ public class FluidFillerBlockEntity extends BaseContainerBlockEntity implements 
 
     @Override
     public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction dir) {
-        return index == SLOT_INPUT_CANISTER && stack.getItem() instanceof FluidCanisterItem;
+        return index == SLOT_INPUT_CANISTER
+                && (stack.getItem() instanceof FluidCanisterItem || stack.getItem() instanceof FlaskItem);
     }
 
     @Override

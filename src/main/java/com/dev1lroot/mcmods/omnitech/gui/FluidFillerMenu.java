@@ -10,7 +10,9 @@ import com.dev1lroot.mcmods.omnitech.blocks.plumbing.FluidFillerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
+import com.dev1lroot.mcmods.omnitech.items.FlaskItem;
 import com.dev1lroot.mcmods.omnitech.items.FluidCanisterItem;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -58,7 +60,8 @@ public class FluidFillerMenu extends AbstractContainerMenu {
                 addSlot(new Slot(container, el.slot_index, el.x, el.y) {
                     @Override
                     public boolean mayPlace(ItemStack stack) {
-                        return stack.getItem() instanceof FluidCanisterItem;
+                        return stack.getItem() instanceof FluidCanisterItem
+                                || stack.getItem() instanceof FlaskItem;
                     }
                 });
             } else {
@@ -83,6 +86,10 @@ public class FluidFillerMenu extends AbstractContainerMenu {
     public FluidStack getOutputFluid() {
         if (container instanceof FluidFillerBlockEntity be) return be.getOutputFluid();
         return FluidStack.EMPTY;
+    }
+
+    public BlockPos getBlockPos() {
+        return container instanceof BlockEntity be ? be.getBlockPos() : BlockPos.ZERO;
     }
 
     // ── ContainerData accessors ───────────────────────────────────────────────

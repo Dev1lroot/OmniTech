@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>OmniTech Roadmap</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <aside id="sidebar">
+      <header>
+        <h1>OmniTech Roadmap</h1>
+        <p class="sub">Live item / fluid / recipe graph</p>
+      </header>
+
+      <div id="status" class="status">connecting…</div>
+
+      <div class="field">
+        <label for="search">Search an item or fluid</label>
+        <input id="search" type="text" placeholder="e.g. tungsten_ingot, molten_uranium…" autocomplete="off" />
+        <div id="suggestions" class="suggestions"></div>
+      </div>
+
+      <div class="field row">
+        <label for="hops">Hops out from focus</label>
+        <input id="hops" type="range" min="1" max="6" value="2" />
+        <span id="hopsValue">2</span>
+      </div>
+
+      <div class="field row">
+        <label><input type="checkbox" id="hideRecipes" /> Hide recipe nodes (items only)</label>
+      </div>
+
+      <div class="field">
+        <button id="fullGraphBtn">Show entire graph (slow)</button>
+        <button id="clearBtn">Clear</button>
+      </div>
+
+      <div id="focusInfo" class="focus-info"></div>
+
+      <div class="legend">
+        <h2>Legend</h2>
+        <div class="legend-row"><span class="swatch item"></span> Item</div>
+        <div class="legend-row"><span class="swatch fluid"></span> Fluid</div>
+        <div class="legend-row"><span class="swatch recipe"></span> Recipe (shape = process, colour = machine)</div>
+        <div class="legend-row"><span class="edge-sample input"></span> input</div>
+        <div class="legend-row"><span class="edge-sample output"></span> output</div>
+        <div class="legend-row"><span class="edge-sample byproduct"></span> byproduct (chance &lt; 1)</div>
+        <div class="legend-row"><span class="edge-sample catalyst"></span> catalyst / template</div>
+      </div>
+
+      <div id="stats" class="stats"></div>
+    </aside>
+
+    <main id="graphWrap">
+      <div id="cy"></div>
+      <div id="emptyState" class="empty-state">
+        <p>Search for an item or fluid to trace its production cycle —</p>
+        <p><code>dust → ingot ↔ block</code> and everywhere else it's used.</p>
+      </div>
+    </main>
+
+    <div id="tooltip" class="tooltip"></div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

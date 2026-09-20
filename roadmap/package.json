@@ -1,0 +1,16 @@
+{
+  "name": "omnitech-roadmap",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Live node-graph of every item/fluid and every recipe that connects them, across OmniTech and referenced vanilla Minecraft content.",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "chokidar": "^4.0.1",
+    "cors": "^2.8.6",
+    "express": "^5.1.0"
+  }
+}

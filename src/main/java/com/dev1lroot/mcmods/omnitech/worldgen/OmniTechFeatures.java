@@ -50,6 +50,13 @@ public class OmniTechFeatures {
     public static final java.util.function.Supplier<MapCodec<CrudeOilPocketFeature>> CRUDE_OIL_POCKET =
             REGISTRY.register("crude_oil_pocket", () -> CrudeOilPocketFeature.CODEC);
 
+    /**
+     * Procedural volcanic cone with a summit crater and lava pool, placed on
+     * mountain terrain (see {@code neoforge/biome_modifier/volcano.json}).
+     */
+    public static final java.util.function.Supplier<MapCodec<VolcanoFeature>> VOLCANO =
+            REGISTRY.register("volcano", () -> VolcanoFeature.CODEC);
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }

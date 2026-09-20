@@ -67,6 +67,26 @@ public class OmniTechDataComponents {
                             .networkSynchronized(FLUID_STACK_STREAM_CODEC)
                             .build());
 
+    /**
+     * The multi-fluid solution stored inside a {@link com.dev1lroot.mcmods.omnitech.items.FlaskItem}
+     * or {@link com.dev1lroot.mcmods.omnitech.items.PipetteItem}. Only present when the
+     * container holds at least one component.
+     */
+    public static final Supplier<DataComponentType<com.dev1lroot.mcmods.omnitech.items.Solution>> SOLUTION =
+            REGISTRY.register("solution", () ->
+                    DataComponentType.<com.dev1lroot.mcmods.omnitech.items.Solution>builder()
+                            .persistent(com.dev1lroot.mcmods.omnitech.items.Solution.CODEC)
+                            .networkSynchronized(com.dev1lroot.mcmods.omnitech.items.Solution.STREAM_CODEC)
+                            .build());
+
+    /** Target draw amount (mB, 1–20) configured on a {@link com.dev1lroot.mcmods.omnitech.items.PipetteItem}. */
+    public static final Supplier<DataComponentType<Integer>> PIPETTE_AMOUNT =
+            REGISTRY.register("pipette_amount", () ->
+                    DataComponentType.<Integer>builder()
+                            .persistent(Codec.INT)
+                            .networkSynchronized(ByteBufCodecs.INT)
+                            .build());
+
     /** EU stored in a bore tool (whole EU units, 0 = empty). */
     public static final Supplier<DataComponentType<Integer>> EU_STORED =
             REGISTRY.register("eu_stored", () ->

@@ -202,6 +202,9 @@ public class OmniTechItems
     public static final DeferredItem<com.dev1lroot.mcmods.omnitech.items.FlaskItem> FLASK =
             REGISTRY.registerItem("flask", com.dev1lroot.mcmods.omnitech.items.FlaskItem::new);
 
+    public static final DeferredItem<com.dev1lroot.mcmods.omnitech.items.PipetteItem> PIPETTE =
+            REGISTRY.registerItem("pipette", com.dev1lroot.mcmods.omnitech.items.PipetteItem::new);
+
     // ── Electric Charger block item ───────────────────────────────────────────
 
     public static final DeferredItem<BlockItem> ELECTRIC_CHARGER_ITEM =

@@ -153,6 +153,7 @@ public class OmniTech {
         CreativeTabLoader.loadAll();     // reads data/omnitech/creative_tab/*.json
         OmniTechGUI.register(modEventBus);
         OmniTechDataComponents.register(modEventBus);
+        OmniTechRecipeSerializers.register(modEventBus);
         OmniTechAttachments.register(modEventBus);
         OmniTechMobEffects.register(modEventBus);
         OmniTechSounds.register(modEventBus);
@@ -395,6 +396,14 @@ public class OmniTech {
                 OmniTechItems.FLASK.get()
         );
 
+        // Pipette exposes its stored fluid the same way, purely so DynamicFluidContainerModel
+        // has something to read the current fluid + tint from when rendering.
+        event.registerItem(
+                Capabilities.Fluid.ITEM,
+                (stack, access) -> new com.dev1lroot.mcmods.omnitech.client.PipetteResourceHandler(access),
+                OmniTechItems.PIPETTE.get()
+        );
+
         // Reactor master block exposes its distilled-water coolant tank
         event.registerBlockEntity(
                 Capabilities.Fluid.BLOCK,
@@ -549,6 +558,14 @@ public class OmniTech {
                 SetMachineValuePacket.TYPE,
                 SetMachineValuePacket.CODEC,
                 SetMachineValuePacket::handle);
+        event.registrar("1").playToServer(
+                com.dev1lroot.mcmods.omnitech.network.FluidFillerInjectPacket.TYPE,
+                com.dev1lroot.mcmods.omnitech.network.FluidFillerInjectPacket.CODEC,
+                com.dev1lroot.mcmods.omnitech.network.FluidFillerInjectPacket::handle);
+        event.registrar("1").playToServer(
+                com.dev1lroot.mcmods.omnitech.network.SetPipetteAmountPacket.TYPE,
+                com.dev1lroot.mcmods.omnitech.network.SetPipetteAmountPacket.CODEC,
+                com.dev1lroot.mcmods.omnitech.network.SetPipetteAmountPacket::handle);
         event.registrar("1").playToClient(
                 NuclearExplosionFxPacket.TYPE,
                 NuclearExplosionFxPacket.CODEC,
