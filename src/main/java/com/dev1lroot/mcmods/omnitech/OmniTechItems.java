@@ -172,6 +172,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> SOLVATION_MACHINE_ITEM = REGISTRY.registerSimpleBlockItem(
             "solvation_machine", OmniTechBlocks.SOLVATION_MACHINE);
 
+    public static final DeferredItem<BlockItem> FILTER_PRESS_ITEM = REGISTRY.registerSimpleBlockItem(
+            "filter_press", OmniTechBlocks.FILTER_PRESS);
+
     public static final DeferredItem<BlockItem> ELECTROLYSIS_MACHINE_ITEM = REGISTRY.registerSimpleBlockItem(
             "electrolysis_machine", OmniTechBlocks.ELECTROLYSIS_MACHINE);
 

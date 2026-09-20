@@ -1,0 +1,15 @@
+{
+  "requiredKineticForce": 10,
+  "inputFluid": {
+    "fluid": "minecraft:water",
+    "amount": 1000
+  },
+  "outputFluid": {
+    "fluid": "minecraft:water",
+    "amount": 1000
+  },
+  "outputItem": {
+    "item": "minecraft:sand",
+    "amount": 1
+  }
+}

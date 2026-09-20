@@ -381,6 +381,24 @@ public class OmniTechClient
             event.getToolTip().add(
                     Component.literal(formula).withStyle(ChatFormatting.DARK_GRAY));
         }
+
+        // Machine blurb: any item with a "tooltip.omnitech.<path>.desc" lang key gets a
+        // one-line description on shift, and a "hold shift" hint otherwise. Which items show
+        // this is controlled entirely by which lang keys exist — no separate registry to keep
+        // in sync.
+        net.minecraft.resources.Identifier id =
+                net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(event.getItemStack().getItem());
+        if (id != null && id.getNamespace().equals(OmniTech.MODID)) {
+            String descKey = "tooltip.omnitech." + id.getPath() + ".desc";
+            if (net.minecraft.locale.Language.getInstance().has(descKey)) {
+                if (Minecraft.getInstance().hasShiftDown()) {
+                    event.getToolTip().add(Component.translatable(descKey).withStyle(ChatFormatting.GRAY));
+                } else {
+                    event.getToolTip().add(Component.translatable("tooltip.omnitech.hold_shift")
+                            .withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
+                }
+            }
+        }
     }
 
     void registerGuiLayers(RegisterGuiLayersEvent event) {

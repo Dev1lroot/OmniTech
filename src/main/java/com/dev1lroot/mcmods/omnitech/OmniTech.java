@@ -230,6 +230,21 @@ public class OmniTech {
         );
         event.registerBlockEntity(
                 Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.FILTER_PRESS.get(),
+                (be, side) -> {
+                    if (side == null) return null;
+                    var state = be.getLevel() != null
+                            ? be.getLevel().getBlockState(be.getBlockPos())
+                            : null;
+                    if (state == null) return null;
+                    Direction facing = state.getValue(com.dev1lroot.mcmods.omnitech.blocks.labware.FilterPressBlock.FACING);
+                    if (side == facing) return ((com.dev1lroot.mcmods.omnitech.blocks.labware.FilterPressBlockEntity) be).inputFluidHandler;
+                    if (side == facing.getOpposite()) return ((com.dev1lroot.mcmods.omnitech.blocks.labware.FilterPressBlockEntity) be).outputFluidHandler;
+                    return null;
+                }
+        );
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
                 OmniTechBlockEntities.FLUID_COLLECTOR.get(),
                 (be, side) -> {
                     if (side == null) return null;
@@ -777,6 +792,15 @@ public class OmniTech {
                     PreparationBarrier barrier, Executor reloadExecutor) {
                 return CompletableFuture.runAsync(() -> {
                     FoundryRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "filter_press_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    com.dev1lroot.mcmods.omnitech.recipes.FilterPressRecipeManager.loadRecipes(sharedState.resourceManager());
                 }, taskExecutor).thenCompose(barrier::wait);
             }
         });

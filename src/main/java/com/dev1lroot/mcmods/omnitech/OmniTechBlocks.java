@@ -154,6 +154,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> ELECTRIC_FURNACE;
     public static final DeferredBlock<Block> SOLAR_PANEL;
     public static final DeferredBlock<Block> SOLVATION_MACHINE;
+    public static final DeferredBlock<Block> FILTER_PRESS;
     public static final DeferredBlock<Block> ELECTROLYSIS_MACHINE;
     public static final DeferredBlock<Block> ROTARY_COMPRESSOR;
     public static final DeferredBlock<Block> FLUID_COLLECTOR;
@@ -328,6 +329,9 @@ public class OmniTechBlocks {
         SOLVATION_MACHINE = register("solvation_machine",
                 p -> new SolvationMachineBlock(p.mapColor(MapColor.METAL).strength(3.5F)
                         .sound(SoundType.METAL)));
+        FILTER_PRESS = register("filter_press",
+                p -> new com.dev1lroot.mcmods.omnitech.blocks.labware.FilterPressBlock(
+                        p.mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.METAL)));
         ELECTROLYSIS_MACHINE = register("electrolysis_machine",
                 p -> new ElectrolysisMachineBlock(p.mapColor(MapColor.METAL).strength(3.5F)
                         .sound(SoundType.METAL)));

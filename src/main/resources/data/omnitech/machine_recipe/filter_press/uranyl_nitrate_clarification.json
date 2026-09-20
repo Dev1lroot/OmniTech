@@ -1,0 +1,15 @@
+{
+  "requiredKineticForce": 25,
+  "inputFluid": {
+    "fluid": "omnitech:uranyl_nitrate",
+    "amount": 1000
+  },
+  "outputFluid": {
+    "fluid": "omnitech:uranyl_nitrate",
+    "amount": 1000
+  },
+  "outputItem": {
+    "item": "minecraft:gravel",
+    "amount": 1
+  }
+}
