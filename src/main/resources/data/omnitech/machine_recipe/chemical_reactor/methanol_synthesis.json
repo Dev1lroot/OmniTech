@@ -1,0 +1,22 @@
+{
+  "requiredTemperature": 250,
+  "productionTime": 200,
+  "inputs": [
+    {
+      "fluid": "omnitech:carbon_dioxide",
+      "amount": 1000
+    },
+    {
+      "fluid": "omnitech:hydrogen",
+      "amount": 3000
+    }
+  ],
+  "output": {
+    "fluid": "omnitech:methanol",
+    "amount": 1000
+  },
+  "catalyst": {
+    "item": "omnitech:copper_rod",
+    "damage": 1
+  }
+}

@@ -17,5 +17,6 @@
     "triple_point_pressure": 1,
     "has_solid": true
   },
-  "neutron_slowing": 0.6
+  "neutron_slowing": 0.6,
+  "toxic": true
 }

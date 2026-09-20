@@ -1,0 +1,18 @@
+{
+  "requiredTemperature": 500,
+  "productionTime": 150,
+  "inputs": [
+    {
+      "fluid": "omnitech:propane",
+      "amount": 1000
+    },
+    {
+      "fluid": "omnitech:oxygen",
+      "amount": 500
+    }
+  ],
+  "output": {
+    "fluid": "omnitech:acetone",
+    "amount": 800
+  }
+}

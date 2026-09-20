@@ -2,7 +2,7 @@
   "icon": "omnitech:tungsten_ore",
   "after": "omnitech:omnitech.utility",
   "data": [
-    "$material_sets",
+    "$mineral_sets",
     "omnitech:europa_stone",
     "omnitech:europa_ice",
     "omnitech:cracked_ice",

@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:fluorite",
+  "output": [
+    {
+      "item": "omnitech:fluorite_dust",
+      "count": 4,
+      "chance": 1.0
+    }
+  ]
+}

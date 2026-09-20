@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech.jei;
 
 import com.dev1lroot.mcmods.omnitech.OmniTech;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
+import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
 import com.dev1lroot.mcmods.omnitech.recipes.AlloyFurnaceRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.AlloyFurnaceRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ChemicalReactorRecipe;
@@ -85,6 +86,28 @@ public class OmniTechJeiPlugin implements IModPlugin {
     public static final IRecipeType<FluidCollectorRecipe> FLUID_COLLECTOR =
             IRecipeType.create(OmniTech.MODID, "fluid_collector", FluidCollectorRecipe.class);
 
+    public static final IRecipeType<FluidFillerRecipe> FLUID_FILLER =
+            IRecipeType.create(OmniTech.MODID, "fluid_filler", FluidFillerRecipe.class);
+
+    /**
+     * Not backed by any recipe JSON — filling a bucket is a generic capability
+     * interaction (see {@link OmniTechFluids.FluidObject#bucket}), not a data-driven
+     * recipe. This is a display-only pairing so JEI can show "right-click an empty
+     * bucket on a Fluid Tank / Fluid Filler holding this fluid" for every fluid that
+     * actually has a bucket.
+     */
+    private record FluidFillerRecipe(net.minecraft.world.level.material.Fluid fluid,
+                                      net.minecraft.world.item.Item filledBucket) {}
+
+    private static List<FluidFillerRecipe> buildFluidFillerRecipes() {
+        List<FluidFillerRecipe> recipes = new java.util.ArrayList<>();
+        for (OmniTechFluids.FluidObject fluidObject : OmniTechFluids.all().values()) {
+            if (fluidObject.bucket == null) continue;
+            recipes.add(new FluidFillerRecipe(fluidObject.source.get(), fluidObject.bucket.get()));
+        }
+        return recipes;
+    }
+
     // ── Plugin identity ───────────────────────────────────────────────────────
 
     @Override
@@ -109,7 +132,8 @@ public class OmniTechJeiPlugin implements IModPlugin {
                 new ElectrolysisCategory(gui),
                 new FractionalDistillationCategory(gui),
                 new SolvationCategory(gui),
-                new FluidCollectorCategory(gui)
+                new FluidCollectorCategory(gui),
+                new FluidFillerCategory(gui)
         );
     }
 
@@ -127,6 +151,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
         registration.addRecipes(FRACTIONAL_DISTILLATION,  FractionalDistillationRecipeManager.getAllRecipes());
         registration.addRecipes(SOLVATION,                SolvationRecipeManager.getAllRecipes());
         registration.addRecipes(FLUID_COLLECTOR,          FluidCollectorRecipeManager.getAllRecipes());
+        registration.addRecipes(FLUID_FILLER,             buildFluidFillerRecipes());
     }
 
     // ── Catalyst registration ─────────────────────────────────────────────────
@@ -143,6 +168,8 @@ public class OmniTechJeiPlugin implements IModPlugin {
         registration.addCraftingStation(FRACTIONAL_DISTILLATION, OmniTechBlocks.FRACTIONAL_DISTILLER.get());
         registration.addCraftingStation(SOLVATION,               OmniTechBlocks.SOLVATION_MACHINE.get());
         registration.addCraftingStation(FLUID_COLLECTOR,         OmniTechBlocks.FLUID_COLLECTOR.get());
+        registration.addCraftingStation(FLUID_FILLER,            OmniTechBlocks.FLUID_FILLER.get());
+        registration.addCraftingStation(FLUID_FILLER,            OmniTechBlocks.FLUID_TANK.get());
     }
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -575,6 +602,48 @@ public class OmniTechJeiPlugin implements IModPlugin {
 
         @Override
         public void draw(FluidCollectorRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+            arrow.draw(graphics, 44, 12);
+        }
+    }
+
+    // ── Fluid Filler: fluid (in a tank/filler) + empty bucket → filled bucket ──
+    //
+    // Display-only — see FluidFillerRecipe. Right-clicking an empty vanilla bucket on
+    // a Fluid Tank or Fluid Filler holding the shown fluid fills it, the same generic
+    // capability interaction water/lava buckets already use against vanilla tanks.
+
+    static class FluidFillerCategory implements IRecipeCategory<FluidFillerRecipe> {
+        private final IDrawable icon;
+        private final IDrawable arrow;
+
+        FluidFillerCategory(IGuiHelper gui) {
+            this.icon  = gui.createDrawableItemLike(OmniTechBlocks.FLUID_FILLER.get());
+            this.arrow = gui.getRecipeArrow();
+        }
+
+        @Override public IRecipeType<FluidFillerRecipe> getRecipeType() { return FLUID_FILLER; }
+        @Override public Component getTitle() { return Component.translatable("jei.omnitech.fluid_filler"); }
+        @Override public int getWidth()  { return 120; }
+        @Override public int getHeight() { return 50; }
+        @Override public IDrawable getIcon() { return icon; }
+
+        @Override
+        public void setRecipe(IRecipeLayoutBuilder builder, FluidFillerRecipe recipe, IFocusGroup focuses) {
+            builder.addInputSlot(0, 2)
+                    .add(recipe.fluid(), net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME)
+                    .setFluidRenderer(net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME, false, 16, 36);
+
+            builder.addInputSlot(22, 12)
+                    .add(new ItemStack(net.minecraft.world.item.Items.BUCKET))
+                    .setStandardSlotBackground();
+
+            builder.addOutputSlot(82, 2)
+                    .add(new ItemStack(recipe.filledBucket()))
+                    .setOutputSlotBackground();
+        }
+
+        @Override
+        public void draw(FluidFillerRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
             arrow.draw(graphics, 44, 12);
         }
     }

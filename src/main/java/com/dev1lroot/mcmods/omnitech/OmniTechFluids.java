@@ -4,7 +4,9 @@
  */
 package com.dev1lroot.mcmods.omnitech;
 
+import com.dev1lroot.mcmods.omnitech.blocks.fluid.FlammableLiquidBlock;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -17,6 +19,7 @@ import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
@@ -47,6 +50,9 @@ public class OmniTechFluids
     /** Companion world blocks for fluids marked {@code "world_placeable": true}. */
     public static final DeferredRegister.Blocks BLOCKS =
             DeferredRegister.createBlocks(OmniTech.MODID);
+    /** Companion vanilla-style buckets for world-placeable fluids — see {@link FluidObject}. */
+    public static final DeferredRegister.Items ITEMS =
+            DeferredRegister.createItems(OmniTech.MODID);
 
     private static final Map<String, FluidObject> FLUIDS = new LinkedHashMap<>();
 
@@ -75,12 +81,14 @@ public class OmniTechFluids
      * Called by {@link FluidLoader} for each JSON file. Package-private — not
      * intended for use outside the loading pipeline.
      */
-    static void registerFluid(String name, FluidType.Properties props, boolean worldPlaceable) {
+    static void registerFluid(String name, FluidType.Properties props, boolean worldPlaceable, boolean flammable) {
         if (FLUIDS.containsKey(name)) {
             OmniTech.LOGGER.warn("[OmniTechFluids] Duplicate fluid ignored: '{}'", name);
             return;
         }
-        FLUIDS.put(name, new FluidObject(name, props, worldPlaceable));
+        // A bucket only makes sense for a fluid that can also be placed in the world
+        // (BucketItem.emptyContents needs the fluid's companion block to exist).
+        FLUIDS.put(name, new FluidObject(name, props, worldPlaceable, worldPlaceable, flammable));
     }
 
     // ── FluidObject ───────────────────────────────────────────────────────────
@@ -97,8 +105,11 @@ public class OmniTechFluids
         public final DeferredHolder<Fluid, Fluid> flowing;
         /** Companion world block, or {@code null} when not {@code world_placeable}. */
         public final DeferredBlock<LiquidBlock> block;
+        /** Companion vanilla-style bucket ({@code <name>_bucket}), or {@code null} when not bucketable. */
+        public final DeferredItem<BucketItem> bucket;
 
-        FluidObject(String name, FluidType.Properties typeProps, boolean worldPlaceable) {
+        FluidObject(String name, FluidType.Properties typeProps, boolean worldPlaceable,
+                    boolean bucketable, boolean flammable) {
             this.name = name;
             this.type = TYPE_REGISTRY.register(name,
                     () -> new FluidType(typeProps.descriptionId("fluid.omnitech." + name)));
@@ -108,16 +119,29 @@ public class OmniTechFluids
                     () -> new BaseFlowingFluid.Flowing(this.makeProperties()));
             this.block = worldPlaceable
                     ? BLOCKS.registerBlock(name,
-                            p -> new LiquidBlock((FlowingFluid) source.get(), p),
-                            () -> BlockBehaviour.Properties.of()
-                                    .mapColor(MapColor.COLOR_BLACK)
-                                    .replaceable()
-                                    .noCollision()
-                                    .strength(100.0F)
-                                    .pushReaction(PushReaction.POPPED)
-                                    .noLootTable()
-                                    .liquid()
-                                    .sound(SoundType.EMPTY))
+                            p -> flammable
+                                    ? new FlammableLiquidBlock((FlowingFluid) source.get(), p)
+                                    : new LiquidBlock((FlowingFluid) source.get(), p),
+                            () -> {
+                                var p = BlockBehaviour.Properties.of()
+                                        .mapColor(MapColor.COLOR_BLACK)
+                                        .replaceable()
+                                        .noCollision()
+                                        .strength(100.0F)
+                                        .pushReaction(PushReaction.POPPED)
+                                        .noLootTable()
+                                        .liquid()
+                                        .sound(SoundType.EMPTY);
+                                // Flammable fluids need random ticks to scan for nearby fire —
+                                // see FlammableLiquidBlock.
+                                return flammable ? p.randomTicks() : p;
+                            })
+                    : null;
+            // Fluid registration (this class) runs before item registration in the mod
+            // constructor, so `source` is resolved by the time this factory lambda fires.
+            this.bucket = bucketable
+                    ? ITEMS.registerItem(name + "_bucket",
+                            p -> new OmniTechBucketItem(source.get(), p.stacksTo(1)))
                     : null;
         }
 
@@ -132,5 +156,6 @@ public class OmniTechFluids
         TYPE_REGISTRY.register(modEventBus);
         REGISTRY.register(modEventBus);
         BLOCKS.register(modEventBus);
+        ITEMS.register(modEventBus);
     }
 }

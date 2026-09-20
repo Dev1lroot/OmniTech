@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.items;
 
+import com.dev1lroot.mcmods.omnitech.FluidHazardUtil;
 import com.dev1lroot.mcmods.omnitech.FluidPhaseUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import net.minecraft.ChatFormatting;
@@ -123,6 +124,7 @@ public class FluidCanisterItem extends Item {
                                    : fluidTemp >   20 ? ChatFormatting.YELLOW
                                    :                    ChatFormatting.GRAY;
             tooltip.accept(Component.literal(fluidTemp + " °C").withStyle(tempFmt));
+            FluidHazardUtil.appendHazardTooltip(fluid, tooltip);
         }
     }
 }

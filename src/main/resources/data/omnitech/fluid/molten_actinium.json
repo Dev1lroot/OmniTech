@@ -2,5 +2,6 @@
   "density": 10070,
   "viscosity": 2890,
   "temperature": 1323,
-  "light_level": 3
+  "light_level": 3,
+  "radioactive_level": 2
 }

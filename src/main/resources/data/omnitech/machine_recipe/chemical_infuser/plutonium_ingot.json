@@ -1,0 +1,16 @@
+{
+  "requiredKineticForce": 25.0,
+  "requiredTemperature": 650,
+  "inputFluid": {
+    "fluid": "omnitech:plutonium_nitrate",
+    "amount": 1000
+  },
+  "inputItem": {
+    "item": "omnitech:calcium_dust",
+    "amount": 3
+  },
+  "outputItem": {
+    "item": "omnitech:plutonium_ingot",
+    "amount": 1
+  }
+}

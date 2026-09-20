@@ -1,5 +1,5 @@
 {
-  "density": 10,
+  "density": 1032,
   "viscosity": 10,
   "temperature": 0,
   "min_temp": -52,
@@ -16,5 +16,7 @@
     "triple_point_pressure": 1,
     "has_solid": true
   },
-  "neutron_slowing": 0.65
+  "neutron_slowing": 0.65,
+  "flammable": true,
+  "toxic": true
 }

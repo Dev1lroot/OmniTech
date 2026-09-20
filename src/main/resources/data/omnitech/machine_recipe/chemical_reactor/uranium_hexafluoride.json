@@ -1,0 +1,18 @@
+{
+  "requiredTemperature": 350,
+  "productionTime": 300,
+  "inputs": [
+    {
+      "fluid": "omnitech:uranyl_nitrate",
+      "amount": 1000
+    },
+    {
+      "fluid": "omnitech:fluorine",
+      "amount": 1500
+    }
+  ],
+  "output": {
+    "fluid": "omnitech:uranium_hexafluoride",
+    "amount": 1000
+  }
+}

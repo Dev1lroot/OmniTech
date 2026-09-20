@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "omnitech:item/flask",
+    "layer1": "omnitech:item/flask_fluid"
+  }
+}

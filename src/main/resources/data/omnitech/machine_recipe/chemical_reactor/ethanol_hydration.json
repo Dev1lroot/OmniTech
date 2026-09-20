@@ -1,0 +1,18 @@
+{
+  "requiredTemperature": 300,
+  "productionTime": 150,
+  "inputs": [
+    {
+      "fluid": "omnitech:ethylene",
+      "amount": 1000
+    },
+    {
+      "fluid": "omnitech:distilled_water",
+      "amount": 1000
+    }
+  ],
+  "output": {
+    "fluid": "omnitech:ethanol",
+    "amount": 900
+  }
+}

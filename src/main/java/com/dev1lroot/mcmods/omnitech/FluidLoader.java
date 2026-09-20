@@ -72,7 +72,13 @@ public class FluidLoader {
                 int   minPressure   = json.has("min_pressure")    ? json.get("min_pressure").getAsInt()    : 0;
                 int   maxPressure   = json.has("max_pressure")    ? json.get("max_pressure").getAsInt()    : 100_000;
                 float neutronSlowing = json.has("neutron_slowing") ? json.get("neutron_slowing").getAsFloat() : 0.0f;
-                boolean worldPlaceable = json.has("world_placeable") && json.get("world_placeable").getAsBoolean();
+
+                // Hazard attributes shown in tooltips and applied to players standing in
+                // (toxic/radioactive) or igniting (flammable) the fluid — see FluidHazardUtil,
+                // FluidHazardTick and FlammableLiquidBlock.
+                boolean toxic            = json.has("toxic") && json.get("toxic").getAsBoolean();
+                int     radioactiveLevel = json.has("radioactive_level") ? json.get("radioactive_level").getAsInt() : 0;
+                boolean flammable        = json.has("flammable") && json.get("flammable").getAsBoolean();
 
                 FluidPhysicsRegistry.PhaseDiagram phaseDiagram = null;
                 if (json.has("phase_diagram")) {
@@ -94,15 +100,29 @@ public class FluidLoader {
                             plasmaTemp, hasSolid);
                 }
 
+                // A fluid is a normal bulk liquid — safe to place in the world and hand
+                // out a bucket for — when it's actually LIQUID at room temperature and
+                // isn't corrosive. Acids eat through a bucket; anything gas or molten at
+                // 20°C/101kPa isn't something a bucket or a placed block can represent.
+                // JSON can always override this explicitly with "world_placeable".
+                boolean isAcid = name.contains("acid");
+                boolean isLiquidAtAmbient = phaseDiagram != null
+                        && FluidPhaseUtil.getPhase(20, 101, phaseDiagram) == FluidPhase.LIQUID;
+                boolean autoPlaceable = isLiquidAtAmbient && !isAcid;
+                boolean worldPlaceable = json.has("world_placeable")
+                        ? json.get("world_placeable").getAsBoolean()
+                        : autoPlaceable;
+
                 FluidType.Properties props = FluidType.Properties.create()
                         .density(density)
                         .viscosity(viscosity)
                         .temperature(temperature)
                         .lightLevel(lightLevel);
 
-                OmniTechFluids.registerFluid(name, props, worldPlaceable);
+                OmniTechFluids.registerFluid(name, props, worldPlaceable, flammable);
                 FluidPhysicsRegistry.register(name,
-                        new FluidPhysicsRegistry.FluidPhysics(minTemp, maxTemp, minPressure, maxPressure, phaseDiagram, neutronSlowing));
+                        new FluidPhysicsRegistry.FluidPhysics(minTemp, maxTemp, minPressure, maxPressure,
+                                phaseDiagram, neutronSlowing, toxic, radioactiveLevel, flammable));
 
             } catch (Exception e) {
                 OmniTech.LOGGER.error("[FluidLoader] Failed to parse fluid '{}': {}", name, e.getMessage());

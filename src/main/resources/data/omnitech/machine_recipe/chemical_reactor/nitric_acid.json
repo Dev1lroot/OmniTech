@@ -1,0 +1,22 @@
+{
+  "requiredTemperature": 850,
+  "productionTime": 150,
+  "inputs": [
+    {
+      "fluid": "omnitech:ammonia",
+      "amount": 1000
+    },
+    {
+      "fluid": "omnitech:oxygen",
+      "amount": 2000
+    }
+  ],
+  "output": {
+    "fluid": "omnitech:nitric_acid",
+    "amount": 1000
+  },
+  "catalyst": {
+    "item": "omnitech:platinum_rod",
+    "damage": 1
+  }
+}

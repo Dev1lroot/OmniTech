@@ -1,0 +1,30 @@
+{
+  "requiredTemperature": 200,
+  "productionTime": 200,
+  "input": {
+    "fluid": "omnitech:crude_oil",
+    "amount": 1000
+  },
+  "outputs": [
+    {
+      "fluid": "omnitech:heavy_fuel_oil",
+      "amount": 350
+    },
+    {
+      "fluid": "omnitech:diesel",
+      "amount": 250
+    },
+    {
+      "fluid": "omnitech:kerosene",
+      "amount": 150
+    },
+    {
+      "fluid": "omnitech:naphtha",
+      "amount": 150
+    },
+    {
+      "fluid": "omnitech:propane",
+      "amount": 100
+    }
+  ]
+}

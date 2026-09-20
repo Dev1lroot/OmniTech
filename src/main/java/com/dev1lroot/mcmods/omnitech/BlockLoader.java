@@ -138,6 +138,20 @@ public class BlockLoader {
         }
     }
 
+    /**
+     * Adds every registered block item <em>except</em> the crafted storage forms
+     * ({@code <material>_block} and {@code raw_<material>_block}) — i.e. the blocks a
+     * player actually mines (ores, native minerals) rather than crafts from ingots.
+     * Used by the minerals creative tab so it doesn't duplicate the materials tab's
+     * ingot-compaction blocks.
+     */
+    public static void addMineralsToTab(CreativeModeTab.Output output) {
+        for (String name : REGISTERED.keySet()) {
+            if (name.endsWith("_block")) continue;
+            getBlockItem(name).ifPresent(output::accept);
+        }
+    }
+
     /** Returns the DeferredBlock registered for {@code name}, or {@code null} if unknown. */
     public static DeferredBlock<Block> getBlock(String name) {
         return REGISTERED.get(name);

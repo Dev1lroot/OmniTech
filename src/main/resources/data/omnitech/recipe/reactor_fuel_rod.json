@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "U": "omnitech:enriched_uranium_ingot",
+    "Z": "omnitech:zirconium_ingot"
+  },
+  "pattern": [
+    "Z",
+    "U",
+    "Z"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:reactor_fuel_rod"
+  }
+}

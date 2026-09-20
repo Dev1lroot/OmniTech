@@ -1,0 +1,22 @@
+{
+  "density": 789,
+  "viscosity": 1200,
+  "temperature": 293,
+  "light_level": 0,
+  "min_temp": -114,
+  "max_temp": 441,
+  "min_pressure": 0,
+  "max_pressure": 200000,
+  "toxic": true,
+  "flammable": true,
+  "phase_diagram": {
+    "melting_point": -114,
+    "boiling_point": 78,
+    "boiling_slope": 40,
+    "critical_temp": 241,
+    "critical_pressure": 6270,
+    "triple_point_temp": -114,
+    "triple_point_pressure": 1,
+    "has_solid": true
+  }
+}

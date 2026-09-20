@@ -1851,6 +1851,26 @@ materials:
     tools: []
     armor: []
 
+  # ── Nuclear fuel cycle ────────────────────────────────────────────────────────
+
+  - name: "enriched_uranium"
+    formula: "U-235"
+    colors: { dark: "#4A6B3A", light: "#C9FF33", lum: 1.2, sat: 1.5 }
+    burns: true
+    items: ["%_ingot"]
+    blocks: []
+    tools: []
+    armor: []
+
+  - name: "fluorite"
+    formula: "CaF2"
+    colors: { dark: "#2F4F4F", light: "#9370DB", lum: 1.0, sat: 1.2 }
+    burns: true
+    items: ["%_dust"]
+    blocks: ["%"]
+    tools: []
+    armor: []
+
 # ── Melt amounts (mb) per item pattern ────────────────────────────────────────
 melt_values:
   "raw_%":        1000

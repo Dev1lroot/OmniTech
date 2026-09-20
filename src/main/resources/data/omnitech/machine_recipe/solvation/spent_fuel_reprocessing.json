@@ -1,0 +1,15 @@
+{
+  "requiredKineticForce": 40,
+  "inputFluid": {
+    "fluid": "omnitech:nitric_acid",
+    "amount": 1500
+  },
+  "inputItem": {
+    "item": "omnitech:depleted_reactor_fuel_rod",
+    "amount": 1
+  },
+  "outputFluid": {
+    "fluid": "omnitech:spent_fuel_solution",
+    "amount": 1500
+  }
+}

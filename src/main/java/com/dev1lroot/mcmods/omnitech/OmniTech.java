@@ -159,6 +159,7 @@ public class OmniTech {
 
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(com.dev1lroot.mcmods.omnitech.radiation.RadiationTick.class);
+        NeoForge.EVENT_BUS.register(FluidHazardTick.class);
         NeoForge.EVENT_BUS.addListener(OmniTech::registerCommands);
         NeoForge.EVENT_BUS.addListener(OmniTech::onServerTick);
         NeoForge.EVENT_BUS.addListener(OmniTech::onServerStopping);
@@ -383,6 +384,15 @@ public class OmniTech {
                 Capabilities.Fluid.ITEM,
                 (stack, access) -> new FluidCanisterResourceHandler(access),
                 OmniTechItems.FLUID_CANISTER.get()
+        );
+
+        // Flask exposes its stored fluid the same way, so Fluid Tank / Fluid Filler
+        // right-click filling works on it automatically with no new interaction code —
+        // its ResourceHandler's isValid() rejects fluids it can't hold.
+        event.registerItem(
+                Capabilities.Fluid.ITEM,
+                (stack, access) -> new com.dev1lroot.mcmods.omnitech.client.FlaskResourceHandler(access),
+                OmniTechItems.FLASK.get()
         );
 
         // Reactor master block exposes its distilled-water coolant tank

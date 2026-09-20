@@ -166,6 +166,9 @@ public class OmniTechClient
         event.register(
                 Identifier.fromNamespaceAndPath(OmniTech.MODID, "fluid_canister"),
                 FluidCanisterItemModel.Unbaked.MAP_CODEC);
+        event.register(
+                Identifier.fromNamespaceAndPath(OmniTech.MODID, "flask"),
+                com.dev1lroot.mcmods.omnitech.client.FlaskItemModel.Unbaked.MAP_CODEC);
     }
 
     void registerRenderPipelines(RegisterRenderPipelinesEvent event) {

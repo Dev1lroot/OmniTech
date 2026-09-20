@@ -53,8 +53,16 @@ public class FluidPhysicsRegistry {
      *                        factor used in neutron-flux calculations.
      */
     public record FluidPhysics(int minTemp, int maxTemp, int minPressure, int maxPressure,
-                               @Nullable PhaseDiagram phaseDiagram, float neutronSlowing) {
-        public static final FluidPhysics DEFAULT = new FluidPhysics(-273, 10_000, 0, 100_000, null, 0.0f);
+                               @Nullable PhaseDiagram phaseDiagram, float neutronSlowing,
+                               boolean toxic, int radioactiveLevel, boolean flammable) {
+        public static final FluidPhysics DEFAULT =
+                new FluidPhysics(-273, 10_000, 0, 100_000, null, 0.0f, false, 0, false);
+
+        /** Convenience constructor for callers that don't set the hazard flags. */
+        public FluidPhysics(int minTemp, int maxTemp, int minPressure, int maxPressure,
+                             @Nullable PhaseDiagram phaseDiagram, float neutronSlowing) {
+            this(minTemp, maxTemp, minPressure, maxPressure, phaseDiagram, neutronSlowing, false, 0, false);
+        }
     }
 
     // Keyed by full "namespace:path" so any mod's fluid can be registered.

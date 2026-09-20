@@ -1,0 +1,28 @@
+{
+  "energyRequired": 500.0,
+  "requiredTemperature": 0,
+  "inputFluid": {
+    "fluid": "omnitech:hydrofluoric_acid",
+    "amount": 1000
+  },
+  "outputAnode": {
+    "fluid": "omnitech:fluorine",
+    "amount": 500
+  },
+  "outputCathode": {
+    "fluid": "omnitech:hydrogen",
+    "amount": 500
+  },
+  "outputSolution": {
+    "fluid": "omnitech:distilled_water",
+    "amount": 10
+  },
+  "anode": {
+    "item": "omnitech:graphite_rod",
+    "damage": 1
+  },
+  "cathode": {
+    "item": "omnitech:copper_rod",
+    "damage": 1
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "requiredTemperature": 80,
+  "productionTime": 100,
+  "inputs": [
+    {
+      "fluid": "omnitech:sulfur_trioxide",
+      "amount": 1000
+    },
+    {
+      "fluid": "omnitech:distilled_water",
+      "amount": 1000
+    }
+  ],
+  "output": {
+    "fluid": "omnitech:sulfuric_acid",
+    "amount": 1000
+  }
+}

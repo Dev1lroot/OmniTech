@@ -1,0 +1,18 @@
+{
+  "requiredTemperature": 64,
+  "productionTime": 1000,
+  "input": {
+    "fluid": "omnitech:uranium_hexafluoride",
+    "amount": 1000
+  },
+  "outputs": [
+    {
+      "fluid": "omnitech:enriched_uranium_hexafluoride",
+      "amount": 150
+    },
+    {
+      "fluid": "omnitech:depleted_uranium_hexafluoride",
+      "amount": 850
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "minecraft:sulfur",
+  "output": [
+    {
+      "item": "omnitech:sulfur_dust",
+      "count": 4,
+      "chance": 1.0
+    }
+  ]
+}

@@ -39,7 +39,10 @@ import net.neoforged.fml.jarcontents.JarContents;
  *
  * <p>Special sentinel values in {@code data}:
  * <ul>
- *   <li>{@code "$material_sets"} – calls {@link MineralSet#addAllToTab} (all mineral/ore blocks)</li>
+ *   <li>{@code "$material_sets"} – calls {@link BlockLoader#addAllToTab} (every registered block)</li>
+ *   <li>{@code "$mineral_sets"}  – calls {@link BlockLoader#addMineralsToTab} (registered blocks
+ *       except the crafted {@code _block}/{@code raw_%_block} storage forms — those belong only
+ *       in the materials tab, since they're crafted/uncrafted from ingots rather than mined)</li>
  *   <li>{@code "$armor_sets"}   – calls {@link ArmorSet#addAllToTab}</li>
  *   <li>{@code "$tool_sets"}    – calls {@link ToolSet#addAllToTab}</li>
  * </ul>
@@ -88,6 +91,7 @@ public class CreativeTabLoader {
                                 for (String entry : data) {
                                     switch (entry) {
                                         case "$material_sets" -> BlockLoader.addAllToTab(output);
+                                        case "$mineral_sets"  -> BlockLoader.addMineralsToTab(output);
                                         case "$armor_sets"    -> ArmorSet.addAllToTab(output);
                                         case "$tool_sets"     -> ToolSet.addAllToTab(output);
                                         default -> BuiltInRegistries.ITEM

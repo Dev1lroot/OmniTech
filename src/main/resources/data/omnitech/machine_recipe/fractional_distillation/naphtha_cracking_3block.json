@@ -1,0 +1,22 @@
+{
+  "requiredTemperature": 850,
+  "productionTime": 150,
+  "input": {
+    "fluid": "omnitech:naphtha",
+    "amount": 1000
+  },
+  "outputs": [
+    {
+      "fluid": "omnitech:ethylene",
+      "amount": 300
+    },
+    {
+      "fluid": "omnitech:propane",
+      "amount": 350
+    },
+    {
+      "fluid": "omnitech:butane",
+      "amount": 350
+    }
+  ]
+}

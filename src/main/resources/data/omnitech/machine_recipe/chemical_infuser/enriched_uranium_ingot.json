@@ -1,0 +1,16 @@
+{
+  "requiredKineticForce": 20.0,
+  "requiredTemperature": 700,
+  "inputFluid": {
+    "fluid": "omnitech:enriched_uranium_hexafluoride",
+    "amount": 1000
+  },
+  "inputItem": {
+    "item": "omnitech:magnesium_ingot",
+    "amount": 2
+  },
+  "outputItem": {
+    "item": "omnitech:enriched_uranium_ingot",
+    "amount": 1
+  }
+}

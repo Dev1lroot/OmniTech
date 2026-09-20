@@ -1,0 +1,22 @@
+{
+  "requiredTemperature": 110,
+  "productionTime": 400,
+  "input": {
+    "fluid": "omnitech:spent_fuel_solution",
+    "amount": 1500
+  },
+  "outputs": [
+    {
+      "fluid": "omnitech:uranyl_nitrate",
+      "amount": 1000
+    },
+    {
+      "fluid": "omnitech:plutonium_nitrate",
+      "amount": 300
+    },
+    {
+      "fluid": "omnitech:nuclear_waste",
+      "amount": 200
+    }
+  ]
+}

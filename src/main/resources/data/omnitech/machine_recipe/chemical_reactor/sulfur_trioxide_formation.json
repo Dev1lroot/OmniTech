@@ -1,0 +1,22 @@
+{
+  "requiredTemperature": 450,
+  "productionTime": 200,
+  "inputs": [
+    {
+      "fluid": "omnitech:sulfur_dioxide",
+      "amount": 1000
+    },
+    {
+      "fluid": "omnitech:oxygen",
+      "amount": 500
+    }
+  ],
+  "output": {
+    "fluid": "omnitech:sulfur_trioxide",
+    "amount": 1000
+  },
+  "catalyst": {
+    "item": "omnitech:vanadium_rod",
+    "damage": 1
+  }
+}

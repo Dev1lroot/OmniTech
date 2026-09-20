@@ -1,0 +1,15 @@
+{
+  "requiredKineticForce": 25,
+  "inputFluid": {
+    "fluid": "omnitech:sulfuric_acid",
+    "amount": 1000
+  },
+  "inputItem": {
+    "item": "omnitech:fluorite_dust",
+    "amount": 4
+  },
+  "outputFluid": {
+    "fluid": "omnitech:hydrofluoric_acid",
+    "amount": 1000
+  }
+}

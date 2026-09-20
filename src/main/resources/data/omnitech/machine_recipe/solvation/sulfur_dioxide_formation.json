@@ -1,0 +1,15 @@
+{
+  "requiredKineticForce": 15,
+  "inputFluid": {
+    "fluid": "omnitech:oxygen",
+    "amount": 1000
+  },
+  "inputItem": {
+    "item": "omnitech:sulfur_dust",
+    "amount": 2
+  },
+  "outputFluid": {
+    "fluid": "omnitech:sulfur_dioxide",
+    "amount": 1000
+  }
+}

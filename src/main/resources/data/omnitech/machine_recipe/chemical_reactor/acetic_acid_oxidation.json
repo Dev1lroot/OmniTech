@@ -1,0 +1,18 @@
+{
+  "requiredTemperature": 60,
+  "productionTime": 150,
+  "inputs": [
+    {
+      "fluid": "omnitech:ethanol",
+      "amount": 1000
+    },
+    {
+      "fluid": "omnitech:oxygen",
+      "amount": 500
+    }
+  ],
+  "output": {
+    "fluid": "omnitech:acetic_acid",
+    "amount": 900
+  }
+}

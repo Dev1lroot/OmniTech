@@ -10,7 +10,7 @@
     "amount": 250
   },
   "outputCathode": {
-    "fluid": "omnitech:molten_aluminum",
+    "fluid": "omnitech:molten_aluminium",
     "amount": 250
   },
   "outputSolution": {

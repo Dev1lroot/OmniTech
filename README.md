@@ -57,7 +57,7 @@ OmniTech moves away from "magic energy" boxes, introducing a sophisticated progr
 The mod significantly expands the periodic table, introducing a wide array of industrial metals and alloys into world generation. Every material features a comprehensive set of processing forms — ranging from plates and wires to complex mechanical components — integrated into a deep, multi-stage manufacturing pipeline.
 
 ### Nuclear Reactors
-Multi-block reactor structures with per-rod temperature simulation, coolant loops, and realistic failure modes. Overheated reactors trigger a nuclear explosion with three zones of block destruction (0–32 blocks: 100%, 32–64: 75%, 64–128: 25%). Radiation persists in world data; players within range receive Radiation I–III effects including health reduction and a noise overlay.
+Multi-block reactor structures (3–11 wide/deep, 7 tall) with per-cell neutron flux simulation, fuel/control/reflector rods, coolant loops keyed to real fluid physics, and realistic failure modes. Overheated or unsafely disassembled reactors trigger a timed, multi-zone nuclear explosion — full block destruction near ground zero, scattered detonations further out, and permanent biome conversion at range. Radiation persists in world save data; players in range receive tiered effects including health reduction and a noise overlay. A full uranium-enrichment → fuel-rod → spent-fuel-reprocessing → plutonium pipeline runs across the Solvation, Chemical Reactor, Fractional Distillation, and Chemical Infuser machines — see [Reactors & Fuel Cycle](Documentation/reactors.md).
 
 ### Scientific Space Exploration
 Space travel in OmniTech is a mathematically grounded experience driven by astronomical logic, not simple teleportation:
@@ -128,6 +128,7 @@ The built JAR is placed in `build/libs/`. Drop it into your NeoForge `mods/` fol
 |----------|----------|
 | [Installation & Build](Documentation/index.md) | Requirements, setup, project structure |
 | [Machines](Documentation/machines.md) | Every machine: I/O, energy, mechanics |
+| [Reactors & Fuel Cycle](Documentation/reactors.md) | Reactor multiblock, neutron flux, coolant, failure modes, uranium enrichment → fuel rod → plutonium pipeline |
 | [Power Networks](Documentation/power_networks.md) | Energy carriers, cross-tier conversion, fluids |
 | [Materials](Documentation/materials.md) | 12 metals, item forms, processing chain |
 | [Planets & Space](Documentation/planets.md) | Dimensions, rocket, navigation GUI, sky renderer |

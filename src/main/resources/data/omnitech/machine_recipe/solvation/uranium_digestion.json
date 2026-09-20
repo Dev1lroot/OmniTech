@@ -1,0 +1,15 @@
+{
+  "requiredKineticForce": 30,
+  "inputFluid": {
+    "fluid": "omnitech:nitric_acid",
+    "amount": 1000
+  },
+  "inputItem": {
+    "item": "omnitech:uranium_dust",
+    "amount": 4
+  },
+  "outputFluid": {
+    "fluid": "omnitech:uranyl_nitrate",
+    "amount": 1000
+  }
+}
