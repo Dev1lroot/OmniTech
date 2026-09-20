@@ -1,0 +1,21 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:ilmenite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:titanium_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:iron_mote",
+      "count": 1,
+      "chance": 0.2
+    }
+  ]
+}

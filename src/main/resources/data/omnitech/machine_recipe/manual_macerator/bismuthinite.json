@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:bismuthinite",
+  "output": [
+    {
+      "item": "omnitech:bismuthinite_dust",
+      "count": 4,
+      "chance": 1.0
+    }
+  ]
+}

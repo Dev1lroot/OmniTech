@@ -1,0 +1,31 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:xenotime_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:yttrium_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:dysprosium_mote",
+      "count": 1,
+      "chance": 0.15
+    },
+    {
+      "item": "omnitech:erbium_mote",
+      "count": 1,
+      "chance": 0.1
+    },
+    {
+      "item": "omnitech:ytterbium_mote",
+      "count": 1,
+      "chance": 0.08
+    }
+  ]
+}

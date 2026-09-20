@@ -1,0 +1,26 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:stannite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:tin_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:copper_mote",
+      "count": 1,
+      "chance": 0.15
+    },
+    {
+      "item": "omnitech:zinc_mote",
+      "count": 1,
+      "chance": 0.08
+    }
+  ]
+}

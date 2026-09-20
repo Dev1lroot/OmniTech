@@ -392,3 +392,166 @@ minerals:
         cluster_size: { min: 2, max: 6 }
         height: { min: 10, max: 50 }
         replaces: ["minecraft:stone", "minecraft:andesite"]
+
+  # ── Newly added minerals (no worldgen yet — block + processing only) ─────────
+
+  - name: "beryl"
+    visuals:
+      base_layer:
+        color: "#3E5C4E"
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#7FCDBB"
+          size: { min: 0.15, max: 0.35 }
+          density: 0.4
+          shading: "translucent"
+        - color: "#B2F2E5"
+          size: { min: 0.05, max: 0.15 }
+          density: 0.15
+          shading: "glassy"
+      effects:
+        emissive: false
+        reflectivity: 0.5
+
+  - name: "celestine"
+    visuals:
+      base_layer:
+        color: "#7A96A4"
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#B8D4E3"
+          size: { min: 0.2, max: 0.4 }
+          density: 0.5
+          shading: "translucent"
+      effects:
+        emissive: false
+        reflectivity: 0.4
+
+  - name: "columbite"
+    visuals:
+      base_layer:
+        color: "#1A1A1A"
+        texture_type: "stony"
+      inclusions:
+        - color: "#4A4A52"
+          size: { min: 0.15, max: 0.3 }
+          density: 0.5
+          shading: "metallic"
+      effects:
+        emissive: false
+        metalness: 0.6
+
+  - name: "molybdenite"
+    visuals:
+      base_layer:
+        color: "#2A2A30"
+        texture_type: "grainy"
+      inclusions:
+        - color: "#8A8A96"
+          size: { min: 0.15, max: 0.35 }
+          density: 0.6
+          shading: "metallic"
+          shape: "plates"
+      effects:
+        emissive: false
+        reflectivity: 0.6
+        metalness: 0.7
+
+  - name: "barite"
+    visuals:
+      base_layer:
+        color: "#C9C0A8"
+        texture_type: "stony"
+      inclusions:
+        - color: "#F0EAD6"
+          size: { min: 0.2, max: 0.4 }
+          density: 0.5
+          shading: "translucent"
+      effects:
+        emissive: false
+        reflectivity: 0.3
+
+  - name: "bastnasite"
+    visuals:
+      base_layer:
+        color: "#4A3D18"
+        texture_type: "grainy"
+      inclusions:
+        - color: "#C9A227"
+          size: { min: 0.15, max: 0.3 }
+          density: 0.4
+          shading: "matte"
+        - color: "#E8C860"
+          size: { min: 0.05, max: 0.15 }
+          density: 0.15
+          shading: "bright"
+      effects:
+        emissive: false
+        radioactive_hint: false
+
+  - name: "xenotime"
+    visuals:
+      base_layer:
+        color: "#3A2E16"
+        texture_type: "stony"
+      inclusions:
+        - color: "#B8935A"
+          size: { min: 0.1, max: 0.3 }
+          density: 0.4
+          shading: "translucent"
+      effects:
+        emissive: false
+        reflectivity: 0.4
+
+  - name: "bismuthinite"
+    visuals:
+      base_layer:
+        color: "#38383E"
+        texture_type: "grainy"
+      inclusions:
+        - color: "#9A9AA8"
+          size: { min: 0.15, max: 0.35 }
+          density: 0.5
+          shading: "metallic"
+          shape: "plates"
+      effects:
+        emissive: false
+        reflectivity: 0.6
+        metalness: 0.6
+
+  - name: "native_platinum"
+    visuals:
+      base_layer:
+        color: "#1E1E1E"
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#E8EAEA"
+          size: { min: 0.1, max: 0.3 }
+          density: 0.3
+          shading: "metallic"
+          shape: "veins"
+      effects:
+        emissive: false
+        reflectivity: 0.9
+        metalness: 1.0
+        sparkle_factor: 0.8
+
+  - name: "vanadinite"
+    visuals:
+      base_layer:
+        color: "#3A1E10"
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#E8621A"
+          size: { min: 0.15, max: 0.35 }
+          density: 0.5
+          shading: "glossy"
+          shape: "cubic"
+        - color: "#FF8C3D"
+          size: { min: 0.05, max: 0.15 }
+          density: 0.15
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.5
+

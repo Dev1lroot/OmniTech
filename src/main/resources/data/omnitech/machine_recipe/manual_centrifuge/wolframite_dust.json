@@ -1,0 +1,26 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:wolframite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:tungsten_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:manganese_mote",
+      "count": 1,
+      "chance": 0.2
+    },
+    {
+      "item": "omnitech:iron_mote",
+      "count": 1,
+      "chance": 0.1
+    }
+  ]
+}

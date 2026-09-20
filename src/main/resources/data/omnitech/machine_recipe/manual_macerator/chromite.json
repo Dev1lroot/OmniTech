@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:chromite",
+  "output": [
+    {
+      "item": "omnitech:chromite_dust",
+      "count": 4,
+      "chance": 1.0
+    }
+  ]
+}

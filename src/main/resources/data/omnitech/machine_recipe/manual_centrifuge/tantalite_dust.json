@@ -1,0 +1,26 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:tantalite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:tantalum_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:niobium_mote",
+      "count": 1,
+      "chance": 0.25
+    },
+    {
+      "item": "omnitech:manganese_mote",
+      "count": 1,
+      "chance": 0.1
+    }
+  ]
+}

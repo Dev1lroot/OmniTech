@@ -1,0 +1,31 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:galena_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:lead_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:silver_mote",
+      "count": 1,
+      "chance": 0.12
+    },
+    {
+      "item": "omnitech:thallium_mote",
+      "count": 1,
+      "chance": 0.06
+    },
+    {
+      "item": "omnitech:bismuth_mote",
+      "count": 1,
+      "chance": 0.06
+    }
+  ]
+}

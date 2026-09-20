@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:wolframite",
+  "output": [
+    {
+      "item": "omnitech:wolframite_dust",
+      "count": 4,
+      "chance": 1.0
+    }
+  ]
+}

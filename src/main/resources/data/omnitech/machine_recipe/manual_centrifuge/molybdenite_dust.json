@@ -1,0 +1,21 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:molybdenite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:molybdenum_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:rhenium_mote",
+      "count": 1,
+      "chance": 0.04
+    }
+  ]
+}

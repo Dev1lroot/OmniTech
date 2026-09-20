@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:magnesite",
+  "output": [
+    {
+      "item": "omnitech:magnesite_dust",
+      "count": 4,
+      "chance": 1.0
+    }
+  ]
+}

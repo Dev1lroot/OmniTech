@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:native_platinum",
+  "output": [
+    {
+      "item": "omnitech:native_platinum_dust",
+      "count": 4,
+      "chance": 1.0
+    }
+  ]
+}

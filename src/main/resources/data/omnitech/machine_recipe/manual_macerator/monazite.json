@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:monazite",
+  "output": [
+    {
+      "item": "omnitech:monazite_dust",
+      "count": 4,
+      "chance": 1.0
+    }
+  ]
+}

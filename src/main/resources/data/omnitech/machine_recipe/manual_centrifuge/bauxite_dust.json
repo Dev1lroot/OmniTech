@@ -1,0 +1,21 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:bauxite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:aluminium_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:gallium_mote",
+      "count": 1,
+      "chance": 0.08
+    }
+  ]
+}

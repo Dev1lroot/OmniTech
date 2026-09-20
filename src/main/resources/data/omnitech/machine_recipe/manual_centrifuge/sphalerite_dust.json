@@ -2,10 +2,40 @@
   "requiredKineticForce": 100,
   "input": "omnitech:sphalerite_dust",
   "output": [
-    { "item": "omnitech:stone_dust", "count":  1, "chance":  1},
-    { "item": "omnitech:zinc_dust",   "count": 1, "chance": 1 },
-    { "item": "omnitech:cadmium_mote",   "count": 1, "chance": 0.1 },
-    { "item": "omnitech:indium_mote",   "count": 1, "chance": 0.1 },
-    { "item": "omnitech:iron_mote",   "count": 1, "chance": 0.1 }
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1
+    },
+    {
+      "item": "omnitech:zinc_dust",
+      "count": 1,
+      "chance": 1
+    },
+    {
+      "item": "omnitech:cadmium_mote",
+      "count": 1,
+      "chance": 0.1
+    },
+    {
+      "item": "omnitech:indium_mote",
+      "count": 1,
+      "chance": 0.1
+    },
+    {
+      "item": "omnitech:iron_mote",
+      "count": 1,
+      "chance": 0.1
+    },
+    {
+      "item": "omnitech:gallium_mote",
+      "count": 1,
+      "chance": 0.06
+    },
+    {
+      "item": "omnitech:germanium_mote",
+      "count": 1,
+      "chance": 0.05
+    }
   ]
 }

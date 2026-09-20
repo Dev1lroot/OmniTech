@@ -1,0 +1,26 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:carnotite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:uranium_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:vanadium_dust",
+      "count": 1,
+      "chance": 0.6
+    },
+    {
+      "item": "omnitech:potassium_mote",
+      "count": 1,
+      "chance": 0.2
+    }
+  ]
+}

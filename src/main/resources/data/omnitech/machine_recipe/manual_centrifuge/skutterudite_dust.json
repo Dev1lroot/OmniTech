@@ -1,0 +1,26 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:skutterudite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:cobalt_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:arsenic_dust",
+      "count": 2,
+      "chance": 0.6
+    },
+    {
+      "item": "omnitech:nickel_mote",
+      "count": 1,
+      "chance": 0.1
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:barite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:barium_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

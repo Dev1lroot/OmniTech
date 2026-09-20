@@ -1,0 +1,46 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:monazite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:thorium_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:cerium_mote",
+      "count": 1,
+      "chance": 0.3
+    },
+    {
+      "item": "omnitech:lanthanum_mote",
+      "count": 1,
+      "chance": 0.25
+    },
+    {
+      "item": "omnitech:neodymium_mote",
+      "count": 1,
+      "chance": 0.2
+    },
+    {
+      "item": "omnitech:praseodymium_mote",
+      "count": 1,
+      "chance": 0.1
+    },
+    {
+      "item": "omnitech:samarium_mote",
+      "count": 1,
+      "chance": 0.06
+    },
+    {
+      "item": "omnitech:scandium_mote",
+      "count": 1,
+      "chance": 0.03
+    }
+  ]
+}

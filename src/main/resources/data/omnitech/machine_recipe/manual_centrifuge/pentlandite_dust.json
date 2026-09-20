@@ -1,0 +1,31 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:pentlandite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:nickel_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:cobalt_mote",
+      "count": 1,
+      "chance": 0.15
+    },
+    {
+      "item": "omnitech:palladium_mote",
+      "count": 1,
+      "chance": 0.04
+    },
+    {
+      "item": "omnitech:platinum_mote",
+      "count": 1,
+      "chance": 0.02
+    }
+  ]
+}

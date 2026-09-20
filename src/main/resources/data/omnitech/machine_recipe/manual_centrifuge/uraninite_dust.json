@@ -1,0 +1,56 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:uraninite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:uranium_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:lead_mote",
+      "count": 1,
+      "chance": 0.2
+    },
+    {
+      "item": "omnitech:radium_mote",
+      "count": 1,
+      "chance": 0.08
+    },
+    {
+      "item": "omnitech:thorium_mote",
+      "count": 1,
+      "chance": 0.08
+    },
+    {
+      "item": "omnitech:polonium_mote",
+      "count": 1,
+      "chance": 0.04
+    },
+    {
+      "item": "omnitech:actinium_mote",
+      "count": 1,
+      "chance": 0.03
+    },
+    {
+      "item": "omnitech:protactinium_mote",
+      "count": 1,
+      "chance": 0.02
+    },
+    {
+      "item": "omnitech:neptunium_mote",
+      "count": 1,
+      "chance": 0.01
+    },
+    {
+      "item": "omnitech:plutonium_mote",
+      "count": 1,
+      "chance": 0.005
+    }
+  ]
+}

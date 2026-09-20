@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:bauxite",
+  "output": [
+    {
+      "item": "omnitech:bauxite_dust",
+      "count": 4,
+      "chance": 1.0
+    }
+  ]
+}

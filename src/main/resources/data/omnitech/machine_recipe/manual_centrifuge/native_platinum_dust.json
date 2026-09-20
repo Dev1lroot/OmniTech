@@ -1,0 +1,41 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:native_platinum_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:platinum_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:palladium_mote",
+      "count": 1,
+      "chance": 0.15
+    },
+    {
+      "item": "omnitech:rhodium_mote",
+      "count": 1,
+      "chance": 0.08
+    },
+    {
+      "item": "omnitech:ruthenium_mote",
+      "count": 1,
+      "chance": 0.05
+    },
+    {
+      "item": "omnitech:osmium_mote",
+      "count": 1,
+      "chance": 0.03
+    },
+    {
+      "item": "omnitech:iridium_mote",
+      "count": 1,
+      "chance": 0.03
+    }
+  ]
+}
