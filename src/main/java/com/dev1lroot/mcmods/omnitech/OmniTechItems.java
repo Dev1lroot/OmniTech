@@ -190,6 +190,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> CHEMICAL_REACTOR_ITEM = REGISTRY.registerSimpleBlockItem(
             "chemical_reactor", OmniTechBlocks.CHEMICAL_REACTOR);
 
+    public static final DeferredItem<BlockItem> ROCKET_CONTROLLER_ITEM = REGISTRY.registerSimpleBlockItem(
+            "rocket_controller", OmniTechBlocks.ROCKET_CONTROLLER);
+
     public static final DeferredItem<BlockItem> FLUID_FILLER_ITEM = REGISTRY.registerSimpleBlockItem(
             "fluid_filler", OmniTechBlocks.FLUID_FILLER);
 

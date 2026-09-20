@@ -5,6 +5,7 @@
 package com.dev1lroot.mcmods.omnitech.worldgen;
 
 import com.dev1lroot.mcmods.omnitech.OmniTech;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.carver.WorldCarver;
 import net.neoforged.bus.api.IEventBus;
@@ -14,11 +15,11 @@ import java.util.function.Supplier;
 
 public class OmniTechCarvers {
 
-    public static final DeferredRegister<WorldCarver<?>> REGISTRY =
-            DeferredRegister.create(Registries.CARVER, OmniTech.MODID);
+    public static final DeferredRegister<MapCodec<? extends WorldCarver>> REGISTRY =
+            DeferredRegister.create(Registries.CARVER_TYPE, OmniTech.MODID);
 
-    public static final Supplier<CraterCarver> MOON_CRATER =
-            REGISTRY.register("moon_crater", CraterCarver::new);
+    public static final Supplier<MapCodec<CraterCarver>> MOON_CRATER =
+            REGISTRY.register("moon_crater", () -> CraterCarver.MAP_CODEC);
 
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);

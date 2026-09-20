@@ -1,0 +1,45 @@
+{
+  "controller": "omnitech:rocket_controller",
+  "key": {
+    "C": "omnitech:rocket_controller",
+    "P": "omnitech:titanium_block",
+    "F": "omnitech:steel_block"
+  },
+  "layers": [
+    [
+      "  F  ",
+      "  F  ",
+      "FFCFF",
+      "  F  ",
+      "  F  "
+    ],
+    [
+      "     ",
+      " PPP ",
+      " PPP ",
+      " PPP ",
+      "     "
+    ],
+    [
+      "     ",
+      " PPP ",
+      " PPP ",
+      " PPP ",
+      "     "
+    ],
+    [
+      "     ",
+      " PPP ",
+      " PPP ",
+      " PPP ",
+      "     "
+    ],
+    [
+      "     ",
+      "     ",
+      "  P  ",
+      "     ",
+      "     "
+    ]
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "type": "minecraft:sequence",
+  "sequence": [
+    {
+      "type": "minecraft:condition",
+      "if_true": {
+        "type": "minecraft:vertical_gradient",
+        "false_at_and_above": { "above_bottom": 3 },
+        "random_name": "omnitech:europa_bedrock_floor",
+        "true_at_and_below": { "above_bottom": 0 }
+      },
+      "then_run": {
+        "type": "minecraft:block",
+        "result_state": "minecraft:bedrock"
+      }
+    },
+    {
+      "type": "minecraft:condition",
+      "if_true": {
+        "type": "minecraft:not",
+        "invert": {
+          "type": "minecraft:y_above",
+          "anchor": { "absolute": 23 },
+          "surface_depth_multiplier": 0,
+          "add_stone_depth": false
+        }
+      },
+      "then_run": {
+        "type": "minecraft:block",
+        "result_state": "omnitech:europa_stone"
+      }
+    },
+    {
+      "type": "minecraft:condition",
+      "if_true": {
+        "type": "minecraft:stone_depth",
+        "add_surface_depth": false,
+        "offset": 0,
+        "secondary_depth_range": 0,
+        "surface_type": "floor"
+      },
+      "then_run": {
+        "type": "minecraft:block",
+        "result_state": "omnitech:cracked_ice"
+      }
+    },
+    {
+      "type": "minecraft:condition",
+      "if_true": {
+        "type": "minecraft:stone_depth",
+        "add_surface_depth": false,
+        "offset": 0,
+        "secondary_depth_range": 18,
+        "surface_type": "floor"
+      },
+      "then_run": {
+        "type": "minecraft:block",
+        "result_state": "omnitech:europa_ice"
+      }
+    },
+    {
+      "type": "minecraft:block",
+      "result_state": "omnitech:europa_ice"
+    }
+  ]
+}

@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_engine;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
  * <p>{@code LIT} is true while the engine is receiving KF and producing EU.
  */
 public class ElectricEngineBlock extends BaseEntityBlock {
-    public static final MapCodec<ElectricEngineBlock> CODEC = simpleCodec(ElectricEngineBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -46,9 +44,6 @@ public class ElectricEngineBlock extends BaseEntityBlock {
                 .setValue(FACING, Direction.NORTH)
                 .setValue(LIT, false));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

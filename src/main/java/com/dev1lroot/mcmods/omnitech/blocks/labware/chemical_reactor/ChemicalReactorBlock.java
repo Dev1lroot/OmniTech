@@ -7,7 +7,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.labware.chemical_reactor;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IFluidContainer;
 import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -43,7 +42,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ChemicalReactorBlock extends BaseEntityBlock implements IFluidContainer {
 
-    public static final MapCodec<ChemicalReactorBlock> CODEC = simpleCodec(ChemicalReactorBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -60,9 +58,6 @@ public class ChemicalReactorBlock extends BaseEntityBlock implements IFluidConta
         if (face == Direction.UP || face == Direction.DOWN) return false;
         return true;
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

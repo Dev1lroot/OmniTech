@@ -26,7 +26,7 @@ public class CokingRecipeManager {
 
     public static void loadRecipes(ResourceManager resourceManager) {
         RECIPES.clear();
-        String path = "recipe/coking";
+        String path = "machine_recipe/coking";
 
         try {
             Map<Identifier, Resource> resources = resourceManager.listResources(path,

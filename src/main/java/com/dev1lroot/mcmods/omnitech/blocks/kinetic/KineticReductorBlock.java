@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.kinetic;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -36,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class KineticReductorBlock extends BaseEntityBlock
 {
-    public static final MapCodec<KineticReductorBlock> CODEC = simpleCodec(KineticReductorBlock::new);
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final BooleanProperty SIGNALED = BooleanProperty.create("signaled");
 
@@ -65,9 +63,6 @@ public class KineticReductorBlock extends BaseEntityBlock
     public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext context) {
         return this.defaultBlockState().setValue(SIGNALED, context.getLevel().hasNeighborSignal(context.getClickedPos()));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     /** Use the standard block-model pipeline so .mcmeta texture animation works. */
     @Override

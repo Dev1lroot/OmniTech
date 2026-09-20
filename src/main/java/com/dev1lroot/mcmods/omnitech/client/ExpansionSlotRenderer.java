@@ -107,7 +107,7 @@ public class ExpansionSlotRenderer implements BlockEntityRenderer<ExpansionSlotB
         if (state.item01a != null) {
             poseStack.pushPose();
             poseStack.translate(0.5f, 0.55f, 0.5f);
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
+            poseStack.rotate(Axis.YP.rotationDegrees(yRot));
             poseStack.translate(0.0f, 0.0f, -0.3f);
             poseStack.scale(1.5f, 1.5f, 1.5f);
             state.item01a.submit(
@@ -118,7 +118,7 @@ public class ExpansionSlotRenderer implements BlockEntityRenderer<ExpansionSlotB
         if (state.item02a != null) {
             poseStack.pushPose();
             poseStack.translate(0.5f, 0.55f, 0.5f);
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
+            poseStack.rotate(Axis.YP.rotationDegrees(yRot));
             poseStack.translate(0.0f, 0.0f, -0.1f);
             poseStack.scale(1.5f, 1.5f, 1.5f);
             state.item02a.submit(
@@ -129,7 +129,7 @@ public class ExpansionSlotRenderer implements BlockEntityRenderer<ExpansionSlotB
         if (state.item03a != null) {
             poseStack.pushPose();
             poseStack.translate(0.5f, 0.55f, 0.5f);
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
+            poseStack.rotate(Axis.YP.rotationDegrees(yRot));
             poseStack.translate(0.0f, 0.0f, 0.1f);
             poseStack.scale(1.5f, 1.5f, 1.5f);
             state.item03a.submit(
@@ -140,7 +140,7 @@ public class ExpansionSlotRenderer implements BlockEntityRenderer<ExpansionSlotB
         if (state.item04a != null) {
             poseStack.pushPose();
             poseStack.translate(0.5f, 0.55f, 0.5f);
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
+            poseStack.rotate(Axis.YP.rotationDegrees(yRot));
             poseStack.translate(0.0f, 0.0f, 0.3f);
             poseStack.scale(1.5f, 1.5f, 1.5f);
             state.item04a.submit(
@@ -152,7 +152,7 @@ public class ExpansionSlotRenderer implements BlockEntityRenderer<ExpansionSlotB
         if (state.item01b != null) {
             poseStack.pushPose();
             poseStack.translate(0.5f, 0.1f, 0.5f);
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
+            poseStack.rotate(Axis.YP.rotationDegrees(yRot));
             poseStack.translate(0.0f, 0.0f, -0.3f);
             poseStack.scale(1.5f, 1.5f, 1.5f);
             state.item01b.submit(
@@ -163,7 +163,7 @@ public class ExpansionSlotRenderer implements BlockEntityRenderer<ExpansionSlotB
         if (state.item02b != null) {
             poseStack.pushPose();
             poseStack.translate(0.5f, 0.1f, 0.5f);
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
+            poseStack.rotate(Axis.YP.rotationDegrees(yRot));
             poseStack.translate(0.0f, 0.0f, -0.1f);
             poseStack.scale(1.5f, 1.5f, 1.5f);
             state.item02b.submit(
@@ -174,7 +174,7 @@ public class ExpansionSlotRenderer implements BlockEntityRenderer<ExpansionSlotB
         if (state.item03b != null) {
             poseStack.pushPose();
             poseStack.translate(0.5f, 0.1f, 0.5f);
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
+            poseStack.rotate(Axis.YP.rotationDegrees(yRot));
             poseStack.translate(0.0f, 0.0f, 0.1f);
             poseStack.scale(1.5f, 1.5f, 1.5f);
             state.item03b.submit(
@@ -185,7 +185,7 @@ public class ExpansionSlotRenderer implements BlockEntityRenderer<ExpansionSlotB
         if (state.item04b != null) {
             poseStack.pushPose();
             poseStack.translate(0.5f, 0.1f, 0.5f);
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
+            poseStack.rotate(Axis.YP.rotationDegrees(yRot));
             poseStack.translate(0.0f, 0.0f, 0.3f);
             poseStack.scale(1.5f, 1.5f, 1.5f);
             state.item04b.submit(

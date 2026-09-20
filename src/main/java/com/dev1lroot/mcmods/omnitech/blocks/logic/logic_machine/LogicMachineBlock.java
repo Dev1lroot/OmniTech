@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,16 +27,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class LogicMachineBlock extends BaseEntityBlock {
 
-    public static final MapCodec<LogicMachineBlock> CODEC = simpleCodec(LogicMachineBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public LogicMachineBlock(Properties props) {
         super(props);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
@@ -24,12 +23,7 @@ import net.minecraft.core.Direction;
 
 public class GPIOPortBlock extends BaseEntityBlock {
 
-    public static final MapCodec<GPIOPortBlock> CODEC = simpleCodec(GPIOPortBlock::new);
-
     public GPIOPortBlock(Properties props) { super(props); }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

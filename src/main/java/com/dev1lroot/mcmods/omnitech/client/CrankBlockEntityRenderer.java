@@ -61,7 +61,7 @@ public class CrankBlockEntityRenderer implements BlockEntityRenderer<CrankBlockE
 
         poseStack.pushPose();
         poseStack.translate(0.5, 0.0, 0.5);
-        poseStack.mulPose(Axis.YP.rotationDegrees(state.spinAngle));
+        poseStack.rotate(Axis.YP.rotationDegrees(state.spinAngle));
         poseStack.translate(-0.5, 0.0, -0.5);
         submitNodeCollector.submitMovingBlock(poseStack, state.crankModel, 0);
         poseStack.popPose();

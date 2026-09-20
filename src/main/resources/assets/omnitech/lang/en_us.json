@@ -776,6 +776,7 @@
 
   "block.omnitech.fluid_filler": "Fluid Filler",
   "block.omnitech.chemical_reactor": "Chemical Reactor",
+  "block.omnitech.rocket_controller": "Rocket Controller",
   "block.omnitech.speaker": "Speaker",
   "block.omnitech.microphone": "Microphone",
   "block.omnitech.analog_cable": "Analog Cable",
@@ -820,5 +821,19 @@
   "omnitech.fluid.distilled_water.supercritical": "Supercritical Water",
   "omnitech.fluid.steam.vapour":                  "Vapour",
   "omnitech.fluid.steam.gas":                     "Superheated Steam",
-  "omnitech.fluid.steam.supercritical":           "Supercritical Steam"
+  "omnitech.fluid.steam.supercritical":           "Supercritical Steam",
+
+  "fluid.omnitech.crude_oil": "Crude Oil",
+  "fluid.omnitech.heavy_fuel_oil": "Heavy Fuel Oil",
+  "fluid.omnitech.diesel": "Diesel",
+  "fluid.omnitech.naphtha": "Naphtha",
+  "fluid.omnitech.propane": "Propane",
+  "fluid.omnitech.butane": "Butane",
+  "fluid.omnitech.sulfuric_acid": "Sulfuric Acid",
+  "fluid.omnitech.hydrochloric_acid": "Hydrochloric Acid",
+  "fluid.omnitech.nitric_acid": "Nitric Acid",
+  "fluid.omnitech.mercury": "Mercury",
+
+  "message.omnitech.rocket_assembled": "The rocket structure assembles and is ready for launch!",
+  "message.omnitech.rocket_incomplete": "Rocket structure incomplete"
 }

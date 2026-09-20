@@ -29,7 +29,7 @@ public class ManualMaceratorRecipeManager {
 
     public static void loadRecipes(ResourceManager resourceManager) {
         RECIPES.clear();
-        String path = "recipe/manual_macerator";
+        String path = "machine_recipe/manual_macerator";
 
         try {
             Map<Identifier, Resource> resources = resourceManager.listResources(path,

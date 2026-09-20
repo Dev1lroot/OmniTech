@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ElectrolysisRecipeManager {
 
     private static final Gson   GSON    = new Gson();
-    private static final String PATH    = "recipe/electrolysis";
+    private static final String PATH    = "machine_recipe/electrolysis";
     private static final Map<String, ElectrolysisRecipe> RECIPES = new ConcurrentHashMap<>();
     private static boolean initialized = false;
 

@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.space;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -15,14 +14,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class OrreryBlock extends BaseEntityBlock {
 
-    public static final MapCodec<OrreryBlock> CODEC = simpleCodec(OrreryBlock::new);
-
     public OrreryBlock(Properties props) {
         super(props);
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     public RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

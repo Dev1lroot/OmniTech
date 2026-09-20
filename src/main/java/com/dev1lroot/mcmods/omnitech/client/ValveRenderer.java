@@ -86,9 +86,9 @@ public class ValveRenderer implements BlockEntityRenderer<ValveBlockEntity, Valv
         // Pivot around block center
         poseStack.translate(0.5, 0.5, 0.5);
         // Rotate body so "front" faces the correct direction
-        poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
+        poseStack.rotate(Axis.YP.rotationDegrees(yaw));
         // Spin around the forward (−Z) axis
-        poseStack.mulPose(Axis.ZP.rotationDegrees(state.wheelAngle));
+        poseStack.rotate(Axis.ZP.rotationDegrees(state.wheelAngle));
         poseStack.translate(-0.5, -0.5, -0.5);
 
         submitNodeCollector.submitMovingBlock(poseStack, state.wheelModel, 0);

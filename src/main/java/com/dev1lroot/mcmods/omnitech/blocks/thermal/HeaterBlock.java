@@ -6,7 +6,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.thermal;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -41,7 +40,6 @@ import org.jetbrains.annotations.Nullable;
  * The heater has no directional facing — it outputs heat equally on all six faces.
  */
 public class HeaterBlock extends BaseEntityBlock {
-    public static final MapCodec<HeaterBlock> CODEC = simpleCodec(HeaterBlock::new);
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
@@ -51,9 +49,6 @@ public class HeaterBlock extends BaseEntityBlock {
                 .setValue(FACING, Direction.NORTH)
                 .setValue(LIT, false));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

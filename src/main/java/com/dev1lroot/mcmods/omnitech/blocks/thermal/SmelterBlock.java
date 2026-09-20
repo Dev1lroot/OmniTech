@@ -6,7 +6,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.thermal;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IFluidContainer;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -34,7 +33,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class SmelterBlock extends BaseEntityBlock implements IFluidContainer {
 
-    public static final MapCodec<SmelterBlock> CODEC = simpleCodec(SmelterBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -44,9 +42,6 @@ public class SmelterBlock extends BaseEntityBlock implements IFluidContainer {
                 .setValue(FACING, Direction.NORTH)
                 .setValue(LIT, false));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

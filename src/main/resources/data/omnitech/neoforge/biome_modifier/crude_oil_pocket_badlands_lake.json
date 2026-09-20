@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_badlands",
+  "features": "omnitech:crude_oil_pocket_rare_lake",
+  "step": "underground_ores"
+}

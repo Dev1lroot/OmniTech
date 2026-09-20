@@ -16,6 +16,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -26,11 +28,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -39,6 +46,8 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
+
+import java.util.Optional;
 
 public class CokeOvenEntity extends Entity implements MenuProvider {
 
@@ -242,8 +251,10 @@ public class CokeOvenEntity extends Entity implements MenuProvider {
 
     private int getFuelBurnTime(ItemStack stack) {
         var lvl = level();
-        if (lvl == null || stack.isEmpty()) return 0;
-        return lvl.fuelValues().burnDuration(stack);
+        if (!(lvl instanceof ServerLevel serverLevel) || stack.isEmpty()) return 0;
+        LootParams params = new LootParams.Builder(serverLevel).create(LootContextParamSets.EMPTY);
+        LootContext context = new LootContext.Builder(params).create(Optional.empty());
+        return ResolvableInt.getFromItem(stack, DataComponents.COOKING_FUEL, CookingFuel::burnTime, context, 0);
     }
 
     // ── Push / pull ───────────────────────────────────────────────────────────

@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FractionalDistillationRecipeManager {
 
     private static final Gson   GSON    = new Gson();
-    private static final String FOLDER  = "recipe/fractional_distillation";
+    private static final String FOLDER  = "machine_recipe/fractional_distillation";
     private static final Map<String, FractionalDistillationRecipe> RECIPES = new ConcurrentHashMap<>();
     private static boolean initialized = false;
 

@@ -63,7 +63,7 @@ public class CokeOvenEntityRenderer extends EntityRenderer<CokeOvenEntity, CokeO
         // The model spans -1..+2 blocks in X/Z (centre at +0.5) and -1..+2 in Y.
         // translate(-0.5, 1.0, -0.5) shifts that centre to (0, 1.5, 0) in entity space,
         // which is the geometric centre of the 3×3×3 structure.
-        poseStack.mulPose(Axis.YP.rotationDegrees(facingToYRot(state.facing)));
+        poseStack.rotate(Axis.YP.rotationDegrees(facingToYRot(state.facing)));
         poseStack.translate(-0.5, 1.0, -0.5);
         state.displayModel.submitMultiLayer(poseStack, submitNodeCollector,
                 state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);

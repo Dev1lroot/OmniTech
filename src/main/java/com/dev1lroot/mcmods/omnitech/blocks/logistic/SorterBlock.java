@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.logistic;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,16 +41,12 @@ import org.jetbrains.annotations.Nullable;
  * advancing the pointer each time an item is successfully routed.
  */
 public class SorterBlock extends BaseEntityBlock {
-    public static final MapCodec<SorterBlock> CODEC = simpleCodec(SorterBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public SorterBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

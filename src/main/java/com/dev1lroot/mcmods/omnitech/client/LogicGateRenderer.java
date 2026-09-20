@@ -81,7 +81,7 @@ public class LogicGateRenderer
             float yRot = facingToYRot(state.facing);
             poseStack.pushPose();
             poseStack.translate(0.5f, Y_TEMPLATE, 0.5f);
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
+            poseStack.rotate(Axis.YP.rotationDegrees(yRot));
             poseStack.scale(TEMPLATE_SCALE, TEMPLATE_SCALE, TEMPLATE_SCALE);
             state.templateItemState.submit(
                     poseStack, submitNodeCollector,

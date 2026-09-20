@@ -11,7 +11,6 @@ import com.dev1lroot.mcmods.omnitech.blocks.processing.macerator.ManualMacerator
 import com.dev1lroot.mcmods.omnitech.io.IKineticReceiver;
 import com.dev1lroot.mcmods.omnitech.util.KineticNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -37,7 +36,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class CrankBlock extends BaseEntityBlock {
-    public static final MapCodec<CrankBlock> CODEC = simpleCodec(CrankBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     // Small flat shape — just the crank sitting on top of the macerator
@@ -47,9 +45,6 @@ public class CrankBlock extends BaseEntityBlock {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {

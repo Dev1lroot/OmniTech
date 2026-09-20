@@ -8,7 +8,7 @@ import com.dev1lroot.mcmods.omnitech.OmniTech;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -24,13 +24,13 @@ public final class OmniTechWorldGen {
     // ── ConfiguredFeature ──────────────────────────────────────────────────
 
     /** Key for the default (fallback) configured feature of an ore. */
-    public static ResourceKey<ConfiguredFeature<?, ?>> cfKey(String ore) {
-        return ResourceKey.create(Registries.CONFIGURED_FEATURE, id(ore));
+    public static ResourceKey<Feature> cfKey(String ore) {
+        return ResourceKey.create(Registries.FEATURE, id(ore));
     }
 
     /** Key for a biome-override configured feature (created only when vein size differs). */
-    public static ResourceKey<ConfiguredFeature<?, ?>> cfOverrideKey(String ore, int index) {
-        return ResourceKey.create(Registries.CONFIGURED_FEATURE, id(ore + "_biome_" + index));
+    public static ResourceKey<Feature> cfOverrideKey(String ore, int index) {
+        return ResourceKey.create(Registries.FEATURE, id(ore + "_biome_" + index));
     }
 
     // ── PlacedFeature ──────────────────────────────────────────────────────

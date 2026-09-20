@@ -4,7 +4,6 @@
  */
 package com.dev1lroot.mcmods.omnitech.blocks.logic.expansion_slot;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,8 +26,6 @@ public class ExpansionSlotBlock extends BaseEntityBlock
 {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
-    public static final MapCodec<ExpansionSlotBlock> CODEC = simpleCodec(ExpansionSlotBlock::new);
-
     public ExpansionSlotBlock(Properties props) {
         super(props);
         this.registerDefaultState(this.stateDefinition.any()
@@ -45,9 +42,6 @@ public class ExpansionSlotBlock extends BaseEntityBlock
         return this.defaultBlockState()
                 .setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

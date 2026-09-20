@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.thermal.electric_heater;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -33,7 +32,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class ElectricHeaterBlock extends BaseEntityBlock {
 
-    public static final MapCodec<ElectricHeaterBlock> CODEC = simpleCodec(ElectricHeaterBlock::new);
     public static final BooleanProperty LIT    = BlockStateProperties.LIT;
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
@@ -43,9 +41,6 @@ public class ElectricHeaterBlock extends BaseEntityBlock {
                 .setValue(FACING, Direction.NORTH)
                 .setValue(LIT, false));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

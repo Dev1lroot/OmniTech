@@ -23,9 +23,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.BlockReplacement;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
+import net.minecraft.world.level.levelgen.feature.OreFeature;
 import net.minecraft.world.level.levelgen.placement.*;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
 import net.neoforged.neoforge.common.world.BiomeModifier;
@@ -53,15 +53,15 @@ import java.util.List;
 public class OmniTechDatagen {
 
     public static void gatherData(GatherDataEvent.Client event) {
-        event.createDatapackRegistryObjects(new RegistrySetBuilder()
-            .add(Registries.CONFIGURED_FEATURE, OmniTechDatagen::bootstrapCF)
+        event.createWorldRegistryObjects(new RegistrySetBuilder()
+            .add(Registries.FEATURE, OmniTechDatagen::bootstrapCF)
             .add(Registries.PLACED_FEATURE,      OmniTechDatagen::bootstrapPF)
             .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, OmniTechDatagen::bootstrapBiomeModifiers));
     }
 
     // ── ConfiguredFeature ──────────────────────────────────────────────────
 
-    private static void bootstrapCF(BootstrapContext<ConfiguredFeature<?, ?>> ctx) {
+    private static void bootstrapCF(BootstrapContext<Feature> ctx) {
         for (OreEntry entry : OmniTechBlocks.ALL_ORES) {
             OreSpawnConfig cfg = entry.config();
             String name = entry.name();
@@ -79,20 +79,20 @@ public class OmniTechDatagen {
         }
     }
 
-    private static ConfiguredFeature<?, ?> makeCF(Block block, int veinSize) {
-        return new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(
-            List.of(OreConfiguration.target(
+    private static Feature makeCF(Block block, int veinSize) {
+        return new OreFeature(
+            List.of(BlockReplacement.replace(
                 new BlockMatchTest(Blocks.STONE),
                 block.defaultBlockState()
             )),
             veinSize
-        ));
+        );
     }
 
     // ── PlacedFeature ──────────────────────────────────────────────────────
 
     private static void bootstrapPF(BootstrapContext<PlacedFeature> ctx) {
-        HolderGetter<ConfiguredFeature<?, ?>> cfGetter = ctx.lookup(Registries.CONFIGURED_FEATURE);
+        HolderGetter<Feature> cfGetter = ctx.lookup(Registries.FEATURE);
 
         for (OreEntry entry : OmniTechBlocks.ALL_ORES) {
             OreSpawnConfig cfg = entry.config();
@@ -104,7 +104,7 @@ public class OmniTechDatagen {
             for (int i = 0; i < cfg.biomeOverrides().size(); i++) {
                 OreSpawnConfig.BiomeOverride override = cfg.biomeOverrides().get(i);
                 boolean ownCF = override.veinSize() != cfg.defaultConfig().veinSize();
-                ResourceKey<ConfiguredFeature<?, ?>> cfKey = ownCF
+                ResourceKey<Feature> cfKey = ownCF
                     ? OmniTechWorldGen.cfOverrideKey(name, i)
                     : OmniTechWorldGen.cfKey(name);
                 ctx.register(OmniTechWorldGen.pfOverrideKey(name, i),
@@ -113,7 +113,7 @@ public class OmniTechDatagen {
         }
     }
 
-    private static PlacedFeature makePF(net.minecraft.core.Holder<ConfiguredFeature<?, ?>> cfHolder,
+    private static PlacedFeature makePF(net.minecraft.core.Holder<Feature> cfHolder,
                                         OreSpawnConfig.SpawnParams params) {
         return new PlacedFeature(cfHolder, List.of(
             CountPlacement.of(UniformInt.of(params.minCount(), params.maxCount())),

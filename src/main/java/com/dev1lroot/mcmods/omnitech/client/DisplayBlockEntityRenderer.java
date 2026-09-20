@@ -71,9 +71,9 @@ public class DisplayBlockEntityRenderer
         pose.pushPose();
         pose.translate(0.5, 0.5, 0.5);
         switch (state.facing) {
-            case SOUTH -> pose.mulPose(Axis.YP.rotationDegrees(180f));
-            case EAST  -> pose.mulPose(Axis.YP.rotationDegrees(-90f));
-            case WEST  -> pose.mulPose(Axis.YP.rotationDegrees(90f));
+            case SOUTH -> pose.rotate(Axis.YP.rotationDegrees(180f));
+            case EAST  -> pose.rotate(Axis.YP.rotationDegrees(-90f));
+            case WEST  -> pose.rotate(Axis.YP.rotationDegrees(90f));
             default    -> {}
         }
 

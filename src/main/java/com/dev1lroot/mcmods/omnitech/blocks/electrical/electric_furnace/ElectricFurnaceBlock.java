@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_furnace;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -39,7 +38,6 @@ import org.jetbrains.annotations.Nullable;
  * actively smelting.
  */
 public class ElectricFurnaceBlock extends BaseEntityBlock {
-    public static final MapCodec<ElectricFurnaceBlock> CODEC = simpleCodec(ElectricFurnaceBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -49,9 +47,6 @@ public class ElectricFurnaceBlock extends BaseEntityBlock {
                 .setValue(FACING, Direction.NORTH)
                 .setValue(LIT, false));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

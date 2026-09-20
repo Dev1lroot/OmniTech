@@ -1,0 +1,8 @@
+{
+  "type": "omnitech:moon_crater",
+  "probability": 0.02,
+  "y": {
+    "type": "minecraft:constant",
+    "value": { "absolute": 90 }
+  }
+}

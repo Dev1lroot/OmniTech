@@ -5,10 +5,17 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -37,6 +44,9 @@ public class OmniTechFluids
             DeferredRegister.create(Registries.FLUID, OmniTech.MODID);
     public static final DeferredRegister<FluidType> TYPE_REGISTRY =
             DeferredRegister.create(NeoForgeRegistries.FLUID_TYPES, OmniTech.MODID);
+    /** Companion world blocks for fluids marked {@code "world_placeable": true}. */
+    public static final DeferredRegister.Blocks BLOCKS =
+            DeferredRegister.createBlocks(OmniTech.MODID);
 
     private static final Map<String, FluidObject> FLUIDS = new LinkedHashMap<>();
 
@@ -65,12 +75,12 @@ public class OmniTechFluids
      * Called by {@link FluidLoader} for each JSON file. Package-private — not
      * intended for use outside the loading pipeline.
      */
-    static void registerFluid(String name, FluidType.Properties props) {
+    static void registerFluid(String name, FluidType.Properties props, boolean worldPlaceable) {
         if (FLUIDS.containsKey(name)) {
             OmniTech.LOGGER.warn("[OmniTechFluids] Duplicate fluid ignored: '{}'", name);
             return;
         }
-        FLUIDS.put(name, new FluidObject(name, props));
+        FLUIDS.put(name, new FluidObject(name, props, worldPlaceable));
     }
 
     // ── FluidObject ───────────────────────────────────────────────────────────
@@ -85,8 +95,10 @@ public class OmniTechFluids
         public final DeferredHolder<FluidType, FluidType> type;
         public final DeferredHolder<Fluid, Fluid> source;
         public final DeferredHolder<Fluid, Fluid> flowing;
+        /** Companion world block, or {@code null} when not {@code world_placeable}. */
+        public final DeferredBlock<LiquidBlock> block;
 
-        FluidObject(String name, FluidType.Properties typeProps) {
+        FluidObject(String name, FluidType.Properties typeProps, boolean worldPlaceable) {
             this.name = name;
             this.type = TYPE_REGISTRY.register(name,
                     () -> new FluidType(typeProps.descriptionId("fluid.omnitech." + name)));
@@ -94,15 +106,31 @@ public class OmniTechFluids
                     () -> new BaseFlowingFluid.Source(this.makeProperties()));
             this.flowing = REGISTRY.register("flowing_" + name,
                     () -> new BaseFlowingFluid.Flowing(this.makeProperties()));
+            this.block = worldPlaceable
+                    ? BLOCKS.registerBlock(name,
+                            p -> new LiquidBlock((FlowingFluid) source.get(), p),
+                            () -> BlockBehaviour.Properties.of()
+                                    .mapColor(MapColor.COLOR_BLACK)
+                                    .replaceable()
+                                    .noCollision()
+                                    .strength(100.0F)
+                                    .pushReaction(PushReaction.POPPED)
+                                    .noLootTable()
+                                    .liquid()
+                                    .sound(SoundType.EMPTY))
+                    : null;
         }
 
         private BaseFlowingFluid.Properties makeProperties() {
-            return new BaseFlowingFluid.Properties(type, source, flowing);
+            BaseFlowingFluid.Properties props = new BaseFlowingFluid.Properties(type, source, flowing);
+            if (block != null) props = props.block(block::get);
+            return props;
         }
     }
 
     public static void register(IEventBus modEventBus) {
         TYPE_REGISTRY.register(modEventBus);
         REGISTRY.register(modEventBus);
+        BLOCKS.register(modEventBus);
     }
 }

@@ -60,6 +60,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.plumbing.FluidFillerBlock;
 import com.dev1lroot.mcmods.omnitech.recipes.CokingRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ChemicalInfuserRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ExtractorRecipeManager;
+import com.dev1lroot.mcmods.omnitech.rocket.RocketStructureLoader;
 import com.dev1lroot.mcmods.omnitech.network.NuclearExplosionFxPacket;
 import com.dev1lroot.mcmods.omnitech.network.GravityFieldSyncPacket;
 import com.dev1lroot.mcmods.omnitech.blocks.space.gravitation_source.GravitationSourceBlockEntity;
@@ -817,6 +818,15 @@ public class OmniTech {
                     PreparationBarrier barrier, Executor reloadExecutor) {
                 return CompletableFuture.runAsync(() -> {
                     ExtractorRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "rocket_structures"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    RocketStructureLoader.loadStructures(sharedState.resourceManager());
                 }, taskExecutor).thenCompose(barrier::wait);
             }
         });

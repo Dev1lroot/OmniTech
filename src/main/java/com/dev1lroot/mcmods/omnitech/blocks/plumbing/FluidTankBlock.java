@@ -6,7 +6,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.plumbing;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IFluidContainer;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,7 +43,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class FluidTankBlock extends BaseEntityBlock implements IFluidContainer
 {
-    public static final MapCodec<FluidTankBlock> CODEC = simpleCodec(FluidTankBlock::new);
 
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
@@ -60,9 +58,6 @@ public class FluidTankBlock extends BaseEntityBlock implements IFluidContainer
                 .setValue(EAST,  false).setValue(WEST,  false)
                 .setValue(UP,    false).setValue(DOWN,  false));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

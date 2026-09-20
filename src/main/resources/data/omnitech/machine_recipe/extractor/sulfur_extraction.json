@@ -1,0 +1,5 @@
+{
+  "requiredKineticForce": 5.0,
+  "inputItem":   { "item": "minecraft:sulfur",       "amount": 1 },
+  "outputFluid": { "fluid": "omnitech:sulfuric_acid", "amount": 250 }
+}

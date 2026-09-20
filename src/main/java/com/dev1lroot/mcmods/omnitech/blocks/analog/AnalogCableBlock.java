@@ -7,7 +7,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.analog;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_relay.PowerRelayBlock;
 import com.dev1lroot.mcmods.omnitech.io.IAnalogInput;
 import com.dev1lroot.mcmods.omnitech.io.IAnalogOutput;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -33,7 +32,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  * Has no block entity; it is a pure routing element.
  */
 public class AnalogCableBlock extends Block {
-    public static final MapCodec<AnalogCableBlock> CODEC = simpleCodec(AnalogCableBlock::new);
 
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
@@ -57,9 +55,6 @@ public class AnalogCableBlock extends Block {
                 .setValue(EAST,  false).setValue(WEST,  false)
                 .setValue(UP,    false).setValue(DOWN,  false));
     }
-
-    @Override
-    protected MapCodec<? extends Block> codec() { return CODEC; }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

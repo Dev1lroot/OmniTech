@@ -7,7 +7,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_wire;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_relay.PowerRelayBlock;
 import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IElectricSupplier;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -38,7 +37,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  * 6 directions.
  */
 public class ElectricWireBlock extends Block {
-    public static final MapCodec<ElectricWireBlock> CODEC = simpleCodec(ElectricWireBlock::new);
 
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
@@ -63,9 +61,6 @@ public class ElectricWireBlock extends Block {
                 .setValue(EAST,  false).setValue(WEST,  false)
                 .setValue(UP,    false).setValue(DOWN,  false));
     }
-
-    @Override
-    protected MapCodec<? extends Block> codec() { return CODEC; }
 
     // ── Block state ───────────────────────────────────────────────────────────
 

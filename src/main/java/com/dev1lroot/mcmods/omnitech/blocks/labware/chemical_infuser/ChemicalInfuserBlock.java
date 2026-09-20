@@ -6,7 +6,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.labware.chemical_infuser;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IFluidContainer;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ChemicalInfuserBlock extends BaseEntityBlock implements IFluidContainer {
 
-    public static final MapCodec<ChemicalInfuserBlock> CODEC = simpleCodec(ChemicalInfuserBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -51,9 +49,6 @@ public class ChemicalInfuserBlock extends BaseEntityBlock implements IFluidConta
     public boolean isConnectable(BlockState state, Direction face) {
         return face == state.getValue(FACING);
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

@@ -6,7 +6,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.plumbing;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IFluidContainer;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -49,8 +48,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class FluidCollectorBlock extends BaseEntityBlock implements IFluidContainer, SimpleWaterloggedBlock {
 
-    public static final MapCodec<FluidCollectorBlock> CODEC = simpleCodec(FluidCollectorBlock::new);
-
     /** All 6 directions — placed like an observer. Output = FACING, sensor = FACING.getOpposite(). */
     public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     public static final BooleanProperty   WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -71,9 +68,6 @@ public class FluidCollectorBlock extends BaseEntityBlock implements IFluidContai
     }
 
     // ── BaseEntityBlock ───────────────────────────────────────────────────────
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

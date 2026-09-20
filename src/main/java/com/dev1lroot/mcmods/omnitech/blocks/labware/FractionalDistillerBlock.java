@@ -8,7 +8,6 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.blocks.ComponentState;
 import com.dev1lroot.mcmods.omnitech.blocks.ThermalState;
 import com.dev1lroot.mcmods.omnitech.io.IFluidContainer;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -53,8 +52,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class FractionalDistillerBlock extends BaseEntityBlock implements IFluidContainer {
 
-    public static final MapCodec<FractionalDistillerBlock> CODEC = simpleCodec(FractionalDistillerBlock::new);
-
     public static final EnumProperty<Direction>      FACING          = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<ComponentState> COMPONENT_STATE = EnumProperty.create("component_state", ComponentState.class);
     public static final EnumProperty<ThermalState>   THERMAL_STATE   = EnumProperty.create("thermal_state",   ThermalState.class);
@@ -77,9 +74,6 @@ public class FractionalDistillerBlock extends BaseEntityBlock implements IFluidC
     }
 
     // ── Block boilerplate ─────────────────────────────────────────────────────
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

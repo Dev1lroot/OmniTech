@@ -4,7 +4,6 @@
  */
 package com.dev1lroot.mcmods.omnitech.blocks.logic;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -21,8 +20,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class RedstoneIntersectionBlock extends Block {
-
-    public static final MapCodec<RedstoneIntersectionBlock> CODEC = simpleCodec(RedstoneIntersectionBlock::new);
 
     private static final VoxelShape BASE      = Block.box( 0,  0,  0, 16, 2, 16);
     private static final VoxelShape JUMP      = Block.box( 4,  2,  4, 12, 8, 12);
@@ -45,10 +42,6 @@ public class RedstoneIntersectionBlock extends Block {
                 .setValue(NS_LEVEL, 0)
                 .setValue(EW_LEVEL, 0));
     }
-
-    @Override
-    protected MapCodec<? extends Block> codec() { return CODEC; }
-
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos,

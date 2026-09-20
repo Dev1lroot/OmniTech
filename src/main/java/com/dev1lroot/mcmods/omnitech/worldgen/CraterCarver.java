@@ -4,40 +4,47 @@
  */
 package com.dev1lroot.mcmods.omnitech.worldgen;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.CarvingMask;
-import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.levelgen.Aquifer;
-import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.carver.CarverConfiguration;
-import net.minecraft.world.level.levelgen.carver.CarvingContext;
+import net.minecraft.world.level.chunk.CarverOutput;
+import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.carver.WorldCarver;
-
-import java.util.function.Function;
+import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
 
 /**
  * Carves perfectly circular parabolic craters into the moon surface.
  *
  * Works like vanilla cave/canyon carvers: called once per (sourceChunkPos, chunk) pair
  * within getRange() radius. Each source chunk independently decides whether it has a
- * crater, using a seeded random so all chunks agree on the same craters. Only blocks
- * within the target chunk are written — no cross-chunk write violations.
+ * crater, using a seeded random so all chunks agree on the same craters. Only positions
+ * within the target chunk are marked via {@link CarverOutput#carve(int, int, int)} — no
+ * cross-chunk write violations.
+ *
+ * <p>Unlike the pre-26.3 API, carvers no longer have {@code ChunkAccess} to query the
+ * live surface heightmap, so the crater centre height is sampled from the configured
+ * {@link #y} height provider rather than the actual generated terrain height.
  */
-public class CraterCarver extends WorldCarver<CarverConfiguration> {
+public record CraterCarver(float probability, HeightProvider y) implements WorldCarver {
+
+    public static final MapCodec<CraterCarver> MAP_CODEC = RecordCodecBuilder.mapCodec(
+        i -> i.group(
+                Codec.floatRange(0.0F, 1.0F).fieldOf("probability").forGetter(CraterCarver::probability),
+                HeightProvider.CODEC.fieldOf("y").forGetter(CraterCarver::y)
+            )
+            .apply(i, CraterCarver::new)
+    );
 
     private static final int MIN_RADIUS = 5;
     private static final int MAX_RADIUS = 50;
     private static final int MIN_DEPTH  = 5;
     private static final int MAX_DEPTH  = 10;
 
-    public CraterCarver() {
-        super(CarverConfiguration.CODEC.codec());
+    @Override
+    public MapCodec<CraterCarver> codec() {
+        return MAP_CODEC;
     }
 
     /**
@@ -54,20 +61,17 @@ public class CraterCarver extends WorldCarver<CarverConfiguration> {
      * 7×7×0.15 ≈ 7 craters visible per chunk, comparable to a heavily cratered surface.
      */
     @Override
-    public boolean isStartChunk(CarverConfiguration config, RandomSource random) {
-        return random.nextFloat() < config.probability;
+    public boolean isStartChunk(RandomSource random) {
+        return random.nextFloat() < this.probability;
     }
 
     @Override
     public boolean carve(
-            CarvingContext context,
-            CarverConfiguration config,
-            ChunkAccess chunk,
-            Function<BlockPos, Holder<Biome>> biomeGetter,
+            WorldGenerationContext context,
             RandomSource random,
-            Aquifer aquifer,
+            ChunkPos chunkPos,
             ChunkPos sourceChunkPos,
-            CarvingMask mask
+            CarverOutput output
     ) {
         // Pick crater centre randomly within the source chunk.
         // random is already seeded consistently for (worldSeed, sourceChunkPos).
@@ -75,19 +79,18 @@ public class CraterCarver extends WorldCarver<CarverConfiguration> {
         int craterCenterZ = sourceChunkPos.getMinBlockZ() + random.nextInt(16);
         int radius   = MIN_RADIUS + random.nextInt(MAX_RADIUS - MIN_RADIUS + 1);
         int maxDepth = MIN_DEPTH  + random.nextInt(MAX_DEPTH  - MIN_DEPTH  + 1);
+        int surfaceY = this.y.sample(random, context);
 
-        ChunkPos currentChunk = chunk.getPos();
-        int chunkMinX = currentChunk.getMinBlockX();
-        int chunkMinZ = currentChunk.getMinBlockZ();
-        int chunkMaxX = currentChunk.getMaxBlockX();
-        int chunkMaxZ = currentChunk.getMaxBlockZ();
+        int chunkMinX = chunkPos.getMinBlockX();
+        int chunkMinZ = chunkPos.getMinBlockZ();
+        int chunkMaxX = chunkPos.getMaxBlockX();
+        int chunkMaxZ = chunkPos.getMaxBlockZ();
 
         // Quick bounding-box rejection — skip if the crater circle cannot touch this chunk.
         if (craterCenterX + radius < chunkMinX || craterCenterX - radius > chunkMaxX) return false;
         if (craterCenterZ + radius < chunkMinZ || craterCenterZ - radius > chunkMaxZ) return false;
 
         double radiusSq = (double) radius * radius;
-        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
         boolean carved = false;
 
         // Iterate only over the columns of THIS chunk that fall inside the crater radius.
@@ -98,6 +101,7 @@ public class CraterCarver extends WorldCarver<CarverConfiguration> {
 
         for (int worldX = iterMinX; worldX <= iterMaxX; worldX++) {
             int dx = worldX - craterCenterX;
+            int localX = worldX - chunkMinX;
             for (int worldZ = iterMinZ; worldZ <= iterMaxZ; worldZ++) {
                 int dz = worldZ - craterCenterZ;
                 double distSq = (double)(dx * dx + dz * dz);
@@ -108,16 +112,10 @@ public class CraterCarver extends WorldCarver<CarverConfiguration> {
                 int depth = (int) Math.ceil(maxDepth * (1.0 - (dist / radius) * (dist / radius)));
                 if (depth <= 0) continue;
 
-                // ChunkAccess.getHeight accepts world XZ; it masks to local internally.
-                int surfaceY = chunk.getHeight(Heightmap.Types.WORLD_SURFACE_WG, worldX, worldZ);
-
+                int localZ = worldZ - chunkMinZ;
                 for (int y = surfaceY; y > surfaceY - depth && y >= context.getMinGenY(); y--) {
-                    mutable.set(worldX, y, worldZ);
-                    BlockState existing = chunk.getBlockState(mutable);
-                    if (!existing.is(Blocks.BEDROCK) && !existing.isAir()) {
-                        chunk.setBlockState(mutable, AIR);
-                        carved = true;
-                    }
+                    output.carve(localX, y, localZ);
+                    carved = true;
                 }
             }
         }

@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_charger;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
@@ -29,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class ElectricChargerBlock extends BaseEntityBlock {
 
-    public static final MapCodec<ElectricChargerBlock> CODEC = simpleCodec(ElectricChargerBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -40,7 +38,6 @@ public class ElectricChargerBlock extends BaseEntityBlock {
                 .setValue(LIT, false));
     }
 
-    @Override protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
     @Override protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }
 
     @Override

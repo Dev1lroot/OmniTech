@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.radio.radio_receiver;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class RadioReceiverBlock extends BaseEntityBlock {
 
-    public static final MapCodec<RadioReceiverBlock> CODEC = simpleCodec(RadioReceiverBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final IntegerProperty POWER = BlockStateProperties.POWER;
 
@@ -40,9 +38,6 @@ public class RadioReceiverBlock extends BaseEntityBlock {
                 .setValue(FACING, Direction.NORTH)
                 .setValue(POWER, 0));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

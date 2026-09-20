@@ -7,7 +7,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.logic.keyboard;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.LogicCableBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.LogicMachineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.network.KeyboardModePacket;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,15 +25,8 @@ public class KeyboardBlock extends Block {
 
     private static final Map<UUID, BlockPos> ACTIVE_SESSIONS = new HashMap<>();
 
-    public static final MapCodec<KeyboardBlock> CODEC = simpleCodec(KeyboardBlock::new);
-
     public KeyboardBlock(Properties props) {
         super(props);
-    }
-
-    @Override
-    protected MapCodec<? extends Block> codec() {
-        return CODEC;
     }
 
     @Override

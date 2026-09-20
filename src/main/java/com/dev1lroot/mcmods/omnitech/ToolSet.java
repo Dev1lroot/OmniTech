@@ -108,31 +108,28 @@ public class ToolSet {
         set.tools.put("%_pickaxe",
                 registry.registerSimpleItem(pickaxeName, props -> props.pickaxe(toolMaterial, 1.0f, -2.8f)));
 
-        // Shovel — ShovelItem for flattening/campfire-extinguishing behavior
+        // Shovel — plain Item; flattening/campfire-extinguishing now comes from the
+        // BLOCK_TRANSFORMER component baked in by Item.Properties#shovel
         String shovelName = material + "_shovel";
-        @SuppressWarnings("unchecked")
-        DeferredItem<Item> shovel = (DeferredItem<Item>) (DeferredItem<?>)
-                registry.registerItem(shovelName, props -> new ShovelItem(toolMaterial, 1.5f, -3.0f, props));
-        set.tools.put("%_shovel", shovel);
+        set.tools.put("%_shovel",
+                registry.registerSimpleItem(shovelName, props -> props.shovel(toolMaterial, 1.5f, -3.0f)));
 
         // Sword — plain Item with sword properties (vanilla 1.21.4 pattern)
         String swordName = material + "_sword";
         set.tools.put("%_sword",
                 registry.registerSimpleItem(swordName, props -> props.sword(toolMaterial, 3.0f, -2.4f)));
 
-        // Axe — AxeItem for stripping/scraping behavior
+        // Axe — plain Item; stripping/scraping now comes from the BLOCK_TRANSFORMER
+        // component baked in by Item.Properties#axe
         String axeName = material + "_axe";
-        @SuppressWarnings("unchecked")
-        DeferredItem<Item> axe = (DeferredItem<Item>) (DeferredItem<?>)
-                registry.registerItem(axeName, props -> new AxeItem(toolMaterial, 6.0f, -3.1f, props));
-        set.tools.put("%_axe", axe);
+        set.tools.put("%_axe",
+                registry.registerSimpleItem(axeName, props -> props.axe(toolMaterial, 6.0f, -3.1f)));
 
-        // Hoe — HoeItem for tilling behavior
+        // Hoe — plain Item; tilling now comes from the BLOCK_TRANSFORMER component
+        // baked in by Item.Properties#hoe
         String hoeName = material + "_hoe";
-        @SuppressWarnings("unchecked")
-        DeferredItem<Item> hoe = (DeferredItem<Item>) (DeferredItem<?>)
-                registry.registerItem(hoeName, props -> new HoeItem(toolMaterial, -2.0f, -1.0f, props));
-        set.tools.put("%_hoe", hoe);
+        set.tools.put("%_hoe",
+                registry.registerSimpleItem(hoeName, props -> props.hoe(toolMaterial, -2.0f, -1.0f)));
 
         // ── Generate resources ─────────────────────────────────────────────────
         if (resourcesDir != null) {

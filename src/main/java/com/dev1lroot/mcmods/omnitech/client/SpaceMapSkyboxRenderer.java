@@ -11,16 +11,16 @@ import com.dev1lroot.mcmods.omnitech.space.SolarSystemScene;
 import com.dev1lroot.mcmods.omnitech.space.SpaceMap;
 import com.dev1lroot.mcmods.omnitech.space.SpaceMapLoader;
 import com.dev1lroot.mcmods.omnitech.space.StarSystem;
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.pipeline.BlendFunction;
-import com.mojang.blaze3d.pipeline.ColorTargetState;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
+import com.mojang.renderpearl.api.pipeline.BlendFunction;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.renderpearl.api.commands.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -43,6 +43,7 @@ import org.joml.Matrix4fc;
 import org.joml.Matrix4fStack;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.joml.Vector4f;
 
 import java.lang.reflect.Field;
@@ -77,7 +78,8 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
     /** Pipeline for all sky body quads — TRANSLUCENT blend for correct occlusion. */
     public static final RenderPipeline SKY_BODY_PIPELINE = RenderPipeline.builder()
             .withBindGroupLayout(BindGroupLayouts.GLOBALS)
-            .withBindGroupLayout(BindGroupLayouts.MATRICES_PROJECTION)
+            .withBindGroupLayout(BindGroupLayouts.PROJECTION)
+            .withBindGroupLayout(BindGroupLayouts.DYNAMIC_TRANSFORMS)
             .withBindGroupLayout(BindGroupLayouts.SAMPLER0)
             .withLocation(Identifier.fromNamespaceAndPath(OmniTech.MODID, "pipeline/sky_body"))
             .withVertexShader("core/position_tex")
@@ -281,15 +283,15 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
         // Spin around world Y first (planet's polar axis in inertial space).
         // This must happen before the direction quaternion so it is a world-space
         // rotation (texture scrolls horizontally), not a local Roll.
-        poseStack.mulPose(Axis.YP.rotation(axialAngle));
+        poseStack.rotate(Axis.YP.rotation(axialAngle));
 
         Vector3f up = new Vector3f(0f, 1f, 0f);
         float dot = direction.dot(up);
         if (dot < 0.9999f && dot > -0.9999f) {
             Quaternionf q = new Quaternionf().rotationTo(up, direction);
-            poseStack.mulPose(q);
+            poseStack.rotate(q);
         } else if (dot < 0f) {
-            poseStack.mulPose(Axis.XP.rotationDegrees(180f));
+            poseStack.rotate(Axis.XP.rotationDegrees(180f));
         }
 
         Matrix4fStack mv = RenderSystem.getModelViewStack();
@@ -308,10 +310,10 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
         try (RenderPass pass = RenderSystem.getDevice().createCommandEncoder()
                 .createRenderPass(() -> "Sky body [" + spriteId + "]",
                         color, Optional.empty(), depth, OptionalDouble.empty())) {
-            pass.setPipeline(SKY_BODY_PIPELINE);
+            pass.setPipeline(RenderSystem.getCompiledPipeline(SKY_BODY_PIPELINE));
             RenderSystem.bindDefaultUniforms(pass);
             pass.setUniform("DynamicTransforms", dyn);
-            pass.bindTexture("Sampler0", atlas.getTextureView(), atlas.getSampler());
+            pass.setUniform("Sampler0", atlas.getTextureView(), atlas.getSampler());
             pass.setVertexBuffer(0, getOrCreateBuffer(spriteId).slice());
             pass.setIndexBuffer(quadIndices.getBuffer(36), quadIndices.type());
             pass.drawIndexed(36, 1, 0, 0, 0);
@@ -327,7 +329,7 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
 
     @Override
     public boolean renderSky(LevelRenderState levelRenderState, SkyRenderState skyRenderState,
-                              Matrix4fc modelViewMatrix, Runnable setupFog) {
+                              Matrix4fc modelViewMatrix, GpuBufferSlice skyFog) {
         SkyRenderer skyRenderer = getSkyRenderer();
         if (skyRenderer == null) return false;
 
@@ -336,8 +338,8 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
         Minecraft mc = Minecraft.getInstance();
         long gameTime = mc.level != null ? mc.level.getOverworldClockTime() : 0;
 
-        setupFog.run();
-        skyRenderer.renderSkyDisc(0xFF000000);
+        RenderSystem.setShaderFog(skyFog);
+        withRenderPass("OmniTech sky disc", pass -> invokeRenderSkyDisc(skyRenderer, pass, new Vector3f(0f, 0f, 0f)));
 
         PoseStack poseStack = new PoseStack();
 
@@ -345,20 +347,25 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
         suppressVanillaMoon = true;
         suppressVanillaSun  = true;
         try {
-            skyRenderer.renderSunMoonAndStars(
-                    poseStack,
+            withRenderPass("OmniTech sun/moon/stars", pass -> invokeRenderSunMoonAndStars(
+                    skyRenderer, pass, poseStack,
                     skyRenderState.sunAngle,
                     skyRenderState.moonAngle,
                     skyRenderState.starAngle,
                     skyRenderState.moonPhase,
                     skyRenderState.rainBrightness,
-                    1.0f);
+                    1.0f));
         } finally {
             suppressVanillaMoon = false;
             suppressVanillaSun  = false;
         }
 
-        if (loc == null) return true; // unknown dimension — nothing else to draw
+        if (loc == null) {
+            if (skyRenderState.shouldRenderDarkDisc) {
+                withRenderPass("OmniTech dark disc", pass -> invokeRenderDarkDisc(skyRenderer, pass));
+            }
+            return true; // unknown dimension — nothing else to draw
+        }
 
         // ── Viewer's heliocentric position ────────────────────────────────────
         CelestialBody viewerPlanet = loc.parentPlanet() != null ? loc.parentPlanet() : loc.body();
@@ -449,7 +456,9 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
                     task.brightness(), task.axialAngle(), poseStack);
         }
 
-        if (skyRenderState.shouldRenderDarkDisc) skyRenderer.renderDarkDisc();
+        if (skyRenderState.shouldRenderDarkDisc) {
+            withRenderPass("OmniTech dark disc", pass -> invokeRenderDarkDisc(skyRenderer, pass));
+        }
         return true;
     }
 
@@ -468,17 +477,50 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
         }
     }
 
-    public static void invokeMoonRender(SkyRenderer instance, MoonPhase moonPhase,
+    public static void invokeMoonRender(SkyRenderer instance, RenderPass renderPass, MoonPhase moonPhase,
                                          float rainBrightness, PoseStack poseStack) {
         invokePrivate(instance, "renderMoon",
-                new Class[]{MoonPhase.class, float.class, PoseStack.class},
-                new Object[]{moonPhase, rainBrightness, poseStack});
+                new Class[]{RenderPass.class, MoonPhase.class, float.class, PoseStack.class},
+                new Object[]{renderPass, moonPhase, rainBrightness, poseStack});
     }
 
-    public static void invokeSunRender(SkyRenderer instance, float rainBrightness, PoseStack poseStack) {
+    public static void invokeSunRender(SkyRenderer instance, RenderPass renderPass, float rainBrightness, PoseStack poseStack) {
         invokePrivate(instance, "renderSun",
-                new Class[]{float.class, PoseStack.class},
-                new Object[]{rainBrightness, poseStack});
+                new Class[]{RenderPass.class, float.class, PoseStack.class},
+                new Object[]{renderPass, rainBrightness, poseStack});
+    }
+
+    private static void invokeRenderSkyDisc(SkyRenderer instance, RenderPass renderPass, Vector3fc skyColor) {
+        invokePrivate(instance, "renderSkyDisc",
+                new Class[]{RenderPass.class, Vector3fc.class},
+                new Object[]{renderPass, skyColor});
+    }
+
+    private static void invokeRenderDarkDisc(SkyRenderer instance, RenderPass renderPass) {
+        invokePrivate(instance, "renderDarkDisc",
+                new Class[]{RenderPass.class},
+                new Object[]{renderPass});
+    }
+
+    private static void invokeRenderSunMoonAndStars(SkyRenderer instance, RenderPass renderPass, PoseStack poseStack,
+                                                      float sunAngle, float moonAngle, float starAngle,
+                                                      MoonPhase moonPhase, float rainBrightness, float starBrightness) {
+        invokePrivate(instance, "renderSunMoonAndStars",
+                new Class[]{RenderPass.class, PoseStack.class, float.class, float.class, float.class,
+                        MoonPhase.class, float.class, float.class},
+                new Object[]{renderPass, poseStack, sunAngle, moonAngle, starAngle, moonPhase, rainBrightness, starBrightness});
+    }
+
+    /** Opens a short-lived render pass against the main render target, invokes {@code body}, then closes it. */
+    private static void withRenderPass(String label, java.util.function.Consumer<RenderPass> body) {
+        RenderTarget mainRenderTarget = Minecraft.getInstance().gameRenderer.mainRenderTarget();
+        GpuTextureView color = mainRenderTarget.getColorTextureView();
+        GpuTextureView depth = mainRenderTarget.getDepthTextureView();
+        try (RenderPass pass = RenderSystem.getDevice().createCommandEncoder()
+                .createRenderPass(() -> label, color, Optional.empty(), depth, OptionalDouble.empty())) {
+            RenderSystem.bindDefaultUniforms(pass);
+            body.accept(pass);
+        }
     }
 
     private static void invokePrivate(Object target, String name, Class<?>[] params, Object[] args) {

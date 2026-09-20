@@ -7,7 +7,7 @@ package com.dev1lroot.mcmods.omnitech.gui;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 
 /**
  * Hex dump editor widget. Shows binary data as 8-bytes-per-row hex dump with ASCII preview.
@@ -141,15 +141,15 @@ public class HexEditorWidget {
     public boolean keyPressed(int key, int h) {
         if (selectedIdx < 0) return false;
         switch (key) {
-            case GLFW.GLFW_KEY_RIGHT -> { advance(+1); return true; }
-            case GLFW.GLFW_KEY_LEFT  -> { advance(-1); return true; }
-            case GLFW.GLFW_KEY_DOWN  -> { advance(+BYTES_PER_ROW); ensureVisible(h); return true; }
-            case GLFW.GLFW_KEY_UP    -> { advance(-BYTES_PER_ROW); ensureVisible(h); return true; }
-            case GLFW.GLFW_KEY_PAGE_DOWN -> {
+            case InputConstants.KEY_RIGHT -> { advance(+1); return true; }
+            case InputConstants.KEY_LEFT  -> { advance(-1); return true; }
+            case InputConstants.KEY_DOWN  -> { advance(+BYTES_PER_ROW); ensureVisible(h); return true; }
+            case InputConstants.KEY_UP    -> { advance(-BYTES_PER_ROW); ensureVisible(h); return true; }
+            case InputConstants.KEY_PAGEDOWN -> {
                 int step = visibleRows(h) * BYTES_PER_ROW;
                 advance(+step); ensureVisible(h); return true;
             }
-            case GLFW.GLFW_KEY_PAGE_UP -> {
+            case InputConstants.KEY_PAGEUP -> {
                 int step = visibleRows(h) * BYTES_PER_ROW;
                 advance(-step); ensureVisible(h); return true;
             }

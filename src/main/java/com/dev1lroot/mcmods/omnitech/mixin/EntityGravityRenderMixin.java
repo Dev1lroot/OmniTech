@@ -56,7 +56,7 @@ public abstract class EntityGravityRenderMixin {
 
         float halfHeight = state.boundingBoxHeight * 0.5f;
         poseStack.translate(0.0, halfHeight, 0.0);
-        poseStack.mulPose(rotation);
+        poseStack.rotate(rotation);
         poseStack.translate(0.0, -halfHeight, 0.0);
     }
 }

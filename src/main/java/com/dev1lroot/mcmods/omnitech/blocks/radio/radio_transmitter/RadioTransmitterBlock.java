@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.radio.radio_transmitter;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
@@ -28,16 +27,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class RadioTransmitterBlock extends BaseEntityBlock {
 
-    public static final MapCodec<RadioTransmitterBlock> CODEC = simpleCodec(RadioTransmitterBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public RadioTransmitterBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

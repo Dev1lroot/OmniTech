@@ -165,7 +165,7 @@ public class FoundryRenderer
         if (state.templateItemState != null) {
             poseStack.pushPose();
             poseStack.translate(0.5f, Y_TEMPLATE, 0.685f);
-            poseStack.mulPose(Axis.XP.rotationDegrees(-90f));
+            poseStack.rotate(Axis.XP.rotationDegrees(-90f));
             poseStack.scale(TEMPLATE_SCALE, TEMPLATE_SCALE, TEMPLATE_SCALE);
             state.templateItemState.submit(
                     poseStack, submitNodeCollector,

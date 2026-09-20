@@ -1,0 +1,21 @@
+{
+  "density": 730,
+  "viscosity": 400,
+  "temperature": 293,
+  "light_level": 0,
+  "min_temp": -60,
+  "max_temp": 400,
+  "min_pressure": 0,
+  "max_pressure": 50000,
+  "phase_diagram": {
+    "melting_point": -60,
+    "boiling_point": 105,
+    "boiling_slope": 45,
+    "critical_temp": 480,
+    "critical_pressure": 18000,
+    "triple_point_temp": -60,
+    "triple_point_pressure": 1,
+    "has_solid": true
+  },
+  "neutron_slowing": 0.6
+}

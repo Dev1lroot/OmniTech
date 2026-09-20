@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ExtractorRecipeManager {
 
     private static final Gson GSON = new Gson();
-    private static final String PATH = "recipe/extractor";
+    private static final String PATH = "machine_recipe/extractor";
     private static final Map<String, ExtractorRecipe> RECIPES = new ConcurrentHashMap<>();
     private static boolean initialized = false;
 

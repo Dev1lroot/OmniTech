@@ -7,7 +7,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.pressure.decompressor;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.HeatExchangerBlock;
 import com.dev1lroot.mcmods.omnitech.io.IFluidContainer;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -41,7 +40,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class DecompressorBlock extends BaseEntityBlock implements IFluidContainer {
 
-    public static final MapCodec<DecompressorBlock> CODEC = simpleCodec(DecompressorBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -58,9 +56,6 @@ public class DecompressorBlock extends BaseEntityBlock implements IFluidContaine
         Direction facing = state.getValue(FACING);
         return face == facing || face == facing.getOpposite();
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

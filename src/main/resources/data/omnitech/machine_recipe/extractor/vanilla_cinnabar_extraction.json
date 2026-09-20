@@ -1,0 +1,6 @@
+{
+  "requiredKineticForce": 4.0,
+  "inputItem":   { "item": "minecraft:cinnabar", "amount": 1 },
+  "outputFluid": { "fluid": "omnitech:mercury",  "amount": 100 },
+  "residueItem": { "item": "minecraft:sulfur",   "amount": 1 }
+}

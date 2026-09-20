@@ -6,14 +6,14 @@ package com.dev1lroot.mcmods.omnitech.worldgen;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.blocks.space.gravitation_source.GravitationSourceBlockEntity;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.minecraft.world.level.levelgen.synth.ImprovedNoise;
+import net.minecraft.world.level.levelgen.synth.PerlinNoise;
 
 /**
  * Places a single Kuiper-Belt asteroid in the void:
@@ -30,23 +30,23 @@ import net.minecraft.world.level.levelgen.synth.ImprovedNoise;
  * Placement is governed by the {@code omnitech:asteroid} placed-feature JSON, which
  * scatters asteroids sparsely across the full height range of the Kuiper Belt dimension.
  */
-public class AsteroidFeature extends Feature<NoneFeatureConfiguration> {
+public record AsteroidFeature() implements Feature {
 
-    public AsteroidFeature() {
-        super(NoneFeatureConfiguration.CODEC);
+    public static final MapCodec<AsteroidFeature> CODEC = MapCodec.unit(AsteroidFeature::new);
+
+    @Override
+    public MapCodec<AsteroidFeature> codec() {
+        return CODEC;
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> ctx) {
-        WorldGenLevel level  = ctx.level();
-        BlockPos       origin = ctx.origin();
-        RandomSource   random = ctx.random();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
 
         // Body radius: 6–24 blocks → diameter 13–49 blocks
         int radius = 6 + random.nextInt(19);
 
         // Two-octave Perlin for smooth surface distortion
-        ImprovedNoise noise = new ImprovedNoise(random);
+        PerlinNoise noise = new PerlinNoise(random);
         double noiseScale     = 0.13;              // bump wavelength
         double noiseAmplitude = radius * 0.22;     // ±22% radius variation at surface
 
@@ -65,8 +65,8 @@ public class AsteroidFeature extends Feature<NoneFeatureConfiguration> {
                     double nz = dz * noiseScale;
 
                     // Two octaves: base + half-wavelength detail
-                    double nv = noise.noise(nx, ny, nz) * 0.65
-                              + noise.noise(nx * 2.1, ny * 2.1, nz * 2.1) * 0.35;
+                    double nv = noise.get(nx, ny, nz) * 0.65
+                              + noise.get(nx * 2.1, ny * 2.1, nz * 2.1) * 0.35;
 
                     double effectiveRadius = radius + nv * noiseAmplitude;
 

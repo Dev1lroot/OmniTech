@@ -1,0 +1,4 @@
+{
+  "inputBlock": "omnitech:crude_oil",
+  "outputFluid": { "fluid": "omnitech:crude_oil", "amount": 100 }
+}

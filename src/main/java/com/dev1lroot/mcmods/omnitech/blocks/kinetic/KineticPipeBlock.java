@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.kinetic;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -38,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
  * to each other through their sides.
  */
 public class KineticPipeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
-    public static final MapCodec<KineticPipeBlock> CODEC = simpleCodec(KineticPipeBlock::new);
     public static final EnumProperty<Direction.Axis> AXIS    = BlockStateProperties.AXIS;
     public static final BooleanProperty              POWERED = BlockStateProperties.POWERED;
     public static final BooleanProperty              WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -56,9 +54,6 @@ public class KineticPipeBlock extends BaseEntityBlock implements SimpleWaterlogg
                 .setValue(WATERLOGGED, false)
         );
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     /** All rendering is done by the BlockEntityRenderer. */
     @Override

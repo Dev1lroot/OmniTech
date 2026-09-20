@@ -12,7 +12,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import java.awt.Desktop;
 import java.net.URI;
@@ -241,11 +241,11 @@ public class GuidebookScreen extends Screen {
     @Override
     public boolean keyPressed(KeyEvent event) {
         int key = event.key();
-        if (key == GLFW.GLFW_KEY_LEFT || key == GLFW.GLFW_KEY_PAGE_UP) {
+        if (key == InputConstants.KEY_LEFT || key == InputConstants.KEY_PAGEUP) {
             goToPrev();
             return true;
         }
-        if (key == GLFW.GLFW_KEY_RIGHT || key == GLFW.GLFW_KEY_PAGE_DOWN) {
+        if (key == InputConstants.KEY_RIGHT || key == InputConstants.KEY_PAGEDOWN) {
             goToNext();
             return true;
         }

@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.thermal.radiator;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -41,8 +40,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class RadiatorBlock extends BaseEntityBlock {
 
-    public static final MapCodec<RadiatorBlock> CODEC = simpleCodec(RadiatorBlock::new);
-
     public static final BooleanProperty LIT    = BlockStateProperties.LIT;
     /** Direction the front face (fins) points. Back = {@code FACING.getOpposite()}. */
     public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
@@ -53,9 +50,6 @@ public class RadiatorBlock extends BaseEntityBlock {
                 .setValue(LIT,    false)
                 .setValue(FACING, Direction.SOUTH));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

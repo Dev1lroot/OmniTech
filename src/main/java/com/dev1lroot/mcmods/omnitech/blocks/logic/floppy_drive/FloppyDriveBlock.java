@@ -8,7 +8,6 @@ import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_gate.LogicGateBlockEntit
 import com.dev1lroot.mcmods.omnitech.items.FloppyDiskItem;
 import com.dev1lroot.mcmods.omnitech.items.LogicGateTemplateItem;
 import com.dev1lroot.mcmods.omnitech.util.LogicGate;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,8 +34,6 @@ public class FloppyDriveBlock extends BaseEntityBlock
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty HAS_DISK = BooleanProperty.create("has_disk");
 
-    public static final MapCodec<FloppyDriveBlock> CODEC = simpleCodec(FloppyDriveBlock::new);
-
     public FloppyDriveBlock(Properties props) {
         super(props);
         this.registerDefaultState(this.stateDefinition.any()
@@ -44,9 +41,6 @@ public class FloppyDriveBlock extends BaseEntityBlock
                 .setValue(HAS_DISK, false)
         );
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

@@ -28,7 +28,7 @@ public class FoundryRecipeManager {
 
     public static void loadRecipes(ResourceManager resourceManager) {
         RECIPES.clear();
-        String path = "recipe/foundry";
+        String path = "machine_recipe/foundry";
 
         try {
             Map<Identifier, Resource> resources = resourceManager.listResources(path,

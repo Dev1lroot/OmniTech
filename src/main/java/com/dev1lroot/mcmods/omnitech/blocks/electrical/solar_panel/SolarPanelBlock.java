@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.electrical.solar_panel;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
@@ -35,16 +34,12 @@ import org.jetbrains.annotations.Nullable;
  * The panel has no facing direction — it always faces up.
  */
 public class SolarPanelBlock extends BaseEntityBlock {
-    public static final MapCodec<SolarPanelBlock> CODEC = simpleCodec(SolarPanelBlock::new);
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
     public SolarPanelBlock(Properties properties) {
         super(properties.lightLevel(state -> state.getValue(LIT) ? 4 : 0));
         registerDefaultState(stateDefinition.any().setValue(LIT, false));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

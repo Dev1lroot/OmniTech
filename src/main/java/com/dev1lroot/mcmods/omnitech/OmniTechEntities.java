@@ -31,7 +31,7 @@ public class OmniTechEntities {
                             .sized(3.0f, 3.0f)
                             .passengerAttachments(3.1f)
                             .clientTrackingRange(10)
-                            .updateInterval(1)
+                            .updateInterval(3)
                             .build(ResourceKey.create(Registries.ENTITY_TYPE,
                                     Identifier.fromNamespaceAndPath(OmniTech.MODID, "rocket"))));
 

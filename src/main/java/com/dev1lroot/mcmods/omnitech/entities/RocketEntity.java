@@ -25,6 +25,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.InterpolationHandler;
 import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.SteppedInterpolationHandler;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -102,7 +103,6 @@ public class RocketEntity extends Entity implements MenuProvider {
     // -------------------------------------------------------------------------
 
     private final SimpleContainer inventory = new SimpleContainer(2);
-    private final InterpolationHandler interpolation = new InterpolationHandler(this, 3);
 
     // -------------------------------------------------------------------------
     // Constructor
@@ -127,7 +127,6 @@ public class RocketEntity extends Entity implements MenuProvider {
         super.tick();
 
         if (level().isClientSide()) {
-            interpolation.interpolate();
             return;
         }
 
@@ -312,7 +311,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     public boolean hurtServer(ServerLevel level, DamageSource source, float damage) { return false; }
 
     @Override
-    public InterpolationHandler getInterpolation() { return interpolation; }
+    protected InterpolationHandler createInterpolationHandler() { return SteppedInterpolationHandler.create(this); }
 
     @Override
     public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {

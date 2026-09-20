@@ -6,7 +6,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.logic.reactor;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.radiation.NuclearExplosion;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -27,14 +26,9 @@ import java.util.Optional;
 
 public class ReactorBlock extends BaseEntityBlock {
 
-    public static final MapCodec<ReactorBlock> CODEC = simpleCodec(ReactorBlock::new);
-
     public ReactorBlock(Properties properties) {
         super(properties);
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

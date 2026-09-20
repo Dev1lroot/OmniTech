@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.space.gravitation_source;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
@@ -22,14 +21,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class GravitationSourceBlock extends BaseEntityBlock {
 
-    public static final MapCodec<GravitationSourceBlock> CODEC = simpleCodec(GravitationSourceBlock::new);
-
     public GravitationSourceBlock(Properties properties) {
         super(properties);
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

@@ -5,14 +5,14 @@
 package com.dev1lroot.mcmods.omnitech.worldgen;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
 /**
  * Generates upward-pointing {@code europa_stone} spires rising from the ocean
@@ -26,17 +26,17 @@ import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConf
  * <p>Placement should target Y ≈ 30–45 so the scanner can locate the ocean
  * floor reliably.
  */
-public class EuropaStoneSpireFeature extends Feature<NoneFeatureConfiguration> {
+public record EuropaStoneSpireFeature() implements Feature {
 
-    public EuropaStoneSpireFeature() {
-        super(NoneFeatureConfiguration.CODEC);
+    public static final MapCodec<EuropaStoneSpireFeature> CODEC = MapCodec.unit(EuropaStoneSpireFeature::new);
+
+    @Override
+    public MapCodec<EuropaStoneSpireFeature> codec() {
+        return CODEC;
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> ctx) {
-        WorldGenLevel level  = ctx.level();
-        BlockPos      origin = ctx.origin();
-        RandomSource  random = ctx.random();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
 
         int spireCount = 4 + random.nextInt(6);  // 4–9 spires per cluster
         boolean anyPlaced = false;

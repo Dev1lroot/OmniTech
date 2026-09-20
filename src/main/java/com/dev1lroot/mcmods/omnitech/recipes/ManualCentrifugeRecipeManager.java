@@ -29,7 +29,7 @@ public class ManualCentrifugeRecipeManager {
 
     public static void loadRecipes(ResourceManager resourceManager) {
         RECIPES.clear();
-        String path = "recipe/manual_centrifuge";
+        String path = "machine_recipe/manual_centrifuge";
 
         try {
             Map<Identifier, Resource> resources = resourceManager.listResources(path,

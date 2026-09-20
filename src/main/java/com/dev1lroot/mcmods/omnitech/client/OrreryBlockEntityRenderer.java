@@ -212,7 +212,7 @@ public class OrreryBlockEntityRenderer
 
             pose.pushPose();
             pose.translate(bx, by, bz);
-            pose.mulPose(Axis.YP.rotation(body.axialAngle()));
+            pose.rotate(Axis.YP.rotation(body.axialAngle()));
 
             if (body.spriteId() != null) {
                 TextureAtlasSprite sp = atlas.getSprite(body.spriteId());

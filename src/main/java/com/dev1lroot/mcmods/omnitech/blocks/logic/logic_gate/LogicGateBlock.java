@@ -6,11 +6,12 @@ package com.dev1lroot.mcmods.omnitech.blocks.logic.logic_gate;
 
 import com.dev1lroot.mcmods.omnitech.items.LogicGateTemplateItem;
 import com.dev1lroot.mcmods.omnitech.util.LogicGate;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -36,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class LogicGateBlock extends BaseEntityBlock
 {
-    public static final MapCodec<LogicGateBlock> CODEC = simpleCodec(LogicGateBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty INPUT_A = BooleanProperty.create("a");
     public static final BooleanProperty INPUT_B = BooleanProperty.create("b");
@@ -69,9 +69,6 @@ public class LogicGateBlock extends BaseEntityBlock
         }
         return shape;
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }
@@ -212,7 +209,7 @@ public class LogicGateBlock extends BaseEntityBlock
 
     // Drop template when block is destroyed by player
     @Override
-    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state,
+    public void playerDestroy(ServerLevel level, ServerPlayer player, BlockPos pos, BlockState state,
                               @Nullable BlockEntity blockEntity, ItemStack tool) {
         if (!level.isClientSide() && blockEntity instanceof LogicGateBlockEntity be) {
             ItemStack template = be.getTemplate();

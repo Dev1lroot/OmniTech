@@ -6,7 +6,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.plumbing;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IFluidContainer;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -50,7 +49,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, SimpleWaterloggedBlock
 {
-    public static final MapCodec<FluidPipeBlock> CODEC = simpleCodec(FluidPipeBlock::new);
 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
@@ -83,9 +81,6 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, 
                 .setValue(COLOR,  0)
         );
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }
@@ -164,7 +159,6 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, 
         {
             // сторона соседа, которая смотрит на трубу
             Direction neighborFace = fromPipe.getOpposite();
-
 
             if (block instanceof FluidPipeBlock)
             {

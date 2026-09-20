@@ -66,7 +66,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 @Mod(value = OmniTech.MODID, dist = Dist.CLIENT)
 public class OmniTechClient
 {
@@ -178,12 +178,12 @@ public class OmniTechClient
         event.registerCategory(category);
         OPEN_ROCKET_GUI = new KeyMapping(
                 "key.omnitech.open_rocket_gui",
-                GLFW.GLFW_KEY_G,
+                InputConstants.KEY_G,
                 category);
         event.register(OPEN_ROCKET_GUI);
         PUSH_TO_TALK = new KeyMapping(
                 "key.omnitech.push_to_talk",
-                GLFW.GLFW_KEY_UNKNOWN,
+                InputConstants.UNKNOWN.getValue(),
                 category);
         event.register(PUSH_TO_TALK);
     }

@@ -6,7 +6,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.logic.reactor;
 
 import com.dev1lroot.mcmods.omnitech.items.ReactorRodItem;
 import com.dev1lroot.mcmods.omnitech.radiation.NuclearExplosion;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,8 +29,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class ReactorCell extends BaseEntityBlock {
 
-    public static final MapCodec<ReactorCell> CODEC = simpleCodec(ReactorCell::new);
-
     public static final EnumProperty<ReactorCellState> CELL_STATE =
             EnumProperty.create("reactor_cell_state", ReactorCellState.class);
     public static final EnumProperty<ReactorCellType> CELL_TYPE =
@@ -43,9 +40,6 @@ public class ReactorCell extends BaseEntityBlock {
                 .setValue(CELL_STATE, ReactorCellState.COOL)
                 .setValue(CELL_TYPE,  ReactorCellType.EMPTY));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

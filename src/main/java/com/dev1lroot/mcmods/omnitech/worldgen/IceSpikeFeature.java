@@ -5,14 +5,14 @@
 package com.dev1lroot.mcmods.omnitech.worldgen;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
 /**
  * Places downward-pointing icicle spikes of {@code europa_ice} that hang from
@@ -22,17 +22,17 @@ import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConf
  * scans upward from that point to find the first ice block, then extends a
  * tapered column downward through water blocks.
  */
-public class IceSpikeFeature extends Feature<NoneFeatureConfiguration> {
+public record IceSpikeFeature() implements Feature {
 
-    public IceSpikeFeature() {
-        super(NoneFeatureConfiguration.CODEC);
+    public static final MapCodec<IceSpikeFeature> CODEC = MapCodec.unit(IceSpikeFeature::new);
+
+    @Override
+    public MapCodec<IceSpikeFeature> codec() {
+        return CODEC;
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> ctx) {
-        WorldGenLevel level  = ctx.level();
-        BlockPos       origin = ctx.origin();
-        RandomSource   random = ctx.random();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
 
         BlockPos.MutableBlockPos mutable = origin.mutable();
 

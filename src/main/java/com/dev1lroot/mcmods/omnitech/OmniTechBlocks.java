@@ -51,6 +51,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.processing.macerator.ManualMacerator
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.*;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.boiler.BoilerBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.chemical_reactor.ChemicalReactorBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.rocket.RocketControllerBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logistic.conveyor_belt.ConveyorBeltBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.crank.CrankBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.pressure.decompressor.DecompressorBlock;
@@ -159,6 +160,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> DECOMPRESSOR;
     public static final DeferredBlock<Block> FRACTIONAL_DISTILLER;
     public static final DeferredBlock<Block> CHEMICAL_REACTOR;
+    public static final DeferredBlock<Block> ROCKET_CONTROLLER;
     public static final DeferredBlock<Block> FLUID_FILLER;
     public static final DeferredBlock<Block> ELECTRIC_CHARGER;
     public static final DeferredBlock<Block> COKE_BRICK;
@@ -222,7 +224,7 @@ public class OmniTechBlocks {
                         .strength(3.0F)
                         .sound(SoundType.METAL)
                         .noOcclusion()
-                        .pushReaction(PushReaction.NORMAL)
+                        .pushReaction(PushReaction.PUSH_PULL)
                 ));
         KF_REDUCTOR = register("kf_reductor",
                 p -> new KineticReductorBlock(p
@@ -253,7 +255,7 @@ public class OmniTechBlocks {
                         .strength(2.0F)
                         .sound(SoundType.METAL)
                         .noOcclusion()
-                        .pushReaction(PushReaction.NORMAL)
+                        .pushReaction(PushReaction.PUSH_PULL)
                 ));
         FLUID_PIPE_TRIM = register("fluid_pipe_trim",
                 p -> new FluidPipeTrimBlock(p
@@ -272,7 +274,7 @@ public class OmniTechBlocks {
                         .strength(3.0F)
                         .sound(SoundType.METAL)
                         .noOcclusion()
-                        .isViewBlocking((state, level, pos) -> false)
+                        .isViewBlocking((state, level, pos, nearPlaneBox) -> false)
                 ));
         BOILER = register("boiler",
                 p -> new BoilerBlock(p.mapColor(MapColor.METAL).strength(3.0F)
@@ -312,7 +314,7 @@ public class OmniTechBlocks {
         ELECTRIC_WIRE = register("electric_wire",
                 p -> new ElectricWireBlock(p.mapColor(MapColor.METAL).strength(1.5F)
                         .sound(SoundType.METAL).noOcclusion()
-                        .pushReaction(net.minecraft.world.level.material.PushReaction.NORMAL)));
+                        .pushReaction(net.minecraft.world.level.material.PushReaction.PUSH_PULL)));
         ELECTRIC_FURNACE = register("electric_furnace",
                 p -> new ElectricFurnaceBlock(p.mapColor(MapColor.METAL).strength(3.5F)
                         .sound(SoundType.METAL)));
@@ -343,6 +345,9 @@ public class OmniTechBlocks {
         CHEMICAL_REACTOR = register("chemical_reactor",
                 p -> new ChemicalReactorBlock(p.mapColor(MapColor.METAL).strength(3.5F)
                         .sound(SoundType.METAL)));
+        ROCKET_CONTROLLER = register("rocket_controller",
+                p -> new RocketControllerBlock(p.mapColor(MapColor.METAL).strength(3.5F)
+                        .sound(SoundType.METAL).noOcclusion()));
         FLUID_FILLER = register("fluid_filler",
                 p -> new FluidFillerBlock(p.mapColor(MapColor.METAL).strength(3.0F)
                         .sound(SoundType.METAL)));
@@ -364,7 +369,7 @@ public class OmniTechBlocks {
         THERMAL_CONDUCTOR = register("thermal_conductor",
                 p -> new ThermalConductorBlock(p.mapColor(MapColor.METAL).strength(2.0F)
                         .sound(SoundType.METAL).noOcclusion()
-                        .pushReaction(net.minecraft.world.level.material.PushReaction.NORMAL)));
+                        .pushReaction(net.minecraft.world.level.material.PushReaction.PUSH_PULL)));
         ELECTRIC_HEATER = register("electric_heater",
                 p -> new ElectricHeaterBlock(p.mapColor(MapColor.METAL).strength(3.5F)
                         .sound(SoundType.METAL)));
@@ -382,7 +387,7 @@ public class OmniTechBlocks {
         ANALOG_CABLE = register("analog_cable",
                 p -> new AnalogCableBlock(p.mapColor(MapColor.COLOR_YELLOW).strength(1.0F)
                         .sound(SoundType.METAL).noOcclusion()
-                        .pushReaction(net.minecraft.world.level.material.PushReaction.NORMAL)));
+                        .pushReaction(net.minecraft.world.level.material.PushReaction.PUSH_PULL)));
         MICROPHONE = register("microphone",
                 p -> new MicrophoneBlock(p.mapColor(MapColor.METAL).strength(2.5F)
                         .sound(SoundType.METAL)));
@@ -402,7 +407,7 @@ public class OmniTechBlocks {
         LOGIC_CABLE = register("logic_cable",
                 p -> new LogicCableBlock(p.mapColor(MapColor.COLOR_GREEN).strength(1.0F)
                         .sound(SoundType.METAL).noOcclusion()
-                        .pushReaction(net.minecraft.world.level.material.PushReaction.NORMAL)));
+                        .pushReaction(net.minecraft.world.level.material.PushReaction.PUSH_PULL)));
         LOGIC_GATE_BLOCK = register("logic_gate_block",
                 p -> new LogicGateBlock(p.mapColor(MapColor.METAL).strength(2.5F)
                         .sound(SoundType.METAL)

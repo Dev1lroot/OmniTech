@@ -106,9 +106,9 @@ public class KineticReductorRenderer
         // Spin must be outermost (first in code) so it acts on the world axis, not the
         // pre-rotated local frame.  Pre-rotation orients the model so the shaft aligns
         // with spinAxis before the spin is applied to the vertex.
-        poseStack.mulPose(spinAxis.rotationDegrees(angle));
+        poseStack.rotate(spinAxis.rotationDegrees(angle));
         if (preRotation != null) {
-            poseStack.mulPose(preRotation);
+            poseStack.rotate(preRotation);
         }
         poseStack.translate(-0.5, -0.5, -0.5);
         collector.submitMovingBlock(poseStack, model, 0);

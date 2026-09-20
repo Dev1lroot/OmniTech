@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ChemicalReactorRecipeManager {
 
     private static final Gson   GSON   = new Gson();
-    private static final String FOLDER = "recipe/chemical_reactor";
+    private static final String FOLDER = "machine_recipe/chemical_reactor";
     private static final Map<String, ChemicalReactorRecipe> RECIPES = new ConcurrentHashMap<>();
     private static boolean initialized = false;
 

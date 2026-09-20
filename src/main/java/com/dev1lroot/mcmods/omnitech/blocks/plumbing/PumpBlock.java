@@ -6,7 +6,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.plumbing;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IFluidContainer;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -36,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
  * output side do NOT equalize through the pump, only through it.
  */
 public class PumpBlock extends BaseEntityBlock implements IFluidContainer {
-    public static final MapCodec<PumpBlock> CODEC = simpleCodec(PumpBlock::new);
 
     /** Direction the pump outputs toward (= "front" face). */
     public static final EnumProperty<Direction> FACING  = BlockStateProperties.HORIZONTAL_FACING;
@@ -59,9 +57,6 @@ public class PumpBlock extends BaseEntityBlock implements IFluidContainer {
         // только перед и зад
         return face == facing || face == facing.getOpposite();
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

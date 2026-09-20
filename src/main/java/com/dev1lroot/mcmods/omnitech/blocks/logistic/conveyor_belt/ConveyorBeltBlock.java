@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.logistic.conveyor_belt;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -35,7 +34,6 @@ import org.jetbrains.annotations.Nullable;
  * POWERED reflects whether KF is currently flowing.
  */
 public class ConveyorBeltBlock extends BaseEntityBlock {
-    public static final MapCodec<ConveyorBeltBlock> CODEC = simpleCodec(ConveyorBeltBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty   POWERED = BlockStateProperties.POWERED;
     /** Transfer progress [0, TRANSFER_INTERVAL] stored in blockstate for server-authoritative animation. */
@@ -52,9 +50,6 @@ public class ConveyorBeltBlock extends BaseEntityBlock {
                 .setValue(POWERED, false)
                 .setValue(PROGRESS, 0));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     /**
      * INVISIBLE so the {@link ConveyorBeltRenderer} can submit the belt model

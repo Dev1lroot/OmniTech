@@ -8,8 +8,24 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Petroleum chemistry: `crude_oil`, `heavy_fuel_oil`, `diesel`, `naphtha`, `propane`, `butane` fluids, plus `sulfuric_acid`, `hydrochloric_acid`, and `nitric_acid`.
+- Crude oil now spawns underground as distorted ore-free pockets (`CrudeOilPocketFeature`), mostly in desert biomes and occasionally in badlands; harvestable with a Fluid Collector.
+- Fractional Distiller recipes refining crude oil into heavy fuel oil, diesel, naphtha, and propane (2/3/4-block structures), plus a naphtha-cracking recipe producing propane and butane.
+- Fluids can now optionally declare `"world_placeable": true` in their JSON definition to register a companion in-world `LiquidBlock` (used by crude oil).
+- Rocket multiblock: place `omnitech:rocket_controller` as the anchor of a structure defined in `data/omnitech/rocket_structure/*.json`. The JSON pattern is an arbitrary 3D shape (fins, tapering, non-cuboid silhouettes — not just a box); on match, every structure block is removed (no drops) and a `RocketEntity` is spawned in its place. Assembly is checked automatically right after the controller is placed, and again on right-click as a manual retry. Ships with an example `basic_rocket` template.
+- `mercury` fluid (liquid metal, room-temp) and new Extractor recipes tying Minecraft 26.3's vanilla `cinnabar` and `sulfur` into the chemistry chain: roasting either `omnitech:cinnabar` or vanilla `minecraft:cinnabar` yields mercury with elemental sulfur as residue, and extracting `minecraft:sulfur` now produces `sulfuric_acid`.
+
 ### Changed
+- Upgraded to NeoForge 26.3.0.1-beta on Minecraft 26.3; bumped moddev plugin to 2.0.147.
+- Bumped JEI to 26.3-neoforge-31.0.0.9 for Minecraft 26.3 compatibility; migrated `OmniTechJeiPlugin` off JEI APIs deprecated for removal (`RecipeType` → `IRecipeType`, `addRecipeCatalysts` → `addCraftingStation`, `addItemStack`/`addFluidStack` → the unified `add(...)` overloads).
 - Upgraded to NeoForge 26.2.0.6-beta on Minecraft 26.2; bumped JEI to 26.2-neoforge-30.1.0.12.
+
+### Fixed
+- Fixed a `NullPointerException: Block id not set` crash on startup for any fluid marked `world_placeable`, caused by constructing its companion `LiquidBlock` from `BlockBehaviour.Properties` that hadn't had its registry id bound yet; now uses `DeferredRegister.Blocks#registerBlock` so the id is set before construction.
+- Discovered (not fixed, pre-existing) that `data/omnitech/worldgen/biome_modifier/penguin_spawn.json` sits at the wrong datapack path for the `neoforge:biome_modifier` registry — it needs to be under `data/omnitech/neoforge/biome_modifier/` to actually load.
+- Fixed `CrudeOilPocketFeature` carving through generated structures (e.g. Trial Chambers): it replaced any non-air, non-fluid block, which included structure blocks placed before the feature runs. Now uses a natural-terrain allowlist (`BlockTags.BASE_STONE_OVERWORLD`, sand, red sand, gravel) so only genuine terrain is ever replaced.
+- Crude oil pockets now generate across a much taller height range (desert: Y −50 to 65; badlands: Y −50 to 90) instead of only deep underground, so a pocket occasionally breaches the surface and settles into a visible "oil lake" in its own basin.
 
 ### Added — Reactor & Radiation (2026-05-17 – 2026-05-19)
 - Nuclear explosion on meltdown (core ≥ 1200 °C) or reactor destruction while hot (> 300 °C).

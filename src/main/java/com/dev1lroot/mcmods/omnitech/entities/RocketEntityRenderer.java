@@ -48,7 +48,7 @@ public class RocketEntityRenderer extends EntityRenderer<RocketEntity, RocketRen
         // then flip axes to match Minecraft's model coordinate convention.
         poseStack.translate(0.0f, 1.5f, 0.0f);
         poseStack.scale(-1.0f, -1.0f, 1.0f);
-        submitNodeCollector.submitModel(model, state, poseStack, TEXTURE, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
+        submitNodeCollector.submitModel(model, state, poseStack, TEXTURE, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
         poseStack.popPose();
     }
 }

@@ -34,7 +34,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
@@ -55,35 +55,35 @@ public class OmniTechJeiPlugin implements IModPlugin {
 
     // ── Recipe types ──────────────────────────────────────────────────────────
 
-    public static final RecipeType<AlloyFurnaceRecipe> ALLOY_FURNACE =
-            RecipeType.create(OmniTech.MODID, "alloy_furnace", AlloyFurnaceRecipe.class);
+    public static final IRecipeType<AlloyFurnaceRecipe> ALLOY_FURNACE =
+            IRecipeType.create(OmniTech.MODID, "alloy_furnace", AlloyFurnaceRecipe.class);
 
-    public static final RecipeType<ManualMaceratorRecipe> MANUAL_MACERATOR =
-            RecipeType.create(OmniTech.MODID, "manual_macerator", ManualMaceratorRecipe.class);
+    public static final IRecipeType<ManualMaceratorRecipe> MANUAL_MACERATOR =
+            IRecipeType.create(OmniTech.MODID, "manual_macerator", ManualMaceratorRecipe.class);
 
-    public static final RecipeType<ManualCentrifugeRecipe> MANUAL_CENTRIFUGE =
-            RecipeType.create(OmniTech.MODID, "manual_centrifuge", ManualCentrifugeRecipe.class);
+    public static final IRecipeType<ManualCentrifugeRecipe> MANUAL_CENTRIFUGE =
+            IRecipeType.create(OmniTech.MODID, "manual_centrifuge", ManualCentrifugeRecipe.class);
 
-    public static final RecipeType<SmelterRecipe> SMELTING =
-            RecipeType.create(OmniTech.MODID, "smelting", SmelterRecipe.class);
+    public static final IRecipeType<SmelterRecipe> SMELTING =
+            IRecipeType.create(OmniTech.MODID, "smelting", SmelterRecipe.class);
 
-    public static final RecipeType<FoundryRecipe> FOUNDRY =
-            RecipeType.create(OmniTech.MODID, "foundry", FoundryRecipe.class);
+    public static final IRecipeType<FoundryRecipe> FOUNDRY =
+            IRecipeType.create(OmniTech.MODID, "foundry", FoundryRecipe.class);
 
-    public static final RecipeType<ChemicalReactorRecipe> CHEMICAL_REACTOR =
-            RecipeType.create(OmniTech.MODID, "chemical_reactor", ChemicalReactorRecipe.class);
+    public static final IRecipeType<ChemicalReactorRecipe> CHEMICAL_REACTOR =
+            IRecipeType.create(OmniTech.MODID, "chemical_reactor", ChemicalReactorRecipe.class);
 
-    public static final RecipeType<ElectrolysisRecipe> ELECTROLYSIS =
-            RecipeType.create(OmniTech.MODID, "electrolysis", ElectrolysisRecipe.class);
+    public static final IRecipeType<ElectrolysisRecipe> ELECTROLYSIS =
+            IRecipeType.create(OmniTech.MODID, "electrolysis", ElectrolysisRecipe.class);
 
-    public static final RecipeType<FractionalDistillationRecipe> FRACTIONAL_DISTILLATION =
-            RecipeType.create(OmniTech.MODID, "fractional_distillation", FractionalDistillationRecipe.class);
+    public static final IRecipeType<FractionalDistillationRecipe> FRACTIONAL_DISTILLATION =
+            IRecipeType.create(OmniTech.MODID, "fractional_distillation", FractionalDistillationRecipe.class);
 
-    public static final RecipeType<SolvationRecipe> SOLVATION =
-            RecipeType.create(OmniTech.MODID, "solvation", SolvationRecipe.class);
+    public static final IRecipeType<SolvationRecipe> SOLVATION =
+            IRecipeType.create(OmniTech.MODID, "solvation", SolvationRecipe.class);
 
-    public static final RecipeType<FluidCollectorRecipe> FLUID_COLLECTOR =
-            RecipeType.create(OmniTech.MODID, "fluid_collector", FluidCollectorRecipe.class);
+    public static final IRecipeType<FluidCollectorRecipe> FLUID_COLLECTOR =
+            IRecipeType.create(OmniTech.MODID, "fluid_collector", FluidCollectorRecipe.class);
 
     // ── Plugin identity ───────────────────────────────────────────────────────
 
@@ -133,16 +133,16 @@ public class OmniTechJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalysts(ALLOY_FURNACE,           OmniTechBlocks.ALLOY_FURNACE.get());
-        registration.addRecipeCatalysts(MANUAL_MACERATOR,        OmniTechBlocks.MANUAL_MACERATOR.get());
-        registration.addRecipeCatalysts(MANUAL_CENTRIFUGE,       OmniTechBlocks.MANUAL_CENTRIFUGE.get());
-        registration.addRecipeCatalysts(SMELTING,                OmniTechBlocks.SMELTER.get());
-        registration.addRecipeCatalysts(FOUNDRY,                 OmniTechBlocks.FOUNDRY.get());
-        registration.addRecipeCatalysts(CHEMICAL_REACTOR,        OmniTechBlocks.CHEMICAL_REACTOR.get());
-        registration.addRecipeCatalysts(ELECTROLYSIS,            OmniTechBlocks.ELECTROLYSIS_MACHINE.get());
-        registration.addRecipeCatalysts(FRACTIONAL_DISTILLATION, OmniTechBlocks.FRACTIONAL_DISTILLER.get());
-        registration.addRecipeCatalysts(SOLVATION,               OmniTechBlocks.SOLVATION_MACHINE.get());
-        registration.addRecipeCatalysts(FLUID_COLLECTOR,         OmniTechBlocks.FLUID_COLLECTOR.get());
+        registration.addCraftingStation(ALLOY_FURNACE,           OmniTechBlocks.ALLOY_FURNACE.get());
+        registration.addCraftingStation(MANUAL_MACERATOR,        OmniTechBlocks.MANUAL_MACERATOR.get());
+        registration.addCraftingStation(MANUAL_CENTRIFUGE,       OmniTechBlocks.MANUAL_CENTRIFUGE.get());
+        registration.addCraftingStation(SMELTING,                OmniTechBlocks.SMELTER.get());
+        registration.addCraftingStation(FOUNDRY,                 OmniTechBlocks.FOUNDRY.get());
+        registration.addCraftingStation(CHEMICAL_REACTOR,        OmniTechBlocks.CHEMICAL_REACTOR.get());
+        registration.addCraftingStation(ELECTROLYSIS,            OmniTechBlocks.ELECTROLYSIS_MACHINE.get());
+        registration.addCraftingStation(FRACTIONAL_DISTILLATION, OmniTechBlocks.FRACTIONAL_DISTILLER.get());
+        registration.addCraftingStation(SOLVATION,               OmniTechBlocks.SOLVATION_MACHINE.get());
+        registration.addCraftingStation(FLUID_COLLECTOR,         OmniTechBlocks.FLUID_COLLECTOR.get());
     }
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -162,7 +162,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
             this.arrow      = gui.getRecipeArrow();
         }
 
-        @Override public RecipeType<AlloyFurnaceRecipe> getRecipeType() { return ALLOY_FURNACE; }
+        @Override public IRecipeType<AlloyFurnaceRecipe> getRecipeType() { return ALLOY_FURNACE; }
         @Override public Component getTitle() { return Component.translatable("jei.omnitech.alloy_furnace"); }
         @Override public int getWidth()  { return 160; }
         @Override public int getHeight() { return 65; }
@@ -175,7 +175,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
                 int x = (i % 2) * 18;
                 int y = (i / 2) * 18;
                 builder.addInputSlot(x, y)
-                        .addItemStack(new ItemStack(inputs.get(i)))
+                        .add(new ItemStack(inputs.get(i)))
                         .setStandardSlotBackground();
             }
             List<net.minecraft.world.item.Item> outputs = recipe.getOutputs();
@@ -183,7 +183,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
                 int x = 108 + (i % 2) * 18;
                 int y = (i / 2) * 18;
                 builder.addOutputSlot(x, y)
-                        .addItemStack(new ItemStack(outputs.get(i)))
+                        .add(new ItemStack(outputs.get(i)))
                         .setOutputSlotBackground();
             }
         }
@@ -209,7 +209,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
             this.arrow      = gui.getRecipeArrow();
         }
 
-        @Override public RecipeType<ManualMaceratorRecipe> getRecipeType() { return MANUAL_MACERATOR; }
+        @Override public IRecipeType<ManualMaceratorRecipe> getRecipeType() { return MANUAL_MACERATOR; }
         @Override public Component getTitle() { return Component.translatable("jei.omnitech.manual_macerator"); }
         @Override public int getWidth()  { return 160; }
         @Override public int getHeight() { return 60; }
@@ -218,12 +218,12 @@ public class OmniTechJeiPlugin implements IModPlugin {
         @Override
         public void setRecipe(IRecipeLayoutBuilder builder, ManualMaceratorRecipe recipe, IFocusGroup focuses) {
             if (recipe.getInput() != null)
-                builder.addInputSlot(0, 10).addItemStack(new ItemStack(recipe.getInput())).setStandardSlotBackground();
+                builder.addInputSlot(0, 10).add(new ItemStack(recipe.getInput())).setStandardSlotBackground();
 
             List<ManualMaceratorRecipe.Output> outputs = recipe.getOutputs();
             for (int i = 0; i < outputs.size() && i < 6; i++) {
                 builder.addOutputSlot(108 + (i % 3) * 18, (i / 3) * 18)
-                        .addItemStack(new ItemStack(outputs.get(i).item(), outputs.get(i).count()))
+                        .add(new ItemStack(outputs.get(i).item(), outputs.get(i).count()))
                         .setOutputSlotBackground();
             }
         }
@@ -249,7 +249,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
             this.arrow      = gui.getRecipeArrow();
         }
 
-        @Override public RecipeType<ManualCentrifugeRecipe> getRecipeType() { return MANUAL_CENTRIFUGE; }
+        @Override public IRecipeType<ManualCentrifugeRecipe> getRecipeType() { return MANUAL_CENTRIFUGE; }
         @Override public Component getTitle() { return Component.translatable("jei.omnitech.manual_centrifuge"); }
         @Override public int getWidth()  { return 160; }
         @Override public int getHeight() { return 78; }
@@ -258,12 +258,12 @@ public class OmniTechJeiPlugin implements IModPlugin {
         @Override
         public void setRecipe(IRecipeLayoutBuilder builder, ManualCentrifugeRecipe recipe, IFocusGroup focuses) {
             if (recipe.getInput() != null)
-                builder.addInputSlot(0, 20).addItemStack(new ItemStack(recipe.getInput())).setStandardSlotBackground();
+                builder.addInputSlot(0, 20).add(new ItemStack(recipe.getInput())).setStandardSlotBackground();
 
             List<ManualCentrifugeRecipe.Output> outputs = recipe.getOutputs();
             for (int i = 0; i < outputs.size() && i < 9; i++) {
                 builder.addOutputSlot(96 + (i % 3) * 18, (i / 3) * 18)
-                        .addItemStack(new ItemStack(outputs.get(i).item(), outputs.get(i).count()))
+                        .add(new ItemStack(outputs.get(i).item(), outputs.get(i).count()))
                         .setOutputSlotBackground();
             }
         }
@@ -289,7 +289,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
             this.arrow      = gui.getRecipeArrow();
         }
 
-        @Override public RecipeType<SmelterRecipe> getRecipeType() { return SMELTING; }
+        @Override public IRecipeType<SmelterRecipe> getRecipeType() { return SMELTING; }
         @Override public Component getTitle() { return Component.translatable("jei.omnitech.smelting"); }
         @Override public int getWidth()  { return 160; }
         @Override public int getHeight() { return 65; }
@@ -300,13 +300,13 @@ public class OmniTechJeiPlugin implements IModPlugin {
             List<net.minecraft.world.item.Item> ingredients = recipe.getIngredients();
             for (int i = 0; i < ingredients.size() && i < 4; i++) {
                 builder.addInputSlot((i % 2) * 18, (i / 2) * 18)
-                        .addItemStack(new ItemStack(ingredients.get(i)))
+                        .add(new ItemStack(ingredients.get(i)))
                         .setStandardSlotBackground();
             }
             FluidStack out = recipe.getOutput();
             if (!out.isEmpty()) {
                 builder.addOutputSlot(116, 8)
-                        .addFluidStack(out.getFluid(), out.getAmount())
+                        .add(out.getFluid(), out.getAmount())
                         .setFluidRenderer(out.getAmount(), false, 16, 36);
             }
         }
@@ -332,7 +332,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
             this.arrow      = gui.getRecipeArrow();
         }
 
-        @Override public RecipeType<FoundryRecipe> getRecipeType() { return FOUNDRY; }
+        @Override public IRecipeType<FoundryRecipe> getRecipeType() { return FOUNDRY; }
         @Override public Component getTitle() { return Component.translatable("jei.omnitech.foundry"); }
         @Override public int getWidth()  { return 160; }
         @Override public int getHeight() { return 65; }
@@ -343,14 +343,14 @@ public class OmniTechJeiPlugin implements IModPlugin {
             net.minecraft.world.level.material.Fluid inputFluid = recipe.getInputFluid();
             if (inputFluid != null) {
                 builder.addInputSlot(0, 2)
-                        .addFluidStack(inputFluid, recipe.getInputAmount())
+                        .add(inputFluid, recipe.getInputAmount())
                         .setFluidRenderer(recipe.getInputAmount(), false, 16, 36);
             }
             if (recipe.getTemplateItem() != null)
-                builder.addInputSlot(22, 12).addItemStack(new ItemStack(recipe.getTemplateItem())).setStandardSlotBackground();
+                builder.addInputSlot(22, 12).add(new ItemStack(recipe.getTemplateItem())).setStandardSlotBackground();
 
             if (recipe.getOutputItem() != null)
-                builder.addOutputSlot(116, 12).addItemStack(new ItemStack(recipe.getOutputItem())).setOutputSlotBackground();
+                builder.addOutputSlot(116, 12).add(new ItemStack(recipe.getOutputItem())).setOutputSlotBackground();
         }
 
         @Override
@@ -374,7 +374,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
             this.arrow      = gui.getRecipeArrow();
         }
 
-        @Override public RecipeType<ChemicalReactorRecipe> getRecipeType() { return CHEMICAL_REACTOR; }
+        @Override public IRecipeType<ChemicalReactorRecipe> getRecipeType() { return CHEMICAL_REACTOR; }
         @Override public Component getTitle() { return Component.translatable("jei.omnitech.chemical_reactor"); }
         @Override public int getWidth()  { return 160; }
         @Override public int getHeight() { return 80; }
@@ -384,18 +384,18 @@ public class OmniTechJeiPlugin implements IModPlugin {
         public void setRecipe(IRecipeLayoutBuilder builder, ChemicalReactorRecipe recipe, IFocusGroup focuses) {
             FluidStack in1 = recipe.getInput1Fluid();
             if (!in1.isEmpty())
-                builder.addInputSlot(0, 0).addFluidStack(in1.getFluid(), in1.getAmount()).setFluidRenderer(in1.getAmount(), false, 16, 36);
+                builder.addInputSlot(0, 0).add(in1.getFluid(), in1.getAmount()).setFluidRenderer(in1.getAmount(), false, 16, 36);
 
             FluidStack in2 = recipe.getInput2Fluid();
             if (!in2.isEmpty())
-                builder.addInputSlot(20, 0).addFluidStack(in2.getFluid(), in2.getAmount()).setFluidRenderer(in2.getAmount(), false, 16, 36);
+                builder.addInputSlot(20, 0).add(in2.getFluid(), in2.getAmount()).setFluidRenderer(in2.getAmount(), false, 16, 36);
 
             if (recipe.requiresCatalyst() && recipe.getCatalystItem() != null)
-                builder.addInputSlot(40, 12).addItemStack(new ItemStack(recipe.getCatalystItem())).setStandardSlotBackground();
+                builder.addInputSlot(40, 12).add(new ItemStack(recipe.getCatalystItem())).setStandardSlotBackground();
 
             FluidStack out = recipe.getOutput();
             if (!out.isEmpty())
-                builder.addOutputSlot(116, 0).addFluidStack(out.getFluid(), out.getAmount()).setFluidRenderer(out.getAmount(), false, 16, 36);
+                builder.addOutputSlot(116, 0).add(out.getFluid(), out.getAmount()).setFluidRenderer(out.getAmount(), false, 16, 36);
         }
 
         @Override
@@ -420,7 +420,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
             this.arrow      = gui.getRecipeArrow();
         }
 
-        @Override public RecipeType<ElectrolysisRecipe> getRecipeType() { return ELECTROLYSIS; }
+        @Override public IRecipeType<ElectrolysisRecipe> getRecipeType() { return ELECTROLYSIS; }
         @Override public Component getTitle() { return Component.translatable("jei.omnitech.electrolysis"); }
         @Override public int getWidth()  { return 160; }
         @Override public int getHeight() { return 90; }
@@ -430,25 +430,25 @@ public class OmniTechJeiPlugin implements IModPlugin {
         public void setRecipe(IRecipeLayoutBuilder builder, ElectrolysisRecipe recipe, IFocusGroup focuses) {
             FluidStack in = recipe.getInputFluid();
             if (!in.isEmpty())
-                builder.addInputSlot(0, 0).addFluidStack(in.getFluid(), in.getAmount()).setFluidRenderer(in.getAmount(), false, 16, 36);
+                builder.addInputSlot(0, 0).add(in.getFluid(), in.getAmount()).setFluidRenderer(in.getAmount(), false, 16, 36);
 
             net.minecraft.world.item.Item anode = recipe.getAnodeItem();
-            if (anode != null) builder.addInputSlot(20, 10).addItemStack(new ItemStack(anode)).setStandardSlotBackground();
+            if (anode != null) builder.addInputSlot(20, 10).add(new ItemStack(anode)).setStandardSlotBackground();
 
             net.minecraft.world.item.Item cathode = recipe.getCathodeItem();
-            if (cathode != null) builder.addInputSlot(20, 30).addItemStack(new ItemStack(cathode)).setStandardSlotBackground();
+            if (cathode != null) builder.addInputSlot(20, 30).add(new ItemStack(cathode)).setStandardSlotBackground();
 
             FluidStack outAnode = recipe.getOutputAnode();
             if (!outAnode.isEmpty())
-                builder.addOutputSlot(108, 0).addFluidStack(outAnode.getFluid(), outAnode.getAmount()).setFluidRenderer(outAnode.getAmount(), false, 16, 36);
+                builder.addOutputSlot(108, 0).add(outAnode.getFluid(), outAnode.getAmount()).setFluidRenderer(outAnode.getAmount(), false, 16, 36);
 
             FluidStack outCathode = recipe.getOutputCathode();
             if (!outCathode.isEmpty())
-                builder.addOutputSlot(126, 0).addFluidStack(outCathode.getFluid(), outCathode.getAmount()).setFluidRenderer(outCathode.getAmount(), false, 16, 36);
+                builder.addOutputSlot(126, 0).add(outCathode.getFluid(), outCathode.getAmount()).setFluidRenderer(outCathode.getAmount(), false, 16, 36);
 
             FluidStack outSolution = recipe.getOutputSolution();
             if (!outSolution.isEmpty())
-                builder.addOutputSlot(144, 0).addFluidStack(outSolution.getFluid(), outSolution.getAmount()).setFluidRenderer(outSolution.getAmount(), false, 16, 36);
+                builder.addOutputSlot(144, 0).add(outSolution.getFluid(), outSolution.getAmount()).setFluidRenderer(outSolution.getAmount(), false, 16, 36);
         }
 
         @Override
@@ -472,7 +472,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
             this.arrow      = gui.getRecipeArrow();
         }
 
-        @Override public RecipeType<FractionalDistillationRecipe> getRecipeType() { return FRACTIONAL_DISTILLATION; }
+        @Override public IRecipeType<FractionalDistillationRecipe> getRecipeType() { return FRACTIONAL_DISTILLATION; }
         @Override public Component getTitle() { return Component.translatable("jei.omnitech.fractional_distillation"); }
         @Override public int getWidth()  { return 160; }
         @Override public int getHeight() { return 80; }
@@ -482,13 +482,13 @@ public class OmniTechJeiPlugin implements IModPlugin {
         public void setRecipe(IRecipeLayoutBuilder builder, FractionalDistillationRecipe recipe, IFocusGroup focuses) {
             net.minecraft.world.level.material.Fluid inputFluid = recipe.getInputFluid();
             if (inputFluid != null)
-                builder.addInputSlot(0, 2).addFluidStack(inputFluid, recipe.getInputAmount()).setFluidRenderer(recipe.getInputAmount(), false, 16, 36);
+                builder.addInputSlot(0, 2).add(inputFluid, recipe.getInputAmount()).setFluidRenderer(recipe.getInputAmount(), false, 16, 36);
 
             int count = recipe.getOutputCount();
             for (int i = 0; i < count && i < 5; i++) {
                 FluidStack out = recipe.getOutputStack(i);
                 if (!out.isEmpty())
-                    builder.addOutputSlot(100 + i * 18, 2).addFluidStack(out.getFluid(), out.getAmount()).setFluidRenderer(out.getAmount(), false, 16, 36);
+                    builder.addOutputSlot(100 + i * 18, 2).add(out.getFluid(), out.getAmount()).setFluidRenderer(out.getAmount(), false, 16, 36);
             }
         }
 
@@ -514,7 +514,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
             this.arrow      = gui.getRecipeArrow();
         }
 
-        @Override public RecipeType<SolvationRecipe> getRecipeType() { return SOLVATION; }
+        @Override public IRecipeType<SolvationRecipe> getRecipeType() { return SOLVATION; }
         @Override public Component getTitle() { return Component.translatable("jei.omnitech.solvation"); }
         @Override public int getWidth()  { return 160; }
         @Override public int getHeight() { return 65; }
@@ -524,15 +524,15 @@ public class OmniTechJeiPlugin implements IModPlugin {
         public void setRecipe(IRecipeLayoutBuilder builder, SolvationRecipe recipe, IFocusGroup focuses) {
             FluidStack in = recipe.getInputFluid();
             if (!in.isEmpty())
-                builder.addInputSlot(0, 2).addFluidStack(in.getFluid(), in.getAmount()).setFluidRenderer(in.getAmount(), false, 16, 36);
+                builder.addInputSlot(0, 2).add(in.getFluid(), in.getAmount()).setFluidRenderer(in.getAmount(), false, 16, 36);
 
             net.minecraft.world.item.Item inputItem = recipe.getInputItem();
             if (inputItem != null)
-                builder.addInputSlot(20, 12).addItemStack(new ItemStack(inputItem)).setStandardSlotBackground();
+                builder.addInputSlot(20, 12).add(new ItemStack(inputItem)).setStandardSlotBackground();
 
             FluidStack out = recipe.getOutputFluid();
             if (!out.isEmpty())
-                builder.addOutputSlot(116, 2).addFluidStack(out.getFluid(), out.getAmount()).setFluidRenderer(out.getAmount(), false, 16, 36);
+                builder.addOutputSlot(116, 2).add(out.getFluid(), out.getAmount()).setFluidRenderer(out.getAmount(), false, 16, 36);
         }
 
         @Override
@@ -556,7 +556,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
             this.arrow      = gui.getRecipeArrow();
         }
 
-        @Override public RecipeType<FluidCollectorRecipe> getRecipeType() { return FLUID_COLLECTOR; }
+        @Override public IRecipeType<FluidCollectorRecipe> getRecipeType() { return FLUID_COLLECTOR; }
         @Override public Component getTitle() { return Component.translatable("jei.omnitech.fluid_collector"); }
         @Override public int getWidth()  { return 120; }
         @Override public int getHeight() { return 50; }
@@ -566,11 +566,11 @@ public class OmniTechJeiPlugin implements IModPlugin {
         public void setRecipe(IRecipeLayoutBuilder builder, FluidCollectorRecipe recipe, IFocusGroup focuses) {
             net.minecraft.world.level.block.Block block = recipe.getInputBlock();
             if (block != null)
-                builder.addInputSlot(0, 10).addItemStack(new ItemStack(block.asItem())).setStandardSlotBackground();
+                builder.addInputSlot(0, 10).add(new ItemStack(block.asItem())).setStandardSlotBackground();
 
             FluidStack out = recipe.getOutputFluid();
             if (!out.isEmpty())
-                builder.addOutputSlot(82, 2).addFluidStack(out.getFluid(), out.getAmount()).setFluidRenderer(out.getAmount(), false, 16, 36);
+                builder.addOutputSlot(82, 2).add(out.getFluid(), out.getAmount()).setFluidRenderer(out.getAmount(), false, 16, 36);
         }
 
         @Override

@@ -4,15 +4,14 @@
  */
 package com.dev1lroot.mcmods.omnitech.worldgen;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
 /**
  * Carves a circular parabolic crater bowl into the moon surface.
@@ -20,22 +19,22 @@ import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConf
  * Radius: 5–40 blocks. Depth: 5–20 blocks (at centre).
  * Depth falls off as depth * (1 - (r/radius)^2) — parabolic profile.
  */
-public class CraterFeature extends Feature<NoneFeatureConfiguration> {
+public record CraterFeature() implements Feature {
+
+    public static final MapCodec<CraterFeature> CODEC = MapCodec.unit(CraterFeature::new);
 
     private static final int MIN_RADIUS = 5;
     private static final int MAX_RADIUS = 40;
     private static final int MIN_DEPTH  = 5;
     private static final int MAX_DEPTH  = 20;
 
-    public CraterFeature(Codec<NoneFeatureConfiguration> codec) {
-        super(codec);
+    @Override
+    public MapCodec<CraterFeature> codec() {
+        return CODEC;
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        WorldGenLevel level  = context.level();
-        RandomSource  random = context.random();
-        BlockPos      origin = context.origin();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
 
         int radius   = MIN_RADIUS + random.nextInt(MAX_RADIUS - MIN_RADIUS + 1);
         int maxDepth = MIN_DEPTH  + random.nextInt(MAX_DEPTH  - MIN_DEPTH  + 1);

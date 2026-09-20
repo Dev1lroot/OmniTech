@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech.mixin;
 
 import com.dev1lroot.mcmods.omnitech.client.SpaceMapSkyboxRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.renderpearl.api.commands.RenderPass;
 import net.minecraft.client.renderer.SkyRenderer;
 import net.minecraft.world.level.MoonPhase;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,12 +24,12 @@ public class SkyRendererMixin {
             method = "renderSunMoonAndStars",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/SkyRenderer;renderSun(FLcom/mojang/blaze3d/vertex/PoseStack;)V"
+                    target = "Lnet/minecraft/client/renderer/SkyRenderer;renderSun(Lcom/mojang/renderpearl/api/commands/RenderPass;FLcom/mojang/blaze3d/vertex/PoseStack;)V"
             )
     )
-    private void redirectRenderSun(SkyRenderer instance, float rainBrightness, PoseStack poseStack) {
+    private void redirectRenderSun(SkyRenderer instance, RenderPass renderPass, float rainBrightness, PoseStack poseStack) {
         if (!SpaceMapSkyboxRenderer.isSuppressingVanillaSun()) {
-            SpaceMapSkyboxRenderer.invokeSunRender(instance, rainBrightness, poseStack);
+            SpaceMapSkyboxRenderer.invokeSunRender(instance, renderPass, rainBrightness, poseStack);
         }
         // else: suppressed — SpaceMapSkyboxRenderer renders its own scaled star
     }
@@ -41,13 +42,13 @@ public class SkyRendererMixin {
             method = "renderSunMoonAndStars",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/SkyRenderer;renderMoon(Lnet/minecraft/world/level/MoonPhase;FLcom/mojang/blaze3d/vertex/PoseStack;)V"
+                    target = "Lnet/minecraft/client/renderer/SkyRenderer;renderMoon(Lcom/mojang/renderpearl/api/commands/RenderPass;Lnet/minecraft/world/level/MoonPhase;FLcom/mojang/blaze3d/vertex/PoseStack;)V"
             )
     )
-    private void redirectRenderMoon(SkyRenderer instance, MoonPhase moonPhase,
+    private void redirectRenderMoon(SkyRenderer instance, RenderPass renderPass, MoonPhase moonPhase,
                                     float rainBrightness, PoseStack poseStack) {
         if (!SpaceMapSkyboxRenderer.isSuppressingVanillaMoon()) {
-            SpaceMapSkyboxRenderer.invokeMoonRender(instance, moonPhase, rainBrightness, poseStack);
+            SpaceMapSkyboxRenderer.invokeMoonRender(instance, renderPass, moonPhase, rainBrightness, poseStack);
         }
         // else: suppressed — SpaceMapSkyboxRenderer renders the parent planet instead
     }

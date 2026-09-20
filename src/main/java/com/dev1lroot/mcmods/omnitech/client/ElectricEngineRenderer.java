@@ -79,15 +79,15 @@ public class ElectricEngineRenderer
         poseStack.translate(0.5, 0.5, 0.5);
         // Align the model's +Z shaft axis to match the actual FACING direction
         switch (state.facing) {
-            case SOUTH -> poseStack.mulPose(Axis.YP.rotationDegrees(180f));
-            case EAST  -> poseStack.mulPose(Axis.YP.rotationDegrees(-90f));
-            case WEST  -> poseStack.mulPose(Axis.YP.rotationDegrees(90f));
-            case UP    -> poseStack.mulPose(Axis.XP.rotationDegrees(90f));
-            case DOWN  -> poseStack.mulPose(Axis.XP.rotationDegrees(-90f));
+            case SOUTH -> poseStack.rotate(Axis.YP.rotationDegrees(180f));
+            case EAST  -> poseStack.rotate(Axis.YP.rotationDegrees(-90f));
+            case WEST  -> poseStack.rotate(Axis.YP.rotationDegrees(90f));
+            case UP    -> poseStack.rotate(Axis.XP.rotationDegrees(90f));
+            case DOWN  -> poseStack.rotate(Axis.XP.rotationDegrees(-90f));
             default    -> {} // NORTH: +Z already aligns with facing
         }
         // Spin around local +Z (which is the shaft axis after alignment)
-        poseStack.mulPose(Axis.ZP.rotationDegrees(state.statorAngle));
+        poseStack.rotate(Axis.ZP.rotationDegrees(state.statorAngle));
         poseStack.translate(-0.5, -0.5, -0.5);
         submitNodeCollector.submitMovingBlock(poseStack, state.statorModel, 0);
         poseStack.popPose();

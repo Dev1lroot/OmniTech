@@ -7,7 +7,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.thermal.boiler;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IFluidContainer;
 import com.dev1lroot.mcmods.omnitech.blocks.ThermalState;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -32,7 +31,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 public class BoilerBlock extends BaseEntityBlock implements IFluidContainer {
-    public static final MapCodec<BoilerBlock> CODEC = simpleCodec(BoilerBlock::new);
     public static final BooleanProperty LIT    = BlockStateProperties.LIT;
     public static final EnumProperty<ThermalState> THERMAL =
             EnumProperty.create("thermal_state", ThermalState.class);
@@ -49,9 +47,6 @@ public class BoilerBlock extends BaseEntityBlock implements IFluidContainer {
         // Бойлер принимает трубы со всех сторон
         return true;
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

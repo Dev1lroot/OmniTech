@@ -8,7 +8,6 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IColdReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IThermalNode;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -47,8 +46,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ThermalConductorBlock extends BaseEntityBlock {
 
-    public static final MapCodec<ThermalConductorBlock> CODEC = simpleCodec(ThermalConductorBlock::new);
-
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
     public static final BooleanProperty EAST  = BooleanProperty.create("east");
@@ -72,9 +69,6 @@ public class ThermalConductorBlock extends BaseEntityBlock {
                 .setValue(EAST,  false).setValue(WEST,  false)
                 .setValue(UP,    false).setValue(DOWN,  false));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     // Block model renders normally; BER adds the glow overlay on top.
     @Override

@@ -39,6 +39,7 @@
     "omnitech:decompressor",
     "omnitech:fractional_distiller",
     "omnitech:chemical_reactor",
+    "omnitech:rocket_controller",
     "omnitech:chemical_infuser",
     "omnitech:extractor",
     "omnitech:radiator",

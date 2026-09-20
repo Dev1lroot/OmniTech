@@ -4,7 +4,6 @@
  */
 package com.dev1lroot.mcmods.omnitech.blocks.electrical.power_relay;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -29,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
  * this block and only continues in the two directions parallel to {@code FACING}.
  */
 public class PowerRelayBlock extends Block {
-    public static final MapCodec<PowerRelayBlock> CODEC = simpleCodec(PowerRelayBlock::new);
 
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty   POWERED = BlockStateProperties.POWERED;
@@ -40,9 +38,6 @@ public class PowerRelayBlock extends Block {
                 .setValue(FACING, Direction.NORTH)
                 .setValue(POWERED, false));
     }
-
-    @Override
-    protected MapCodec<? extends Block> codec() { return CODEC; }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

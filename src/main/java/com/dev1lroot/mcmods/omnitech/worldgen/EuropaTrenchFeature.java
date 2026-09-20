@@ -4,14 +4,14 @@
  */
 package com.dev1lroot.mcmods.omnitech.worldgen;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
 /**
  * Generates a rare hydrothermal trench in Europa's subsurface ocean floor.
@@ -24,17 +24,17 @@ import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConf
  * settings) so the feature carves downward into solid rock.  The feature is rare
  * by design — use {@code minecraft:rarity_filter} in the placed-feature JSON.
  */
-public class EuropaTrenchFeature extends Feature<NoneFeatureConfiguration> {
+public record EuropaTrenchFeature() implements Feature {
 
-    public EuropaTrenchFeature() {
-        super(NoneFeatureConfiguration.CODEC);
+    public static final MapCodec<EuropaTrenchFeature> CODEC = MapCodec.unit(EuropaTrenchFeature::new);
+
+    @Override
+    public MapCodec<EuropaTrenchFeature> codec() {
+        return CODEC;
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> ctx) {
-        WorldGenLevel  level  = ctx.level();
-        BlockPos       origin = ctx.origin();
-        RandomSource   random = ctx.random();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
 
         // ── Find the actual ocean floor ────────────────────────────────────────
         // Scan a window around the placement Y to find the topmost solid block.

@@ -4,7 +4,6 @@
  */
 package com.dev1lroot.mcmods.omnitech.blocks.logic.display;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,16 +27,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class DisplayBlock extends BaseEntityBlock {
 
-    public static final MapCodec<DisplayBlock> CODEC = simpleCodec(DisplayBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public DisplayBlock(Properties props) {
         super(props);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
-
-    @Override
-    protected MapCodec<? extends DisplayBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

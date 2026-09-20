@@ -6,7 +6,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.plumbing;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IFluidContainer;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
@@ -47,7 +46,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ValveBlock extends BaseEntityBlock implements IFluidContainer
 {
-    public static final MapCodec<ValveBlock> CODEC = simpleCodec(ValveBlock::new);
 
     /** Direction the wheel faces (front of the valve). */
     public static final EnumProperty<Direction> FACING =
@@ -71,9 +69,6 @@ public class ValveBlock extends BaseEntityBlock implements IFluidContainer
                 .setValue(VERTICAL, false)
                 .setValue(LEVEL,    0));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ChemicalInfuserRecipeManager {
 
     private static final Gson GSON = new Gson();
-    private static final String PATH = "recipe/chemical_infuser";
+    private static final String PATH = "machine_recipe/chemical_infuser";
     private static final Map<String, ChemicalInfuserRecipe> RECIPES = new ConcurrentHashMap<>();
     private static boolean initialized = false;
 

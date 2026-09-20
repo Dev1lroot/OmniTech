@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RotaryCompressionRecipeManager {
 
     private static final Gson GSON    = new Gson();
-    private static final String PATH  = "recipe/compression";
+    private static final String PATH  = "machine_recipe/compression";
     private static final Map<String, RotaryCompressionRecipe> RECIPES = new ConcurrentHashMap<>();
     private static boolean initialized = false;
 

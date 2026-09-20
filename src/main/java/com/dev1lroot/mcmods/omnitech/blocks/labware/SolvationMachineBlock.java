@@ -6,7 +6,6 @@ package com.dev1lroot.mcmods.omnitech.blocks.labware;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IFluidContainer;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,7 +38,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class SolvationMachineBlock extends BaseEntityBlock implements IFluidContainer {
 
-    public static final MapCodec<SolvationMachineBlock> CODEC = simpleCodec(SolvationMachineBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -58,9 +56,6 @@ public class SolvationMachineBlock extends BaseEntityBlock implements IFluidCont
         // только перед и зад
         return face == facing || face == facing.getOpposite();
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

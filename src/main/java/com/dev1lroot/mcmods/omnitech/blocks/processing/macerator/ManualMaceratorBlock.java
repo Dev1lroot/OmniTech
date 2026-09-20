@@ -5,7 +5,6 @@
 package com.dev1lroot.mcmods.omnitech.blocks.processing.macerator;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,7 +29,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class ManualMaceratorBlock extends BaseEntityBlock {
-    public static final MapCodec<ManualMaceratorBlock> CODEC = simpleCodec(ManualMaceratorBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     private static final VoxelShape SHAPE = box(0, 0, 0, 16, 16, 16);
@@ -39,9 +37,6 @@ public class ManualMaceratorBlock extends BaseEntityBlock {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }

@@ -28,7 +28,7 @@ public class AlloyFurnaceRecipeManager {
 
     public static void loadRecipes(ResourceManager resourceManager) {
         RECIPES.clear();
-        String path = "recipe/alloy_furnace";
+        String path = "machine_recipe/alloy_furnace";
 
         try {
             Map<Identifier, Resource> resources = resourceManager.listResources(path,

@@ -25,6 +25,8 @@ import net.neoforged.neoforge.fluids.FluidType;
  *   "max_temp":   10000,   // °C
  *   "min_pressure":   0,   // kPa
  *   "max_pressure": 100000,
+ *   "world_placeable": false, // true = also registers a LiquidBlock so this fluid
+ *                             // can be generated/placed directly in the world
  *
  *   "phase_diagram": {
  *     "melting_point":       0,      // normal melting point at 101 kPa (°C)
@@ -70,6 +72,7 @@ public class FluidLoader {
                 int   minPressure   = json.has("min_pressure")    ? json.get("min_pressure").getAsInt()    : 0;
                 int   maxPressure   = json.has("max_pressure")    ? json.get("max_pressure").getAsInt()    : 100_000;
                 float neutronSlowing = json.has("neutron_slowing") ? json.get("neutron_slowing").getAsFloat() : 0.0f;
+                boolean worldPlaceable = json.has("world_placeable") && json.get("world_placeable").getAsBoolean();
 
                 FluidPhysicsRegistry.PhaseDiagram phaseDiagram = null;
                 if (json.has("phase_diagram")) {
@@ -97,7 +100,7 @@ public class FluidLoader {
                         .temperature(temperature)
                         .lightLevel(lightLevel);
 
-                OmniTechFluids.registerFluid(name, props);
+                OmniTechFluids.registerFluid(name, props, worldPlaceable);
                 FluidPhysicsRegistry.register(name,
                         new FluidPhysicsRegistry.FluidPhysics(minTemp, maxTemp, minPressure, maxPressure, phaseDiagram, neutronSlowing));
 
