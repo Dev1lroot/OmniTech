@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech.items;
 
 import com.dev1lroot.mcmods.omnitech.FluidHazardUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
+import com.dev1lroot.mcmods.omnitech.blocks.labware.FermenterBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.plumbing.FluidTankBlockEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -111,6 +112,18 @@ public class PipetteItem extends Item {
         }
         if (extracted <= 0) return false;
         addFluid(stack, fluid, extracted);
+        return true;
+    }
+
+    /**
+     * Draws a sample of up to this pipette's target amount from the fermenter's mixture, every
+     * component in proportion to its share. Returns true if anything was transferred.
+     */
+    public static boolean tryFillFromFermenter(ItemStack stack, FermenterBlockEntity fermenter) {
+        if (!isEmpty(stack)) return false;
+        Solution sample = fermenter.drawSample(Math.min(getTargetAmount(stack), MAX_AMOUNT));
+        if (sample.isEmpty()) return false;
+        setSolution(stack, sample);
         return true;
     }
 

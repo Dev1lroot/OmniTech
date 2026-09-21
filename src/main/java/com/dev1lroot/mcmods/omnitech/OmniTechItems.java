@@ -176,6 +176,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> FILTER_PRESS_ITEM = REGISTRY.registerSimpleBlockItem(
             "filter_press", OmniTechBlocks.FILTER_PRESS);
 
+    public static final DeferredItem<BlockItem> FERMENTER_ITEM = REGISTRY.registerSimpleBlockItem(
+            "fermenter", OmniTechBlocks.FERMENTER);
+
     public static final DeferredItem<BlockItem> STRUCTURE_TABLE_ITEM = REGISTRY.registerSimpleBlockItem(
             "structure_table", OmniTechBlocks.STRUCTURE_TABLE);
 
@@ -291,6 +294,11 @@ public class OmniTechItems
      */
     public static final DeferredItem<Item> CORN =
             REGISTRY.registerItem("corn", Item::new);
+    /** Macerated wheat / corn — dissolves into the Fermenter's "flour" component. */
+    public static final DeferredItem<Item> WHEAT_FLOUR =
+            REGISTRY.registerItem("wheat_flour", Item::new);
+    public static final DeferredItem<Item> CORN_FLOUR =
+            REGISTRY.registerItem("corn_flour", Item::new);
     /**
      * A {@link BlockItem} for {@link OmniTechBlocks#CORN_PLANT} registered under its
      * own name — the only way a corn plant ever enters the world, since that block

@@ -1,0 +1,13 @@
+{
+  "interval": 200,
+  "inputs": [
+    {
+      "fluid": "omnitech:dead_yeast",
+      "amount": 50
+    }
+  ],
+  "outputItem": {
+    "item": "minecraft:bone_meal",
+    "amount": 1
+  }
+}

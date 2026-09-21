@@ -164,6 +164,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> SOLAR_PANEL;
     public static final DeferredBlock<Block> SOLVATION_MACHINE;
     public static final DeferredBlock<Block> FILTER_PRESS;
+    public static final DeferredBlock<Block> FERMENTER;
     public static final DeferredBlock<Block> STRUCTURE_TABLE;
     public static final DeferredBlock<Block> ELECTROLYSIS_MACHINE;
     public static final DeferredBlock<Block> ROTARY_COMPRESSOR;
@@ -360,6 +361,9 @@ public class OmniTechBlocks {
                         .sound(SoundType.METAL)));
         FILTER_PRESS = register("filter_press",
                 p -> new com.dev1lroot.mcmods.omnitech.blocks.labware.FilterPressBlock(
+                        p.mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.METAL)));
+        FERMENTER = register("fermenter",
+                p -> new com.dev1lroot.mcmods.omnitech.blocks.labware.FermenterBlock(
                         p.mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.METAL)));
         STRUCTURE_TABLE = register("structure_table",
                 p -> new com.dev1lroot.mcmods.omnitech.blocks.labware.StructureTableBlock(

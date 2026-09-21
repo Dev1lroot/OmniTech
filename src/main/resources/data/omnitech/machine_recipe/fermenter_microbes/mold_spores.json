@@ -1,0 +1,9 @@
+{
+  "fluid": "omnitech:mold",
+  "amount": 1,
+  "weight": 2,
+  "requires": [
+    "minecraft:water",
+    "omnitech:flour"
+  ]
+}

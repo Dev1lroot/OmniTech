@@ -63,6 +63,31 @@ public record Solution(List<ResourceStack<FluidResource>> components) {
         return best;
     }
 
+    /** How many mB of {@code fluid} this solution holds (0 if it isn't a component). */
+    public int amountOf(Fluid fluid) {
+        if (fluid == null) return 0;
+        for (var c : components) if (c.resource().is(fluid)) return c.amount();
+        return 0;
+    }
+
+    /**
+     * Returns a new solution with up to {@code amount} mB of {@code fluid} removed. A component
+     * drained to zero disappears entirely, so {@link #isEmpty()} stays meaningful.
+     */
+    public Solution minus(Fluid fluid, int amount) {
+        if (amount <= 0 || fluid == null) return this;
+        List<ResourceStack<FluidResource>> next = new ArrayList<>(components.size());
+        for (var c : components) {
+            if (c.resource().is(fluid)) {
+                int left = c.amount() - amount;
+                if (left > 0) next.add(new ResourceStack<>(c.resource(), left));
+            } else {
+                next.add(c);
+            }
+        }
+        return new Solution(next);
+    }
+
     /**
      * Returns a new solution with {@code amount} mB of {@code fluid} merged in — added to the
      * matching existing component if there is one, otherwise appended as a new component.

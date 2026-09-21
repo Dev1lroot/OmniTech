@@ -134,6 +134,10 @@ public class OmniTechMenuTypes {
             REGISTRY.register("filter_press",
                     () -> IMenuTypeExtension.create(com.dev1lroot.mcmods.omnitech.gui.FilterPressMenu::new));
 
+    public static final Supplier<MenuType<com.dev1lroot.mcmods.omnitech.gui.FermenterMenu>> FERMENTER =
+            REGISTRY.register("fermenter",
+                    () -> IMenuTypeExtension.create(com.dev1lroot.mcmods.omnitech.gui.FermenterMenu::new));
+
     public static final Supplier<MenuType<SolvationMachineMenu>> SOLVATION_MACHINE =
             REGISTRY.register("solvation_machine",
                     () -> IMenuTypeExtension.create(SolvationMachineMenu::new));

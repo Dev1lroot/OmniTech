@@ -123,6 +123,30 @@ public class GuiUtil
     }
 
     /**
+     * Fills the rectangle with the fluid's own still texture (tiled), ignoring phase and fill
+     * level. {@link #renderFluidBar} always uses the generic per-phase sprite, which is right for a
+     * single-fluid tank but would make every band of a multi-fluid mixture look the same — this is
+     * for callers that stack several fluids and need each one to be told apart.
+     */
+    public static void renderFluidBand(GuiGraphicsExtractor graphics, FluidStack fluidStack,
+            int x, int y, int width, int height) {
+        if (fluidStack.isEmpty() || width <= 0 || height <= 0) return;
+
+        var modelSet = Minecraft.getInstance().getModelManager().getFluidStateModelSet();
+        FluidModel fluidModel = modelSet.get(fluidStack.getFluid().defaultFluidState());
+        TextureAtlasSprite sprite = fluidModel.stillMaterial().sprite();
+
+        graphics.enableScissor(x, y, x + width, y + height);
+        for (int drawX = 0; drawX < width; drawX += 16) {
+            for (int drawY = 0; drawY < height; drawY += 16) {
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite,
+                        x + drawX, y + drawY, 16, 16, -1);
+            }
+        }
+        graphics.disableScissor();
+    }
+
+    /**
      * Builds a standard fluid tooltip: name, "amount / capacity mB", and — when the
      * fluid carries a {@link OmniTechDataComponents#FLUID_TEMPERATURE} component above
      * ambient — a colour-coded temperature line.  Callers may append additional lines

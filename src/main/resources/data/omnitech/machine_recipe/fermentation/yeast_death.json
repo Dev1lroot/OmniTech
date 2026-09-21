@@ -1,0 +1,21 @@
+{
+  "interval": 400,
+  "inputs": [
+    {
+      "fluid": "omnitech:yeast",
+      "amount": 1
+    }
+  ],
+  "catalysts": [
+    {
+      "fluid": "omnitech:ethanol",
+      "amount": 1
+    }
+  ],
+  "outputs": [
+    {
+      "fluid": "omnitech:dead_yeast",
+      "amount": 1
+    }
+  ]
+}

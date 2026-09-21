@@ -196,6 +196,11 @@ public class OmniTechBlockEntities {
                     () -> new BlockEntityType<>(com.dev1lroot.mcmods.omnitech.blocks.labware.FilterPressBlockEntity::new,
                             OmniTechBlocks.FILTER_PRESS.get()));
 
+    public static final Supplier<BlockEntityType<com.dev1lroot.mcmods.omnitech.blocks.labware.FermenterBlockEntity>> FERMENTER =
+            REGISTRY.register("fermenter",
+                    () -> new BlockEntityType<>(com.dev1lroot.mcmods.omnitech.blocks.labware.FermenterBlockEntity::new,
+                            OmniTechBlocks.FERMENTER.get()));
+
     public static final Supplier<BlockEntityType<ElectrolysisMachineBlockEntity>> ELECTROLYSIS_MACHINE =
             REGISTRY.register("electrolysis_machine",
                     () -> new BlockEntityType<>(ElectrolysisMachineBlockEntity::new,

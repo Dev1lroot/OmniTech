@@ -5,6 +5,7 @@
 package com.dev1lroot.mcmods.omnitech.items;
 
 import com.dev1lroot.mcmods.omnitech.FluidHazardUtil;
+import com.dev1lroot.mcmods.omnitech.blocks.labware.FermenterBlockEntity;
 import com.dev1lroot.mcmods.omnitech.FluidPhase;
 import com.dev1lroot.mcmods.omnitech.FluidPhaseUtil;
 import com.dev1lroot.mcmods.omnitech.FluidPhysicsRegistry;
@@ -86,6 +87,19 @@ public class FlaskItem extends Item {
         if (added <= 0) return 0;
         setSolution(stack, getSolution(stack).plus(fluid, added));
         return added;
+    }
+
+    /**
+     * Fills an empty flask with a proportional sample of the fermenter's mixture — as much as the
+     * flask holds ({@value #CAPACITY} mB), or all of it if the vessel has less. Returns true if
+     * anything was transferred.
+     */
+    public static boolean tryFillFromFermenter(ItemStack stack, FermenterBlockEntity fermenter) {
+        if (!isEmpty(stack)) return false;
+        Solution sample = fermenter.drawSample(CAPACITY);
+        if (sample.isEmpty()) return false;
+        setSolution(stack, sample);
+        return true;
     }
 
     // ── Fill-level bar ─────────────────────────────────────────────────────────

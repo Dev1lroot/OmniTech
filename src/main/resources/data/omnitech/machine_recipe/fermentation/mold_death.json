@@ -1,0 +1,21 @@
+{
+  "interval": 100,
+  "inputs": [
+    {
+      "fluid": "omnitech:mold",
+      "amount": 1
+    }
+  ],
+  "catalysts": [
+    {
+      "fluid": "omnitech:ethanol",
+      "amount": 20
+    }
+  ],
+  "outputs": [
+    {
+      "fluid": "omnitech:dead_mold",
+      "amount": 1
+    }
+  ]
+}

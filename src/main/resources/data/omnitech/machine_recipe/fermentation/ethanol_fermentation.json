@@ -1,0 +1,29 @@
+{
+  "interval": 100,
+  "inputs": [
+    {
+      "fluid": "minecraft:water",
+      "amount": 1
+    },
+    {
+      "fluid": "omnitech:flour",
+      "amount": 1
+    },
+    {
+      "fluid": "omnitech:sugar",
+      "amount": 1
+    }
+  ],
+  "catalysts": [
+    {
+      "fluid": "omnitech:yeast",
+      "amount": 1
+    }
+  ],
+  "outputs": [
+    {
+      "fluid": "omnitech:ethanol",
+      "amount": 2
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "minecraft:wheat",
+  "output": [
+    {
+      "item": "omnitech:wheat_flour",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

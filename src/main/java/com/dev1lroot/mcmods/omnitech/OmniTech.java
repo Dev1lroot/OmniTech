@@ -245,6 +245,11 @@ public class OmniTech {
         );
         event.registerBlockEntity(
                 Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.FERMENTER.get(),
+                (be, side) -> be.fluidHandler
+        );
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
                 OmniTechBlockEntities.FLUID_COLLECTOR.get(),
                 (be, side) -> {
                     if (side == null) return null;
@@ -805,6 +810,15 @@ public class OmniTech {
                     PreparationBarrier barrier, Executor reloadExecutor) {
                 return CompletableFuture.runAsync(() -> {
                     com.dev1lroot.mcmods.omnitech.recipes.FilterPressRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "fermentation_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    com.dev1lroot.mcmods.omnitech.recipes.FermentationRecipeManager.loadRecipes(sharedState.resourceManager());
                 }, taskExecutor).thenCompose(barrier::wait);
             }
         });

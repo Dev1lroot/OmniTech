@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:corn",
+  "output": [
+    {
+      "item": "omnitech:corn_flour",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}
