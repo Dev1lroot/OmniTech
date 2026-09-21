@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:corn"
+  ],
+  "result": {
+    "count": 3,
+    "id": "omnitech:corn_seeds"
+  }
+}

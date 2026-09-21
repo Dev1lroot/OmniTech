@@ -252,6 +252,25 @@ public class OmniTechDataComponents {
                             .networkSynchronized(ByteBufCodecs.INT)
                             .build());
 
+    /** The structural formula sketched on a Structure Table, stored on a Chemical Formula item. */
+    public static final Supplier<DataComponentType<com.dev1lroot.mcmods.omnitech.chemistry.Molecule>> MOLECULE =
+            REGISTRY.register("molecule", () ->
+                    DataComponentType.<com.dev1lroot.mcmods.omnitech.chemistry.Molecule>builder()
+                            .persistent(com.dev1lroot.mcmods.omnitech.chemistry.Molecule.CODEC)
+                            .networkSynchronized(com.dev1lroot.mcmods.omnitech.chemistry.Molecule.STREAM_CODEC)
+                            .build());
+
+    /**
+     * Player-chosen name for a Chemical Formula item, overriding the auto-generated IUPAC-style
+     * name. Absent = use the auto-generated name.
+     */
+    public static final Supplier<DataComponentType<String>> MOLECULE_NAME =
+            REGISTRY.register("molecule_name", () ->
+                    DataComponentType.<String>builder()
+                            .persistent(Codec.STRING)
+                            .networkSynchronized(ByteBufCodecs.STRING_UTF8)
+                            .build());
+
     public static void register(IEventBus bus) {
         REGISTRY.register(bus);
     }

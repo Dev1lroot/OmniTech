@@ -8,6 +8,7 @@ import com.dev1lroot.mcmods.omnitech.entities.AbyssalEelEntity;
 import com.dev1lroot.mcmods.omnitech.entities.CokeOvenEntity;
 import com.dev1lroot.mcmods.omnitech.entities.PenguinEntity;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntity;
+import com.dev1lroot.mcmods.omnitech.entities.ThrownTomatoEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -63,6 +64,14 @@ public class OmniTechEntities {
                             .clientTrackingRange(8)
                             .build(ResourceKey.create(Registries.ENTITY_TYPE,
                                     Identifier.fromNamespaceAndPath(OmniTech.MODID, "abyssal_eel"))));
+
+    /** Thrown by right-clicking {@code omnitech:tomato} without sneaking — see {@link ThrownTomatoEntity}. */
+    public static final Supplier<EntityType<ThrownTomatoEntity>> THROWN_TOMATO =
+            REGISTRY.register("thrown_tomato",
+                    () -> EntityType.Builder.<ThrownTomatoEntity>of(ThrownTomatoEntity::new, MobCategory.MISC)
+                            .noLootTable().sized(0.25f, 0.25f).clientTrackingRange(4).updateInterval(10)
+                            .build(ResourceKey.create(Registries.ENTITY_TYPE,
+                                    Identifier.fromNamespaceAndPath(OmniTech.MODID, "thrown_tomato"))));
 
     public static void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
         event.register(

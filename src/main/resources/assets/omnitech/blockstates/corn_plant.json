@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "part=top": { "model": "omnitech:block/corn_top" },
+    "part=base": { "model": "omnitech:block/corn_base" },
+    "part=grown": { "model": "omnitech:block/corn_grown" }
+  }
+}

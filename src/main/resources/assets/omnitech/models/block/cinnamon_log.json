@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "omnitech:block/cinnamon_log_top",
+    "side": "omnitech:block/cinnamon_log"
+  }
+}

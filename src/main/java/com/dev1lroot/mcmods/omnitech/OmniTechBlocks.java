@@ -5,6 +5,12 @@
 package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.blocks.*;
+import com.dev1lroot.mcmods.omnitech.blocks.plants.BerryPlantBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.plants.CinnamonLogBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.plants.CinnamonSaplingBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.plants.CornBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.plants.NettleBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.plants.StrippedCinnamonLogBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.alloy_furnace.AlloyFurnaceBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.processing.centrifuge.ManualCentrifugeBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.processing.centrifuge.ManualCentrifugeRotorBlock;
@@ -66,6 +72,9 @@ import com.dev1lroot.mcmods.omnitech.blocks.pressure.RotaryCompressorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.solar_panel.SolarPanelBlock;
 import com.dev1lroot.mcmods.omnitech.worldgen.OreSpawnConfig;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.sounds.AmbientLeavesBlockSoundPlayer;
+import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -155,6 +164,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> SOLAR_PANEL;
     public static final DeferredBlock<Block> SOLVATION_MACHINE;
     public static final DeferredBlock<Block> FILTER_PRESS;
+    public static final DeferredBlock<Block> STRUCTURE_TABLE;
     public static final DeferredBlock<Block> ELECTROLYSIS_MACHINE;
     public static final DeferredBlock<Block> ROTARY_COMPRESSOR;
     public static final DeferredBlock<Block> FLUID_COLLECTOR;
@@ -206,6 +216,25 @@ public class OmniTechBlocks {
     // ── Space ─────────────────────────────────────────────────────────────────
     public static final DeferredBlock<Block> ORRERY;
     public static final DeferredBlock<Block> GRAVITATION_SOURCE;
+
+    // ── Botany ────────────────────────────────────────────────────────────────
+    /** Vanilla (the orchid vine, Vanilla planifolia) — behaves exactly like {@link VineBlock}. */
+    public static final DeferredBlock<Block> VANILLA_VINE;
+    public static final DeferredBlock<Block> CINNAMON_LOG;
+    /** Axe-stripped {@link #CINNAMON_LOG}; may regrow its bark, see {@link StrippedCinnamonLogBlock}. */
+    public static final DeferredBlock<Block> STRIPPED_CINNAMON_LOG;
+    public static final DeferredBlock<Block> CINNAMON_LEAVES;
+    public static final DeferredBlock<Block> CINNAMON_SAPLING;
+    /** Stinging nettle — damages entities that push through it. */
+    public static final DeferredBlock<Block> NETTLE;
+
+    /**
+     * A 1-3 tall corn plant — a single reusable block, see {@link CornBlock}.
+     * No BlockItem of its own; only planted via {@code corn_seeds}.
+     */
+    public static final DeferredBlock<Block> CORN_PLANT;
+    public static final DeferredBlock<Block> TOMATO;
+    public static final DeferredBlock<Block> JALAPENO;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -332,6 +361,9 @@ public class OmniTechBlocks {
         FILTER_PRESS = register("filter_press",
                 p -> new com.dev1lroot.mcmods.omnitech.blocks.labware.FilterPressBlock(
                         p.mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.METAL)));
+        STRUCTURE_TABLE = register("structure_table",
+                p -> new com.dev1lroot.mcmods.omnitech.blocks.labware.StructureTableBlock(
+                        p.mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD)));
         ELECTROLYSIS_MACHINE = register("electrolysis_machine",
                 p -> new ElectrolysisMachineBlock(p.mapColor(MapColor.METAL).strength(3.5F)
                         .sound(SoundType.METAL)));
@@ -468,6 +500,54 @@ public class OmniTechBlocks {
                 p -> new GravitationSourceBlock(
                         p.mapColor(MapColor.COLOR_PURPLE).strength(5.0F).sound(SoundType.METAL)
                                 .lightLevel(state -> 4).requiresCorrectToolForDrops()));
+
+        // ── Botany ───────────────────────────────────────────────────────────
+        VANILLA_VINE = register("vanilla_vine",
+                p -> new VineBlock(p.mapColor(MapColor.PLANT).replaceable().noCollision().randomTicks()
+                        .strength(0.2F).sound(SoundType.VINE).ignitedByLava().pushReaction(PushReaction.POPPED)));
+
+        CINNAMON_LOG = register("cinnamon_log",
+                p -> new CinnamonLogBlock(p.mapColor(MapColor.WOOD).instrument(net.minecraft.world.level.block.state.properties.NoteBlockInstrument.BASS)
+                        .strength(2.0F).sound(SoundType.WOOD).ignitedByLava()));
+
+        STRIPPED_CINNAMON_LOG = register("stripped_cinnamon_log",
+                p -> new StrippedCinnamonLogBlock(p.mapColor(MapColor.WOOD).instrument(net.minecraft.world.level.block.state.properties.NoteBlockInstrument.BASS)
+                        .strength(2.0F).sound(SoundType.WOOD).randomTicks().ignitedByLava()));
+
+        CINNAMON_LEAVES = register("cinnamon_leaves",
+                p -> new LeavesBlock(AmbientLeavesBlockSoundPlayer.noAmbientSound(),
+                        p.mapColor(MapColor.PLANT).strength(0.2F).randomTicks().sound(SoundType.GRASS)
+                                .noOcclusion().isValidSpawn((state, level, pos, type) -> false)
+                                .isSuffocating((state, level, pos) -> false)
+                                .isViewBlocking((state, level, pos, nearPlaneBox) -> false)
+                                .ignitedByLava().pushReaction(PushReaction.POPPED)
+                                .isRedstoneConductor((state, level, pos) -> false)));
+
+        CINNAMON_SAPLING = register("cinnamon_sapling",
+                p -> new CinnamonSaplingBlock(p.mapColor(MapColor.PLANT).noCollision().randomTicks()
+                        .instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.POPPED)));
+
+        NETTLE = register("nettle",
+                p -> new NettleBlock(p.mapColor(MapColor.PLANT).replaceable().noCollision().instabreak()
+                        .sound(SoundType.GRASS)
+                        .offsetType(BlockBehaviour.OffsetType.XZ)
+                        .ignitedByLava().pushReaction(PushReaction.POPPED)));
+
+        CORN_PLANT = register("corn_plant",
+                p -> new CornBlock(p.mapColor(MapColor.PLANT).replaceable().noCollision().randomTicks()
+                        .instabreak().sound(SoundType.CROP).noLootTable()
+                        .offsetType(BlockBehaviour.OffsetType.XZ)
+                        .ignitedByLava().pushReaction(PushReaction.POPPED)));
+
+        TOMATO = register("tomato",
+                p -> new BerryPlantBlock(() -> OmniTechItems.TOMATO.get(),
+                        p.mapColor(MapColor.PLANT).randomTicks().noCollision()
+                                .sound(SoundType.SWEET_BERRY_BUSH).pushReaction(PushReaction.POPPED)));
+
+        JALAPENO = register("jalapeno",
+                p -> new BerryPlantBlock(() -> OmniTechItems.JALAPENO.get(),
+                        p.mapColor(MapColor.PLANT).randomTicks().noCollision()
+                                .sound(SoundType.SWEET_BERRY_BUSH).pushReaction(PushReaction.POPPED)));
     }
 
     // ── Registration helpers ───────────────────────────────────────────────

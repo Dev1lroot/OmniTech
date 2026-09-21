@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "omnitech:block/vanilla_vine",
+    "layer1": "omnitech:block/vanilla_vine_overlay"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "half=lower": { "model": "omnitech:block/nettle_bottom" },
+    "half=upper": { "model": "omnitech:block/nettle_top" }
+  }
+}

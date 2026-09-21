@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "axis=x,natural=false": {
+      "model": "omnitech:block/cinnamon_log_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=x,natural=true": {
+      "model": "omnitech:block/cinnamon_log_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y,natural=false": {
+      "model": "omnitech:block/cinnamon_log"
+    },
+    "axis=y,natural=true": {
+      "model": "omnitech:block/cinnamon_log"
+    },
+    "axis=z,natural=false": {
+      "model": "omnitech:block/cinnamon_log_horizontal",
+      "x": 90
+    },
+    "axis=z,natural=true": {
+      "model": "omnitech:block/cinnamon_log_horizontal",
+      "x": 90
+    }
+  }
+}

@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.resources.Identifier;
@@ -138,6 +139,18 @@ public class ToolSet {
             }
             updateLangFile(resourcesDir, material);
             generateRepairTag(resourcesDir, material, ingotId, "tools");
+
+            // Item.Properties#pickaxe/shovel/sword/axe/hoe only wire up mining speed,
+            // attack stats and the BLOCK_TRANSFORMER component (strip/till/flatten) —
+            // they do NOT add the item to the vanilla #minecraft:pickaxes / #axes /
+            // #shovels / #swords / #hoes item tags, so anything (ours or vanilla)
+            // that checks tool *type* via tag rather than via the Tool component
+            // silently fails to recognize these as pickaxes/axes/etc.
+            addToVanillaToolTag(resourcesDir, "pickaxes", pickaxeName);
+            addToVanillaToolTag(resourcesDir, "shovels", shovelName);
+            addToVanillaToolTag(resourcesDir, "swords", swordName);
+            addToVanillaToolTag(resourcesDir, "axes", axeName);
+            addToVanillaToolTag(resourcesDir, "hoes", hoeName);
         }
 
         ALL_SETS.add(set);
@@ -212,6 +225,37 @@ public class ToolSet {
         Path tagPath = res.resolve("data/" + OmniTech.MODID + "/tags/item/repairs_" + material + "_" + kind + ".json");
         writeIfAbsent(tagPath,
                 "{\n  \"values\": [ \"" + ingotId + "\" ]\n}\n");
+    }
+
+    /**
+     * Adds {@code omnitech:<itemName>} to {@code data/minecraft/tags/item/<tagName>.json},
+     * merging into whatever every previous material already contributed rather than
+     * overwriting — unlike the per-material repair tag, this one file accumulates
+     * every material's tool of that type.
+     */
+    private static void addToVanillaToolTag(Path res, String tagName, String itemName) {
+        Path tagPath = res.resolve("data/minecraft/tags/item/" + tagName + ".json");
+        String itemId = OmniTech.MODID + ":" + itemName;
+
+        JsonObject tag;
+        if (Files.exists(tagPath)) {
+            try {
+                tag = JsonParser.parseString(Files.readString(tagPath, StandardCharsets.UTF_8)).getAsJsonObject();
+            } catch (IOException | RuntimeException e) {
+                OmniTech.LOGGER.warn("[ToolSet] Could not read {}: {}", tagPath, e.getMessage());
+                return;
+            }
+        } else {
+            tag = new JsonObject();
+            tag.add("values", new JsonArray());
+        }
+
+        JsonArray values = tag.getAsJsonArray("values");
+        for (var entry : values) {
+            if (entry.getAsString().equals(itemId)) return; // already present
+        }
+        values.add(itemId);
+        writeFile(tagPath, GSON.toJson(tag));
     }
 
     // ── JSON templates ────────────────────────────────────────────────────────

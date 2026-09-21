@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:wooded_badlands",
+  "features": "omnitech:jalapeno",
+  "step": "vegetal_decoration"
+}

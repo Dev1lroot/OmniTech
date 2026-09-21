@@ -87,6 +87,7 @@ public class OmniTechClient
         modEventBus.addListener(this::registerKeys);
         modEventBus.addListener(this::onAddClientReloadListeners);
         modEventBus.addListener(this::registerItemColors);
+        modEventBus.addListener(this::registerBlockColors);
         modEventBus.addListener(this::registerItemModels);
         modEventBus.addListener(this::registerGuiLayers);
         modEventBus.addListener(this::registerTooltipComponents);
@@ -143,6 +144,8 @@ public class OmniTechClient
         event.registerEntityRenderer(OmniTechEntities.PENGUIN.get(), PenguinRenderer::new);
         event.registerEntityRenderer(OmniTechEntities.ABYSSAL_EEL.get(), AbyssalEelRenderer::new);
         event.registerEntityRenderer(OmniTechEntities.COKE_OVEN.get(), CokeOvenEntityRenderer::new);
+        event.registerEntityRenderer(OmniTechEntities.THROWN_TOMATO.get(),
+                net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
     }
 
     void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
@@ -161,6 +164,24 @@ public class OmniTechClient
         event.register(
                 net.minecraft.resources.Identifier.fromNamespaceAndPath(OmniTech.MODID, "fluid_canister_tint"),
                 FluidCanisterTintSource.MAP_CODEC);
+    }
+
+    /**
+     * Biome-tints our foliage exactly like their vanilla counterparts:
+     * {@code VANILLA_VINE}/{@code CINNAMON_LEAVES} use the same foliage-color
+     * source as {@code Blocks.VINE}/{@code Blocks.OAK_LEAVES} etc., and
+     * {@code NETTLE} uses the same double-tall-grass source as
+     * {@code Blocks.TALL_GRASS}/{@code Blocks.LARGE_FERN}. Without this the
+     * blocks render with their raw (grayish, pre-tint) textures.
+     */
+    void registerBlockColors(RegisterColorHandlersEvent.BlockTintSources event) {
+        event.register(
+                java.util.List.of(net.minecraft.client.color.block.BlockTintSources.foliage()),
+                OmniTechBlocks.VANILLA_VINE.get(),
+                OmniTechBlocks.CINNAMON_LEAVES.get());
+        event.register(
+                java.util.List.of(net.minecraft.client.color.block.BlockTintSources.doubleTallGrass()),
+                OmniTechBlocks.NETTLE.get());
     }
 
     void registerItemModels(RegisterItemModelsEvent event) {
@@ -211,6 +232,25 @@ public class OmniTechClient
                     Minecraft.getInstance().gui.setScreen(new SpaceNavigationScreen());
                     return 1;
                 })
+        );
+        event.getDispatcher().register(
+            net.minecraft.commands.Commands.literal("smiles")
+                .then(net.minecraft.commands.Commands.argument("code",
+                                com.mojang.brigadier.arguments.StringArgumentType.greedyString())
+                        .executes(ctx -> {
+                            String code = com.mojang.brigadier.arguments.StringArgumentType.getString(ctx, "code");
+                            try {
+                                Minecraft.getInstance().gui.setScreen(
+                                        com.dev1lroot.mcmods.omnitech.gui.FormulaViewerScreen.fromCode(code));
+                            } catch (com.dev1lroot.mcmods.omnitech.chemistry.SmilesParser.ParseException e) {
+                                if (Minecraft.getInstance().player != null) {
+                                    Minecraft.getInstance().player.sendSystemMessage(
+                                            net.minecraft.network.chat.Component.literal("Couldn't read that structural code: " + e.getMessage())
+                                                    .withStyle(net.minecraft.ChatFormatting.RED));
+                                }
+                            }
+                            return 1;
+                        }))
         );
     }
 

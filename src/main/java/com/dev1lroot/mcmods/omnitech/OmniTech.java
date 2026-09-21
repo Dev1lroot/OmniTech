@@ -585,6 +585,10 @@ public class OmniTech {
                 com.dev1lroot.mcmods.omnitech.network.SetPipetteAmountSlotPacket.TYPE,
                 com.dev1lroot.mcmods.omnitech.network.SetPipetteAmountSlotPacket.CODEC,
                 com.dev1lroot.mcmods.omnitech.network.SetPipetteAmountSlotPacket::handle);
+        event.registrar("1").playToServer(
+                com.dev1lroot.mcmods.omnitech.network.PrintFormulaPacket.TYPE,
+                com.dev1lroot.mcmods.omnitech.network.PrintFormulaPacket.CODEC,
+                com.dev1lroot.mcmods.omnitech.network.PrintFormulaPacket::handle);
         event.registrar("1").playToClient(
                 NuclearExplosionFxPacket.TYPE,
                 NuclearExplosionFxPacket.CODEC,

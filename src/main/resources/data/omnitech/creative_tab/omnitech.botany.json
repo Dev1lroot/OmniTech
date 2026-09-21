@@ -1,0 +1,17 @@
+{
+  "icon": "omnitech:cinnamon_sapling",
+  "after": "omnitech:omnitech.minerals",
+  "data": [
+    "omnitech:vanilla_vine",
+    "omnitech:cinnamon_sapling",
+    "omnitech:cinnamon_log",
+    "omnitech:stripped_cinnamon_log",
+    "omnitech:cinnamon_leaves",
+    "omnitech:cinnamon",
+    "omnitech:nettle",
+    "omnitech:corn_seeds",
+    "omnitech:corn",
+    "omnitech:tomato",
+    "omnitech:jalapeno"
+  ]
+}

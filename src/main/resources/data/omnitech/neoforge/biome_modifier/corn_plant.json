@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:wooded_badlands",
+  "features": "omnitech:corn_plant",
+  "step": "vegetal_decoration"
+}

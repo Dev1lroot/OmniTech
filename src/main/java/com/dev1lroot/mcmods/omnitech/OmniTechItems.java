@@ -34,6 +34,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.equipment.ArmorMaterial;
@@ -175,6 +176,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> FILTER_PRESS_ITEM = REGISTRY.registerSimpleBlockItem(
             "filter_press", OmniTechBlocks.FILTER_PRESS);
 
+    public static final DeferredItem<BlockItem> STRUCTURE_TABLE_ITEM = REGISTRY.registerSimpleBlockItem(
+            "structure_table", OmniTechBlocks.STRUCTURE_TABLE);
+
     public static final DeferredItem<BlockItem> ELECTROLYSIS_MACHINE_ITEM = REGISTRY.registerSimpleBlockItem(
             "electrolysis_machine", OmniTechBlocks.ELECTROLYSIS_MACHINE);
 
@@ -210,6 +214,9 @@ public class OmniTechItems
 
     public static final DeferredItem<com.dev1lroot.mcmods.omnitech.items.PipetteItem> PIPETTE =
             REGISTRY.registerItem("pipette", com.dev1lroot.mcmods.omnitech.items.PipetteItem::new);
+
+    public static final DeferredItem<com.dev1lroot.mcmods.omnitech.items.ChemicalFormulaItem> CHEMICAL_FORMULA =
+            REGISTRY.registerItem("chemical_formula", com.dev1lroot.mcmods.omnitech.items.ChemicalFormulaItem::new);
 
     // ── Electric Charger block item ───────────────────────────────────────────
 
@@ -251,6 +258,70 @@ public class OmniTechItems
 
     public static final DeferredItem<BlockItem> SPEAKER_ITEM =
             REGISTRY.registerSimpleBlockItem("speaker", OmniTechBlocks.SPEAKER);
+
+    // ── Botany ────────────────────────────────────────────────────────────────
+    public static final DeferredItem<BlockItem> VANILLA_VINE_ITEM =
+            REGISTRY.registerSimpleBlockItem("vanilla_vine", OmniTechBlocks.VANILLA_VINE);
+
+    /** Logs and stripped logs are valid furnace fuel, same as every other wood species. */
+    public static final DeferredItem<BlockItem> CINNAMON_LOG_ITEM =
+            REGISTRY.registerItem("cinnamon_log",
+                    p -> new BlockItem(OmniTechBlocks.CINNAMON_LOG.get(), p),
+                    p -> p.cookingFuel(net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders.COOKING_TIME_WOOD_BLOCKS));
+    public static final DeferredItem<BlockItem> STRIPPED_CINNAMON_LOG_ITEM =
+            REGISTRY.registerItem("stripped_cinnamon_log",
+                    p -> new BlockItem(OmniTechBlocks.STRIPPED_CINNAMON_LOG.get(), p),
+                    p -> p.cookingFuel(net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders.COOKING_TIME_WOOD_BLOCKS));
+
+    public static final DeferredItem<BlockItem> CINNAMON_LEAVES_ITEM =
+            REGISTRY.registerSimpleBlockItem("cinnamon_leaves", OmniTechBlocks.CINNAMON_LEAVES);
+    public static final DeferredItem<BlockItem> CINNAMON_SAPLING_ITEM =
+            REGISTRY.registerSimpleBlockItem("cinnamon_sapling", OmniTechBlocks.CINNAMON_SAPLING);
+    public static final DeferredItem<BlockItem> NETTLE_ITEM =
+            REGISTRY.registerSimpleBlockItem("nettle", OmniTechBlocks.NETTLE);
+
+    /** Harvested from a cinnamon log's bark when it's stripped with an axe. */
+    public static final DeferredItem<Item> CINNAMON =
+            REGISTRY.registerItem("cinnamon", Item::new);
+
+    /**
+     * Dropped by breaking any segment of {@link OmniTechBlocks#CORN_PLANT} — craft
+     * into {@link #CORN_SEEDS} to replant. Deliberately <b>not</b> food: raw corn
+     * needs to be cooked first (no cooked variant/recipe yet).
+     */
+    public static final DeferredItem<Item> CORN =
+            REGISTRY.registerItem("corn", Item::new);
+    /**
+     * A {@link BlockItem} for {@link OmniTechBlocks#CORN_PLANT} registered under its
+     * own name — the only way a corn plant ever enters the world, since that block
+     * has no BlockItem of its own (see {@link com.dev1lroot.mcmods.omnitech.blocks.plants.CornBlock}).
+     * {@code useItemDescriptionPrefix()} makes it show its own name ("Corn Seeds")
+     * instead of inheriting {@code corn_plant}'s — the same trick vanilla uses for
+     * {@code wheat_seeds} (a {@code BlockItem(Blocks.WHEAT, ...)}).
+     */
+    public static final DeferredItem<BlockItem> CORN_SEEDS =
+            REGISTRY.registerItem("corn_seeds",
+                    p -> new BlockItem(OmniTechBlocks.CORN_PLANT.get(), p.useItemDescriptionPrefix()));
+
+    /**
+     * A {@link BlockItem} for {@link OmniTechBlocks#TOMATO} that's also food and a
+     * throwable projectile — see {@link com.dev1lroot.mcmods.omnitech.items.TomatoItem}.
+     */
+    public static final DeferredItem<com.dev1lroot.mcmods.omnitech.items.TomatoItem> TOMATO =
+            REGISTRY.registerItem("tomato",
+                    p -> new com.dev1lroot.mcmods.omnitech.items.TomatoItem(OmniTechBlocks.TOMATO.get(), p),
+                    p -> p.useItemDescriptionPrefix().food(
+                            new net.minecraft.world.food.FoodProperties.Builder().nutrition(3).saturationModifier(0.3F).build()));
+
+    /**
+     * A {@link BlockItem} for {@link OmniTechBlocks#JALAPENO} that's also food —
+     * see {@link com.dev1lroot.mcmods.omnitech.items.JalapenoItem} for the fire-on-eat effect.
+     */
+    public static final DeferredItem<com.dev1lroot.mcmods.omnitech.items.JalapenoItem> JALAPENO =
+            REGISTRY.registerItem("jalapeno",
+                    p -> new com.dev1lroot.mcmods.omnitech.items.JalapenoItem(OmniTechBlocks.JALAPENO.get(), p),
+                    p -> p.useItemDescriptionPrefix().food(
+                            new net.minecraft.world.food.FoodProperties.Builder().nutrition(2).saturationModifier(0.2F).build()));
 
     // ── Research ──────────────────────────────────────────────────────────────
     public static final DeferredItem<BlueprintItem> BLUEPRINT =

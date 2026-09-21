@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": "minecraft:tool/can_shear",
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "omnitech:vanilla_vine"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "omnitech:blocks/vanilla_vine"
+}

@@ -57,6 +57,13 @@ public class OmniTechFeatures {
     public static final java.util.function.Supplier<MapCodec<VolcanoFeature>> VOLCANO =
             REGISTRY.register("volcano", () -> VolcanoFeature.CODEC);
 
+    /**
+     * Places a single {@code omnitech:vanilla_vine} block — a rare jungle
+     * vine look-alike. See {@link VanillaVineFeature}.
+     */
+    public static final java.util.function.Supplier<MapCodec<VanillaVineFeature>> VANILLA_VINE =
+            REGISTRY.register("vanilla_vine", () -> VanillaVineFeature.CODEC);
+
     public static void register(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
     }

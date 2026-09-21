@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "ripe=false": { "model": "omnitech:block/tomato_unripe" },
+    "ripe=true": { "model": "omnitech:block/tomato_ripe" }
+  }
+}
