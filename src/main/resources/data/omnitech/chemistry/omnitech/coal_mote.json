@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 0.5 g pure carbon (small fragment, 1/20 of the coal_dust.json mass).",
+  "compounds": [
+    {
+      "smiles": "[C]",
+      "name": "Carbon (Coal)",
+      "amount": 41.63
+    }
+  ]
+}

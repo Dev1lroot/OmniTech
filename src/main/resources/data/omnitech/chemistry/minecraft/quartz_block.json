@@ -1,0 +1,6 @@
+{
+  "note": "Crystalline quartz, density ≈ 2650 kg/m³, 1 block = 1×1×1 m. Essentially pure SiO2.",
+  "compounds": [
+    { "smiles": "O=[Si]=O", "name": "Silicon Dioxide (Quartz)", "amount": 44107856.2 }
+  ]
+}

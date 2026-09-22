@@ -1,0 +1,20 @@
+{
+  "note": "spruce_planks.json scaled to 1/20 block volume (button rule).",
+  "compounds": [
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Cellulose (anhydroglucose repeat unit)",
+      "amount": 62446.0
+    },
+    {
+      "smiles": "OC1OCC(O)C(O)C1O",
+      "name": "Hemicellulose (xylan repeat unit)",
+      "amount": 42578.2
+    },
+    {
+      "smiles": "COc1cc(C=CCO)ccc1O",
+      "name": "Lignin (coniferyl-alcohol repeat unit)",
+      "amount": 31215.3
+    }
+  ]
+}

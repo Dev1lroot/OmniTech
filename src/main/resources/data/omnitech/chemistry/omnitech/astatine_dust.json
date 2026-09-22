@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 7000.00 g pure astatine (1× the ingot-equivalent mass, 1000 mB (1 L) molten astatine × real density 7.0 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[At]",
+      "name": "Astatine",
+      "amount": 33333.33
+    }
+  ]
+}

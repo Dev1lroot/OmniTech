@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 332.22 g pure scandium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten scandium × real density 2.99 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Sc]",
+      "name": "Scandium",
+      "amount": 7389.94
+    }
+  ]
+}

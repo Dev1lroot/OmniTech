@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 13690.00 g pure americium (1× the ingot-equivalent mass, 1000 mB (1 L) molten americium × real density 13.69 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Am]",
+      "name": "Americium",
+      "amount": 56337.45
+    }
+  ]
+}

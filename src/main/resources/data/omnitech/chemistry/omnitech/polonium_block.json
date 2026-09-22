@@ -1,0 +1,10 @@
+{
+  "note": "9× polonium_ingot mass compacted into a block (≈ 82800.00 g pure polonium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Po]",
+      "name": "Polonium",
+      "amount": 396172.25
+    }
+  ]
+}

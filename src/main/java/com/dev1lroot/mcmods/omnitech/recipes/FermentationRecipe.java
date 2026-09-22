@@ -37,20 +37,30 @@ import java.util.List;
  */
 public final class FermentationRecipe {
 
-    /** A fluid + mB amount, with the {@link Fluid} resolved lazily from the registry. */
+    /**
+     * A fluid + mB amount, with the {@link Fluid} resolved lazily from the registry, and whether it is
+     * <em>dissolved</em> in the mixture (the default) or an undissolved solid suspended in it. The flag
+     * matters where the amount is <em>added</em> (outputs, dissolved items, spawned microbes); when a
+     * recipe merely looks for or consumes a fluid it matches the fluid whichever form it is in.
+     */
     public static final class FluidAmount {
         private final Identifier id;
         private final int amount;
+        private final boolean dissolved;
         private @Nullable Fluid fluid;
         private boolean resolved;
 
-        public FluidAmount(Identifier id, int amount) {
+        public FluidAmount(Identifier id, int amount) { this(id, amount, true); }
+
+        public FluidAmount(Identifier id, int amount, boolean dissolved) {
             this.id = id;
             this.amount = amount;
+            this.dissolved = dissolved;
         }
 
-        public Identifier id()  { return id; }
-        public int amount()     { return amount; }
+        public Identifier id()      { return id; }
+        public int amount()         { return amount; }
+        public boolean dissolved()  { return dissolved; }
 
         /** The registered fluid, or {@code null} if this id names nothing (typo / missing mod). */
         public @Nullable Fluid fluid() {
@@ -129,7 +139,7 @@ public final class FermentationRecipe {
         Solution next = solution;
         for (FluidAmount in : inputs)  next = next.minus(in.fluid(), in.amount());
         for (FluidAmount out : outputs) {
-            if (out.fluid() != null) next = next.plus(out.fluid(), out.amount());
+            if (out.fluid() != null) next = next.plus(out.fluid(), out.amount(), out.dissolved());
         }
         return next;
     }

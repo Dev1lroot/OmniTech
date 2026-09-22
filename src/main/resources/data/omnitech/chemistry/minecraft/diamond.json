@@ -1,0 +1,6 @@
+{
+  "note": "1 gem ≈ 0.5 g (≈ 2.5 carat) — pure crystalline carbon.",
+  "compounds": [
+    { "smiles": "[C]", "name": "Carbon (Diamond)", "amount": 41.6 }
+  ]
+}

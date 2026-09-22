@@ -1,0 +1,10 @@
+{
+  "note": "9× uranium_ingot mass compacted into a block (≈ 171450.00 g pure uranium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[U]",
+      "name": "Uranium",
+      "amount": 720290.38
+    }
+  ]
+}

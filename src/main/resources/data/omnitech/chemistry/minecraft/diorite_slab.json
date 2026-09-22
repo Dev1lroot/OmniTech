@@ -1,0 +1,30 @@
+{
+  "note": "diorite.json scaled to 1/2 block volume (slab rule).",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 13515312.9
+    },
+    {
+      "smiles": "O=[Al]O[Al]=O",
+      "name": "Aluminium Oxide",
+      "amount": 2334248.7
+    },
+    {
+      "smiles": "[Na]O[Na]",
+      "name": "Sodium Oxide",
+      "amount": 1129396.6
+    },
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide",
+      "amount": 876698.6
+    },
+    {
+      "smiles": "[Ca]=O",
+      "name": "Calcium Oxide",
+      "amount": 2496433.7
+    }
+  ]
+}

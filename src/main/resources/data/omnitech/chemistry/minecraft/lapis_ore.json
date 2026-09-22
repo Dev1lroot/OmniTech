@@ -1,0 +1,15 @@
+{
+  "note": "Lazurite-bearing marble, density ≈ 2700 kg/m³, 1 block = 1×1×1 m. 10% lazurite ore mineral / 90% CaCO3 marble host by mass.",
+  "compounds": [
+    {
+      "smiles": "[Na]",
+      "name": "Sodium Calcium Aluminosilicate Sulfide (Lazurite ore)",
+      "amount": 541809.6
+    },
+    {
+      "smiles": "O=C([O-])[O-].[Ca+2]",
+      "name": "Calcium Carbonate (marble host rock)",
+      "amount": 24278149.7
+    }
+  ]
+}

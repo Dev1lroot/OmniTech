@@ -32,7 +32,7 @@ public class FermenterMenu extends AbstractContainerMenu {
     public FermenterMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
         this(containerId, playerInventory,
                 playerInventory.player.level().getBlockEntity(extraData.readBlockPos()),
-                new SimpleContainerData(4));
+                new SimpleContainerData(6));
     }
 
     // Server constructor
@@ -76,6 +76,8 @@ public class FermenterMenu extends AbstractContainerMenu {
     public int getCapacity()        { return data.get(1); }
     public int getActiveReactions() { return data.get(2); }
     public int getLiveMicrobes()    { return data.get(3); }
+    public int getTemperature()     { return data.get(4); }
+    public int getPressure()        { return data.get(5); }
 
     // ── Shift-click ───────────────────────────────────────────────────────────
 

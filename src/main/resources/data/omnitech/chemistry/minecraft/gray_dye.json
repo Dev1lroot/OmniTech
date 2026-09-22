@@ -1,0 +1,10 @@
+{
+  "note": "1 dye item ≈ 20 mg extracted pigment.",
+  "compounds": [
+    {
+      "smiles": "[C]",
+      "name": "Carbon (diluted ink sac pigment, mixed with bone meal)",
+      "amount": 1.7
+    }
+  ]
+}

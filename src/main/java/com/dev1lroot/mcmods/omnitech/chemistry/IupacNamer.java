@@ -28,6 +28,15 @@ import java.util.*;
  * are valid, unambiguous IUPAC substituent names). Molecules that fall outside this get an honest
  * generic name built from the molecular formula rather than a guess — wrong chemistry is worse
  * than an admitted gap.
+ *
+ * <p><b>Inorganic compounds</b> (ores, minerals, alloys — anything containing a metal or
+ * metalloid) take a completely separate, formula-count-based path (see "Inorganic naming" below)
+ * rather than any of the above organic machinery: single elements ("iron"), binary ionic
+ * compounds with a worked-out oxidation state for variable-valence metals ("iron(III) oxide",
+ * "copper(I) sulfide" vs. "copper(II) sulfide"), metal hydroxides ("aluminium hydroxide"), and
+ * covalent metalloid oxides/sulfides with Greek numeric prefixes and proper elision ("silicon
+ * dioxide", "diboron trioxide"). Ternary+ inorganic compounds and unrecognized element pairings
+ * fall back to a formula-based name, same philosophy as the organic gap above.
  */
 public final class IupacNamer {
 
@@ -46,6 +55,17 @@ public final class IupacNamer {
     public static String name(Molecule m) {
         try {
             if (m.isEmpty()) return "Nothing";
+
+            // Inorganic compounds (ores, minerals, alloys, ...) get an entirely separate naming
+            // path — see the "Inorganic naming" section below. This also runs ahead of the
+            // isConnected() check below, since real-world ionic compounds are conventionally
+            // written as disconnected ion fragments (e.g. "[Na+].[Cl-]" for salt) rather than a
+            // single bonded structure.
+            if (containsInorganicElement(m)) {
+                String inorganic = nameInorganic(m);
+                return inorganic != null ? capitalize(inorganic) : ("Compound (" + m.molecularFormula() + ")");
+            }
+
             if (!m.isConnected()) return "Mixture (" + m.molecularFormula() + ")";
 
             int cyclomatic = m.cyclomaticNumber();
@@ -77,6 +97,155 @@ public final class IupacNamer {
             // Fall through to the honest fallback below rather than surface a half-built name.
         }
         return "Unnamed compound (" + m.molecularFormula() + ")";
+    }
+
+    // ── Inorganic naming (ores, minerals, alloys — metals/metalloids) ──────────
+
+    private static final Set<String> ORGANIC_ELEMENTS = Set.of("C", "N", "O", "S", "P", "F", "Cl", "Br", "I");
+
+    private static final Set<String> METALS = Set.of(
+            "Li", "Na", "K", "Rb", "Cs", "Mg", "Ca", "Sr", "Ba", "Al",
+            "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn",
+            "Zr", "Nb", "Mo", "Ag", "Cd", "Sn", "Hf", "Ta", "W", "Au", "Pt", "Hg", "Pb", "Bi", "U");
+
+    /** Metalloids get covalent (Greek-prefix) binary naming instead of ionic — "silicon dioxide",
+     *  not "silicon(IV) oxide". */
+    private static final Set<String> METALLOIDS = Set.of("B", "Si", "Sb");
+
+    private static final Map<String, String> ELEMENT_NAME = Map.ofEntries(
+            Map.entry("Li", "lithium"), Map.entry("Na", "sodium"), Map.entry("K", "potassium"),
+            Map.entry("Rb", "rubidium"), Map.entry("Cs", "caesium"), Map.entry("Mg", "magnesium"),
+            Map.entry("Ca", "calcium"), Map.entry("Sr", "strontium"), Map.entry("Ba", "barium"),
+            Map.entry("B", "boron"), Map.entry("Al", "aluminium"), Map.entry("Si", "silicon"),
+            Map.entry("Ti", "titanium"), Map.entry("V", "vanadium"), Map.entry("Cr", "chromium"),
+            Map.entry("Mn", "manganese"), Map.entry("Fe", "iron"), Map.entry("Co", "cobalt"),
+            Map.entry("Ni", "nickel"), Map.entry("Cu", "copper"), Map.entry("Zn", "zinc"),
+            Map.entry("Zr", "zirconium"), Map.entry("Nb", "niobium"), Map.entry("Mo", "molybdenum"),
+            Map.entry("Ag", "silver"), Map.entry("Cd", "cadmium"), Map.entry("Sn", "tin"),
+            Map.entry("Sb", "antimony"), Map.entry("Hf", "hafnium"), Map.entry("Ta", "tantalum"),
+            Map.entry("W", "tungsten"), Map.entry("Au", "gold"), Map.entry("Pt", "platinum"),
+            Map.entry("Hg", "mercury"), Map.entry("Pb", "lead"), Map.entry("Bi", "bismuth"),
+            Map.entry("U", "uranium"));
+
+    /** Metals with only one common oxidation state don't take a Roman-numeral suffix — "sodium
+     *  chloride", never "sodium(I) chloride". Everything else in {@link #METALS} is treated as
+     *  variable-valence (iron, copper, tin, lead, chromium, ...) and gets one worked out from the
+     *  formula's stoichiometry (e.g. Fe2O3 → "iron(III) oxide"). */
+    private static final Set<String> FIXED_VALENCE_METALS = Set.of(
+            "Li", "Na", "K", "Rb", "Cs", "Mg", "Ca", "Sr", "Ba", "Al", "Zn", "Ag", "Cd");
+
+    private static final Map<String, Integer> ANION_CHARGE = Map.of(
+            "O", 2, "S", 2, "N", 3, "P", 3, "F", 1, "Cl", 1, "Br", 1, "I", 1);
+    private static final Map<String, String> ANION_NAME = Map.of(
+            "O", "oxide", "S", "sulfide", "N", "nitride", "P", "phosphide",
+            "F", "fluoride", "Cl", "chloride", "Br", "bromide", "I", "iodide");
+
+    private static final String[] GREEK_PREFIX = {
+            null, "mono", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "nona", "deca"
+    };
+    private static final String[] ROMAN = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII" };
+
+    private static boolean containsInorganicElement(Molecule m) {
+        for (Atom a : m.atoms()) if (!ORGANIC_ELEMENTS.contains(a.element())) return true;
+        return false;
+    }
+
+    /** Formula-count-based (not bond-topology-based) inorganic naming — ionic compounds don't
+     *  really have discrete covalent bonds the way this parser's bond orders imply, so working
+     *  from element counts is both simpler and more honest than pretending the drawn bonds mean
+     *  something structural. Returns {@code null} for anything outside its scope (ternary+
+     *  compounds, unrecognized element pairings), which the caller turns into a formula fallback.
+     */
+    private static String nameInorganic(Molecule m) {
+        Map<String, Integer> counts = new TreeMap<>();
+        for (Atom a : m.atoms()) counts.merge(a.element(), 1, Integer::sum);
+
+        if (counts.size() == 1) return ELEMENT_NAME.get(counts.keySet().iterator().next());
+        if (counts.size() != 2) return null;
+
+        var it = counts.entrySet().iterator();
+        var e1 = it.next();
+        var e2 = it.next();
+        String sym1 = e1.getKey(), sym2 = e2.getKey();
+        int n1 = e1.getValue(), n2 = e2.getValue();
+
+        if (METALS.contains(sym1) && "O".equals(sym2) && isAllHydroxide(m, sym1)) return hydroxideName(sym1);
+        if (METALS.contains(sym2) && "O".equals(sym1) && isAllHydroxide(m, sym2)) return hydroxideName(sym2);
+
+        if (METALS.contains(sym1) && ANION_CHARGE.containsKey(sym2)) return binaryIonicName(sym1, sym2, n1, n2);
+        if (METALS.contains(sym2) && ANION_CHARGE.containsKey(sym1)) return binaryIonicName(sym2, sym1, n2, n1);
+
+        if (METALLOIDS.contains(sym1) && ("O".equals(sym2) || "S".equals(sym2))) return covalentBinaryName(sym1, sym2, n1, n2);
+        if (METALLOIDS.contains(sym2) && ("O".equals(sym1) || "S".equals(sym1))) return covalentBinaryName(sym2, sym1, n2, n1);
+
+        return null;
+    }
+
+    /** True if every oxygen atom in the molecule carries exactly one (implicit) hydrogen and is
+     *  bonded to {@code metalSym} — i.e. the O/H pairs are hydroxide groups, not oxide oxygens. */
+    private static boolean isAllHydroxide(Molecule m, String metalSym) {
+        boolean sawAny = false;
+        for (Atom a : m.atoms()) {
+            if (!"O".equals(a.element())) continue;
+            sawAny = true;
+            if (m.implicitH(a.id()) != 1) return false;
+            boolean bondedToMetal = false;
+            for (int nb : m.neighbors(a.id())) {
+                Atom other = m.atom(nb);
+                if (other != null && metalSym.equals(other.element())) bondedToMetal = true;
+            }
+            if (!bondedToMetal) return false;
+        }
+        return sawAny;
+    }
+
+    private static String hydroxideName(String metalSym) {
+        String metalName = ELEMENT_NAME.get(metalSym);
+        return metalName == null ? null : metalName + " hydroxide";
+    }
+
+    /** Ionic binary compound, e.g. Fe2O3 → "iron(III) oxide", NaCl → "sodium chloride". */
+    private static String binaryIonicName(String metalSym, String anionSym, int metalCount, int anionCount) {
+        String metalName = ELEMENT_NAME.get(metalSym);
+        String anionName = ANION_NAME.get(anionSym);
+        if (metalName == null || anionName == null) return null;
+
+        String oxidationState = "";
+        if (!FIXED_VALENCE_METALS.contains(metalSym) && metalCount > 0) {
+            int totalNegative = ANION_CHARGE.get(anionSym) * anionCount;
+            if (totalNegative % metalCount == 0) {
+                int state = totalNegative / metalCount;
+                if (state >= 1 && state <= ROMAN.length) oxidationState = "(" + ROMAN[state - 1] + ")";
+            }
+        }
+        return metalName + oxidationState + " " + anionName;
+    }
+
+    /** Covalent binary compound (metalloid + oxide/sulfide), e.g. SiO2 → "silicon dioxide",
+     *  B2O3 → "diboron trioxide" — Greek numeric prefixes, no oxidation-state Roman numeral. */
+    private static String covalentBinaryName(String elemSym, String anionSym, int elemCount, int anionCount) {
+        String elemName = ELEMENT_NAME.get(elemSym);
+        String anionName = ANION_NAME.get(anionSym);
+        if (elemName == null || anionName == null) return null;
+
+        String first = elemCount > 1 ? elideGreekPrefix(greekPrefix(elemCount), elemName) + elemName : elemName;
+        String second = elideGreekPrefix(greekPrefix(anionCount), anionName) + anionName;
+        return first + " " + second;
+    }
+
+    private static String greekPrefix(int count) {
+        return count >= 1 && count < GREEK_PREFIX.length ? GREEK_PREFIX[count] : "";
+    }
+
+    /** "mono" + "oxide" → "monoxide", "tetra" + "oxide" → "tetroxide" — real IUPAC elides a
+     *  trailing a/o off the prefix before a vowel-initial element/anion name ("trioxide" and
+     *  "disulfide" need no elision, since "tri"/"di" don't end in a/o and "sulfide" isn't
+     *  vowel-initial). */
+    private static String elideGreekPrefix(String prefix, String followingName) {
+        if (prefix == null || prefix.isEmpty() || followingName.isEmpty()) return prefix == null ? "" : prefix;
+        char last = prefix.charAt(prefix.length() - 1);
+        boolean vowelStart = "aeiou".indexOf(Character.toLowerCase(followingName.charAt(0))) >= 0;
+        return (vowelStart && (last == 'a' || last == 'o')) ? prefix.substring(0, prefix.length() - 1) : prefix;
     }
 
     // ── Functional-group scan ────────────────────────────────────────────────

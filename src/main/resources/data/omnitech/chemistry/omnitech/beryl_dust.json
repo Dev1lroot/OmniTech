@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[Be][Be][Be][Al][Al][Si][Si][Si][Si][Si][Si][O][O][O][O][O][O][O][O][O][O][O][O][O][O][O][O][O][O]",
+      "name": "Beryllium Aluminium Silicate (Beryl)",
+      "amount": 93.02
+    }
+  ]
+}

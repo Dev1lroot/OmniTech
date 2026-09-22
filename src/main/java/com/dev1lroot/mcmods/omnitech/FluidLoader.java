@@ -119,6 +119,18 @@ public class FluidLoader {
                         .temperature(temperature)
                         .lightLevel(lightLevel);
 
+                // Whether it may blend with other fluids into a solution inside pipes and tanks.
+                String polarity = json.has("polarity") ? json.get("polarity").getAsString() : "polar";
+                boolean miscible = !json.has("miscible") || json.get("miscible").getAsBoolean();
+                com.dev1lroot.mcmods.omnitech.util.FluidMixing.register(OmniTech.MODID, name,
+                        new com.dev1lroot.mcmods.omnitech.util.FluidMixing.Traits(
+                                com.dev1lroot.mcmods.omnitech.util.FluidMixing.Polarity.parse(polarity), miscible));
+
+                // Optional SMILES structural code — see FluidChemistryRegistry.
+                if (json.has("smiles")) {
+                    FluidChemistryRegistry.register(name, json.get("smiles").getAsString());
+                }
+
                 OmniTechFluids.registerFluid(name, props, worldPlaceable, flammable);
                 FluidPhysicsRegistry.register(name,
                         new FluidPhysicsRegistry.FluidPhysics(minTemp, maxTemp, minPressure, maxPressure,
@@ -163,6 +175,10 @@ public class FluidLoader {
                         new FluidPhysicsRegistry.PhaseDiagram(
                                 700, 2000, 180f, 4000, 100_000, 700, 1, -1, true),
                         0.02f));
+
+        com.dev1lroot.mcmods.omnitech.util.FluidMixing.register("minecraft", "lava",
+                new com.dev1lroot.mcmods.omnitech.util.FluidMixing.Traits(
+                        com.dev1lroot.mcmods.omnitech.util.FluidMixing.Polarity.POLAR, false));
 
         OmniTech.LOGGER.info("[FluidLoader] Vanilla fluid physics registered (water, lava)");
     }

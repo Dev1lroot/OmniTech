@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 683.33 g pure lanthanum (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten lanthanum × real density 6.15 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[La]",
+      "name": "Lanthanum",
+      "amount": 4919.43
+    }
+  ]
+}

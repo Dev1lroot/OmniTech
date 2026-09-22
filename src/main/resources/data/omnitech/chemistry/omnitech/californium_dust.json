@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 15100.00 g pure californium (1× the ingot-equivalent mass, 1000 mB (1 L) molten californium × real density 15.1 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Cf]",
+      "name": "Californium",
+      "amount": 60159.36
+    }
+  ]
+}

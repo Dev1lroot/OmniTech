@@ -1,0 +1,15 @@
+{
+  "note": "9× hafnium_tantalum_carbide_ingot.json compacted into a block (≈ 115650 g), a 50/50 mass split of the two carbides.",
+  "compounds": [
+    {
+      "smiles": "[Hf][C]",
+      "name": "Hafnium Carbide",
+      "amount": 303541.71
+    },
+    {
+      "smiles": "[Ta][C]",
+      "name": "Tantalum Carbide",
+      "amount": 299675.06
+    }
+  ]
+}

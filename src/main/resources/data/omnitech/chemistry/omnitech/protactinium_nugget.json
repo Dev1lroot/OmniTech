@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1707.78 g pure protactinium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten protactinium × real density 15.37 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Pa]",
+      "name": "Protactinium",
+      "amount": 7391.83
+    }
+  ]
+}

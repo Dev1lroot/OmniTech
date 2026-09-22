@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 246.50 g pure iodine (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten iodine × real density 4.93 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[I]",
+      "name": "Iodine",
+      "amount": 1942.41
+    }
+  ]
+}

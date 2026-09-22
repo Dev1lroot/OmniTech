@@ -1,0 +1,15 @@
+{
+  "note": "Amethyst crystal cluster, density ≈ 2650 kg/m³, 1 block = 1×1×1 m. 99% SiO2 quartz / 1% Fe2O3 (the Fe3+ impurity that gives it its purple color).",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 43666777.6
+    },
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide (color-center impurity)",
+      "amount": 165946.5
+    }
+  ]
+}

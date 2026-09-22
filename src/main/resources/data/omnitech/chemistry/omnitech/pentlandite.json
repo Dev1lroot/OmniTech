@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 4.8 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 8% Iron Nickel Sulfide / 92% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[pentlandite]",
+      "name": "Iron Nickel Sulfide (Pentlandite)",
+      "amount": 1719.04
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 73502.0
+    }
+  ]
+}

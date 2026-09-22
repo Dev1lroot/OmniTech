@@ -1,0 +1,10 @@
+{
+  "note": "1 dye item ≈ 50 mg extracted pigment.",
+  "compounds": [
+    {
+      "smiles": "Oc1ccc(cc1)C1=C(O)C(=O)c2c(O)cc(O)cc2O1",
+      "name": "Quercetin (Flavonoid pigment, from dandelion)",
+      "amount": 0.2
+    }
+  ]
+}

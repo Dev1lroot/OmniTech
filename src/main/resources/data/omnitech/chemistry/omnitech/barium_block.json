@@ -1,0 +1,10 @@
+{
+  "note": "9× barium_ingot mass compacted into a block (≈ 31590.00 g pure barium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Ba]",
+      "name": "Barium",
+      "amount": 230034.88
+    }
+  ]
+}

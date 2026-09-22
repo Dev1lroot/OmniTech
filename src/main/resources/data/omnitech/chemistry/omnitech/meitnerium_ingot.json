@@ -1,0 +1,10 @@
+{
+  "note": "1 ingot ≈ 37400.00 g pure meitnerium (1× the ingot-equivalent mass, 1000 mB (1 L) molten meitnerium × real density 37.4 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Mt]",
+      "name": "Meitnerium",
+      "amount": 135507.25
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 1128.00 g pure iridium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten iridium × real density 22.56 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ir]",
+      "name": "Iridium",
+      "amount": 5868.37
+    }
+  ]
+}

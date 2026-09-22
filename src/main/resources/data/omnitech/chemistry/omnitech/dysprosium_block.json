@@ -1,0 +1,10 @@
+{
+  "note": "9× dysprosium_ingot mass compacted into a block (≈ 76860.00 g pure dysprosium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Dy]",
+      "name": "Dysprosium",
+      "amount": 472984.62
+    }
+  ]
+}

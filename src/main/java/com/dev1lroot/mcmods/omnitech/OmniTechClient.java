@@ -108,6 +108,8 @@ public class OmniTechClient
 
     void registerTooltipComponents(RegisterClientTooltipComponentFactoriesEvent event) {
         event.register(PhaseDiagramTooltipData.class, PhaseDiagramClientTooltipComponent::new);
+        event.register(com.dev1lroot.mcmods.omnitech.gui.tooltip.MoleculeStructureTooltipData.class,
+                com.dev1lroot.mcmods.omnitech.gui.tooltip.MoleculeStructureClientTooltipComponent::new);
     }
 
     void onClientSetup(FMLClientSetupEvent event) {
@@ -164,6 +166,9 @@ public class OmniTechClient
         event.register(
                 net.minecraft.resources.Identifier.fromNamespaceAndPath(OmniTech.MODID, "fluid_canister_tint"),
                 FluidCanisterTintSource.MAP_CODEC);
+        event.register(
+                net.minecraft.resources.Identifier.fromNamespaceAndPath(OmniTech.MODID, "mixture_dust_tint"),
+                MixtureDustTintSource.MAP_CODEC);
     }
 
     /**
@@ -416,29 +421,60 @@ public class OmniTechClient
     }
 
     public static void onItemTooltip(ItemTooltipEvent event) {
-        String formula = event.getItemStack().get(OmniTechDataComponents.FORMULA.get());
+        var stack = event.getItemStack();
+        String formula = stack.get(OmniTechDataComponents.FORMULA.get());
         if (formula != null) {
             event.getToolTip().add(
                     Component.literal(formula).withStyle(ChatFormatting.DARK_GRAY));
         }
 
-        // Machine blurb: any item with a "tooltip.omnitech.<path>.desc" lang key gets a
-        // one-line description on shift, and a "hold shift" hint otherwise. Which items show
-        // this is controlled entirely by which lang keys exist — no separate registry to keep
-        // in sync.
         net.minecraft.resources.Identifier id =
-                net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(event.getItemStack().getItem());
+                net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
+        boolean shift = Minecraft.getInstance().hasShiftDown();
+        boolean shiftGatedContent = false;
+
+        // Machine blurb: any item with a "tooltip.omnitech.<path>.desc" lang key gets a
+        // one-line description on shift. Which items show this is controlled entirely by which
+        // lang keys exist — no separate registry to keep in sync.
         if (id != null && id.getNamespace().equals(OmniTech.MODID)) {
             String descKey = "tooltip.omnitech." + id.getPath() + ".desc";
             if (net.minecraft.locale.Language.getInstance().has(descKey)) {
-                if (Minecraft.getInstance().hasShiftDown()) {
+                shiftGatedContent = true;
+                if (shift) {
                     event.getToolTip().add(Component.translatable(descKey).withStyle(ChatFormatting.GRAY));
-                } else {
-                    event.getToolTip().add(Component.translatable("tooltip.omnitech.hold_shift")
-                            .withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
                 }
             }
         }
+
+        // Real-world chemical composition, data-driven from data/omnitech/chemistry/*.json —
+        // see ChemistryCompositionLoader. Applies to vanilla and modded items alike.
+        List<ItemChemistryRegistry.CompoundAmount> compounds =
+                id == null ? List.of() : ItemChemistryRegistry.get(id.toString());
+        if (!compounds.isEmpty()) {
+            shiftGatedContent = true;
+            if (shift) {
+                event.getToolTip().add(Component.translatable("tooltip.omnitech.composition")
+                        .withStyle(ChatFormatting.GOLD));
+                for (var c : compounds) {
+                    event.getToolTip().add(Component.literal(
+                                    "  " + c.displayName() + " — " + formatMmol(c.amountMmol()) + " mmol")
+                            .withStyle(ChatFormatting.GREEN));
+                }
+            }
+        }
+
+        if (shiftGatedContent && !shift) {
+            event.getToolTip().add(Component.translatable("tooltip.omnitech.hold_shift")
+                    .withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
+        }
+    }
+
+    /** {@code 12500.0} → {@code "12,500"}; keeps a couple of decimals for non-whole amounts. */
+    private static String formatMmol(double amount) {
+        if (amount == Math.rint(amount) && Math.abs(amount) < 1.0e7) {
+            return String.format("%,d", (long) amount);
+        }
+        return String.format("%,.2f", amount);
     }
 
     void registerGuiLayers(RegisterGuiLayersEvent event) {

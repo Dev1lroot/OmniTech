@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 214.44 g pure caesium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten caesium × real density 1.93 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Cs]",
+      "name": "Caesium",
+      "amount": 1613.52
+    }
+  ]
+}

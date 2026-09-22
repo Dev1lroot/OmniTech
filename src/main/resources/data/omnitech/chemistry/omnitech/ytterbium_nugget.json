@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 766.67 g pure ytterbium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten ytterbium × real density 6.9 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Yb]",
+      "name": "Ytterbium",
+      "amount": 4430.45
+    }
+  ]
+}

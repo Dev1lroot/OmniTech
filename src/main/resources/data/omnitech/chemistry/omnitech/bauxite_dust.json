@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[Al][O][O][O][H][H][H]",
+      "name": "Aluminium Hydroxide (Bauxite)",
+      "amount": 641.0
+    }
+  ]
+}

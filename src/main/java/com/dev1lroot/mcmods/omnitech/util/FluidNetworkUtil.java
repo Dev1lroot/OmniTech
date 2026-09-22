@@ -67,6 +67,13 @@ public final class FluidNetworkUtil {
                 ? (fluidPressure(existing) * existingAmount + incomingPressure * toInsert) / total
                 : incomingPressure;
 
+        // A different (miscible) fluid, or two mixtures: the result is the blend of both
+        // compositions, at the volume-weighted temperature and pressure.
+        if (!existing.isEmpty() && (SolutionFluids.isMixture(existing) || !incoming.is(existing.getFluid()))) {
+            var merged = SolutionFluids.toSolution(existing).plus(SolutionFluids.toSolution(incoming, toInsert));
+            return SolutionFluids.toStack(merged, blendedTemp, blendedPressure);
+        }
+
         FluidStack result = existing.isEmpty()
                 ? incoming.toStack(toInsert)
                 : existing.copyWithAmount(total);
@@ -394,6 +401,12 @@ public final class FluidNetworkUtil {
         long totalWeightedPressure = 0;
         FluidStack referenceStack = FluidStack.EMPTY;
 
+        // Miscible fluids in one network are one blend: sum every node's contents, and remember one
+        // stack per distinct set of fluids so each newcomer is only checked against those.
+        com.dev1lroot.mcmods.omnitech.items.Solution combined = com.dev1lroot.mcmods.omnitech.items.Solution.EMPTY;
+        Map<Set<Fluid>, FluidStack> seen = new HashMap<>();
+        boolean homogeneous = true;   // every non-empty node already holds exactly the same thing
+
         while (!queue.isEmpty()) {
             BlockPos pos = queue.poll();
             BlockEntity be = level.getBlockEntity(pos);
@@ -402,12 +415,27 @@ public final class FluidNetworkUtil {
 
             FluidStack fs = getFluidFromEntity(be);
 
-            if (!referenceStack.isEmpty() && !fs.isEmpty() && referenceStack.getFluid() != fs.getFluid()) {
-                continue;
-            }
+            if (!fs.isEmpty()) {
+                var solution = SolutionFluids.toSolution(fs);
+                Set<Fluid> key = new HashSet<>();
+                for (var part : solution.components()) key.add(part.fluid());
 
-            if (referenceStack.isEmpty() && !fs.isEmpty()) {
-                referenceStack = fs;
+                if (!seen.containsKey(key)) {
+                    boolean compatible = true;
+                    for (FluidStack other : seen.values()) {
+                        if (!FluidMixing.canMix(other, fs)) { compatible = false; break; }
+                    }
+                    if (!compatible) continue;   // stays locked out, like an unrelated fluid always was
+                    seen.put(key, fs);
+                }
+                combined = combined.plus(solution);
+                if (referenceStack.isEmpty()) {
+                    referenceStack = fs;
+                } else if (fs.getFluid() != referenceStack.getFluid()
+                        || !Objects.equals(fs.get(OmniTechDataComponents.MIXTURE.get()),
+                                           referenceStack.get(OmniTechDataComponents.MIXTURE.get()))) {
+                    homogeneous = false;
+                }
             }
 
             int fsAmount = fs.getAmount();
@@ -425,6 +453,12 @@ public final class FluidNetworkUtil {
         }
         int blendedTemp     = totalAmount > 0 ? (int) (totalWeightedTemp     / totalAmount) : 20;
         int blendedPressure = totalAmount > 0 ? (int) (totalWeightedPressure / totalAmount) : 101;
+
+        // More than one fluid (or a mixture) in the network: the reference is the blend of all of it.
+        // (Rebuilding an already uniform mixture from rounded mB would only make its ratios drift.)
+        if (!homogeneous) {
+            referenceStack = SolutionFluids.toStack(combined, blendedTemp, blendedPressure);
+        }
         return new NetworkData(nodes, totalAmount, referenceStack, blendedTemp, blendedPressure);
     }
 
@@ -442,14 +476,7 @@ public final class FluidNetworkUtil {
             long totalAmount, FluidStack ref) {
         if (ref.isEmpty()) return;
 
-        var physics = com.dev1lroot.mcmods.omnitech.FluidPhysicsRegistry.get(ref.getFluid());
-        Integer tempBox     = ref.get(com.dev1lroot.mcmods.omnitech.OmniTechDataComponents.FLUID_TEMPERATURE.get());
-        Integer pressureBox = ref.get(com.dev1lroot.mcmods.omnitech.OmniTechDataComponents.FLUID_PRESSURE.get());
-        int tempC       = tempBox     != null ? tempBox     : 20;
-        int pressureKPa = pressureBox != null ? pressureBox : 101;
-
-        com.dev1lroot.mcmods.omnitech.FluidPhase phase =
-                com.dev1lroot.mcmods.omnitech.FluidPhaseUtil.getPhase(tempC, pressureKPa, physics.phaseDiagram());
+        com.dev1lroot.mcmods.omnitech.FluidPhase phase = FluidMixing.phaseOf(ref);
 
         if (phase == com.dev1lroot.mcmods.omnitech.FluidPhase.GAS
                 || phase == com.dev1lroot.mcmods.omnitech.FluidPhase.SUPERCRITICAL
@@ -604,11 +631,9 @@ public final class FluidNetworkUtil {
 
     private static void updateBlockFluid(BlockEntity be, int amount, FluidStack ref, Level level) {
         FluidStack current = getFluidFromEntity(be);
-        if (!current.isEmpty() && current.getAmount() == amount
-                && fluidTemp(current) == fluidTemp(ref)
-                && fluidPressure(current) == fluidPressure(ref)) return;
-
         FluidStack nextStack = (amount <= 0) ? FluidStack.EMPTY : ref.copyWithAmount(amount);
+        if (!current.isEmpty() && FluidStack.matches(current, nextStack)) return;
+        if (current.isEmpty() && nextStack.isEmpty()) return;
 
         if (be instanceof FluidPipeBlockEntity p) p.setFluid(nextStack);
         else if (be instanceof FluidTankBlockEntity t) t.setFluid(nextStack);

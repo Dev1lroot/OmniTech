@@ -1,0 +1,6 @@
+{
+  "note": "1 ingot ≈ 100 g refined metal.",
+  "compounds": [
+    { "smiles": "[Fe]", "name": "Iron", "amount": 1790.5 }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1501.11 g pure curium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten curium × real density 13.51 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Cm]",
+      "name": "Curium",
+      "amount": 6077.37
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 675.00 g pure moscovium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten moscovium × real density 13.5 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Mc]",
+      "name": "Moscovium",
+      "amount": 2343.75
+    }
+  ]
+}

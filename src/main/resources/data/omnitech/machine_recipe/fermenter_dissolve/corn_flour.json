@@ -1,5 +1,6 @@
 {
   "item": "omnitech:corn_flour",
   "fluid": "omnitech:flour",
-  "amount": 250
+  "amount": 250,
+  "dissolved": false
 }

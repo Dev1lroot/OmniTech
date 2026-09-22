@@ -1,0 +1,10 @@
+{
+  "note": "9× berkelium_ingot mass compacted into a block (≈ 133110.00 g pure berkelium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Bk]",
+      "name": "Berkelium",
+      "amount": 538906.88
+    }
+  ]
+}

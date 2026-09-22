@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 4.79 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 12% Iron Titanium Oxide / 88% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[ilmenite]",
+      "name": "Iron Titanium Oxide (Ilmenite)",
+      "amount": 3788.83
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 70159.79
+    }
+  ]
+}

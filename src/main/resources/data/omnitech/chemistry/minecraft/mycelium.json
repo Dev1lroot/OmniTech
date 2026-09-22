@@ -1,0 +1,30 @@
+{
+  "note": "Fungus-colonized soil, density ≈ 1300 kg/m³, 1 block = 1×1×1 m. 35% quartz sand, 15% clay, 30% moisture, 15% humus, 5% fungal mycelium (chitin) by mass.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz sand fraction)",
+      "amount": 7573235.7
+    },
+    {
+      "smiles": "O=[Al]O[Si]=O",
+      "name": "Aluminosilicate Hydrate (Kaolinite clay)",
+      "amount": 755287.0
+    },
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 21648626.1
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Humus (decayed organic matter)",
+      "amount": 1202664.4
+    },
+    {
+      "smiles": "CC(=O)NC1C(O)OC(CO)C(O)C1O",
+      "name": "Chitin (fungal mycelium)",
+      "amount": 293838.4
+    }
+  ]
+}

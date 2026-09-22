@@ -1,0 +1,10 @@
+{
+  "note": "9× titanium_ingot mass compacted into a block (≈ 40590.00 g pure titanium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Ti]",
+      "name": "Titanium",
+      "amount": 847974.6
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "note": "stone_bricks.json scaled to 3/4 block volume (stairs rule).",
+  "compounds": [
+    { "smiles": "O=[Si]=O", "name": "Silicon Dioxide (Quartz)", "amount": 21908288.9 },
+    { "smiles": "O=[Al]O[Al]=O", "name": "Aluminium Oxide (feldspar/clay component)", "amount": 2979109.5 },
+    { "smiles": "O=[Fe]O[Fe]=O", "name": "Iron(III) Oxide (Hematite)", "amount": 1268081.9 },
+    { "smiles": "[Ca]=O", "name": "Calcium Oxide (bound in feldspar/calcite)", "amount": 3610913.0 }
+  ]
+}

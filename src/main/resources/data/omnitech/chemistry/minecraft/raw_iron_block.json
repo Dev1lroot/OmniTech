@@ -1,0 +1,10 @@
+{
+  "note": "9× raw_iron.json compacted into a block.",
+  "compounds": [
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide (Hematite, unsmelted)",
+      "amount": 6763.1
+    }
+  ]
+}

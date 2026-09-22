@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 534.00 g pure lithium (1× the ingot-equivalent mass, 1000 mB (1 L) molten lithium × real density 0.534 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Li]",
+      "name": "Lithium",
+      "amount": 76945.24
+    }
+  ]
+}

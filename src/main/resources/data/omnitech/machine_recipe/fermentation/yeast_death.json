@@ -15,7 +15,8 @@
   "outputs": [
     {
       "fluid": "omnitech:dead_yeast",
-      "amount": 1
+      "amount": 1,
+      "dissolved": false
     }
   ]
 }

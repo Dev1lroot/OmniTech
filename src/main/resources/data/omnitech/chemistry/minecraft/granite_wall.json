@@ -1,0 +1,30 @@
+{
+  "note": "granite.json scaled to 1/2 block volume (wall rule).",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 16178428.8
+    },
+    {
+      "smiles": "O=[Al]O[Al]=O",
+      "name": "Aluminium Oxide",
+      "amount": 1853668.1
+    },
+    {
+      "smiles": "[K]O[K]",
+      "name": "Potassium Oxide",
+      "amount": 1003184.7
+    },
+    {
+      "smiles": "[Na]O[Na]",
+      "name": "Sodium Oxide",
+      "amount": 871248.8
+    },
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide",
+      "amount": 253616.4
+    }
+  ]
+}

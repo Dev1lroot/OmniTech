@@ -1,0 +1,10 @@
+{
+  "note": "9× californium_ingot mass compacted into a block (≈ 135900.00 g pure californium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Cf]",
+      "name": "Californium",
+      "amount": 541434.26
+    }
+  ]
+}

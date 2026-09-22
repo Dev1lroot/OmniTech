@@ -1,0 +1,10 @@
+{
+  "note": "1 ingot ≈ 6150.00 g pure lanthanum (1× the ingot-equivalent mass, 1000 mB (1 L) molten lanthanum × real density 6.15 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[La]",
+      "name": "Lanthanum",
+      "amount": 44274.86
+    }
+  ]
+}

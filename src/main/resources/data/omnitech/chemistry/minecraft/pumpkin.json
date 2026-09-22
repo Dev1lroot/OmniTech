@@ -1,0 +1,15 @@
+{
+  "note": "1 pumpkin ≈ 100 g chunk: 92% water, 5% starch.",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 5106.9
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Starch (amylose repeat unit)",
+      "amount": 30.8
+    }
+  ]
+}

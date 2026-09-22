@@ -194,6 +194,9 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> HEAT_EXCHANGER_ITEM = REGISTRY.registerSimpleBlockItem(
             "heat_exchanger", OmniTechBlocks.HEAT_EXCHANGER);
 
+    public static final DeferredItem<BlockItem> CHEMICAL_MIXER_ITEM = REGISTRY.registerSimpleBlockItem(
+            "chemical_mixer", OmniTechBlocks.CHEMICAL_MIXER);
+
     public static final DeferredItem<BlockItem> DECOMPRESSOR_ITEM = REGISTRY.registerSimpleBlockItem(
             "decompressor", OmniTechBlocks.DECOMPRESSOR);
 
@@ -215,11 +218,17 @@ public class OmniTechItems
     public static final DeferredItem<com.dev1lroot.mcmods.omnitech.items.FlaskItem> FLASK =
             REGISTRY.registerItem("flask", com.dev1lroot.mcmods.omnitech.items.FlaskItem::new);
 
+    public static final DeferredItem<com.dev1lroot.mcmods.omnitech.items.MixtureDustItem> MIXTURE_DUST =
+            REGISTRY.registerItem("mixture_dust", com.dev1lroot.mcmods.omnitech.items.MixtureDustItem::new);
+
     public static final DeferredItem<com.dev1lroot.mcmods.omnitech.items.PipetteItem> PIPETTE =
             REGISTRY.registerItem("pipette", com.dev1lroot.mcmods.omnitech.items.PipetteItem::new);
 
     public static final DeferredItem<com.dev1lroot.mcmods.omnitech.items.ChemicalFormulaItem> CHEMICAL_FORMULA =
             REGISTRY.registerItem("chemical_formula", com.dev1lroot.mcmods.omnitech.items.ChemicalFormulaItem::new);
+
+    public static final DeferredItem<com.dev1lroot.mcmods.omnitech.items.ChemicalCompoundDustItem> CHEMICAL_COMPOUND_DUST =
+            REGISTRY.registerItem("chemical_compound_dust", com.dev1lroot.mcmods.omnitech.items.ChemicalCompoundDustItem::new);
 
     // ── Electric Charger block item ───────────────────────────────────────────
 

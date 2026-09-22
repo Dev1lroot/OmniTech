@@ -1,0 +1,20 @@
+{
+  "note": "Same 670 kg/m³ wood density as birch_planks.json, scaled to 1/6 block volume (door rule — same thin-panel category as a trapdoor).",
+  "compounds": [
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Cellulose (anhydroglucose repeat unit)",
+      "amount": 309917.4
+    },
+    {
+      "smiles": "OC1OCC(O)C(O)C1O",
+      "name": "Hemicellulose (xylan repeat unit)",
+      "amount": 211313.8
+    },
+    {
+      "smiles": "COc1cc(C=CCO)ccc1O",
+      "name": "Lignin (coniferyl-alcohol repeat unit)",
+      "amount": 154920.5
+    }
+  ]
+}

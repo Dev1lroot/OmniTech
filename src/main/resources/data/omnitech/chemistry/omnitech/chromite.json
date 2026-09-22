@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 4.8 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 12% Iron Chromium Oxide / 88% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[chromite]",
+      "name": "Iron Chromium Oxide (Chromite)",
+      "amount": 2573.35
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 70306.26
+    }
+  ]
+}

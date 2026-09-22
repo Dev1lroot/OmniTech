@@ -1,0 +1,11 @@
+{
+  "density": 1000,
+  "viscosity": 1200,
+  "temperature": 293,
+  "light_level": 0,
+  "min_temp": -273,
+  "max_temp": 10000,
+  "min_pressure": 0,
+  "max_pressure": 200000,
+  "world_placeable": false
+}

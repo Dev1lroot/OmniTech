@@ -1,0 +1,25 @@
+{
+  "note": "1 bucket ≈ 1000 mL milk: 87% water, 4.8% lactose, 3.5% fat, 3.3% protein.",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 48293.1
+    },
+    {
+      "smiles": "OCC1OC(OC2(CO)OC(CO)C(O)C2O)C(O)C(O)C1O",
+      "name": "Lactose",
+      "amount": 140.2
+    },
+    {
+      "smiles": "CCCCCCCCC=CCCCCCCCC(=O)OCC(OC(=O)CCCCCCCC=CCCCCCCCC)COC(=O)CCCCCCCC=CCCCCCCCC",
+      "name": "Milk Fat (Triolein, representative triglyceride)",
+      "amount": 39.5
+    },
+    {
+      "smiles": "NCC(=O)O",
+      "name": "Casein Protein (amino-acid content, as glycine-equivalent)",
+      "amount": 439.6
+    }
+  ]
+}

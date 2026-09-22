@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 4555.56 g pure hassium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten hassium × real density 41.0 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Hs]",
+      "name": "Hassium",
+      "amount": 16872.43
+    }
+  ]
+}

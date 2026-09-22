@@ -1,0 +1,10 @@
+{
+  "note": "9× chromium_ingot mass compacted into a block (≈ 64710.00 g pure chromium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Cr]",
+      "name": "Chromium",
+      "amount": 1244518.81
+    }
+  ]
+}

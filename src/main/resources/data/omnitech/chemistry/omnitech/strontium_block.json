@@ -1,0 +1,10 @@
+{
+  "note": "9× strontium_ingot mass compacted into a block (≈ 23760.00 g pure strontium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Sr]",
+      "name": "Strontium",
+      "amount": 271170.97
+    }
+  ]
+}

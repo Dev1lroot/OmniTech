@@ -1,0 +1,10 @@
+{
+  "note": "Compacted ice, same density as ice.json ≈ 917 kg/m³, 1 block = 1×1×1 m.",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 50902026.1
+    }
+  ]
+}

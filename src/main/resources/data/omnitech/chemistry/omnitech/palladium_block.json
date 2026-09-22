@@ -1,0 +1,10 @@
+{
+  "note": "9× palladium_ingot mass compacted into a block (≈ 108180.00 g pure palladium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Pd]",
+      "name": "Palladium",
+      "amount": 1016538.24
+    }
+  ]
+}

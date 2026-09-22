@@ -1,0 +1,10 @@
+{
+  "note": "9× raw_tungsten.json compacted into a block (≈ 1080 g total).",
+  "compounds": [
+    {
+      "smiles": "[W]",
+      "name": "Tungsten",
+      "amount": 5874.67
+    }
+  ]
+}

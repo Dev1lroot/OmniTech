@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 326.00 g pure zirconium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten zirconium × real density 6.52 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Zr]",
+      "name": "Zirconium",
+      "amount": 3573.62
+    }
+  ]
+}

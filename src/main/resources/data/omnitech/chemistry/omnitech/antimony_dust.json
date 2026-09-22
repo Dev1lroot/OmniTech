@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 6700.00 g pure antimony (1× the ingot-equivalent mass, 1000 mB (1 L) molten antimony × real density 6.7 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Sb]",
+      "name": "Antimony",
+      "amount": 55026.28
+    }
+  ]
+}

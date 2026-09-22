@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 4.7 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 5% Potassium Uranyl Vanadate Hydrate / 95% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[carnotite]",
+      "name": "Potassium Uranyl Vanadate Hydrate (Carnotite)",
+      "amount": 277.08
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 74317.58
+    }
+  ]
+}

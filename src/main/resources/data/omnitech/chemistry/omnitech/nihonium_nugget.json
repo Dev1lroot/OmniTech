@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1777.78 g pure nihonium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten nihonium × real density 16.0 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Nh]",
+      "name": "Nihonium",
+      "amount": 6259.78
+    }
+  ]
+}

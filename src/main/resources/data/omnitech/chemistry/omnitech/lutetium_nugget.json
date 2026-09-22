@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1093.33 g pure lutetium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten lutetium × real density 9.84 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Lu]",
+      "name": "Lutetium",
+      "amount": 6248.8
+    }
+  ]
+}

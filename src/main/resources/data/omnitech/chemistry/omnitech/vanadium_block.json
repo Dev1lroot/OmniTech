@@ -1,0 +1,10 @@
+{
+  "note": "9× vanadium_ingot mass compacted into a block (≈ 54990.00 g pure vanadium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[V]",
+      "name": "Vanadium",
+      "amount": 1079462.92
+    }
+  ]
+}

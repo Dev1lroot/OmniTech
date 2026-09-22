@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 2.7 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 5% Beryllium Aluminium Silicate / 95% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[beryl]",
+      "name": "Beryllium Aluminium Silicate (Beryl)",
+      "amount": 251.17
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 42693.08
+    }
+  ]
+}

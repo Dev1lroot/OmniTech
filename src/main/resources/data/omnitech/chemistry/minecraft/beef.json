@@ -1,0 +1,8 @@
+{
+  "note": "1 raw steak ≈ 250 g: 70% water, 20% protein (represented as glycine-equivalent, since a real muscle protein has no single small-molecule SMILES), 10% fat (represented as triolein, a representative triglyceride).",
+  "compounds": [
+    { "smiles": "O", "name": "Water", "amount": 9714.1 },
+    { "smiles": "NCC(=O)O", "name": "Protein (amino-acid content, as glycine-equivalent)", "amount": 666.0 },
+    { "smiles": "CCCCCCCCC=CCCCCCCCC(=O)OCC(OC(=O)CCCCCCCC=CCCCCCCCC)COC(=O)CCCCCCCC=CCCCCCCCC", "name": "Fat (Triolein, representative triglyceride)", "amount": 28.2 }
+  ]
+}

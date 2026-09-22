@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 492.00 g pure lutetium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten lutetium × real density 9.84 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Lu]",
+      "name": "Lutetium",
+      "amount": 2811.96
+    }
+  ]
+}

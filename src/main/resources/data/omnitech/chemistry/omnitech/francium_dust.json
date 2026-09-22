@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 1870.00 g pure francium (1× the ingot-equivalent mass, 1000 mB (1 L) molten francium × real density 1.87 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Fr]",
+      "name": "Francium",
+      "amount": 8385.65
+    }
+  ]
+}

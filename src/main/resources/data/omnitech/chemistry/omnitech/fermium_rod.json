@@ -1,0 +1,10 @@
+{
+  "note": "1 rod ≈ 9700.00 g pure fermium (1× the ingot-equivalent mass, 1000 mB (1 L) molten fermium × real density 9.7 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Fm]",
+      "name": "Fermium",
+      "amount": 37743.19
+    }
+  ]
+}

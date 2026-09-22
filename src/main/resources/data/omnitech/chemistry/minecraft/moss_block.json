@@ -1,0 +1,15 @@
+{
+  "note": "Bryophyte (moss) mat, density ≈ 600 kg/m³, 1 block = 1×1×1 m. 70% water, 30% cellulose.",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 23313905.1
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Cellulose",
+      "amount": 1110151.7
+    }
+  ]
+}

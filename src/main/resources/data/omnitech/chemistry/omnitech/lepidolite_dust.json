@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[K][Li][Li][Li][Al][Si][Si][Si][O][O][O][O][O][O][O][O][O][O][F][F]",
+      "name": "Lithium Aluminosilicate Mica (Lepidolite)",
+      "amount": 131.58
+    }
+  ]
+}

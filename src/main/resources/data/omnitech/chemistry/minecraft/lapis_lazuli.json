@@ -1,0 +1,10 @@
+{
+  "note": "1 gem/dye chunk ≈ 3 g of the blue mineral lazurite (Na3CaAl3Si3O12S), treated as one compound.",
+  "compounds": [
+    {
+      "smiles": "[Na]",
+      "name": "Sodium Calcium Aluminosilicate Sulfide (Lazurite)",
+      "amount": 6.0
+    }
+  ]
+}

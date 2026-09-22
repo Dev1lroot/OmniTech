@@ -1,0 +1,10 @@
+{
+  "note": "1 nether quartz item ≈ 5 g crystal shard — essentially pure SiO2.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 83.2
+    }
+  ]
+}

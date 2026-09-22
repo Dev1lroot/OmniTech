@@ -1,0 +1,10 @@
+{
+  "note": "9× nihonium_ingot mass compacted into a block (≈ 144000.00 g pure nihonium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Nh]",
+      "name": "Nihonium",
+      "amount": 507042.25
+    }
+  ]
+}

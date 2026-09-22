@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 645.00 g pure livermorium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten livermorium × real density 12.9 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Lv]",
+      "name": "Livermorium",
+      "amount": 2201.37
+    }
+  ]
+}

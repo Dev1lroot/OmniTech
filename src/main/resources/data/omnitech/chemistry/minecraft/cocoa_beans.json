@@ -1,0 +1,15 @@
+{
+  "note": "1 dried bean ≈ 5 g: 2% theobromine (the characteristic cocoa alkaloid), 50% fat (cocoa butter, represented as triolein).",
+  "compounds": [
+    {
+      "smiles": "Cn1cnc2c1c(=O)[nH]c(=O)n2C",
+      "name": "Theobromine (cocoa alkaloid)",
+      "amount": 0.6
+    },
+    {
+      "smiles": "CCCCCCCCC=CCCCCCCCC(=O)OCC(OC(=O)CCCCCCCC=CCCCCCCCC)COC(=O)CCCCCCCC=CCCCCCCCC",
+      "name": "Cocoa Butter (Triolein, representative triglyceride)",
+      "amount": 2.8
+    }
+  ]
+}

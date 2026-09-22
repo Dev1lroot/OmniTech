@@ -1,0 +1,7 @@
+{
+  "note": "1 carrot ≈ 60 g: 88% water, 5% glucose (remainder fiber/beta-carotene/other omitted).",
+  "compounds": [
+    { "smiles": "O", "name": "Water", "amount": 2930.9 },
+    { "smiles": "OC1OC(CO)C(O)C(O)C1O", "name": "Glucose", "amount": 16.7 }
+  ]
+}

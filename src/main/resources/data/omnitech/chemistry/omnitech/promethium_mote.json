@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 363.00 g pure promethium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten promethium × real density 7.26 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Pm]",
+      "name": "Promethium",
+      "amount": 2503.45
+    }
+  ]
+}

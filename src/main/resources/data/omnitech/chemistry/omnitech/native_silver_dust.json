@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g — native metal found as naturally pure nuggets/flakes (no smelting required in reality), at raw-find scale rather than foundry-ingot scale.",
+  "compounds": [
+    {
+      "smiles": "[Ag]",
+      "name": "Silver",
+      "amount": 463.53
+    }
+  ]
+}

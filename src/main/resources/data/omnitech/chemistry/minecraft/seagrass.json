@@ -1,0 +1,15 @@
+{
+  "note": "1 seagrass item ≈ 5 g: 90% water, 5% cellulose.",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 249.8
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Cellulose",
+      "amount": 1.5
+    }
+  ]
+}

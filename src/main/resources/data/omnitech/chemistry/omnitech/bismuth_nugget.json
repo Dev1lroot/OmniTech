@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1086.67 g pure bismuth (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten bismuth × real density 9.78 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Bi]",
+      "name": "Bismuth",
+      "amount": 5199.86
+    }
+  ]
+}

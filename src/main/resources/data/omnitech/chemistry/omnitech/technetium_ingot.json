@@ -1,0 +1,10 @@
+{
+  "note": "1 ingot ≈ 11500.00 g pure technetium (1× the ingot-equivalent mass, 1000 mB (1 L) molten technetium × real density 11.5 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Tc]",
+      "name": "Technetium",
+      "amount": 117346.94
+    }
+  ]
+}

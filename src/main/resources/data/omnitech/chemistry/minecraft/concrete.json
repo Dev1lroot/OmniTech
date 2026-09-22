@@ -1,0 +1,15 @@
+{
+  "note": "Hardened concrete_powder, density ≈ 2400 kg/m³, 1 block = 1×1×1 m. Same 30/70 clinker/sand split (hydration water omitted).",
+  "compounds": [
+    {
+      "smiles": "[Ca]O[Si]=O",
+      "name": "Tricalcium Silicate (Portland cement clinker)",
+      "amount": 3153330.7
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 27962716.4
+    }
+  ]
+}

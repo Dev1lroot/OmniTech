@@ -1,0 +1,11 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "omnitech:item/mixture_dust",
+    "tints": [
+      {
+        "type": "omnitech:mixture_dust_tint"
+      }
+    ]
+  }
+}

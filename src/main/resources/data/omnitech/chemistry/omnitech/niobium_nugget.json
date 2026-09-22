@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 952.22 g pure niobium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten niobium × real density 8.57 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Nb]",
+      "name": "Niobium",
+      "amount": 10249.31
+    }
+  ]
+}

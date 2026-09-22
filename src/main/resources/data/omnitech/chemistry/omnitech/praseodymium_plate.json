@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 6770.00 g pure praseodymium (1× the ingot-equivalent mass, 1000 mB (1 L) molten praseodymium × real density 6.77 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Pr]",
+      "name": "Praseodymium",
+      "amount": 48045.53
+    }
+  ]
+}

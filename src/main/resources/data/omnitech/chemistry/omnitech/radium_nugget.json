@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 611.11 g pure radium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten radium × real density 5.5 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ra]",
+      "name": "Radium",
+      "amount": 2704.03
+    }
+  ]
+}

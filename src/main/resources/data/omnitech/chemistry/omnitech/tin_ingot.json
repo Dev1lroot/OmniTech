@@ -1,0 +1,10 @@
+{
+  "note": "1 ingot ≈ 7310.00 g pure tin (1× the ingot-equivalent mass, 1000 mB (1 L) molten tin × real density 7.31 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Sn]",
+      "name": "Tin",
+      "amount": 61578.64
+    }
+  ]
+}

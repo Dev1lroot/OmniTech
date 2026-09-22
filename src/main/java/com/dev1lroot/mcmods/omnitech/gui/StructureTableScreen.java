@@ -78,8 +78,10 @@ public class StructureTableScreen extends Screen {
 
         addRenderableWidget(Button.builder(Component.literal("Print (1 paper)"), b -> doPrint())
                 .bounds(lx + 10, ty + H - 20, 100, 16).build());
+        addRenderableWidget(Button.builder(Component.literal("As Compound"), b -> doPrintCompound())
+                .bounds(lx + 116, ty + H - 20, 74, 16).build());
         addRenderableWidget(Button.builder(Component.literal("Clear"), b -> clearAll())
-                .bounds(lx + 116, ty + H - 20, 50, 16).build());
+                .bounds(lx + 196, ty + H - 20, 50, 16).build());
 
         refreshAutoName();
     }
@@ -166,6 +168,20 @@ public class StructureTableScreen extends Screen {
         Molecule canonical = StructureLayout.layout(sketch);
         String name = nameBox.getValue().isBlank() ? IupacNamer.name(canonical) : nameBox.getValue();
         ClientPacketDistributor.sendToServer(new PrintFormulaPacket(canonical, name));
+        statusMessage = "Sent to print.";
+    }
+
+    /**
+     * Alternative to {@link #doPrint()}: instead of a paper {@code ChemicalFormulaItem}, sends
+     * back a generic {@code chemical_compound_dust} carrying this sketch's SMILES code — a
+     * compound the mod has no hand-authored fluid/item for, named/rendered entirely from that
+     * SMILES from then on (see {@link com.dev1lroot.mcmods.omnitech.items.ChemicalCompoundDustItem}).
+     */
+    private void doPrintCompound() {
+        Molecule sketch = currentMolecule();
+        if (sketch.isEmpty()) { statusMessage = "Nothing sketched."; return; }
+        Molecule canonical = StructureLayout.layout(sketch);
+        ClientPacketDistributor.sendToServer(new com.dev1lroot.mcmods.omnitech.network.PrintCompoundPacket(canonical));
         statusMessage = "Sent to print.";
     }
 

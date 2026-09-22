@@ -1,0 +1,15 @@
+{
+  "note": "1 shard ≈ 3 g, same 99% SiO2 / 1% Fe2O3 split as amethyst_block.json.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 49.4
+    },
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide (color-center impurity)",
+      "amount": 0.2
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 wire ≈ 4325.00 g pure cadmium (0.5× the ingot-equivalent mass, 1000 mB (1 L) molten cadmium × real density 8.65 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Cd]",
+      "name": "Cadmium",
+      "amount": 38473.86
+    }
+  ]
+}

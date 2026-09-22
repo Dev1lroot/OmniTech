@@ -1,0 +1,10 @@
+{
+  "note": "1 reductor ≈ 100.00 g pure copper (1× the ingot-equivalent mass, anchored to the vanilla copper_ingot.json mass (100.0 g)).",
+  "compounds": [
+    {
+      "smiles": "[Cu]",
+      "name": "Copper",
+      "amount": 1573.66
+    }
+  ]
+}

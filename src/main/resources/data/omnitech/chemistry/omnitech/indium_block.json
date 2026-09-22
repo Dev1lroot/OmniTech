@@ -1,0 +1,10 @@
+{
+  "note": "9× indium_ingot mass compacted into a block (≈ 65790.00 g pure indium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[In]",
+      "name": "Indium",
+      "amount": 572993.78
+    }
+  ]
+}

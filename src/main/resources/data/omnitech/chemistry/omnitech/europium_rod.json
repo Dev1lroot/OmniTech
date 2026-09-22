@@ -1,0 +1,10 @@
+{
+  "note": "1 rod ≈ 5240.00 g pure europium (1× the ingot-equivalent mass, 1000 mB (1 L) molten europium × real density 5.24 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Eu]",
+      "name": "Europium",
+      "amount": 34481.85
+    }
+  ]
+}

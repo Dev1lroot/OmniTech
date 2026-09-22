@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 2990.00 g pure scandium (1× the ingot-equivalent mass, 1000 mB (1 L) molten scandium × real density 2.99 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Sc]",
+      "name": "Scandium",
+      "amount": 66509.48
+    }
+  ]
+}

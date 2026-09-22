@@ -1,0 +1,10 @@
+{
+  "note": "1 ingot ≈ 11850.00 g pure thallium (1× the ingot-equivalent mass, 1000 mB (1 L) molten thallium × real density 11.85 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Tl]",
+      "name": "Thallium",
+      "amount": 57980.23
+    }
+  ]
+}

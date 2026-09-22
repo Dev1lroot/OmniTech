@@ -1,0 +1,10 @@
+{
+  "note": "1 cog ≈ 2440.00 g (0.2× the 1000 mB foundry-cast ingot mass, density 12.2 g/cm³). HfC is a genuine stoichiometric ceramic compound (not an alloy), kept as one compound.",
+  "compounds": [
+    {
+      "smiles": "[Hf][C]",
+      "name": "Hafnium Carbide",
+      "amount": 12808.33
+    }
+  ]
+}

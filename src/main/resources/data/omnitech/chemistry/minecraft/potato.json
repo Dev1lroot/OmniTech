@@ -1,0 +1,7 @@
+{
+  "note": "1 potato ≈ 150 g: 79% water, 17% starch (remainder protein/fiber/ash omitted).",
+  "compounds": [
+    { "smiles": "O", "name": "Water", "amount": 6577.9 },
+    { "smiles": "OC1OC(CO)C(O)C(O)C1O", "name": "Starch (amylose repeat unit)", "amount": 141.5 }
+  ]
+}

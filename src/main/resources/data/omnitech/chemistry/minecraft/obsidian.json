@@ -1,0 +1,10 @@
+{
+  "note": "Volcanic glass (rapidly-cooled felsic lava, amorphous — same chemistry family as granite/obsidian's parent magma), density ≈ 2400 kg/m³, 1 block = 1×1×1 m. 75% SiO2 / 13% Al2O3 / 5% Na2O / 4% Fe2O3 / 3% CaO by mass.",
+  "compounds": [
+    { "smiles": "O=[Si]=O", "name": "Silicon Dioxide (Quartz glass)", "amount": 29960053.3 },
+    { "smiles": "O=[Al]O[Al]=O", "name": "Aluminium Oxide", "amount": 3060023.5 },
+    { "smiles": "[Na]O[Na]", "name": "Sodium Oxide", "amount": 1936108.4 },
+    { "smiles": "O=[Fe]O[Fe]=O", "name": "Iron(III) Oxide", "amount": 601164.8 },
+    { "smiles": "[Ca]=O", "name": "Calcium Oxide", "amount": 1283880.2 }
+  ]
+}

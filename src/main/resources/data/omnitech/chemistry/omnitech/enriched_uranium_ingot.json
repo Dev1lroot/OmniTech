@@ -1,0 +1,10 @@
+{
+  "note": "1 ingot ≈ 19050.00 g — 1000 mB (1 L) molten uranium × real density 19.05 g/cm³, per the foundry casting recipe. Represents U-235-enriched fissile material (same molar mass as natural uranium for this purpose).",
+  "compounds": [
+    {
+      "smiles": "[U]",
+      "name": "Uranium (U-235 enriched)",
+      "amount": 80032.26
+    }
+  ]
+}

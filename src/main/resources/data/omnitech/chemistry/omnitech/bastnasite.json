@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 4.95 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 8% Cerium Lanthanum Carbonate Fluoride / 92% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[bastnasite]",
+      "name": "Cerium Lanthanum Carbonate Fluoride (Bastnasite)",
+      "amount": 1807.21
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 75798.93
+    }
+  ]
+}

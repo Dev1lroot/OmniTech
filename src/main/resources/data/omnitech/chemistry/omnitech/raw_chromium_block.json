@@ -1,0 +1,10 @@
+{
+  "note": "9× raw_chromium.json compacted into a block (≈ 1080 g total).",
+  "compounds": [
+    {
+      "smiles": "[Cr]",
+      "name": "Chromium",
+      "amount": 20770.83
+    }
+  ]
+}

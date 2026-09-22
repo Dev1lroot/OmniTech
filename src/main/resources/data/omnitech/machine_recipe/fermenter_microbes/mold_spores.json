@@ -5,5 +5,6 @@
   "requires": [
     "minecraft:water",
     "omnitech:flour"
-  ]
+  ],
+  "dissolved": false
 }

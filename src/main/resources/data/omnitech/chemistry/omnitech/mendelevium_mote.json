@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 515.00 g pure mendelevium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten mendelevium × real density 10.3 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Md]",
+      "name": "Mendelevium",
+      "amount": 1996.12
+    }
+  ]
+}

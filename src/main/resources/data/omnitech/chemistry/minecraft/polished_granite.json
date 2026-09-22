@@ -1,0 +1,30 @@
+{
+  "note": "Same oxide profile as granite.json, cut/polished (no compositional change) — full block.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 32356857.5
+    },
+    {
+      "smiles": "O=[Al]O[Al]=O",
+      "name": "Aluminium Oxide",
+      "amount": 3707336.2
+    },
+    {
+      "smiles": "[K]O[K]",
+      "name": "Potassium Oxide",
+      "amount": 2006369.4
+    },
+    {
+      "smiles": "[Na]O[Na]",
+      "name": "Sodium Oxide",
+      "amount": 1742497.6
+    },
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide",
+      "amount": 507232.8
+    }
+  ]
+}

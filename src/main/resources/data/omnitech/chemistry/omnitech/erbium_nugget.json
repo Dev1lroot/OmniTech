@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1007.78 g pure erbium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten erbium × real density 9.07 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Er]",
+      "name": "Erbium",
+      "amount": 6025.25
+    }
+  ]
+}

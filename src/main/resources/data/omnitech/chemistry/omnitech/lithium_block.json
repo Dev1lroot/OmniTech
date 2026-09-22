@@ -1,0 +1,10 @@
+{
+  "note": "9× lithium_ingot mass compacted into a block (≈ 4806.00 g pure lithium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Li]",
+      "name": "Lithium",
+      "amount": 692507.2
+    }
+  ]
+}

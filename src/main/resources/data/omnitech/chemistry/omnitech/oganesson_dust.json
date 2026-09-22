@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 5000.00 g pure oganesson (1× the ingot-equivalent mass, 1000 mB (1 L) molten oganesson × real density 5.0 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Og]",
+      "name": "Oganesson",
+      "amount": 17006.8
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "note": "1 bottle ≈ 40 g honey: 38% fructose, 31% glucose, 17% water.",
+  "compounds": [
+    {
+      "smiles": "OCC1(O)OC(CO)C(O)C1O",
+      "name": "Fructose",
+      "amount": 84.4
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Glucose",
+      "amount": 68.8
+    },
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 377.5
+    }
+  ]
+}

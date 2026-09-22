@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 1435.00 g pure roentgenium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten roentgenium × real density 28.7 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Rg]",
+      "name": "Roentgenium",
+      "amount": 5125.0
+    }
+  ]
+}

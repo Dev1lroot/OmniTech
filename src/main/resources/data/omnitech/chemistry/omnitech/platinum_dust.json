@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 21450.00 g pure platinum (1× the ingot-equivalent mass, 1000 mB (1 L) molten platinum × real density 21.45 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Pt]",
+      "name": "Platinum",
+      "amount": 109952.64
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 dye item ≈ 50 mg extracted pigment.",
+  "compounds": [
+    {
+      "smiles": "Oc1cc(O)c2c(c1)OC(=C2O)c1cc(O)c(O)c(O)c1",
+      "name": "Delphinidin (Anthocyanin pigment)",
+      "amount": 0.2
+    }
+  ]
+}

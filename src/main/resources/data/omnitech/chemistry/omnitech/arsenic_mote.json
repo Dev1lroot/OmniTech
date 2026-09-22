@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 286.50 g pure arsenic (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten arsenic × real density 5.73 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[As]",
+      "name": "Arsenic",
+      "amount": 3823.98
+    }
+  ]
+}

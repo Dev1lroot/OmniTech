@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 8.1 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 8% Mercury / 92% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[cinnabar]",
+      "name": "Mercury(II) Sulfide (Cinnabar)",
+      "amount": 2785.28
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 124034.62
+    }
+  ]
+}

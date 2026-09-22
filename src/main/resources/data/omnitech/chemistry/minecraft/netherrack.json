@@ -1,0 +1,30 @@
+{
+  "note": "Porous mafic volcanic rock, density ≈ 1600 kg/m³ (porous), 1 block = 1×1×1 m. 55% SiO2 / 12% Al2O3 / 15% Fe2O3 / 10% CaO / 8% MgO by mass (Fe2O3-rich → red color).",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 14647137.2
+    },
+    {
+      "smiles": "O=[Al]O[Al]=O",
+      "name": "Aluminium Oxide",
+      "amount": 1883091.4
+    },
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide",
+      "amount": 1502911.9
+    },
+    {
+      "smiles": "[Ca]=O",
+      "name": "Calcium Oxide",
+      "amount": 2853067.0
+    },
+    {
+      "smiles": "[Mg]=O",
+      "name": "Magnesium Oxide",
+      "amount": 3176178.7
+    }
+  ]
+}

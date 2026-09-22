@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 684.50 g pure americium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten americium × real density 13.69 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Am]",
+      "name": "Americium",
+      "amount": 2816.87
+    }
+  ]
+}

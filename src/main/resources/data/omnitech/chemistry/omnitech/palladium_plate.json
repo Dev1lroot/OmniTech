@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 12020.00 g pure palladium (1× the ingot-equivalent mass, 1000 mB (1 L) molten palladium × real density 12.02 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Pd]",
+      "name": "Palladium",
+      "amount": 112948.69
+    }
+  ]
+}

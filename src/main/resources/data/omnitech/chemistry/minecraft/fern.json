@@ -1,0 +1,20 @@
+{
+  "note": "1 fern item ≈ 10 g: 70% water, 20% cellulose, 10% lignin.",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 388.6
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Cellulose",
+      "amount": 12.3
+    },
+    {
+      "smiles": "COc1cc(C=CCO)ccc1O",
+      "name": "Lignin (coniferyl-alcohol repeat unit)",
+      "amount": 5.5
+    }
+  ]
+}

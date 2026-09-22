@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 4.0 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 8% Zinc Sulfide / 92% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[sphalerite]",
+      "name": "Zinc Sulfide (Sphalerite)",
+      "amount": 3284.07
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 61251.66
+    }
+  ]
+}

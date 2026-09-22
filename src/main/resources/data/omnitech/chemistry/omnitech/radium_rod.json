@@ -1,0 +1,10 @@
+{
+  "note": "1 rod ≈ 5500.00 g pure radium (1× the ingot-equivalent mass, 1000 mB (1 L) molten radium × real density 5.5 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ra]",
+      "name": "Radium",
+      "amount": 24336.28
+    }
+  ]
+}

@@ -21,9 +21,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
-import net.neoforged.neoforge.transfer.resource.ResourceStack;
+import com.dev1lroot.mcmods.omnitech.util.GuiUtil;
+import com.dev1lroot.mcmods.omnitech.util.SolutionFluids;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -63,6 +66,7 @@ public class PipetteItem extends Item {
     public static void setSolution(ItemStack stack, Solution solution) {
         if (solution == null || solution.isEmpty()) {
             stack.remove(OmniTechDataComponents.SOLUTION.get());
+            SolutionFluids.setConditions(stack, SolutionFluids.AMBIENT_TEMP, SolutionFluids.AMBIENT_PRESSURE);
         } else {
             stack.set(OmniTechDataComponents.SOLUTION.get(), solution);
         }
@@ -101,8 +105,9 @@ public class PipetteItem extends Item {
         FluidStack tankFluid = tank.getFluid();
         if (tankFluid.isEmpty() || !isEmpty(stack)) return false;
 
-        Fluid fluid = tankFluid.getFluid();
-        if (!FlaskItem.canHold(fluid)) return false;
+        for (Solution.Part part : SolutionFluids.toSolution(tankFluid).components()) {
+            if (!FlaskItem.canHold(part.fluid())) return false;
+        }
 
         int want = Math.min(getTargetAmount(stack), MAX_AMOUNT);
         int extracted;
@@ -111,7 +116,11 @@ public class PipetteItem extends Item {
             if (extracted > 0) tx.commit();
         }
         if (extracted <= 0) return false;
-        addFluid(stack, fluid, extracted);
+
+        // What actually left the tank: same composition and conditions, `extracted` mB of it.
+        FluidStack drawn = tankFluid.copyWithAmount(extracted);
+        setSolution(stack, SolutionFluids.toSolution(drawn));
+        SolutionFluids.setConditions(stack, SolutionFluids.temperatureOf(drawn), SolutionFluids.pressureOf(drawn));
         return true;
     }
 
@@ -124,7 +133,14 @@ public class PipetteItem extends Item {
         Solution sample = fermenter.drawSample(Math.min(getTargetAmount(stack), MAX_AMOUNT));
         if (sample.isEmpty()) return false;
         setSolution(stack, sample);
+        SolutionFluids.setConditions(stack, fermenter.getTemperature(), fermenter.getPressure());
         return true;
+    }
+
+    /** The whole contents as one fluid stack (plain fluid, or a {@code solution} mixture) at the pipette's conditions. */
+    public static FluidStack toFluidStack(ItemStack stack) {
+        return SolutionFluids.toStack(getSolution(stack),
+                SolutionFluids.temperatureOf(stack), SolutionFluids.pressureOf(stack));
     }
 
     // ── Fill-level bar ─────────────────────────────────────────────────────────
@@ -146,7 +162,7 @@ public class PipetteItem extends Item {
     public Component getName(ItemStack stack) {
         Solution solution = getSolution(stack);
         if (solution.isEmpty()) return Component.literal("Pipette Dispenser");
-        ResourceStack<FluidResource> dom = solution.dominant();
+        Solution.Part dom = solution.dominant();
         return dom.resource().toStack(dom.amount()).getHoverName().copy()
                 .append(Component.literal(" Pipette"));
     }
@@ -185,16 +201,15 @@ public class PipetteItem extends Item {
         int total = solution.totalAmount();
         tooltip.accept(Component.literal("Solution: " + total + " / " + MAX_AMOUNT + " mB")
                 .withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.literal(SolutionFluids.temperatureOf(stack) + " °C, "
+                + SolutionFluids.pressureOf(stack) + " kPa").withStyle(ChatFormatting.GRAY));
 
-        for (ResourceStack<FluidResource> c : solution.components()) {
-            FluidResource res = c.resource();
-            int amount = c.amount();
-            int pct = total > 0 ? Math.round(100f * amount / total) : 0;
-            var fluidStack = res.toStack(amount);
-            tooltip.accept(fluidStack.getHoverName().copy()
-                    .append(Component.literal(": " + amount + " mB (" + pct + "%)"))
-                    .withStyle(ChatFormatting.WHITE));
-            FluidHazardUtil.appendHazardTooltip(fluidStack, tooltip);
+        List<Component> lines = new ArrayList<>();
+        GuiUtil.appendMixtureLines(lines, toFluidStack(stack));
+        lines.forEach(tooltip);
+
+        for (Solution.Part c : solution.components()) {
+            FluidHazardUtil.appendHazardTooltip(c.resource().toStack(c.amount()), tooltip);
         }
     }
 }

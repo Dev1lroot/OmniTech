@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 675.50 g pure curium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten curium × real density 13.51 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Cm]",
+      "name": "Curium",
+      "amount": 2734.82
+    }
+  ]
+}

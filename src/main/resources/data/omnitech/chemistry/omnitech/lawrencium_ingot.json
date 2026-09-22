@@ -1,0 +1,10 @@
+{
+  "note": "1 ingot ≈ 15600.00 g pure lawrencium (1× the ingot-equivalent mass, 1000 mB (1 L) molten lawrencium × real density 15.6 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Lr]",
+      "name": "Lawrencium",
+      "amount": 59541.98
+    }
+  ]
+}

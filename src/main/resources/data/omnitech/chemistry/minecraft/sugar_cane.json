@@ -1,0 +1,15 @@
+{
+  "note": "1 stalk ≈ 50 g: 70% water, 15% sucrose (matches real sugarcane's ~15% sucrose content).",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 1942.8
+    },
+    {
+      "smiles": "OCC1OC(OC2(CO)OC(CO)C(O)C2O)C(O)C(O)C1O",
+      "name": "Sucrose",
+      "amount": 21.9
+    }
+  ]
+}

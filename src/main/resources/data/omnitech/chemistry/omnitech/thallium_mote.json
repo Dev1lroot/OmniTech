@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 592.50 g pure thallium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten thallium × real density 11.85 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Tl]",
+      "name": "Thallium",
+      "amount": 2899.01
+    }
+  ]
+}

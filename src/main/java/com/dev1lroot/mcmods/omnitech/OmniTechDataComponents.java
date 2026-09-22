@@ -72,6 +72,17 @@ public class OmniTechDataComponents {
      * or {@link com.dev1lroot.mcmods.omnitech.items.PipetteItem}. Only present when the
      * container holds at least one component.
      */
+    /**
+     * The composition (ratios only) of a {@code omnitech:solution} fluid stack — what a mixture
+     * of several fluids is made of while it travels through pipes and machines.
+     */
+    public static final Supplier<DataComponentType<com.dev1lroot.mcmods.omnitech.items.Mixture>> MIXTURE =
+            REGISTRY.register("mixture", () ->
+                    DataComponentType.<com.dev1lroot.mcmods.omnitech.items.Mixture>builder()
+                            .persistent(com.dev1lroot.mcmods.omnitech.items.Mixture.CODEC)
+                            .networkSynchronized(com.dev1lroot.mcmods.omnitech.items.Mixture.STREAM_CODEC)
+                            .build());
+
     public static final Supplier<DataComponentType<com.dev1lroot.mcmods.omnitech.items.Solution>> SOLUTION =
             REGISTRY.register("solution", () ->
                     DataComponentType.<com.dev1lroot.mcmods.omnitech.items.Solution>builder()
@@ -266,6 +277,21 @@ public class OmniTechDataComponents {
      */
     public static final Supplier<DataComponentType<String>> MOLECULE_NAME =
             REGISTRY.register("molecule_name", () ->
+                    DataComponentType.<String>builder()
+                            .persistent(Codec.STRING)
+                            .networkSynchronized(ByteBufCodecs.STRING_UTF8)
+                            .build());
+
+    /**
+     * SMILES structural code of a {@code omnitech:chemical_compound} fluid stack or
+     * {@link com.dev1lroot.mcmods.omnitech.items.ChemicalCompoundDustItem} stack — the single
+     * source of truth for that stack's identity. Molecular formula, IUPAC name and structure
+     * diagram are all derived from this on demand (via {@link com.dev1lroot.mcmods.omnitech.chemistry.SmilesParser}
+     * and {@link com.dev1lroot.mcmods.omnitech.chemistry.IupacNamer}), never cached, so they can
+     * never go stale — see {@link com.dev1lroot.mcmods.omnitech.chemistry.ChemistryTooltip}.
+     */
+    public static final Supplier<DataComponentType<String>> SMILES =
+            REGISTRY.register("smiles", () ->
                     DataComponentType.<String>builder()
                             .persistent(Codec.STRING)
                             .networkSynchronized(ByteBufCodecs.STRING_UTF8)

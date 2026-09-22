@@ -1,0 +1,15 @@
+{
+  "note": "Same oxide profile as sandstone.json (reskin/variant) — see that file for the derivation.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 36750998.7
+    },
+    {
+      "smiles": "[Ca]=O",
+      "name": "Calcium Oxide",
+      "amount": 1640513.6
+    }
+  ]
+}

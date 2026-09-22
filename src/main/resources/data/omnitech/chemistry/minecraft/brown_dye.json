@@ -1,0 +1,10 @@
+{
+  "note": "1 dye item ≈ 80 mg extracted pigment.",
+  "compounds": [
+    {
+      "smiles": "Cn1cnc2c1c(=O)[nH]c(=O)n2C",
+      "name": "Theobromine (Cocoa pigment/alkaloid, from cocoa beans)",
+      "amount": 0.4
+    }
+  ]
+}

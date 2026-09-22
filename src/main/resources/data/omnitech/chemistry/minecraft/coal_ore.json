@@ -1,0 +1,7 @@
+{
+  "note": "Coal-seam-bearing rock, density ≈ 2200 kg/m³, 1 block = 1×1×1 m. 15% carbon (coal) / 85% SiO2 gangue by mass.",
+  "compounds": [
+    { "smiles": "[C]", "name": "Carbon (Coal)", "amount": 27477102.4 },
+    { "smiles": "O=[Si]=O", "name": "Silicon Dioxide (host rock gangue)", "amount": 31125166.4 }
+  ]
+}

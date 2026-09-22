@@ -7,6 +7,7 @@ package com.dev1lroot.mcmods.omnitech.recipe;
 import com.dev1lroot.mcmods.omnitech.items.FlaskItem;
 import com.dev1lroot.mcmods.omnitech.items.PipetteItem;
 import com.dev1lroot.mcmods.omnitech.items.Solution;
+import com.dev1lroot.mcmods.omnitech.util.SolutionFluids;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.NonNullList;
@@ -72,6 +73,13 @@ public class PipetteInjectRecipe extends CustomRecipe {
         Solution merged = FlaskItem.getSolution(flask).plus(portion);
         ItemStack result = flask.copyWithCount(1);
         FlaskItem.setSolution(result, merged);
+        // the poured portion and what was already in the flask settle at their volume-weighted mean
+        int inFlask = FlaskItem.getTotalAmount(flask);
+        SolutionFluids.setConditions(result,
+                SolutionFluids.blend(SolutionFluids.temperatureOf(flask), inFlask,
+                        SolutionFluids.temperatureOf(pipette), transfer),
+                SolutionFluids.blend(SolutionFluids.pressureOf(flask), inFlask,
+                        SolutionFluids.pressureOf(pipette), transfer));
         return result;
     }
 

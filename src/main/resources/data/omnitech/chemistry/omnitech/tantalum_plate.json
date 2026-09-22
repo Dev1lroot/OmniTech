@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 16650.00 g pure tantalum (1× the ingot-equivalent mass, 1000 mB (1 L) molten tantalum × real density 16.65 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ta]",
+      "name": "Tantalum",
+      "amount": 92015.39
+    }
+  ]
+}

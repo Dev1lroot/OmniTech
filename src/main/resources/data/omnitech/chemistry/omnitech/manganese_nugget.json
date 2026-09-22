@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 801.11 g pure manganese (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten manganese × real density 7.21 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Mn]",
+      "name": "Manganese",
+      "amount": 14582.09
+    }
+  ]
+}

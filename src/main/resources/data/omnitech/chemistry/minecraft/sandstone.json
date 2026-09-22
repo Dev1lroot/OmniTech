@@ -1,0 +1,7 @@
+{
+  "note": "Compressed quartz sand cemented with calcite, density ≈ 2300 kg/m³, 1 block = 1×1×1 m. 96% SiO2 / 4% CaO (cement) by mass.",
+  "compounds": [
+    { "smiles": "O=[Si]=O", "name": "Silicon Dioxide (Quartz sand)", "amount": 36750998.7 },
+    { "smiles": "[Ca]=O", "name": "Calcium Oxide (calcite cement)", "amount": 1640513.6 }
+  ]
+}

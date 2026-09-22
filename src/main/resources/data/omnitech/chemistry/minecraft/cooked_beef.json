@@ -1,0 +1,8 @@
+{
+  "note": "beef.json cooked down to ≈ 200 g (moisture loss): 55% water, 30% protein, 15% fat.",
+  "compounds": [
+    { "smiles": "O", "name": "Water", "amount": 6106.0 },
+    { "smiles": "NCC(=O)O", "name": "Protein (amino-acid content, as glycine-equivalent)", "amount": 799.3 },
+    { "smiles": "CCCCCCCCC=CCCCCCCCC(=O)OCC(OC(=O)CCCCCCCC=CCCCCCCCC)COC(=O)CCCCCCCC=CCCCCCCCC", "name": "Fat (Triolein, representative triglyceride)", "amount": 33.9 }
+  ]
+}

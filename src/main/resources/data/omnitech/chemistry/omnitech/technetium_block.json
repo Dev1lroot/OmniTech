@@ -1,0 +1,10 @@
+{
+  "note": "9× technetium_ingot mass compacted into a block (≈ 103500.00 g pure technetium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Tc]",
+      "name": "Technetium",
+      "amount": 1056122.45
+    }
+  ]
+}

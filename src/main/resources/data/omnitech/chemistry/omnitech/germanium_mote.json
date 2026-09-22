@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 266.00 g pure germanium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten germanium × real density 5.32 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ge]",
+      "name": "Germanium",
+      "amount": 3662.4
+    }
+  ]
+}

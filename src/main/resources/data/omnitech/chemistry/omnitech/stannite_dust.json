@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[Cu][Cu][Fe][Sn][S][S][S][S]",
+      "name": "Copper Iron Tin Sulfide (Stannite)",
+      "amount": 116.31
+    }
+  ]
+}

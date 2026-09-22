@@ -1,0 +1,20 @@
+{
+  "note": "1 sapling ≈ 2 g young plant tissue: 70% water, 20% cellulose, 10% lignin (representative of saplings generally).",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 77.7
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Cellulose",
+      "amount": 2.5
+    },
+    {
+      "smiles": "COc1cc(C=CCO)ccc1O",
+      "name": "Lignin (coniferyl-alcohol repeat unit)",
+      "amount": 1.1
+    }
+  ]
+}

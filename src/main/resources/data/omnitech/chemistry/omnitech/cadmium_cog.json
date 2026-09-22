@@ -1,0 +1,10 @@
+{
+  "note": "1 cog ≈ 1730.00 g pure cadmium (0.2× the ingot-equivalent mass, 1000 mB (1 L) molten cadmium × real density 8.65 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Cd]",
+      "name": "Cadmium",
+      "amount": 15389.54
+    }
+  ]
+}

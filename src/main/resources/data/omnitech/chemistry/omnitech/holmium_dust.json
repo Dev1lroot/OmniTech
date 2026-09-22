@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 8790.00 g pure holmium (1× the ingot-equivalent mass, 1000 mB (1 L) molten holmium × real density 8.79 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ho]",
+      "name": "Holmium",
+      "amount": 53295.34
+    }
+  ]
+}

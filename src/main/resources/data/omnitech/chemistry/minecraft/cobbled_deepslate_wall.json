@@ -1,0 +1,25 @@
+{
+  "note": "deepslate.json scaled to 1/2 block volume (wall rule).",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 16228362.2
+    },
+    {
+      "smiles": "O=[Al]O[Al]=O",
+      "name": "Aluminium Oxide",
+      "amount": 2206747.7
+    },
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide",
+      "amount": 939319.9
+    },
+    {
+      "smiles": "[Ca]=O",
+      "name": "Calcium Oxide",
+      "amount": 2674750.4
+    }
+  ]
+}

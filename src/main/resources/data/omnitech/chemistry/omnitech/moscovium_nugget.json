@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1500.00 g pure moscovium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten moscovium × real density 13.5 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Mc]",
+      "name": "Moscovium",
+      "amount": 5208.33
+    }
+  ]
+}

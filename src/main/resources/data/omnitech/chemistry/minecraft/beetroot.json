@@ -1,0 +1,15 @@
+{
+  "note": "1 beetroot ≈ 80 g: 88% water, 8% sucrose.",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 3907.9
+    },
+    {
+      "smiles": "OCC1OC(OC2(CO)OC(CO)C(O)C2O)C(O)C(O)C1O",
+      "name": "Sucrose",
+      "amount": 18.7
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 coil ≈ 31260.00 g (2× the 1000 mB foundry-cast ingot mass, density 15.63 g/cm³). WC is a genuine stoichiometric ceramic compound (not an alloy), kept as one compound.",
+  "compounds": [
+    {
+      "smiles": "[W][C]",
+      "name": "Tungsten Carbide",
+      "amount": 159611.13
+    }
+  ]
+}

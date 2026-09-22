@@ -1,0 +1,10 @@
+{
+  "note": "1 rod ≈ 2267.00 g pure carbon (1× the ingot-equivalent mass, 1000 mB (1 L) molten carbon × real density 2.267 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[C]",
+      "name": "Carbon",
+      "amount": 188743.65
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "9× samarium_ingot mass compacted into a block (≈ 67680.00 g pure samarium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Sm]",
+      "name": "Samarium",
+      "amount": 450119.71
+    }
+  ]
+}

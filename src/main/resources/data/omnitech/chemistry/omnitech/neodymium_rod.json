@@ -1,0 +1,10 @@
+{
+  "note": "1 rod ≈ 7010.00 g pure neodymium (1× the ingot-equivalent mass, 1000 mB (1 L) molten neodymium × real density 7.01 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Nd]",
+      "name": "Neodymium",
+      "amount": 48598.88
+    }
+  ]
+}

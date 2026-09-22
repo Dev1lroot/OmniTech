@@ -1,0 +1,10 @@
+{
+  "note": "1 ingot ≈ 13510.00 g pure curium (1× the ingot-equivalent mass, 1000 mB (1 L) molten curium × real density 13.51 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Cm]",
+      "name": "Curium",
+      "amount": 54696.36
+    }
+  ]
+}

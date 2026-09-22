@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "omnitech:block/chemical_mixer" },
+    "facing=south": { "model": "omnitech:block/chemical_mixer", "y": 180 },
+    "facing=west":  { "model": "omnitech:block/chemical_mixer", "y": 270 },
+    "facing=east":  { "model": "omnitech:block/chemical_mixer", "y": 90 }
+  }
+}

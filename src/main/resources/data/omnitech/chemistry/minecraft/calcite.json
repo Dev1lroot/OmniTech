@@ -1,0 +1,6 @@
+{
+  "note": "Crystalline calcium carbonate, density ≈ 2710 kg/m³, 1 block = 1×1×1 m. Essentially pure CaCO3.",
+  "compounds": [
+    { "smiles": "O=C([O-])[O-].[Ca+2]", "name": "Calcium Carbonate (Calcite)", "amount": 27075631.9 }
+  ]
+}

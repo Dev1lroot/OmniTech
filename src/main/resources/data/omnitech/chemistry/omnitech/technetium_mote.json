@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 575.00 g pure technetium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten technetium × real density 11.5 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Tc]",
+      "name": "Technetium",
+      "amount": 5867.35
+    }
+  ]
+}

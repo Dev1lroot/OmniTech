@@ -1,0 +1,10 @@
+{
+  "note": "1 scoop ≈ 5 g ground bone — essentially pure hydroxyapatite.",
+  "compounds": [
+    {
+      "smiles": "O=P(=O)(O)O.[Ca]",
+      "name": "Calcium Phosphate (Hydroxyapatite, bone mineral)",
+      "amount": 10.0
+    }
+  ]
+}

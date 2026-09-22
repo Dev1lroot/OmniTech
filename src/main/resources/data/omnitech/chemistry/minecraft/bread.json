@@ -1,0 +1,7 @@
+{
+  "note": "1 loaf ≈ 150 g baked: 55% starch, 35% water (remainder protein/fiber/ash omitted).",
+  "compounds": [
+    { "smiles": "OC1OC(CO)C(O)C(O)C1O", "name": "Starch (gelatinized amylose)", "amount": 457.9 },
+    { "smiles": "O", "name": "Water", "amount": 2914.2 }
+  ]
+}

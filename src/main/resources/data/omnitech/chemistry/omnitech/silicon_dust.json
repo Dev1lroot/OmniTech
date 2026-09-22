@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 2330.00 g pure silicon (1× the ingot-equivalent mass, 1000 mB (1 L) molten silicon × real density 2.33 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Si]",
+      "name": "Silicon",
+      "amount": 82962.44
+    }
+  ]
+}

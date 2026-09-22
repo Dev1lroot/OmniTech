@@ -1,0 +1,10 @@
+{
+  "note": "9× scandium_ingot mass compacted into a block (≈ 26910.00 g pure scandium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Sc]",
+      "name": "Scandium",
+      "amount": 598585.28
+    }
+  ]
+}

@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.blocks.plumbing;
 
+import com.dev1lroot.mcmods.omnitech.util.FluidMixing;
 import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
@@ -196,53 +197,20 @@ public class FluidTankBlockEntity extends BaseContainerBlockEntity {
         @Override
         public boolean isValid(int index, FluidResource resource) {
             if (index != 0) return false;
-            return fluid.isEmpty() || resource.is(fluid.getFluid());
+            return FluidMixing.canAccept(fluid, resource);
         }
 
         @Override
         public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
             if (index != 0 || resource.isEmpty() || amount <= 0) return 0;
-            if (!fluid.isEmpty() && !resource.is(fluid.getFluid())) return 0;
+            if (!FluidMixing.canAccept(fluid, resource)) return 0;
             int space = CAPACITY - fluid.getAmount();
             int toInsert = Math.min(amount, space);
             if (toInsert <= 0) return 0;
 
-            // Weighted blend of temperature and pressure before committing
-            int existingAmount   = fluid.getAmount();
-            int existingTemp     = fluidTemp(fluid);
-            int existingPressure = fluidPressure(fluid);
-            FluidStack sample    = resource.toStack(1);
-            int incomingTemp     = fluidTemp(sample);
-            int incomingPressure = fluidPressure(sample);
-            int blendedTemp = existingAmount > 0
-                    ? (existingTemp * existingAmount + incomingTemp * toInsert) / (existingAmount + toInsert)
-                    : incomingTemp;
-            int blendedPressure = existingAmount > 0
-                    ? (existingPressure * existingAmount + incomingPressure * toInsert) / (existingAmount + toInsert)
-                    : incomingPressure;
-
             updateSnapshots(tx);
-            fluid = fluid.isEmpty() ? resource.toStack(toInsert)
-                    : fluid.copyWithAmount(fluid.getAmount() + toInsert);
-
-            if (blendedTemp != 20) fluid.set(OmniTechDataComponents.FLUID_TEMPERATURE.get(), blendedTemp);
-            else                   fluid.remove(OmniTechDataComponents.FLUID_TEMPERATURE.get());
-            if (blendedPressure != 101) fluid.set(OmniTechDataComponents.FLUID_PRESSURE.get(), blendedPressure);
-            else                        fluid.remove(OmniTechDataComponents.FLUID_PRESSURE.get());
-
+            fluid = FluidNetworkUtil.blendInto(fluid, resource, toInsert);
             return toInsert;
-        }
-
-        private static int fluidTemp(FluidStack stack) {
-            if (stack.isEmpty()) return 20;
-            Integer t = stack.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
-            return t != null ? t : 20;
-        }
-
-        private static int fluidPressure(FluidStack stack) {
-            if (stack.isEmpty()) return 101;
-            Integer p = stack.get(OmniTechDataComponents.FLUID_PRESSURE.get());
-            return p != null ? p : 101;
         }
 
         @Override

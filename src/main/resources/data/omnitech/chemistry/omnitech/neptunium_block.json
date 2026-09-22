@@ -1,0 +1,10 @@
+{
+  "note": "9× neptunium_ingot mass compacted into a block (≈ 184050.00 g pure neptunium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Np]",
+      "name": "Neptunium",
+      "amount": 776582.28
+    }
+  ]
+}

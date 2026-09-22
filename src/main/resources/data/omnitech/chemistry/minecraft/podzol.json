@@ -1,0 +1,25 @@
+{
+  "note": "Acidic, humus-rich forest soil, density ≈ 1200 kg/m³, 1 block = 1×1×1 m. 20% quartz sand, 10% clay, 30% moisture, 40% humus by mass.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz sand fraction)",
+      "amount": 3994673.8
+    },
+    {
+      "smiles": "O=[Al]O[Si]=O",
+      "name": "Aluminosilicate Hydrate (Kaolinite clay)",
+      "amount": 464792.0
+    },
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 19983347.2
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Humus (decayed organic matter, generic cellulose repeat unit)",
+      "amount": 2960404.6
+    }
+  ]
+}

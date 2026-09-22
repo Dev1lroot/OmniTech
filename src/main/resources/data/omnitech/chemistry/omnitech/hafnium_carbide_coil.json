@@ -1,0 +1,10 @@
+{
+  "note": "1 coil ≈ 24400.00 g (2× the 1000 mB foundry-cast ingot mass, density 12.2 g/cm³). HfC is a genuine stoichiometric ceramic compound (not an alloy), kept as one compound.",
+  "compounds": [
+    {
+      "smiles": "[Hf][C]",
+      "name": "Hafnium Carbide",
+      "amount": 128083.32
+    }
+  ]
+}

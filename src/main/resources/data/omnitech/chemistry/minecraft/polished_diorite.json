@@ -1,0 +1,30 @@
+{
+  "note": "Same oxide profile as diorite.json, cut/polished (no compositional change) — full block.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 27030625.8
+    },
+    {
+      "smiles": "O=[Al]O[Al]=O",
+      "name": "Aluminium Oxide",
+      "amount": 4668497.4
+    },
+    {
+      "smiles": "[Na]O[Na]",
+      "name": "Sodium Oxide",
+      "amount": 2258793.2
+    },
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide",
+      "amount": 1753397.2
+    },
+    {
+      "smiles": "[Ca]=O",
+      "name": "Calcium Oxide",
+      "amount": 4992867.3
+    }
+  ]
+}

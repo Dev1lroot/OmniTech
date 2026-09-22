@@ -1,4 +1,5 @@
 {
+  "polarity": "nonpolar",
   "density": 1100,
   "viscosity": 2000,
   "temperature": 320,

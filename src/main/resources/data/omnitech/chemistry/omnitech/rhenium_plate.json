@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 21020.00 g pure rhenium (1× the ingot-equivalent mass, 1000 mB (1 L) molten rhenium × real density 21.02 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Re]",
+      "name": "Rhenium",
+      "amount": 112885.12
+    }
+  ]
+}

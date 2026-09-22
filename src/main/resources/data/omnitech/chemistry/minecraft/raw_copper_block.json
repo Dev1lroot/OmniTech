@@ -1,0 +1,15 @@
+{
+  "note": "9× raw_copper.json compacted into a block.",
+  "compounds": [
+    {
+      "smiles": "[Cu]1[Fe](S1)S",
+      "name": "Copper Iron Sulfide (Chalcopyrite)",
+      "amount": 3530.8
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (matrix)",
+      "amount": 7190.4
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 2506.67 g pure iridium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten iridium × real density 22.56 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ir]",
+      "name": "Iridium",
+      "amount": 13040.82
+    }
+  ]
+}

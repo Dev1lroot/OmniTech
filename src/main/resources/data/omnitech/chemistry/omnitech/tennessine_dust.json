@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 7200.00 g pure tennessine (1× the ingot-equivalent mass, 1000 mB (1 L) molten tennessine × real density 7.2 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ts]",
+      "name": "Tennessine",
+      "amount": 24489.8
+    }
+  ]
+}

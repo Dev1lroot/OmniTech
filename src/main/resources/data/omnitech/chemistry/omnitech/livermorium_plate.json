@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 12900.00 g pure livermorium (1× the ingot-equivalent mass, 1000 mB (1 L) molten livermorium × real density 12.9 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Lv]",
+      "name": "Livermorium",
+      "amount": 44027.3
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "9× neodymium_ingot mass compacted into a block (≈ 63090.00 g pure neodymium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Nd]",
+      "name": "Neodymium",
+      "amount": 437389.94
+    }
+  ]
+}

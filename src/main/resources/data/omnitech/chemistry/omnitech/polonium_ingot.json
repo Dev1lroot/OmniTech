@@ -1,0 +1,10 @@
+{
+  "note": "1 ingot ≈ 9200.00 g pure polonium (1× the ingot-equivalent mass, 1000 mB (1 L) molten polonium × real density 9.2 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Po]",
+      "name": "Polonium",
+      "amount": 44019.14
+    }
+  ]
+}

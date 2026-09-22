@@ -1,0 +1,10 @@
+{
+  "note": "9× beryllium_ingot mass compacted into a block (≈ 16650.00 g pure beryllium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Be]",
+      "name": "Beryllium",
+      "amount": 1847536.62
+    }
+  ]
+}

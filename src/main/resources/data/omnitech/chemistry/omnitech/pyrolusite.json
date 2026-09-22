@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 5.03 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 12% Manganese Dioxide / 88% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[pyrolusite]",
+      "name": "Manganese Dioxide (Pyrolusite)",
+      "amount": 6943.04
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 73675.1
+    }
+  ]
+}

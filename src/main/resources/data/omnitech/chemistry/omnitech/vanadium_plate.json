@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 6110.00 g pure vanadium (1× the ingot-equivalent mass, 1000 mB (1 L) molten vanadium × real density 6.11 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[V]",
+      "name": "Vanadium",
+      "amount": 119940.32
+    }
+  ]
+}

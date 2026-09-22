@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 4.48 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 25% Barium Sulfate / 75% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[barite]",
+      "name": "Barium Sulfate (Barite)",
+      "amount": 4798.98
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 55925.43
+    }
+  ]
+}

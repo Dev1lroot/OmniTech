@@ -1,0 +1,10 @@
+{
+  "note": "9× radium_ingot mass compacted into a block (≈ 49500.00 g pure radium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Ra]",
+      "name": "Radium",
+      "amount": 219026.55
+    }
+  ]
+}

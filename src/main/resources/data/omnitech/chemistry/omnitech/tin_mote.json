@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 365.50 g pure tin (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten tin × real density 7.31 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Sn]",
+      "name": "Tin",
+      "amount": 3078.93
+    }
+  ]
+}

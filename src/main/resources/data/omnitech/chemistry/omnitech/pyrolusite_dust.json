@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[Mn][O][O]",
+      "name": "Manganese Dioxide (Pyrolusite)",
+      "amount": 575.14
+    }
+  ]
+}

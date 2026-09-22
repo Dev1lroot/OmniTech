@@ -1,0 +1,9 @@
+{
+  "note": "1 egg ≈ 50 g total: 5 g shell (pure CaCO3) + 45 g white/yolk (74% water, 13% protein, 11% fat, remainder omitted).",
+  "compounds": [
+    { "smiles": "O=C([O-])[O-].[Ca+2]", "name": "Calcium Carbonate (shell)", "amount": 50.0 },
+    { "smiles": "O", "name": "Water", "amount": 1848.5 },
+    { "smiles": "NCC(=O)O", "name": "Protein (amino-acid content, as glycine-equivalent)", "amount": 77.9 },
+    { "smiles": "CCCCCCCCC=CCCCCCCCC(=O)OCC(OC(=O)CCCCCCCC=CCCCCCCCC)COC(=O)CCCCCCCC=CCCCCCCCC", "name": "Fat (Triolein, representative triglyceride)", "amount": 5.6 }
+  ]
+}

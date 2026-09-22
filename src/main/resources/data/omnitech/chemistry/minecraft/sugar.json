@@ -1,0 +1,6 @@
+{
+  "note": "1 Sugar item ≈ 4 g granulated sucrose.",
+  "compounds": [
+    { "smiles": "OCC1OC(OC2(CO)OC(CO)C(O)C2O)C(O)C(O)C1O", "name": "Sucrose", "amount": 11.7 }
+  ]
+}

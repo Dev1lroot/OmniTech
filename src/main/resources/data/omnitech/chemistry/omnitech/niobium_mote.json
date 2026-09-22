@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 428.50 g pure niobium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten niobium × real density 8.57 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Nb]",
+      "name": "Niobium",
+      "amount": 4612.19
+    }
+  ]
+}

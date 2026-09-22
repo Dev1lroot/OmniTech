@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 806.67 g pure promethium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten promethium × real density 7.26 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Pm]",
+      "name": "Promethium",
+      "amount": 5563.22
+    }
+  ]
+}

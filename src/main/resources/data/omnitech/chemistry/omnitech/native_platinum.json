@@ -1,0 +1,15 @@
+{
+  "note": "Native-metal-bearing rock, density ≈ 21.45 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 3% Platinum / 97% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[native_platinum]",
+      "name": "Platinum",
+      "amount": 3298.58
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 346313.25
+    }
+  ]
+}

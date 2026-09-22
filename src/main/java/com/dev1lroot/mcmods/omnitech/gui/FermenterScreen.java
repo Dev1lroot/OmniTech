@@ -12,6 +12,7 @@ import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutRenderer;
 import com.dev1lroot.mcmods.omnitech.items.Solution;
 import com.dev1lroot.mcmods.omnitech.util.GuiUtil;
 import com.dev1lroot.mcmods.omnitech.util.HudWriter;
+import com.dev1lroot.mcmods.omnitech.util.SolutionFluids;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -19,8 +20,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.transfer.fluid.FluidResource;
-import net.neoforged.neoforge.transfer.resource.ResourceStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +64,7 @@ public class FermenterScreen extends AbstractContainerScreen<FermenterMenu> {
         // mB of yeast is still visible in a 4000 mB vessel.
         int capacity = Math.max(1, menu.getCapacity());
         int bottom = y + TANK_H;
-        for (ResourceStack<FluidResource> c : menu.getSolution().components()) {
+        for (Solution.Part c : menu.getSolution().components()) {
             int h = Math.max(1, Math.round((float) TANK_H * c.amount() / capacity));
             int top = Math.max(y, bottom - h);
             if (bottom <= top) break;
@@ -118,13 +117,13 @@ public class FermenterScreen extends AbstractContainerScreen<FermenterMenu> {
         } else {
             lines.add(Component.literal("Mixture: " + total + " / " + menu.getCapacity() + " mB")
                     .withStyle(ChatFormatting.GRAY));
-            for (ResourceStack<FluidResource> c : solution.components()) {
-                int pct = total > 0 ? Math.round(100f * c.amount() / total) : 0;
-                FluidStack stack = c.resource().toStack(c.amount());
-                lines.add(stack.getHoverName().copy()
-                        .append(Component.literal(": " + c.amount() + " mB (" + pct + "%)"))
-                        .withStyle(ChatFormatting.WHITE));
-                FluidHazardUtil.appendHazardTooltip(stack, lines::add);
+            lines.add(Component.literal(menu.getTemperature() + " °C, " + menu.getPressure() + " kPa")
+                    .withStyle(ChatFormatting.GRAY));
+            // Per component: share, dissolved / undissolved, boiling point, and BOILING when it is.
+            GuiUtil.appendMixtureLines(lines,
+                    SolutionFluids.toStack(solution, menu.getTemperature(), menu.getPressure()));
+            for (Solution.Part c : solution.components()) {
+                FluidHazardUtil.appendHazardTooltip(c.resource().toStack(c.amount()), lines::add);
             }
         }
         graphics.setTooltipForNextFrame(font, lines, Optional.<TooltipComponent>empty(), mouseX, mouseY);

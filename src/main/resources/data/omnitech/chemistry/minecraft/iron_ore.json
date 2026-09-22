@@ -1,0 +1,7 @@
+{
+  "note": "Hematite-bearing rock, density ≈ 2700 kg/m³, 1 block = 1×1×1 m. 20% Fe2O3 ore mineral / 80% SiO2 gangue by mass.",
+  "compounds": [
+    { "smiles": "O=[Fe]O[Fe]=O", "name": "Iron(III) Oxide (Hematite ore)", "amount": 3381551.8 },
+    { "smiles": "O=[Si]=O", "name": "Silicon Dioxide (host rock gangue)", "amount": 35952063.9 }
+  ]
+}

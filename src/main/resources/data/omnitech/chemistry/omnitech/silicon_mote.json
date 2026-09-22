@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 116.50 g pure silicon (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten silicon × real density 2.33 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Si]",
+      "name": "Silicon",
+      "amount": 4148.12
+    }
+  ]
+}

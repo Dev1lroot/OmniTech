@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 976.67 g pure holmium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten holmium × real density 8.79 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ho]",
+      "name": "Holmium",
+      "amount": 5921.7
+    }
+  ]
+}

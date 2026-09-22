@@ -1,0 +1,10 @@
+{
+  "note": "1 dye item ≈ 50 mg extracted pigment.",
+  "compounds": [
+    {
+      "smiles": "CC1=CC(C)(C)CCC1",
+      "name": "Beta-Carotene (Carotenoid pigment, from carrots)",
+      "amount": 0.1
+    }
+  ]
+}

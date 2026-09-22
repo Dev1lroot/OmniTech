@@ -1,0 +1,20 @@
+{
+  "note": "1 raw/cooked portion ≈ 200 g: 65% water, 20% protein (as glycine-equivalent), 15% fat (as triolein).",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 7216.2
+    },
+    {
+      "smiles": "NCC(=O)O",
+      "name": "Protein (amino-acid content, as glycine-equivalent)",
+      "amount": 532.8
+    },
+    {
+      "smiles": "CCCCCCCCC=CCCCCCCCC(=O)OCC(OC(=O)CCCCCCCC=CCCCCCCCC)COC(=O)CCCCCCCC=CCCCCCCCC",
+      "name": "Fat (Triolein, representative triglyceride)",
+      "amount": 33.9
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "9× curium_ingot mass compacted into a block (≈ 121590.00 g pure curium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Cm]",
+      "name": "Curium",
+      "amount": 492267.21
+    }
+  ]
+}

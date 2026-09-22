@@ -1,0 +1,15 @@
+{
+  "note": "Kimberlite-like host rock, density ≈ 2700 kg/m³, 1 block = 1×1×1 m. 0.5% diamond / 99.5% SiO2 gangue by mass (real diamond concentration is extremely low).",
+  "compounds": [
+    {
+      "smiles": "[C]",
+      "name": "Carbon (Diamond)",
+      "amount": 1124063.3
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 44715379.5
+    }
+  ]
+}

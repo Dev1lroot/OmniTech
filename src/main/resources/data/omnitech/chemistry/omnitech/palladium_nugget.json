@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1335.56 g pure palladium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten palladium × real density 12.02 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Pd]",
+      "name": "Palladium",
+      "amount": 12549.85
+    }
+  ]
+}

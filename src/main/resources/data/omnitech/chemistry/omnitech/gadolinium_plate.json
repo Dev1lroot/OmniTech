@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 7900.00 g pure gadolinium (1× the ingot-equivalent mass, 1000 mB (1 L) molten gadolinium × real density 7.9 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Gd]",
+      "name": "Gadolinium",
+      "amount": 50238.47
+    }
+  ]
+}

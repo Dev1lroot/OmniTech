@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 4510.00 g pure titanium (1× the ingot-equivalent mass, 1000 mB (1 L) molten titanium × real density 4.51 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ti]",
+      "name": "Titanium",
+      "amount": 94219.4
+    }
+  ]
+}

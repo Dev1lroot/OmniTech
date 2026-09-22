@@ -1,0 +1,10 @@
+{
+  "note": "9× fermium_ingot mass compacted into a block (≈ 87300.00 g pure fermium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Fm]",
+      "name": "Fermium",
+      "amount": 339688.72
+    }
+  ]
+}

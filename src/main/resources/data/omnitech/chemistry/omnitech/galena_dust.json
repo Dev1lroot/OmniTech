@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[Pb][S]",
+      "name": "Lead Sulfide (Galena)",
+      "amount": 208.98
+    }
+  ]
+}

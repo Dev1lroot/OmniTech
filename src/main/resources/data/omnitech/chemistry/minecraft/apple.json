@@ -1,0 +1,7 @@
+{
+  "note": "1 apple ≈ 150 g: 85% water, 10% fructose (remainder fiber/other sugars omitted).",
+  "compounds": [
+    { "smiles": "O", "name": "Water", "amount": 7077.4 },
+    { "smiles": "OCC1(O)OC(CO)C(O)C1O", "name": "Fructose", "amount": 83.3 }
+  ]
+}

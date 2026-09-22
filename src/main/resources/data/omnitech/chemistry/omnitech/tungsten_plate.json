@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 19250.00 g pure tungsten (1× the ingot-equivalent mass, 1000 mB (1 L) molten tungsten × real density 19.25 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[W]",
+      "name": "Tungsten",
+      "amount": 104710.62
+    }
+  ]
+}

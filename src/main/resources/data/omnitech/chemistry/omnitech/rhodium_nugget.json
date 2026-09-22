@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1378.89 g pure rhodium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten rhodium × real density 12.41 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Rh]",
+      "name": "Rhodium",
+      "amount": 13399.5
+    }
+  ]
+}

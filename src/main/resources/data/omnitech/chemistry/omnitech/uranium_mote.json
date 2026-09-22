@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 952.50 g pure uranium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten uranium × real density 19.05 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[U]",
+      "name": "Uranium",
+      "amount": 4001.61
+    }
+  ]
+}

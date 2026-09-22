@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 4.5 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 5% Yttrium Phosphate / 95% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[xenotime]",
+      "name": "Yttrium Phosphate (Xenotime)",
+      "amount": 1223.65
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 71155.13
+    }
+  ]
+}

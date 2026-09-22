@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 307.50 g pure lanthanum (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten lanthanum × real density 6.15 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[La]",
+      "name": "Lanthanum",
+      "amount": 2213.74
+    }
+  ]
+}

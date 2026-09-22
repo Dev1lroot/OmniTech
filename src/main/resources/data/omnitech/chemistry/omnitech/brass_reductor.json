@@ -1,0 +1,15 @@
+{
+  "note": "1 reductor ≈ 8500.00 g (1× the 1000 mB foundry-cast ingot mass, density 8.5 g/cm³). Real brass: ~70% copper, ~30% zinc by mass (cartridge-brass composition).",
+  "compounds": [
+    {
+      "smiles": "[Cu]",
+      "name": "Copper",
+      "amount": 93632.96
+    },
+    {
+      "smiles": "[Zn]",
+      "name": "Zinc",
+      "amount": 39002.75
+    }
+  ]
+}

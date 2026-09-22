@@ -1,0 +1,15 @@
+{
+  "note": "1 wool item ≈ 50 g raw fleece: mostly keratin protein (represented as glycine-equivalent — collagen/keratin really are glycine-rich) plus a little lanolin wax.",
+  "compounds": [
+    {
+      "smiles": "NCC(=O)O",
+      "name": "Keratin Protein (amino-acid content, as glycine-equivalent)",
+      "amount": 566.1
+    },
+    {
+      "smiles": "CCCCCCCCC=CCCCCCCCC(=O)OCC(OC(=O)CCCCCCCC=CCCCCCCCC)COC(=O)CCCCCCCC=CCCCCCCCC",
+      "name": "Lanolin Wax (representative wax ester)",
+      "amount": 5.6
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 coil ≈ 17800.00 g pure cobalt (2× the ingot-equivalent mass, 1000 mB (1 L) molten cobalt × real density 8.9 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Co]",
+      "name": "Cobalt",
+      "amount": 302037.91
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 15370.00 g pure protactinium (1× the ingot-equivalent mass, 1000 mB (1 L) molten protactinium × real density 15.37 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Pa]",
+      "name": "Protactinium",
+      "amount": 66526.43
+    }
+  ]
+}

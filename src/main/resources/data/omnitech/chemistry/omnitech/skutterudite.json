@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 6.5 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 8% Cobalt Arsenide / 92% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[skutterudite]",
+      "name": "Cobalt Arsenide (Skutterudite)",
+      "amount": 1832.93
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 99533.95
+    }
+  ]
+}

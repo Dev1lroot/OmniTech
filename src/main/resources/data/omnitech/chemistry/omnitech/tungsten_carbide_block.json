@@ -1,0 +1,10 @@
+{
+  "note": "9× tungsten_carbide_ingot.json compacted into a block (≈ 140670 g), a single stoichiometric compound.",
+  "compounds": [
+    {
+      "smiles": "[W][C]",
+      "name": "Tungsten Carbide",
+      "amount": 718250.1
+    }
+  ]
+}

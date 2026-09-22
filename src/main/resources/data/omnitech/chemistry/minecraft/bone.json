@@ -1,0 +1,15 @@
+{
+  "note": "1 bone ≈ 30 g: 65% mineral (hydroxyapatite), 35% collagen protein (as glycine-equivalent).",
+  "compounds": [
+    {
+      "smiles": "O=P(=O)(O)O.[Ca]",
+      "name": "Calcium Phosphate (Hydroxyapatite, bone mineral)",
+      "amount": 38.8
+    },
+    {
+      "smiles": "NCC(=O)O",
+      "name": "Collagen Protein (amino-acid content, as glycine-equivalent)",
+      "amount": 139.9
+    }
+  ]
+}

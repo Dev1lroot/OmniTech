@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 3.96 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 25% Strontium Sulfate / 75% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[celestine]",
+      "name": "Strontium Sulfate (Celestine)",
+      "amount": 5389.93
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 49434.09
+    }
+  ]
+}

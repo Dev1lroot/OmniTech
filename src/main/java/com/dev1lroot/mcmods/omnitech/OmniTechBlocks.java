@@ -20,6 +20,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticGeneratorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticPipeBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticReductorAxisBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticReductorBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.labware.ChemicalMixerBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.ElectrolysisMachineBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.FractionalDistillerBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.SolvationMachineBlock;
@@ -170,6 +171,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> ROTARY_COMPRESSOR;
     public static final DeferredBlock<Block> FLUID_COLLECTOR;
     public static final DeferredBlock<Block> HEAT_EXCHANGER;
+    public static final DeferredBlock<Block> CHEMICAL_MIXER;
     public static final DeferredBlock<Block> DECOMPRESSOR;
     public static final DeferredBlock<Block> FRACTIONAL_DISTILLER;
     public static final DeferredBlock<Block> CHEMICAL_REACTOR;
@@ -379,6 +381,9 @@ public class OmniTechBlocks {
                         .sound(SoundType.METAL).noOcclusion()));
         HEAT_EXCHANGER = register("heat_exchanger",
                 p -> new HeatExchangerBlock(p.mapColor(MapColor.METAL).strength(3.5F).noOcclusion()
+                        .sound(SoundType.METAL)));
+        CHEMICAL_MIXER = register("chemical_mixer",
+                p -> new ChemicalMixerBlock(p.mapColor(MapColor.METAL).strength(3.5F)
                         .sound(SoundType.METAL)));
         DECOMPRESSOR = register("decompressor",
                 p -> new DecompressorBlock(p.mapColor(MapColor.METAL).strength(3.5F).noOcclusion()

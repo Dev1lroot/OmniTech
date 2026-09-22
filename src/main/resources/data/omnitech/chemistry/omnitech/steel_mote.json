@@ -1,0 +1,15 @@
+{
+  "note": "1 mote ≈ 392.50 g (0.05× the 1000 mB foundry-cast ingot mass, density 7.85 g/cm³). Real steel: ~98% iron, ~2% carbon by mass (simplified plain-carbon steel).",
+  "compounds": [
+    {
+      "smiles": "[Fe]",
+      "name": "Iron",
+      "amount": 6887.81
+    },
+    {
+      "smiles": "[C]",
+      "name": "Carbon",
+      "amount": 653.57
+    }
+  ]
+}

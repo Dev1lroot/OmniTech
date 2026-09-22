@@ -1,0 +1,10 @@
+{
+  "note": "9× seaborgium_ingot mass compacted into a block (≈ 315000.00 g pure seaborgium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Sg]",
+      "name": "Seaborgium",
+      "amount": 1162361.62
+    }
+  ]
+}

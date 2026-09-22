@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 4155.56 g pure meitnerium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten meitnerium × real density 37.4 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Mt]",
+      "name": "Meitnerium",
+      "amount": 15056.36
+    }
+  ]
+}

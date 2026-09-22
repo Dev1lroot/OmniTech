@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1316.67 g pure thallium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten thallium × real density 11.85 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Tl]",
+      "name": "Thallium",
+      "amount": 6442.25
+    }
+  ]
+}

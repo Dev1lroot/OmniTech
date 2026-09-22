@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1118.89 g pure actinium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten actinium × real density 10.07 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ac]",
+      "name": "Actinium",
+      "amount": 4929.03
+    }
+  ]
+}

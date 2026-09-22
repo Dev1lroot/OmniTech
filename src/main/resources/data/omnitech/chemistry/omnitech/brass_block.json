@@ -1,0 +1,15 @@
+{
+  "note": "9× brass_ingot.json compacted into a block (≈ 76500 g). 70% copper / 30% zinc by mass.",
+  "compounds": [
+    {
+      "smiles": "[Cu]",
+      "name": "Copper",
+      "amount": 842696.63
+    },
+    {
+      "smiles": "[Zn]",
+      "name": "Zinc",
+      "amount": 351024.78
+    }
+  ]
+}

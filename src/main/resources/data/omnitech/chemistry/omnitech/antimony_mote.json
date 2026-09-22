@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 335.00 g pure antimony (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten antimony × real density 6.7 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Sb]",
+      "name": "Antimony",
+      "amount": 2751.31
+    }
+  ]
+}

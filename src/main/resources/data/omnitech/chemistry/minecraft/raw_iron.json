@@ -1,0 +1,10 @@
+{
+  "note": "1 unsmelted ore chunk ≈ 120 g hematite.",
+  "compounds": [
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide (Hematite, unsmelted)",
+      "amount": 751.5
+    }
+  ]
+}

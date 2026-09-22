@@ -1,0 +1,20 @@
+{
+  "note": "1 cookie ≈ 15 g: 60% starch, 20% fat, 5% water.",
+  "compounds": [
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Starch (amylose repeat unit)",
+      "amount": 55.5
+    },
+    {
+      "smiles": "CCCCCCCCC=CCCCCCCCC(=O)OCC(OC(=O)CCCCCCCC=CCCCCCCCC)COC(=O)CCCCCCCC=CCCCCCCCC",
+      "name": "Fat (Triolein, representative triglyceride)",
+      "amount": 3.4
+    },
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 41.6
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 3510.00 g pure barium (1× the ingot-equivalent mass, 1000 mB (1 L) molten barium × real density 3.51 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ba]",
+      "name": "Barium",
+      "amount": 25559.43
+    }
+  ]
+}

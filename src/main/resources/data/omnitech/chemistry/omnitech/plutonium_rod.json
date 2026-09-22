@@ -1,0 +1,10 @@
+{
+  "note": "1 rod ≈ 19820.00 g pure plutonium (1× the ingot-equivalent mass, 1000 mB (1 L) molten plutonium × real density 19.82 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Pu]",
+      "name": "Plutonium",
+      "amount": 81229.51
+    }
+  ]
+}

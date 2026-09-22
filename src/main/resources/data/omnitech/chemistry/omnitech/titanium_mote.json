@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 225.50 g pure titanium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten titanium × real density 4.51 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ti]",
+      "name": "Titanium",
+      "amount": 4710.97
+    }
+  ]
+}

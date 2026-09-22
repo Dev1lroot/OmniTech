@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 411.50 g pure terbium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten terbium × real density 8.23 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Tb]",
+      "name": "Terbium",
+      "amount": 2589.27
+    }
+  ]
+}

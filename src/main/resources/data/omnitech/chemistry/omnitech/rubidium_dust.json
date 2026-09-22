@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 1530.00 g pure rubidium (1× the ingot-equivalent mass, 1000 mB (1 L) molten rubidium × real density 1.53 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Rb]",
+      "name": "Rubidium",
+      "amount": 17901.44
+    }
+  ]
+}

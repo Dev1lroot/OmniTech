@@ -6,7 +6,11 @@ package com.dev1lroot.mcmods.omnitech.blocks.labware;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
+import com.dev1lroot.mcmods.omnitech.FluidPhaseUtil;
+import com.dev1lroot.mcmods.omnitech.FluidPhysicsRegistry;
+import com.dev1lroot.mcmods.omnitech.items.Solution;
 import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
+import com.dev1lroot.mcmods.omnitech.util.SolutionFluids;
 import com.dev1lroot.mcmods.omnitech.blocks.ThermalState;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.FractionalDistillerMenu;
@@ -60,6 +64,10 @@ import java.util.Optional;
  *   <li>Each segment has its own {@link #outputFluid} tank exposed on the back face.</li>
  *   <li>The master holds {@link #inputFluid} and {@link #temperature}.</li>
  * </ul>
+ *
+ * <h3>Mixtures</h3>
+ * A {@code solution} on the input that no recipe covers is distilled generically by boiling point —
+ * see {@link #tickBoiling}.
  *
  * <h3>Recipe matching</h3>
  * A recipe is selected when:
@@ -315,6 +323,9 @@ public class FractionalDistillerBlockEntity extends BlockEntity
             dirty = true;
         }
 
+        // 5b. A mixture on the input with no recipe for it: boil off whatever is past its boiling point
+        dirty |= be.tickBoiling(structure);
+
         // 6. Update THERMAL_STATE blockstate for every segment in the structure
         ThermalState targetThermal = ThermalState.of((int) be.temperature);
         for (FractionalDistillerBlockEntity seg : structure) {
@@ -341,6 +352,93 @@ public class FractionalDistillerBlockEntity extends BlockEntity
             be.setChanged();
             level.sendBlockUpdated(pos, state, state, 3);
         }
+    }
+
+    // ── Generic boiling of mixtures ───────────────────────────────────────────
+
+    /** Ticks between boil cycles, and the most mB (over all boiling components) moved per cycle. */
+    private static final int BOIL_INTERVAL = 20;
+    private static final int BOIL_RATE     = 50;
+    private int boilTimer = 0;
+
+    /**
+     * Distils a {@code solution} on the input that no recipe covers. Every <em>dissolved</em>
+     * component whose boiling point at the mixture's pressure is at or below the column temperature
+     * is boiling; each cycle up to {@value #BOIL_RATE} mB of the boiling components, in proportion to
+     * what there is, moves to the output tanks. Suspended solids and anything still below its boiling
+     * point stay in the still.
+     *
+     * <p>Boiling components are ranked by boiling point: the highest-boiling condense lowest. With
+     * a tall enough column each gets its own segment and comes out pure; with fewer segments than
+     * boiling components they share tanks and come out as a mixture — a solution for the next stage.
+     * Two components can therefore boil at once, and the output is a mixture of both.
+     */
+    private boolean tickBoiling(List<FractionalDistillerBlockEntity> structure) {
+        if (currentRecipe != null || !SolutionFluids.isMixture(inputFluid)) { boilTimer = 0; return false; }
+
+        int machineTemp = (int) temperature;
+        int pressure = FluidNetworkUtil.fluidPressure(inputFluid);
+        Solution mix = SolutionFluids.toSolution(inputFluid);
+
+        // Boiling components, highest boiling point first (bottom of the column first).
+        List<Solution.Part> boiling = new ArrayList<>();
+        java.util.Map<Solution.Part, Integer> boilsAt = new java.util.IdentityHashMap<>();
+        for (Solution.Part part : mix.components()) {
+            if (!part.dissolved()) continue;
+            var diagram = FluidPhysicsRegistry.get(part.fluid()).phaseDiagram();
+            if (diagram == null) continue;
+            int bp = FluidPhaseUtil.boilingPointAtPressure(pressure, diagram);
+            if (machineTemp >= bp) { boiling.add(part); boilsAt.put(part, bp); }
+        }
+        if (boiling.isEmpty()) { boilTimer = 0; return false; }
+        if (++boilTimer < BOIL_INTERVAL) return false;
+        boilTimer = 0;
+
+        boiling.sort((a, b) -> Integer.compare(boilsAt.get(b), boilsAt.get(a)));
+        Solution vapour = new Solution(boiling).scaledTo(BOIL_RATE);
+        List<Solution.Part> ranked = vapour.components();
+        if (ranked.isEmpty()) return false;
+
+        // One group of components per segment: rank j of k goes to segment j*h/k.
+        int height = structure.size();
+        Solution[] groups = new Solution[height];
+        java.util.Arrays.fill(groups, Solution.EMPTY);
+        for (int j = 0; j < ranked.size(); j++) {
+            int seg = Math.min(height - 1, j * height / ranked.size());
+            Solution.Part p = ranked.get(j);
+            groups[seg] = groups[seg].plus(p.fluid(), p.amount(), p.dissolved());
+        }
+
+        Solution remaining = mix;
+        boolean moved = false;
+        for (int i = 0; i < height; i++) {
+            if (groups[i].isEmpty()) continue;
+            FractionalDistillerBlockEntity seg = structure.get(i);
+            int room = OUTPUT_TANK_CAPACITY - seg.outputFluid.getAmount();
+            Solution portion = groups[i].scaledTo(room);   // as much as fits, same ratios
+            if (portion.isEmpty()) continue;
+
+            int existing = seg.outputFluid.getAmount();
+            int outTemp = SolutionFluids.blend(FluidNetworkUtil.fluidTemp(seg.outputFluid), existing,
+                    machineTemp, portion.totalAmount());
+            int outPressure = SolutionFluids.blend(FluidNetworkUtil.fluidPressure(seg.outputFluid), existing,
+                    pressure, portion.totalAmount());
+            seg.outputFluid = SolutionFluids.toStack(
+                    SolutionFluids.toSolution(seg.outputFluid).plus(portion), outTemp, outPressure);
+            remaining = remaining.minus(portion);
+            moved = true;
+
+            seg.setChanged();
+            if (level != null) level.sendBlockUpdated(seg.worldPosition,
+                    level.getBlockState(seg.worldPosition), level.getBlockState(seg.worldPosition), 3);
+        }
+        if (!moved) return false;
+
+        // What is left in the still keeps the input's own temperature / pressure readings.
+        FluidStack left = SolutionFluids.toStack(remaining,
+                FluidNetworkUtil.fluidTemp(inputFluid), pressure);
+        inputFluid = left;
+        return true;
     }
 
     // ── Processing ────────────────────────────────────────────────────────────

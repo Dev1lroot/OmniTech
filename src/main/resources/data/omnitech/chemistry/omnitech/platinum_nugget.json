@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 2383.33 g pure platinum (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten platinum × real density 21.45 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Pt]",
+      "name": "Platinum",
+      "amount": 12216.96
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 295.50 g pure gallium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten gallium × real density 5.91 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ga]",
+      "name": "Gallium",
+      "amount": 4238.2
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 3.18 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 25% Calcium Fluoride / 75% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[fluorite]",
+      "name": "Calcium Fluoride (Fluorite)",
+      "amount": 10182.65
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 39697.07
+    }
+  ]
+}

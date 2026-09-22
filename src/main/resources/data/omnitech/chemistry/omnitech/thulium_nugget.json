@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1035.56 g pure thulium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten thulium × real density 9.32 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Tm]",
+      "name": "Thulium",
+      "amount": 6129.94
+    }
+  ]
+}

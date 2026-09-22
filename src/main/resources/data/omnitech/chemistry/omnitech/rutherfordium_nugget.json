@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 2577.78 g pure rutherfordium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten rutherfordium × real density 23.2 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Rf]",
+      "name": "Rutherfordium",
+      "amount": 9654.6
+    }
+  ]
+}

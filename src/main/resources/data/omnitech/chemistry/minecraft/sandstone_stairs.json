@@ -1,0 +1,15 @@
+{
+  "note": "sandstone.json scaled to 3/4 block volume (stairs rule).",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 27563249.0
+    },
+    {
+      "smiles": "[Ca]=O",
+      "name": "Calcium Oxide",
+      "amount": 1230385.2
+    }
+  ]
+}

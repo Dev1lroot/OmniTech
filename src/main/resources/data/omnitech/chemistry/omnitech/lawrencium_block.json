@@ -1,0 +1,10 @@
+{
+  "note": "9× lawrencium_ingot mass compacted into a block (≈ 140400.00 g pure lawrencium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Lr]",
+      "name": "Lawrencium",
+      "amount": 535877.86
+    }
+  ]
+}

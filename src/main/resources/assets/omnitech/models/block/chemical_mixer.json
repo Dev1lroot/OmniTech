@@ -1,0 +1,23 @@
+{
+	"parent": "minecraft:block/cube",
+	"textures": {
+		"socket": "omnitech:block/advanced_machine_fluid_socket",
+		"side": "omnitech:block/machine_side",
+		"top": "omnitech:block/machine_top_inset",
+		"particle": "omnitech:block/machine_side"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 16, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#socket"},
+				"east":  {"uv": [0, 0, 16, 16], "texture": "#socket"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#side"},
+				"west":  {"uv": [0, 0, 16, 16], "texture": "#socket"},
+				"up":    {"uv": [0, 0, 16, 16], "texture": "#top"},
+				"down":  {"uv": [0, 0, 16, 16], "texture": "#top"}
+			}
+		}
+	]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 442.00 g pure einsteinium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten einsteinium × real density 8.84 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Es]",
+      "name": "Einsteinium",
+      "amount": 1753.97
+    }
+  ]
+}

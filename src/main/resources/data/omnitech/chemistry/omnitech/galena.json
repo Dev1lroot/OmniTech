@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 7.5 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 8% Lead Sulfide / 92% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[galena]",
+      "name": "Lead Sulfide (Galena)",
+      "amount": 2507.73
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 114846.87
+    }
+  ]
+}

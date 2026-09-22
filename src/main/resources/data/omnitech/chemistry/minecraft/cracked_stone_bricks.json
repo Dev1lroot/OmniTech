@@ -1,0 +1,25 @@
+{
+  "note": "Same generic-rock oxide profile as stone_bricks.json (reskin/variant of the same parent rock) — see that file for the derivation.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 29211051.9
+    },
+    {
+      "smiles": "O=[Al]O[Al]=O",
+      "name": "Aluminium Oxide",
+      "amount": 3972145.9
+    },
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide",
+      "amount": 1690775.9
+    },
+    {
+      "smiles": "[Ca]=O",
+      "name": "Calcium Oxide",
+      "amount": 4814550.6
+    }
+  ]
+}

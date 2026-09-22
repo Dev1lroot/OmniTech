@@ -1,0 +1,10 @@
+{
+  "note": "9× moscovium_ingot mass compacted into a block (≈ 121500.00 g pure moscovium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Mc]",
+      "name": "Moscovium",
+      "amount": 421875.0
+    }
+  ]
+}

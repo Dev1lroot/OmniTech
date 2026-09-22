@@ -1,0 +1,10 @@
+{
+  "note": "9× roentgenium_ingot mass compacted into a block (≈ 258300.00 g pure roentgenium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Rg]",
+      "name": "Roentgenium",
+      "amount": 922500.0
+    }
+  ]
+}

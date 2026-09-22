@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 7.5 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 10% Iron Tungstate / 90% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[tungsten_ore]",
+      "name": "Iron Tungstate (Wolframite)",
+      "amount": 2469.7
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 112350.2
+    }
+  ]
+}

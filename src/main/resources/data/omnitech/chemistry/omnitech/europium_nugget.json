@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 582.22 g pure europium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten europium × real density 5.24 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Eu]",
+      "name": "Europium",
+      "amount": 3831.32
+    }
+  ]
+}

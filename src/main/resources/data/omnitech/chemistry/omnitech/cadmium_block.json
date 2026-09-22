@@ -1,0 +1,10 @@
+{
+  "note": "9× cadmium_ingot mass compacted into a block (≈ 77850.00 g pure cadmium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Cd]",
+      "name": "Cadmium",
+      "amount": 692529.4
+    }
+  ]
+}

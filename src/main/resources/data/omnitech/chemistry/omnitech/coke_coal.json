@@ -1,0 +1,10 @@
+{
+  "note": "1 lump ≈ 10 g pure carbon (coked/purified coal, same mass convention as coal.json).",
+  "compounds": [
+    {
+      "smiles": "[C]",
+      "name": "Carbon (Coke)",
+      "amount": 832.57
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "9× holmium_ingot mass compacted into a block (≈ 79110.00 g pure holmium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Ho]",
+      "name": "Holmium",
+      "amount": 479658.04
+    }
+  ]
+}

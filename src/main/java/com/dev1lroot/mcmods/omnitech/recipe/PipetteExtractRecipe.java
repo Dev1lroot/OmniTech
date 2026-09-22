@@ -7,6 +7,7 @@ package com.dev1lroot.mcmods.omnitech.recipe;
 import com.dev1lroot.mcmods.omnitech.items.FlaskItem;
 import com.dev1lroot.mcmods.omnitech.items.PipetteItem;
 import com.dev1lroot.mcmods.omnitech.items.Solution;
+import com.dev1lroot.mcmods.omnitech.util.SolutionFluids;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.NonNullList;
@@ -72,6 +73,8 @@ public class PipetteExtractRecipe extends CustomRecipe {
         Solution sample = FlaskItem.getSolution(flask).scaledTo(draw);
         ItemStack result = pipette.copyWithCount(1);
         PipetteItem.setSolution(result, sample);
+        SolutionFluids.setConditions(result,
+                SolutionFluids.temperatureOf(flask), SolutionFluids.pressureOf(flask));
         return result;
     }
 

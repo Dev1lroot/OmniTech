@@ -19,7 +19,8 @@
   "outputs": [
     {
       "fluid": "omnitech:mold",
-      "amount": 2
+      "amount": 2,
+      "dissolved": false
     }
   ]
 }

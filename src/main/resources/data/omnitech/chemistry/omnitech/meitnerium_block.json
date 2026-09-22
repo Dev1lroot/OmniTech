@@ -1,0 +1,10 @@
+{
+  "note": "9× meitnerium_ingot mass compacted into a block (≈ 336600.00 g pure meitnerium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Mt]",
+      "name": "Meitnerium",
+      "amount": 1219565.22
+    }
+  ]
+}

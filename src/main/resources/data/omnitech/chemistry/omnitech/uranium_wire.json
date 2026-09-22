@@ -1,0 +1,10 @@
+{
+  "note": "1 wire ≈ 9525.00 g pure uranium (0.5× the ingot-equivalent mass, 1000 mB (1 L) molten uranium × real density 19.05 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[U]",
+      "name": "Uranium",
+      "amount": 40016.13
+    }
+  ]
+}

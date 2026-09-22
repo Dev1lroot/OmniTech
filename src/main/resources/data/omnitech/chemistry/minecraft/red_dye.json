@@ -1,0 +1,10 @@
+{
+  "note": "1 dye item ≈ 60 mg extracted pigment.",
+  "compounds": [
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1n1cc(-c2ccc(O)c(O)c2)c(=O)c2c1cc(O)cc2O",
+      "name": "Betanin (Betalain pigment, from beetroot/poppy)",
+      "amount": 0.1
+    }
+  ]
+}

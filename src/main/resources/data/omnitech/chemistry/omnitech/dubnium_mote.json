@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 1465.00 g pure dubnium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten dubnium × real density 29.3 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Db]",
+      "name": "Dubnium",
+      "amount": 5466.42
+    }
+  ]
+}

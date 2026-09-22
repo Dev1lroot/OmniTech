@@ -1,0 +1,15 @@
+{
+  "note": "1 book ≈ 40 g paper + 10 g leather cover.",
+  "compounds": [
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Cellulose",
+      "amount": 246.7
+    },
+    {
+      "smiles": "NCC(=O)O",
+      "name": "Leather Cover Protein (amino-acid content, as glycine-equivalent)",
+      "amount": 119.9
+    }
+  ]
+}

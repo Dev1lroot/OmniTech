@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 3866.67 g pure darmstadtium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten darmstadtium × real density 34.8 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ds]",
+      "name": "Darmstadtium",
+      "amount": 13760.38
+    }
+  ]
+}

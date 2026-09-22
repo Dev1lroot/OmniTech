@@ -1,0 +1,10 @@
+{
+  "note": "9× bohrium_ingot mass compacted into a block (≈ 333900.00 g pure bohrium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Bh]",
+      "name": "Bohrium",
+      "amount": 1227573.53
+    }
+  ]
+}

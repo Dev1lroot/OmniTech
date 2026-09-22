@@ -1,0 +1,10 @@
+{
+  "note": "Phosphorescent mineral cluster, density ≈ 2000 kg/m³, 1 block = 1×1×1 m — modeled on real zinc sulfide phosphor (the compound behind real glow-in-the-dark pigment).",
+  "compounds": [
+    {
+      "smiles": "[Zn]=S",
+      "name": "Zinc Sulfide (phosphorescent mineral)",
+      "amount": 20519134.1
+    }
+  ]
+}

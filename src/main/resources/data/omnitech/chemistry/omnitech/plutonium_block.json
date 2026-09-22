@@ -1,0 +1,10 @@
+{
+  "note": "9× plutonium_ingot mass compacted into a block (≈ 178380.00 g pure plutonium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Pu]",
+      "name": "Plutonium",
+      "amount": 731065.57
+    }
+  ]
+}

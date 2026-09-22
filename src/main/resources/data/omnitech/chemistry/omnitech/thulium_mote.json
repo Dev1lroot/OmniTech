@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 466.00 g pure thulium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten thulium × real density 9.32 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Tm]",
+      "name": "Thulium",
+      "amount": 2758.47
+    }
+  ]
+}

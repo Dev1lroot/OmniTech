@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 948.89 g pure dysprosium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten dysprosium × real density 8.54 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Dy]",
+      "name": "Dysprosium",
+      "amount": 5839.32
+    }
+  ]
+}

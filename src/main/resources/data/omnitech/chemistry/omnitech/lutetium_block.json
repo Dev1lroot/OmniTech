@@ -1,0 +1,10 @@
+{
+  "note": "9× lutetium_ingot mass compacted into a block (≈ 88560.00 g pure lutetium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Lu]",
+      "name": "Lutetium",
+      "amount": 506152.59
+    }
+  ]
+}

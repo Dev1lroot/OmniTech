@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 10 g pure carbon (anchored to the vanilla coal.json mass).",
+  "compounds": [
+    {
+      "smiles": "[C]",
+      "name": "Carbon (Coal)",
+      "amount": 832.57
+    }
+  ]
+}

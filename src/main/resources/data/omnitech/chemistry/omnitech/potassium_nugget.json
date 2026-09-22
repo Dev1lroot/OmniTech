@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 98.89 g pure potassium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten potassium × real density 0.89 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[K]",
+      "name": "Potassium",
+      "amount": 2529.26
+    }
+  ]
+}

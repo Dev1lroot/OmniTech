@@ -1,0 +1,10 @@
+{
+  "note": "9× platinum_ingot mass compacted into a block (≈ 193050.00 g pure platinum, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Pt]",
+      "name": "Platinum",
+      "amount": 989573.72
+    }
+  ]
+}

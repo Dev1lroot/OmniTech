@@ -1,0 +1,10 @@
+{
+  "note": "1 clay ball ≈ 20 g wet kaolinite clay.",
+  "compounds": [
+    {
+      "smiles": "O=[Al]O[Si]=O",
+      "name": "Aluminosilicate Hydrate (Kaolinite clay)",
+      "amount": 77.5
+    }
+  ]
+}

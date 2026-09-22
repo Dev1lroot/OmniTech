@@ -1,0 +1,20 @@
+{
+  "note": "Waterlogged clay-rich soil, density ≈ 1900 kg/m³, 1 block = 1×1×1 m. 20% quartz sand, 40% clay, 40% water by mass.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz sand fraction)",
+      "amount": 6324900.1
+    },
+    {
+      "smiles": "O=[Al]O[Si]=O",
+      "name": "Aluminosilicate Hydrate (Kaolinite clay)",
+      "amount": 2943682.7
+    },
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 42187066.3
+    }
+  ]
+}

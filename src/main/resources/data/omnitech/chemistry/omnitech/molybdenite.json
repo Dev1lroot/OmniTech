@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 5.0 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 8% Molybdenum Disulfide / 92% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[molybdenite]",
+      "name": "Molybdenum Disulfide (Molybdenite)",
+      "amount": 2498.91
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 76564.58
+    }
+  ]
+}

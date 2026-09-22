@@ -1,0 +1,25 @@
+{
+  "note": "1 dust ≈ 50 g ground generic rock (same 65/15/10/10 SiO2/Al2O3/Fe2O3/CaO oxide split used for the vanilla stone_bricks.json).",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 540.95
+    },
+    {
+      "smiles": "O=[Al]O[Al]=O",
+      "name": "Aluminium Oxide",
+      "amount": 73.56
+    },
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide (Hematite)",
+      "amount": 31.31
+    },
+    {
+      "smiles": "[Ca]=O",
+      "name": "Calcium Oxide",
+      "amount": 89.16
+    }
+  ]
+}

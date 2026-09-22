@@ -1,0 +1,15 @@
+{
+  "note": "1 slice ≈ 30 g: 92% water, 6% fructose.",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 1532.1
+    },
+    {
+      "smiles": "OCC1(O)OC(CO)C(O)C1O",
+      "name": "Fructose",
+      "amount": 10.0
+    }
+  ]
+}

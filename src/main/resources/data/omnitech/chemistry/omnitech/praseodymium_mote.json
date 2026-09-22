@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 338.50 g pure praseodymium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten praseodymium × real density 6.77 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Pr]",
+      "name": "Praseodymium",
+      "amount": 2402.28
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "note": "stone_bricks.json's oxide profile scaled to 1/20 block volume (button rule).",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 1460552.6
+    },
+    {
+      "smiles": "O=[Al]O[Al]=O",
+      "name": "Aluminium Oxide",
+      "amount": 198607.3
+    },
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide (Hematite)",
+      "amount": 84538.8
+    },
+    {
+      "smiles": "[Ca]=O",
+      "name": "Calcium Oxide",
+      "amount": 240727.5
+    }
+  ]
+}

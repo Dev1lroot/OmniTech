@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1100.00 g pure nobelium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten nobelium × real density 9.9 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[No]",
+      "name": "Nobelium",
+      "amount": 4247.1
+    }
+  ]
+}

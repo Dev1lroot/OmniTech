@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1643.33 g pure berkelium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten berkelium × real density 14.79 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Bk]",
+      "name": "Berkelium",
+      "amount": 6653.17
+    }
+  ]
+}

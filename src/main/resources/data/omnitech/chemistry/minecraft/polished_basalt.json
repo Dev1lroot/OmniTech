@@ -1,0 +1,30 @@
+{
+  "note": "Same oxide profile as basalt.json (reskin/variant) — see that file for the derivation.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 24134487.4
+    },
+    {
+      "smiles": "O=[Al]O[Al]=O",
+      "name": "Aluminium Oxide",
+      "amount": 3981953.7
+    },
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide",
+      "amount": 2179222.2
+    },
+    {
+      "smiles": "[Ca]=O",
+      "name": "Calcium Oxide",
+      "amount": 6205420.8
+    },
+    {
+      "smiles": "[Mg]=O",
+      "name": "Magnesium Oxide",
+      "amount": 8635235.7
+    }
+  ]
+}

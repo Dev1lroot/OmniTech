@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 5910.00 g pure gallium (1× the ingot-equivalent mass, 1000 mB (1 L) molten gallium × real density 5.91 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ga]",
+      "name": "Gallium",
+      "amount": 84763.99
+    }
+  ]
+}

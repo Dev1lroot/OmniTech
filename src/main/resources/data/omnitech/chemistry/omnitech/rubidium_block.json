@@ -1,0 +1,10 @@
+{
+  "note": "9× rubidium_ingot mass compacted into a block (≈ 13770.00 g pure rubidium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Rb]",
+      "name": "Rubidium",
+      "amount": 161112.93
+    }
+  ]
+}

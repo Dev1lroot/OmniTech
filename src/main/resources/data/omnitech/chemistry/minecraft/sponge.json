@@ -1,0 +1,15 @@
+{
+  "note": "1 dry sea-sponge ≈ 50 g: marine sponges are structurally mostly collagen-like fibrous protein (spongin). 80% protein (as glycine-equivalent), 20% residual water.",
+  "compounds": [
+    {
+      "smiles": "NCC(=O)O",
+      "name": "Spongin Protein (amino-acid content, as glycine-equivalent)",
+      "amount": 532.8
+    },
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 555.1
+    }
+  ]
+}

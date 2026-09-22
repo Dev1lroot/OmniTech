@@ -1,0 +1,10 @@
+{
+  "note": "9× hafnium_carbide_ingot.json compacted into a block (≈ 109800 g), a single stoichiometric compound.",
+  "compounds": [
+    {
+      "smiles": "[Hf][C]",
+      "name": "Hafnium Carbide",
+      "amount": 576374.93
+    }
+  ]
+}

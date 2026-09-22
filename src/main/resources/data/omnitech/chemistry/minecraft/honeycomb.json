@@ -1,0 +1,10 @@
+{
+  "note": "1 comb piece ≈ 20 g: ≈ 90% beeswax (represented as a triglyceride-like wax ester).",
+  "compounds": [
+    {
+      "smiles": "CCCCCCCCC=CCCCCCCCC(=O)OCC(OC(=O)CCCCCCCC=CCCCCCCCC)COC(=O)CCCCCCCC=CCCCCCCCC",
+      "name": "Beeswax (representative wax ester)",
+      "amount": 20.3
+    }
+  ]
+}

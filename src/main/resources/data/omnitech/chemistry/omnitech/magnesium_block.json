@@ -1,0 +1,10 @@
+{
+  "note": "9× magnesium_ingot mass compacted into a block (≈ 15660.00 g pure magnesium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Mg]",
+      "name": "Magnesium",
+      "amount": 644311.87
+    }
+  ]
+}

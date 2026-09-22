@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 96.50 g pure caesium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten caesium × real density 1.93 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Cs]",
+      "name": "Caesium",
+      "amount": 726.08
+    }
+  ]
+}

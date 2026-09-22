@@ -1,0 +1,10 @@
+{
+  "note": "1 dye item ≈ 300 mg extracted pigment.",
+  "compounds": [
+    {
+      "smiles": "[Na]",
+      "name": "Sodium Calcium Aluminosilicate Sulfide (Lazurite, ground lapis lazuli)",
+      "amount": 0.6
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "note": "Native-gold-bearing quartz vein rock, density ≈ 2700 kg/m³, 1 block = 1×1×1 m. 0.05% native Au / 99.95% SiO2 gangue by mass.",
+  "compounds": [
+    { "smiles": "[Au]", "name": "Gold (native)", "amount": 6853.8 },
+    { "smiles": "O=[Si]=O", "name": "Silicon Dioxide (quartz vein gangue)", "amount": 44917609.9 }
+  ]
+}

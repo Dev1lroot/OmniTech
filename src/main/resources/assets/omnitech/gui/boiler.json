@@ -18,6 +18,13 @@
       "w": 16,
       "h": 52,
       "source": "fluid"
+    },
+    {
+      "id": "output_slot",
+      "type": "slot",
+      "x": 120,
+      "y": 50,
+      "slot_index": 0
     }
   ]
 }

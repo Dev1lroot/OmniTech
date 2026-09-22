@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 656.67 g pure gallium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten gallium × real density 5.91 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ga]",
+      "name": "Gallium",
+      "amount": 9418.22
+    }
+  ]
+}

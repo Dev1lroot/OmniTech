@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 87.00 g pure magnesium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten magnesium × real density 1.74 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Mg]",
+      "name": "Magnesium",
+      "amount": 3579.51
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "9× darmstadtium_ingot mass compacted into a block (≈ 313200.00 g pure darmstadtium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Ds]",
+      "name": "Darmstadtium",
+      "amount": 1114590.75
+    }
+  ]
+}

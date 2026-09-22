@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 2.4 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 25% Sodium Borate / 75% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[borax]",
+      "name": "Sodium Borate (Borax, anhydrous basis)",
+      "amount": 2981.91
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 29960.05
+    }
+  ]
+}

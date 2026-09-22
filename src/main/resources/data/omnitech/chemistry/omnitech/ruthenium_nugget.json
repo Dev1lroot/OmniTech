@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1383.33 g pure ruthenium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten ruthenium × real density 12.45 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ru]",
+      "name": "Ruthenium",
+      "amount": 13686.88
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 117.00 g pure boron (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten boron × real density 2.34 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[B]",
+      "name": "Boron",
+      "amount": 10823.31
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "note": "1 slice ≈ 150 g: 55% water, 20% starch, 10% fat.",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 4579.5
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Starch (amylose repeat unit)",
+      "amount": 185.0
+    },
+    {
+      "smiles": "CCCCCCCCC=CCCCCCCCC(=O)OCC(OC(=O)CCCCCCCC=CCCCCCCCC)COC(=O)CCCCCCCC=CCCCCCCCC",
+      "name": "Fat (Triolein, representative triglyceride)",
+      "amount": 16.9
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 20450.00 g pure neptunium (1× the ingot-equivalent mass, 1000 mB (1 L) molten neptunium × real density 20.45 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Np]",
+      "name": "Neptunium",
+      "amount": 86286.92
+    }
+  ]
+}

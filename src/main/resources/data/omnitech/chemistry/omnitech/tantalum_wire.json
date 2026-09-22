@@ -1,0 +1,10 @@
+{
+  "note": "1 wire ≈ 8325.00 g pure tantalum (0.5× the ingot-equivalent mass, 1000 mB (1 L) molten tantalum × real density 16.65 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ta]",
+      "name": "Tantalum",
+      "amount": 46007.69
+    }
+  ]
+}

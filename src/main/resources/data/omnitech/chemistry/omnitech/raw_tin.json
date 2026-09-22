@@ -1,0 +1,10 @@
+{
+  "note": "1 unsmelted ore chunk ≈ 120 g (same raw-ore convention as vanilla raw_iron.json).",
+  "compounds": [
+    {
+      "smiles": "[Sn]",
+      "name": "Tin",
+      "amount": 1010.87
+    }
+  ]
+}

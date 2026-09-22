@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.plumbing;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IFluidContainer;
+import com.dev1lroot.mcmods.omnitech.items.FlaskItem;
 import com.dev1lroot.mcmods.omnitech.items.PipetteItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,6 +32,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -131,15 +138,45 @@ public class FluidTankBlock extends BaseEntityBlock implements IFluidContainer
 
     // ── Interaction ───────────────────────────────────────────────────────────
 
+    /**
+     * A flask that holds something is emptied into the tank (falling back to topping it up from the
+     * tank if the tank can't take it); an empty flask is filled from the tank. The generic
+     * {@link FluidUtil#interactWithFluidHandler} always tries to fill first, which would top up a
+     * half-full flask from a tank of the same fluid instead of unloading it.
+     */
+    private static boolean interactWithFlask(Player player, InteractionHand hand, Level level,
+            BlockPos pos, Direction side) {
+        ResourceHandler<FluidResource> tank = level.getCapability(Capabilities.Fluid.BLOCK, pos, side);
+        ResourceHandler<FluidResource> flask =
+                ItemAccess.forPlayerInteraction(player, hand).oneByOne().getCapability(Capabilities.Fluid.ITEM);
+        if (tank == null || flask == null) return false;
+
+        if (!FlaskItem.isEmpty(player.getItemInHand(hand))) {
+            return moveWithSound(flask, tank, level, pos, player, false)
+                    || moveWithSound(tank, flask, level, pos, player, true);
+        }
+        return moveWithSound(tank, flask, level, pos, player, true);
+    }
+
+    private static boolean moveWithSound(ResourceHandler<FluidResource> from, ResourceHandler<FluidResource> to,
+            Level level, BlockPos pos, Player player, boolean pickup) {
+        var moved = ResourceHandlerUtil.moveFirst(from, to, fr -> true, Integer.MAX_VALUE, null);
+        if (moved == null) return false;
+        FluidUtil.triggerSoundAndGameEvent(moved.resource(), level, Vec3.atCenterOf(pos), player, pickup);
+        return true;
+    }
+
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
             Player player, BlockHitResult hit) {
-        // Off-hand bucket → fluid interaction
+        // Bucket or flask in hand → fluid interaction
         for (InteractionHand hand : InteractionHand.values()) {
-            if (player.getItemInHand(hand).getItem() instanceof BucketItem) {
+            var held = player.getItemInHand(hand).getItem();
+            if (held instanceof BucketItem || held instanceof FlaskItem) {
                 if (level.isClientSide()) return InteractionResult.SUCCESS;
-                boolean interacted = FluidUtil.interactWithFluidHandler(
-                        player, hand, level, pos, hit.getDirection());
+                boolean interacted = held instanceof FlaskItem
+                        ? interactWithFlask(player, hand, level, pos, hit.getDirection())
+                        : FluidUtil.interactWithFluidHandler(player, hand, level, pos, hit.getDirection());
                 return interacted ? InteractionResult.SUCCESS : InteractionResult.FAIL;
             }
         }

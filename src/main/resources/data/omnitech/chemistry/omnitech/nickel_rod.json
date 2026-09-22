@@ -1,0 +1,10 @@
+{
+  "note": "1 rod ≈ 8910.00 g pure nickel (1× the ingot-equivalent mass, 1000 mB (1 L) molten nickel × real density 8.91 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ni]",
+      "name": "Nickel",
+      "amount": 151806.86
+    }
+  ]
+}

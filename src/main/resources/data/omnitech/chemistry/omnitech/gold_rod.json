@@ -1,0 +1,10 @@
+{
+  "note": "1 rod ≈ 100.00 g pure gold (1× the ingot-equivalent mass, anchored to the vanilla gold_ingot.json mass (100.0 g)).",
+  "compounds": [
+    {
+      "smiles": "[Au]",
+      "name": "Gold",
+      "amount": 507.7
+    }
+  ]
+}

@@ -9,7 +9,10 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.gui.RotaryCompressorMenu;
 import com.dev1lroot.mcmods.omnitech.io.IKineticReceiver;
+import com.dev1lroot.mcmods.omnitech.util.FluidMixing;
 import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
+import com.dev1lroot.mcmods.omnitech.util.SolutionFluids;
+import com.dev1lroot.mcmods.omnitech.util.SolutionPhases;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -165,7 +168,17 @@ public class RotaryCompressorBlockEntity extends BlockEntity implements MenuProv
         if (!be.outputFluid.isEmpty()) {
             var neighbor = level.getCapability(Capabilities.Fluid.BLOCK,
                     pos.relative(facing.getOpposite()), facing);
-            if (neighbor != null) changed |= FluidNetworkUtil.tryPushFluid(be.outputFluidHandler, neighbor);
+            if (neighbor != null) {
+                if (SolutionFluids.isMixture(be.outputFluid)) {
+                    // A mixture may hold several phases after the machine changed its conditions:
+                    // condensed part and gas part leave separately.
+                    FluidStack before = be.outputFluid;
+                    be.outputFluid = SolutionPhases.pushByPhase(be.outputFluid, neighbor, 1000);
+                    changed |= be.outputFluid != before;
+                } else {
+                    changed |= FluidNetworkUtil.tryPushFluid(be.outputFluidHandler, neighbor);
+                }
+            }
         }
 
         if (changed) { be.setChanged(); if (!level.isClientSide()) level.sendBlockUpdated(pos, state, state, 3); }
@@ -177,7 +190,7 @@ public class RotaryCompressorBlockEntity extends BlockEntity implements MenuProv
         if (inputFluid.isEmpty() || inputFluid.getAmount() < BATCH_SIZE) return false;
         if (fluidPressure(inputFluid) >= targetPressure) return false;
         if (outputFluid.isEmpty()) return true;
-        if (outputFluid.getFluid() != inputFluid.getFluid()) return false;
+        if (!FluidMixing.canBlend(outputFluid, FluidResource.of(inputFluid))) return false;
         return (OUTPUT_TANK_CAPACITY - outputFluid.getAmount()) >= BATCH_SIZE;
     }
 
@@ -192,7 +205,7 @@ public class RotaryCompressorBlockEntity extends BlockEntity implements MenuProv
         int   inPressure = fluidPressure(inputFluid);
         int   inTemp     = fluidTemp(inputFluid);
         int   deltaP     = targetPressure - inPressure;
-        int   maxTemp    = FluidPhysicsRegistry.get(inputFluid.getFluid()).maxTemp();
+        int   maxTemp    = SolutionPhases.maxTemp(inputFluid);   // tightest ceiling of every component
         int   outTemp    = Math.min(maxTemp, inTemp + Math.max(0, deltaP / 20));
         FluidResource res = FluidResource.of(inputFluid);
 
@@ -202,15 +215,8 @@ public class RotaryCompressorBlockEntity extends BlockEntity implements MenuProv
         FluidStack produced = res.toStack(BATCH_SIZE);
         applyAttributes(produced, outTemp, targetPressure);
 
-        if (outputFluid.isEmpty()) {
-            outputFluid = produced;
-        } else {
-            int existAmt = outputFluid.getAmount();
-            int mixTemp  = (fluidTemp(outputFluid) * existAmt + outTemp * BATCH_SIZE) / (existAmt + BATCH_SIZE);
-            int mixPres  = (fluidPressure(outputFluid) * existAmt + targetPressure * BATCH_SIZE) / (existAmt + BATCH_SIZE);
-            outputFluid.grow(BATCH_SIZE);
-            applyAttributes(outputFluid, mixTemp, mixPres);
-        }
+        // Blends by volume — temperature, pressure and, for mixtures, composition.
+        outputFluid = FluidNetworkUtil.blendInto(outputFluid, FluidResource.of(produced), BATCH_SIZE);
 
         kineticForce    = Math.max(0f, kineticForce - kfCost);
         processCooldown = MIN_CYCLE_TICKS;
@@ -258,9 +264,9 @@ public class RotaryCompressorBlockEntity extends BlockEntity implements MenuProv
         @Override public FluidResource getResource(int i) { return inputFluid.isEmpty() ? FluidResource.EMPTY : FluidResource.of(inputFluid); }
         @Override public long getAmountAsLong(int i) { return inputFluid.getAmount(); }
         @Override public long getCapacityAsLong(int i, FluidResource r) { return INPUT_TANK_CAPACITY; }
-        @Override public boolean isValid(int i, FluidResource r) { return true; }
+        @Override public boolean isValid(int i, FluidResource r) { return FluidMixing.canBlend(inputFluid, r); }
         @Override public int insert(int i, FluidResource resource, int amount, TransactionContext tx) {
-            if (resource.isEmpty() || (!inputFluid.isEmpty() && !resource.is(inputFluid.getFluid()))) return 0;
+            if (resource.isEmpty() || !FluidMixing.canBlend(inputFluid, resource)) return 0;
             int toFill = Math.min(amount, INPUT_TANK_CAPACITY - inputFluid.getAmount());
             if (toFill <= 0) return 0;
             updateSnapshots(tx);

@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 8650.00 g pure cadmium (1× the ingot-equivalent mass, 1000 mB (1 L) molten cadmium × real density 8.65 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Cd]",
+      "name": "Cadmium",
+      "amount": 76947.71
+    }
+  ]
+}

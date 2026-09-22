@@ -111,8 +111,13 @@ public class OmniTechFluids
         FluidObject(String name, FluidType.Properties typeProps, boolean worldPlaceable,
                     boolean bucketable, boolean flammable) {
             this.name = name;
+            // The generic chemical_compound fluid has no fixed identity — every instance's real
+            // name comes from its own SMILES component instead of a static lang key — so it
+            // needs the dynamic-name FluidType subclass; every other fluid keeps the plain one.
             this.type = TYPE_REGISTRY.register(name,
-                    () -> new FluidType(typeProps.descriptionId("fluid.omnitech." + name)));
+                    name.equals("chemical_compound")
+                            ? () -> new ChemicalCompoundFluidType(typeProps.descriptionId("fluid.omnitech." + name))
+                            : () -> new FluidType(typeProps.descriptionId("fluid.omnitech." + name)));
             this.source = REGISTRY.register(name,
                     () -> new BaseFlowingFluid.Source(this.makeProperties()));
             this.flowing = REGISTRY.register("flowing_" + name,

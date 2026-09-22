@@ -104,7 +104,8 @@ public final class FluidPhaseUtil {
 
     // ── Internal helpers ──────────────────────────────────────────────────────
 
-    private static int boilingPointAtPressure(int pressureKPa,
+    /** The temperature (°C) at which this fluid boils at {@code pressureKPa}, per its phase diagram. */
+    public static int boilingPointAtPressure(int pressureKPa,
             FluidPhysicsRegistry.PhaseDiagram d) {
         if (pressureKPa <= 0) pressureKPa = 1;
 

@@ -1,0 +1,10 @@
+{
+  "note": "9× praseodymium_ingot mass compacted into a block (≈ 60930.00 g pure praseodymium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Pr]",
+      "name": "Praseodymium",
+      "amount": 432409.8
+    }
+  ]
+}

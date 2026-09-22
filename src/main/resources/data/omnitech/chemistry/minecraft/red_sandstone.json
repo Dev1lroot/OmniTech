@@ -1,0 +1,20 @@
+{
+  "note": "Compressed red_sand, density ≈ 2300 kg/m³, 1 block = 1×1×1 m. 93% SiO2 / 3% Fe2O3 / 4% CaO (cement) by mass.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 35602530.0
+    },
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide",
+      "amount": 432087.2
+    },
+    {
+      "smiles": "[Ca]=O",
+      "name": "Calcium Oxide",
+      "amount": 1640513.6
+    }
+  ]
+}

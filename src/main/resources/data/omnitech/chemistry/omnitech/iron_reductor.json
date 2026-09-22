@@ -1,0 +1,10 @@
+{
+  "note": "1 reductor ≈ 100.00 g pure iron (1× the ingot-equivalent mass, anchored to the vanilla iron_ingot.json mass (100.0 g)).",
+  "compounds": [
+    {
+      "smiles": "[Fe]",
+      "name": "Iron",
+      "amount": 1790.67
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 ingot ≈ 6770.00 g pure cerium (1× the ingot-equivalent mass, 1000 mB (1 L) molten cerium × real density 6.77 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ce]",
+      "name": "Cerium",
+      "amount": 48317.11
+    }
+  ]
+}

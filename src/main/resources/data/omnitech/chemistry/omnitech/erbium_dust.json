@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 9070.00 g pure erbium (1× the ingot-equivalent mass, 1000 mB (1 L) molten erbium × real density 9.07 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Er]",
+      "name": "Erbium",
+      "amount": 54227.28
+    }
+  ]
+}

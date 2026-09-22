@@ -1,0 +1,15 @@
+{
+  "note": "1 nugget ≈ 944.44 g (0.1111× the 1000 mB foundry-cast ingot mass, density 8.5 g/cm³). Real brass: ~70% copper, ~30% zinc by mass (cartridge-brass composition).",
+  "compounds": [
+    {
+      "smiles": "[Cu]",
+      "name": "Copper",
+      "amount": 10403.66
+    },
+    {
+      "smiles": "[Zn]",
+      "name": "Zinc",
+      "amount": 4333.64
+    }
+  ]
+}

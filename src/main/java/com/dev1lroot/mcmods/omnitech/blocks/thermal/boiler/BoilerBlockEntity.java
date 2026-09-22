@@ -13,22 +13,31 @@ import com.dev1lroot.mcmods.omnitech.io.IColdReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
 import com.dev1lroot.mcmods.omnitech.blocks.ThermalState;
 import com.dev1lroot.mcmods.omnitech.gui.BoilerMenu;
+import com.dev1lroot.mcmods.omnitech.items.MixtureDustItem;
+import com.dev1lroot.mcmods.omnitech.items.Solution;
+import com.dev1lroot.mcmods.omnitech.recipes.BoilingRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.BoilingRecipeManager;
+import com.dev1lroot.mcmods.omnitech.util.FluidMixing;
 import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
+import com.dev1lroot.mcmods.omnitech.util.SolutionFluids;
+import com.mojang.serialization.Codec;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.MenuProvider;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -37,10 +46,26 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-public class BoilerBlockEntity extends BlockEntity implements MenuProvider, IHeatReceiver, IColdReceiver {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * A pressure-less still. Fluid comes in from below and the sides; every dissolved component of it
+ * that is past its boiling point at the tank's pressure boils off and leaves through the top —
+ * a mixture ({@code omnitech:solution}) boils component by component, so a solution gives off only
+ * what is actually hot enough and keeps the rest. What a boiled-off fluid leaves behind (or turns
+ * into) is data-driven, see {@link BoilingRecipe}; solids land in the single output slot.
+ */
+public class BoilerBlockEntity extends BaseContainerBlockEntity
+        implements IHeatReceiver, IColdReceiver, WorldlyContainer {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -50,14 +75,28 @@ public class BoilerBlockEntity extends BlockEntity implements MenuProvider, IHea
     public static final int MAX_HEAT      =  500;
     public static final int MIN_HEAT      = -500;
 
+    /** One output slot for the solids a boil leaves behind. */
+    public static final int SLOT_COUNT  = 1;
+    public static final int SLOT_OUTPUT = 0;
+
     private static final int AMBIENT_TEMPERATURE = 15;
     private static final int DECAY_INTERVAL      = 20;
+
+    private static final Codec<Map<String, Integer>> BOIL_PROGRESS_CODEC =
+            Codec.unboundedMap(Codec.STRING, Codec.INT);
 
     // ── State ─────────────────────────────────────────────────────────────────
 
     private int storedHeat = 0;
     private int decayTimer = 0;
     private FluidStack fluidTank = FluidStack.EMPTY;
+    private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
+
+    /** mB boiled away so far towards the next cycle of each {@link BoilingRecipe}, by recipe id. */
+    private final Map<String, Integer> boilProgress = new HashMap<>();
+
+    /** Suspended solids already dried out of the tank, waiting to be pressed into mixture dust. */
+    private Solution dustBuffer = Solution.EMPTY;
 
     // ── Fluid capability ──────────────────────────────────────────────────────
 
@@ -86,17 +125,29 @@ public class BoilerBlockEntity extends BlockEntity implements MenuProvider, IHea
         super(OmniTechBlockEntities.BOILER.get(), pos, state);
     }
 
-    // ── MenuProvider ──────────────────────────────────────────────────────────
+    // ── BaseContainerBlockEntity ──────────────────────────────────────────────
 
-    @Override
-    public Component getDisplayName() {
+    @Override protected Component getDefaultName() {
         return Component.translatable("container.omnitech.boiler");
     }
 
+    @Override protected NonNullList<ItemStack> getItems()           { return items; }
+    @Override protected void setItems(NonNullList<ItemStack> items) { this.items = items; }
+    @Override public int getContainerSize()                         { return SLOT_COUNT; }
+
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+    protected AbstractContainerMenu createMenu(int containerId, Inventory playerInventory) {
         return new BoilerMenu(containerId, playerInventory, this, dataAccess);
     }
+
+    // ── WorldlyContainer: hoppers and pipes may only take the output ─────────
+
+    private static final int[] SLOTS = { SLOT_OUTPUT };
+
+    @Override public int[] getSlotsForFace(Direction side) { return SLOTS; }
+    @Override public boolean canPlaceItem(int index, ItemStack stack) { return false; }
+    @Override public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction dir) { return false; }
+    @Override public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction dir) { return true; }
 
     // ── IHeatReceiver / IColdReceiver ─────────────────────────────────────────
 
@@ -158,21 +209,8 @@ public class BoilerBlockEntity extends BlockEntity implements MenuProvider, IHea
             }
         }
 
-        // 3. Push fluid upward only when it has transitioned to a gas-like phase
-        if (!be.fluidTank.isEmpty()) {
-            var physics = FluidPhysicsRegistry.get(be.fluidTank.getFluid());
-            Integer pressureBox = be.fluidTank.get(OmniTechDataComponents.FLUID_PRESSURE.get());
-            int pressureKPa = pressureBox != null ? pressureBox : 101;
-            FluidPhase phase = FluidPhaseUtil.getPhase(be.storedHeat, pressureKPa, physics.phaseDiagram());
-            boolean gasLike = phase == FluidPhase.VAPOUR || phase == FluidPhase.GAS
-                    || phase == FluidPhase.SUPERCRITICAL || phase == FluidPhase.PLASMA;
-            if (gasLike) {
-                ResourceHandler<FluidResource> output = level.getCapability(
-                        Capabilities.Fluid.BLOCK, pos.above(), Direction.DOWN);
-                if (output != null)
-                    dirty |= FluidNetworkUtil.tryPushFluid(be.fluidHandler, output, TRANSFER_RATE);
-            }
-        }
+        // 3. Boil off whatever is hot enough, out through the top; hand solids to the output slot
+        dirty |= be.tickBoiling(level, pos);
 
         // 4. Ambient decay — storedHeat drifts toward AMBIENT_TEMPERATURE every DECAY_INTERVAL ticks
         if (be.storedHeat != AMBIENT_TEMPERATURE) {
@@ -204,21 +242,196 @@ public class BoilerBlockEntity extends BlockEntity implements MenuProvider, IHea
         }
     }
 
+    // ── Boiling ───────────────────────────────────────────────────────────────
+
+    /**
+     * Boils every dissolved component whose boiling point at the tank's pressure is at or below the
+     * boiler's temperature — at most {@value #TRANSFER_RATE} mB per tick over all of them, in
+     * proportion to what there is. A component only counts if its phase diagram says it is
+     * gas-like; suspended solids and anything still cooler than its boiling point stay behind.
+     * The vapour leaves upward as one fluid (or, with several components, as a mixture) and only as
+     * much as the block above accepts leaves the tank.
+     */
+    private boolean tickBoiling(Level level, BlockPos pos) {
+        boolean changed = flushResidue(level.getRandom());
+        if (fluidTank.isEmpty()) return changed;
+
+        int pressure = FluidNetworkUtil.fluidPressure(fluidTank);
+        Solution mix = SolutionFluids.toSolution(fluidTank);
+
+        // Suspended solids only leave the tank as dust; while the slot can't take it, stop.
+        Solution solids = undissolvedOf(mix);
+        boolean dustBlocked = dustBuffer.totalAmount() >= MixtureDustItem.UNIT;
+        if (dustBlocked && !solids.isEmpty()) return changed;
+
+        // Nothing liquid left to carry them: whatever is suspended is now a dry powder.
+        if (SolutionFluids.isMixture(fluidTank) && !solids.isEmpty() && solids.totalAmount() == mix.totalAmount()) {
+            dryOut(mix, solids.scaledTo(TRANSFER_RATE), pressure);
+            flushResidue(level.getRandom());
+            return true;
+        }
+
+        List<Solution.Part> boiling = new ArrayList<>();
+        for (Solution.Part part : mix.components()) {
+            if (!part.dissolved()) continue;
+            var diagram = FluidPhysicsRegistry.get(part.fluid()).phaseDiagram();
+            if (diagram == null) continue;
+            FluidPhase phase = FluidPhaseUtil.getPhase(storedHeat, pressure, diagram);
+            boolean gasLike = phase == FluidPhase.VAPOUR || phase == FluidPhase.GAS
+                    || phase == FluidPhase.SUPERCRITICAL || phase == FluidPhase.PLASMA;
+            if (!gasLike) continue;
+            // Never boil something whose solids would have nowhere to go — they would be lost.
+            BoilingRecipe recipe = BoilingRecipeManager.find(part.fluid());
+            if (recipe != null && recipe.hasResult() && !canStore(recipe.resultStack())) continue;
+            boiling.add(part);
+        }
+        if (boiling.isEmpty()) return changed;
+
+        Solution boiled = new Solution(boiling).scaledTo(TRANSFER_RATE);
+
+        // What actually leaves: the fluid itself, unless a recipe turns it into something else.
+        Solution vapour = Solution.EMPTY;
+        for (Solution.Part part : boiled.components()) {
+            BoilingRecipe recipe = BoilingRecipeManager.find(part.fluid());
+            if (recipe != null && recipe.convertsFluid()) {
+                vapour = vapour.plus(recipe.getOutputFluid(), recipe.vapourFor(part.amount()), true);
+            } else {
+                vapour = vapour.plus(part.fluid(), part.amount(), true);
+            }
+        }
+
+        Solution taken = boiled;
+        if (!vapour.isEmpty()) {
+            ResourceHandler<FluidResource> output = level.getCapability(
+                    Capabilities.Fluid.BLOCK, pos.above(), Direction.DOWN);
+            if (output == null) return changed;
+
+            FluidStack stack = SolutionFluids.toStack(vapour, storedHeat, pressure);
+            int accepted;
+            try (var tx = Transaction.openRoot()) {
+                accepted = output.insert(FluidResource.of(stack), stack.getAmount(), tx);
+                if (accepted > 0) tx.commit();
+            }
+            if (accepted <= 0) return changed;
+            if (accepted < stack.getAmount()) {
+                taken = boiled.scaledTo(Math.max(1,
+                        (int) ((long) boiled.totalAmount() * accepted / stack.getAmount())));
+            }
+        }
+        // (a vapour that rounds to nothing — a sliver of a converted fluid — simply vanishes)
+
+        if (SolutionFluids.isMixture(fluidTank)) {
+            // The solids dry out in step with the liquid: boil off a share of it and the same
+            // share of what was suspended in it is left behind as powder.
+            int liquid = mix.totalAmount() - solids.totalAmount();
+            int dried = liquid <= 0 ? 0 : (int) ((long) solids.totalAmount() * taken.totalAmount() / liquid);
+            Solution dry = solids.isEmpty() ? Solution.EMPTY : solids.scaledTo(dried);
+            fluidTank = SolutionFluids.toStack(mix.minus(taken).minus(dry), storedHeat, pressure);
+            dustBuffer = dustBuffer.plus(dry);
+        } else {
+            int left = fluidTank.getAmount() - taken.totalAmount();
+            fluidTank = left > 0 ? fluidTank.copyWithAmount(left) : FluidStack.EMPTY;
+        }
+
+        for (Solution.Part part : taken.components()) {
+            BoilingRecipe recipe = BoilingRecipeManager.find(part.fluid());
+            if (recipe != null && recipe.hasResult()) boilProgress.merge(recipe.getId(), part.amount(), Integer::sum);
+        }
+        flushResidue(level.getRandom());
+        return true;
+    }
+
+    /** Turns completed boil cycles into items in the output slot; a cycle waits while it is full. */
+    private boolean flushResidue(RandomSource random) {
+        boolean changed = flushDust();
+        Iterator<Map.Entry<String, Integer>> it = boilProgress.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, Integer> entry = it.next();
+            BoilingRecipe recipe = BoilingRecipeManager.get(entry.getKey());
+            if (recipe == null || !recipe.hasResult()) { it.remove(); changed = true; continue; }
+
+            while (entry.getValue() >= recipe.getInputAmount() && canStore(recipe.resultStack())) {
+                entry.setValue(entry.getValue() - recipe.getInputAmount());
+                ItemStack rolled = recipe.rollResult(random);
+                if (!rolled.isEmpty()) {
+                    ItemStack slot = items.get(SLOT_OUTPUT);
+                    if (slot.isEmpty()) items.set(SLOT_OUTPUT, rolled);
+                    else slot.grow(rolled.getCount());
+                }
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    /** Moves {@code dry} out of the tank (the mixture {@code mix}) into the dust buffer. */
+    private void dryOut(Solution mix, Solution dry, int pressure) {
+        fluidTank  = SolutionFluids.toStack(mix.minus(dry), storedHeat, pressure);
+        dustBuffer = dustBuffer.plus(dry);
+    }
+
+    /** The suspended (undissolved) components of {@code mix}. */
+    private static Solution undissolvedOf(Solution mix) {
+        List<Solution.Part> parts = new ArrayList<>();
+        for (Solution.Part p : mix.components()) if (!p.dissolved()) parts.add(p);
+        return new Solution(parts);
+    }
+
+    /**
+     * Presses the dust buffer into mixture dust, {@value MixtureDustItem#UNIT} mB per item, plus a
+     * final smaller batch once the tank has run dry. Waits while the output slot cannot take it.
+     */
+    private boolean flushDust() {
+        boolean changed = false;
+        while (!dustBuffer.isEmpty()) {
+            boolean lastBatch = fluidTank.isEmpty() && dustBuffer.totalAmount() < MixtureDustItem.UNIT;
+            if (dustBuffer.totalAmount() < MixtureDustItem.UNIT && !lastBatch) break;
+
+            Solution portion = dustBuffer.scaledTo(MixtureDustItem.UNIT);
+            ItemStack dust = MixtureDustItem.of(portion);
+            if (!canStore(dust)) break;
+
+            ItemStack slot = items.get(SLOT_OUTPUT);
+            if (slot.isEmpty()) items.set(SLOT_OUTPUT, dust);
+            else slot.grow(1);
+            dustBuffer = dustBuffer.minus(portion);
+            changed = true;
+        }
+        return changed;
+    }
+
+    /** True if {@code stack} fits in the output slot on top of what is already there. */
+    private boolean canStore(ItemStack stack) {
+        if (stack.isEmpty()) return true;
+        ItemStack slot = items.get(SLOT_OUTPUT);
+        if (slot.isEmpty()) return true;
+        return ItemStack.isSameItemSameComponents(slot, stack)
+                && slot.getCount() + stack.getCount() <= slot.getMaxStackSize();
+    }
+
     // ── Persistence ───────────────────────────────────────────────────────────
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+        items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(input, items);
         storedHeat = input.getIntOr("StoredHeat", 0);
         decayTimer = input.getIntOr("DecayTimer", 0);
+        boilProgress.clear();
+        input.read("BoilProgress", BOIL_PROGRESS_CODEC).ifPresent(boilProgress::putAll);
+        dustBuffer = input.read("DustBuffer", Solution.CODEC).orElse(Solution.EMPTY);
         fluidTank  = input.read("FluidTank", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
     }
 
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
+        ContainerHelper.saveAllItems(output, items);
         output.putInt("StoredHeat", storedHeat);
         output.putInt("DecayTimer", decayTimer);
+        output.store("BoilProgress", BOIL_PROGRESS_CODEC, boilProgress);
+        output.store("DustBuffer", Solution.CODEC, dustBuffer);
         output.store("FluidTank", FluidStack.OPTIONAL_CODEC, fluidTank);
     }
 
@@ -244,11 +457,11 @@ public class BoilerBlockEntity extends BlockEntity implements MenuProvider, IHea
 
         @Override public long getAmountAsLong(int i) { return fluidTank.getAmount(); }
         @Override public long getCapacityAsLong(int i, FluidResource res) { return MAX_FLUID; }
-        @Override public boolean isValid(int i, FluidResource res) { return true; }
+        @Override public boolean isValid(int i, FluidResource res) { return FluidMixing.canBlend(fluidTank, res); }
 
         @Override
         public int insert(int i, FluidResource res, int amount, TransactionContext tx) {
-            if (!fluidTank.isEmpty() && !res.matches(fluidTank)) return 0;
+            if (res.isEmpty() || !FluidMixing.canBlend(fluidTank, res)) return 0;
             int space = MAX_FLUID - fluidTank.getAmount();
             int toInsert = Math.min(amount, space);
             if (toInsert <= 0) return 0;

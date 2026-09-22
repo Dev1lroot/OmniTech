@@ -1,0 +1,10 @@
+{
+  "note": "1 rod ≈ 4470.00 g pure yttrium (1× the ingot-equivalent mass, 1000 mB (1 L) molten yttrium × real density 4.47 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Y]",
+      "name": "Yttrium",
+      "amount": 50277.82
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "9× zirconium_ingot mass compacted into a block (≈ 58680.00 g pure zirconium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Zr]",
+      "name": "Zirconium",
+      "amount": 643251.78
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "note": "1 mushroom ≈ 8 g: 90% water, 5% chitin (fungal cell walls, not cellulose — a real, distinctive difference from plants).",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 399.7
+    },
+    {
+      "smiles": "CC(=O)NC1C(O)OC(CO)C(O)C1O",
+      "name": "Chitin (N-acetylglucosamine repeat unit, fungal cell wall)",
+      "amount": 1.8
+    }
+  ]
+}

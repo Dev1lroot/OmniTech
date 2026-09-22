@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g — essentially pure Fe2O3 ore mineral.",
+  "compounds": [
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide (Hematite)",
+      "amount": 313.11
+    }
+  ]
+}

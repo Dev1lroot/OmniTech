@@ -1,0 +1,15 @@
+{
+  "note": "1 rod ≈ 12850.00 g (1× the 1000 mB foundry-cast ingot mass, density 12.85 g/cm³). Real (Hf,Ta)C ultra-high-temperature ceramics are a solid solution of the two carbides; modeled here as an even 50/50 mass split.",
+  "compounds": [
+    {
+      "smiles": "[Hf][C]",
+      "name": "Hafnium Carbide",
+      "amount": 33726.86
+    },
+    {
+      "smiles": "[Ta][C]",
+      "name": "Tantalum Carbide",
+      "amount": 33297.23
+    }
+  ]
+}

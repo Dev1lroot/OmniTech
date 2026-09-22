@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 665.50 g pure hafnium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten hafnium × real density 13.31 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Hf]",
+      "name": "Hafnium",
+      "amount": 3728.5
+    }
+  ]
+}

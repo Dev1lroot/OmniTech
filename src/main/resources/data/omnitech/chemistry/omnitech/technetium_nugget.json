@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1277.78 g pure technetium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten technetium × real density 11.5 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Tc]",
+      "name": "Technetium",
+      "amount": 13038.55
+    }
+  ]
+}

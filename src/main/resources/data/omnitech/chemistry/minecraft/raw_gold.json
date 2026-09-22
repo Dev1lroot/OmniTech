@@ -1,0 +1,15 @@
+{
+  "note": "1 nugget-bearing chunk ≈ 120 g: 80% native gold, 20% SiO2 matrix.",
+  "compounds": [
+    {
+      "smiles": "[Au]",
+      "name": "Gold (native)",
+      "amount": 487.4
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (matrix)",
+      "amount": 399.5
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 26.70 g pure lithium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten lithium × real density 0.534 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Li]",
+      "name": "Lithium",
+      "amount": 3847.26
+    }
+  ]
+}

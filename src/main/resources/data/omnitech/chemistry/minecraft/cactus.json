@@ -1,0 +1,15 @@
+{
+  "note": "1 cactus block ≈ 50 g succulent tissue: 95% water, 3% mucilage (represented generically).",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 2636.7
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Mucilage (succulent polysaccharide, generic repeat unit)",
+      "amount": 9.3
+    }
+  ]
+}

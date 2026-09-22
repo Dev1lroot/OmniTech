@@ -18,17 +18,20 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.transfer.fluid.FluidResource;
-import net.neoforged.neoforge.transfer.resource.ResourceStack;
+import net.neoforged.neoforge.fluids.FluidStack;
+import com.dev1lroot.mcmods.omnitech.util.GuiUtil;
+import com.dev1lroot.mcmods.omnitech.util.SolutionFluids;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
  * A small glass lab flask that carries up to {@value #CAPACITY} mB, split across one or more
- * fluids at once — a {@link Solution}. Filling is one-way through the Fluid Filler's "Inject"
- * action (see {@code FluidFillerBlockEntity#tryInjectFlask}) or a filled {@link PipetteItem}
- * combined with the flask on a crafting table; there's currently no way to drain a flask
- * directly back into a tank.
+ * fluids at once — a {@link Solution}. It can be filled with the Fluid Filler's "Inject" action
+ * (see {@code FluidFillerBlockEntity#tryInjectFlask}) or a filled {@link PipetteItem} combined
+ * with the flask on a crafting table, and right-clicking a Fluid Tank fills an empty flask from it
+ * or unloads a filled one into it (see {@code FluidTankBlock#interactWithFlask}).
  *
  * <p>Unlike {@link BucketItem}, a flask is meant for chemistry — acids and collected
  * gas samples are exactly what lab glassware is for, so {@link #canHold} only rejects
@@ -64,6 +67,7 @@ public class FlaskItem extends Item {
     public static void setSolution(ItemStack stack, Solution solution) {
         if (solution == null || solution.isEmpty()) {
             stack.remove(OmniTechDataComponents.SOLUTION.get());
+            SolutionFluids.setConditions(stack, SolutionFluids.AMBIENT_TEMP, SolutionFluids.AMBIENT_PRESSURE);
         } else {
             stack.set(OmniTechDataComponents.SOLUTION.get(), solution);
         }
@@ -90,6 +94,38 @@ public class FlaskItem extends Item {
     }
 
     /**
+     * Adds up to {@code incoming}'s amount of a fluid stack — plain or a whole mixture — clamped to
+     * the room left, keeping every component's ratio and dissolved flag, and blending the flask's
+     * temperature / pressure with the incoming stack's by volume. Returns the mB actually added
+     * (0 if the flask is full or any component is something glass can't hold).
+     */
+    public static int addFluidStack(ItemStack stack, FluidStack incoming) {
+        if (incoming.isEmpty()) return 0;
+        int space = getRemainingCapacity(stack);
+        if (space <= 0) return 0;
+
+        Solution add = SolutionFluids.toSolution(incoming).scaledTo(space);
+        for (Solution.Part part : add.components()) if (!canHold(part.fluid())) return 0;
+        int added = add.totalAmount();
+        if (added <= 0) return 0;
+
+        int current = getTotalAmount(stack);
+        int temp = SolutionFluids.blend(SolutionFluids.temperatureOf(stack), current,
+                SolutionFluids.temperatureOf(incoming), added);
+        int pressure = SolutionFluids.blend(SolutionFluids.pressureOf(stack), current,
+                SolutionFluids.pressureOf(incoming), added);
+        setSolution(stack, getSolution(stack).plus(add));
+        SolutionFluids.setConditions(stack, temp, pressure);
+        return added;
+    }
+
+    /** The whole contents as one fluid stack (plain fluid, or a {@code solution} mixture) at the flask's conditions. */
+    public static FluidStack toFluidStack(ItemStack stack) {
+        return SolutionFluids.toStack(getSolution(stack),
+                SolutionFluids.temperatureOf(stack), SolutionFluids.pressureOf(stack));
+    }
+
+    /**
      * Fills an empty flask with a proportional sample of the fermenter's mixture — as much as the
      * flask holds ({@value #CAPACITY} mB), or all of it if the vessel has less. Returns true if
      * anything was transferred.
@@ -99,6 +135,7 @@ public class FlaskItem extends Item {
         Solution sample = fermenter.drawSample(CAPACITY);
         if (sample.isEmpty()) return false;
         setSolution(stack, sample);
+        SolutionFluids.setConditions(stack, fermenter.getTemperature(), fermenter.getPressure());
         return true;
     }
 
@@ -122,11 +159,11 @@ public class FlaskItem extends Item {
         Solution solution = getSolution(stack);
         if (solution.isEmpty()) return Component.literal("Flask");
         if (solution.components().size() == 1) {
-            ResourceStack<FluidResource> only = solution.components().get(0);
+            Solution.Part only = solution.components().get(0);
             return only.resource().toStack(only.amount()).getHoverName().copy()
-                    .append(Component.literal(" Flask"));
+                    .append(Component.literal(only.dissolved() ? " Flask" : " Slurry Flask"));
         }
-        ResourceStack<FluidResource> dom = solution.dominant();
+        Solution.Part dom = solution.dominant();
         return dom.resource().toStack(dom.amount()).getHoverName().copy()
                 .append(Component.literal(" Solution Flask"));
     }
@@ -145,16 +182,16 @@ public class FlaskItem extends Item {
         int total = solution.totalAmount();
         tooltip.accept(Component.literal("Solution: " + total + " / " + CAPACITY + " mB")
                 .withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.literal(SolutionFluids.temperatureOf(stack) + " °C, "
+                + SolutionFluids.pressureOf(stack) + " kPa").withStyle(ChatFormatting.GRAY));
 
-        for (ResourceStack<FluidResource> c : solution.components()) {
-            FluidResource res = c.resource();
-            int amount = c.amount();
-            int pct = total > 0 ? Math.round(100f * amount / total) : 0;
-            var fluidStack = res.toStack(amount);
-            tooltip.accept(fluidStack.getHoverName().copy()
-                    .append(Component.literal(": " + amount + " mB (" + pct + "%)"))
-                    .withStyle(ChatFormatting.WHITE));
-            FluidHazardUtil.appendHazardTooltip(fluidStack, tooltip);
+        // Per component: name, share, dissolved / undissolved, boiling point and "BOILING" if it is.
+        List<Component> lines = new ArrayList<>();
+        GuiUtil.appendMixtureLines(lines, toFluidStack(stack));
+        lines.forEach(tooltip);
+
+        for (Solution.Part c : solution.components()) {
+            FluidHazardUtil.appendHazardTooltip(c.resource().toStack(c.amount()), tooltip);
         }
     }
 }

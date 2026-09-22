@@ -1,0 +1,10 @@
+{
+  "note": "9× bismuth_ingot mass compacted into a block (≈ 88020.00 g pure bismuth, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Bi]",
+      "name": "Bismuth",
+      "amount": 421188.63
+    }
+  ]
+}

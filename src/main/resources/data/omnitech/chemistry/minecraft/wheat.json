@@ -1,0 +1,7 @@
+{
+  "note": "1 wheat item ≈ 5 g dry grain-equivalent: 70% starch, 12% water (remainder protein/fiber/ash omitted).",
+  "compounds": [
+    { "smiles": "OC1OC(CO)C(O)C(O)C1O", "name": "Starch (amylose repeat unit)", "amount": 19.4 },
+    { "smiles": "O", "name": "Water", "amount": 33.3 }
+  ]
+}

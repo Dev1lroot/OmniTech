@@ -1,0 +1,10 @@
+{
+  "note": "1 leather item ≈ 30 g tanned hide: mostly collagen protein (represented as glycine-equivalent — collagen is famously ~1/3 glycine residues).",
+  "compounds": [
+    {
+      "smiles": "NCC(=O)O",
+      "name": "Collagen Protein (amino-acid content, as glycine-equivalent)",
+      "amount": 359.7
+    }
+  ]
+}

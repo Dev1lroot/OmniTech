@@ -1,0 +1,10 @@
+{
+  "note": "9× terbium_ingot mass compacted into a block (≈ 74070.00 g pure terbium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Tb]",
+      "name": "Terbium",
+      "amount": 466068.9
+    }
+  ]
+}

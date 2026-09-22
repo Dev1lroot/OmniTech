@@ -1,0 +1,10 @@
+{
+  "note": "9× osmium_ingot mass compacted into a block (≈ 203310.00 g pure osmium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Os]",
+      "name": "Osmium",
+      "amount": 1068758.87
+    }
+  ]
+}

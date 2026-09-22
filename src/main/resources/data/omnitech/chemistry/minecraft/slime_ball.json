@@ -1,0 +1,15 @@
+{
+  "note": "1 slime ball ≈ 10 g gelatinous mucus: 80% water, 20% glycoprotein (as glycine-equivalent).",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 444.1
+    },
+    {
+      "smiles": "NCC(=O)O",
+      "name": "Mucus Glycoprotein (amino-acid content, as glycine-equivalent)",
+      "amount": 26.6
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "note": "Soda-lime glass, density ≈ 2500 kg/m³, 1 block = 1×1×1 m. Typical composition 75% SiO2 / 15% Na2O / 10% CaO by mass.",
+  "compounds": [
+    { "smiles": "O=[Si]=O", "name": "Silicon Dioxide (Quartz sand)", "amount": 31208388.8 },
+    { "smiles": "[Na]O[Na]", "name": "Sodium Oxide (from soda ash flux)", "amount": 6050338.8 },
+    { "smiles": "[Ca]=O", "name": "Calcium Oxide (from limestone, stabilizer)", "amount": 4457917.3 }
+  ]
+}

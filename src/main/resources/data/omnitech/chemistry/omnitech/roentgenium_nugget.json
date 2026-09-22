@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 3188.89 g pure roentgenium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten roentgenium × real density 28.7 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Rg]",
+      "name": "Roentgenium",
+      "amount": 11388.89
+    }
+  ]
+}

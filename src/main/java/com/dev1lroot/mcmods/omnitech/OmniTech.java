@@ -35,7 +35,10 @@ import com.dev1lroot.mcmods.omnitech.recipes.ManualCentrifugeRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualMaceratorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.SmelterRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ElectrolysisRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.BoilingRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.SolvationRecipeManager;
+import com.dev1lroot.mcmods.omnitech.blocks.labware.ChemicalMixerBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.labware.ChemicalMixerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.ElectrolysisMachineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.ElectrolysisMachineBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.SolvationMachineBlockEntity;
@@ -141,6 +144,7 @@ public class OmniTech {
         AssemblerLoader.loadAll();  // reads data/omnitech/assembler/*.json
 
         FluidLoader.loadAll();           // reads data/omnitech/fluid/*.json
+        ChemistryCompositionLoader.loadAll(); // reads data/omnitech/chemistry/**/*.json
         OmniTechFluids.register(modEventBus);
         OmniTechEntities.register(modEventBus);
         OmniTechFeatures.register(modEventBus);
@@ -312,6 +316,22 @@ public class OmniTech {
         );
         event.registerBlockEntity(
                 Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.CHEMICAL_MIXER.get(),
+                (be, side) -> {
+                    if (side == null) return null;
+                    var state = be.getLevel() != null
+                            ? be.getLevel().getBlockState(be.getBlockPos())
+                            : null;
+                    if (state == null) return null;
+                    var mixer = (ChemicalMixerBlockEntity) be;
+                    if (side == state.getValue(ChemicalMixerBlock.FACING)) return mixer.outputHandler;
+                    if (side == ChemicalMixerBlock.inputADirection(state)) return mixer.inputAHandler;
+                    if (side == ChemicalMixerBlock.inputBDirection(state)) return mixer.inputBHandler;
+                    return null;
+                }
+        );
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
                 OmniTechBlockEntities.DECOMPRESSOR.get(),
                 (be, side) -> {
                     if (side == null) return null;
@@ -423,6 +443,19 @@ public class OmniTech {
                 (stack, access) -> new com.dev1lroot.mcmods.omnitech.client.PipetteResourceHandler(access),
                 OmniTechItems.PIPETTE.get()
         );
+
+        // NeoForge only gives the plain BucketItem class a fluid capability, so our per-fluid
+        // OmniTechBucketItem subclasses need it registered by hand — otherwise a Fluid Tank
+        // (or any fluid handler) can neither empty nor fill them on right-click.
+        for (var item : net.minecraft.core.registries.BuiltInRegistries.ITEM) {
+            if (item instanceof com.dev1lroot.mcmods.omnitech.OmniTechBucketItem) {
+                event.registerItem(
+                        Capabilities.Fluid.ITEM,
+                        (stack, access) -> new net.neoforged.neoforge.transfer.fluid.BucketResourceHandler(access),
+                        item
+                );
+            }
+        }
 
         // Reactor master block exposes its distilled-water coolant tank
         event.registerBlockEntity(
@@ -594,6 +627,10 @@ public class OmniTech {
                 com.dev1lroot.mcmods.omnitech.network.PrintFormulaPacket.TYPE,
                 com.dev1lroot.mcmods.omnitech.network.PrintFormulaPacket.CODEC,
                 com.dev1lroot.mcmods.omnitech.network.PrintFormulaPacket::handle);
+        event.registrar("1").playToServer(
+                com.dev1lroot.mcmods.omnitech.network.PrintCompoundPacket.TYPE,
+                com.dev1lroot.mcmods.omnitech.network.PrintCompoundPacket.CODEC,
+                com.dev1lroot.mcmods.omnitech.network.PrintCompoundPacket::handle);
         event.registrar("1").playToClient(
                 NuclearExplosionFxPacket.TYPE,
                 NuclearExplosionFxPacket.CODEC,
@@ -759,6 +796,15 @@ public class OmniTech {
 
     @SubscribeEvent
     public void onAddReloadListener(AddServerReloadListenersEvent event) {
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "boiling_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    BoilingRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
         event.addListener(Identifier.fromNamespaceAndPath(MODID, "alloy_furnace_recipes"), new PreparableReloadListener() {
             @Override
             public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,

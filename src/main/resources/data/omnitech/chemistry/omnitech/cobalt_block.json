@@ -1,0 +1,10 @@
+{
+  "note": "9× cobalt_ingot mass compacted into a block (≈ 80100.00 g pure cobalt, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Co]",
+      "name": "Cobalt",
+      "amount": 1359170.58
+    }
+  ]
+}

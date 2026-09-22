@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 205.56 g pure beryllium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten beryllium × real density 1.85 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Be]",
+      "name": "Beryllium",
+      "amount": 22809.09
+    }
+  ]
+}

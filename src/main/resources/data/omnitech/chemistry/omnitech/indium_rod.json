@@ -1,0 +1,10 @@
+{
+  "note": "1 rod ≈ 7310.00 g pure indium (1× the ingot-equivalent mass, 1000 mB (1 L) molten indium × real density 7.31 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[In]",
+      "name": "Indium",
+      "amount": 63665.98
+    }
+  ]
+}

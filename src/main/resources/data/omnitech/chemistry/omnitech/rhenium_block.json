@@ -1,0 +1,10 @@
+{
+  "note": "9× rhenium_ingot mass compacted into a block (≈ 189180.00 g pure rhenium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Re]",
+      "name": "Rhenium",
+      "amount": 1015966.1
+    }
+  ]
+}

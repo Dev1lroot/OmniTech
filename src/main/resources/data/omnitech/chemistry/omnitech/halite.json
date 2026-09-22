@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 2.17 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 25% Sodium Chloride / 75% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[halite]",
+      "name": "Sodium Chloride (Halite/Rock Salt)",
+      "amount": 9283.03
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 27088.88
+    }
+  ]
+}

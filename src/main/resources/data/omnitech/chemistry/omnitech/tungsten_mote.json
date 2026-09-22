@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 962.50 g pure tungsten (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten tungsten × real density 19.25 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[W]",
+      "name": "Tungsten",
+      "amount": 5235.53
+    }
+  ]
+}

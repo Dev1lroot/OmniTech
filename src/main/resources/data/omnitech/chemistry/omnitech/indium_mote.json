@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 365.50 g pure indium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten indium × real density 7.31 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[In]",
+      "name": "Indium",
+      "amount": 3183.3
+    }
+  ]
+}

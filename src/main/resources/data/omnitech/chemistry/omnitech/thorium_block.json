@@ -1,0 +1,10 @@
+{
+  "note": "9× thorium_ingot mass compacted into a block (≈ 105480.00 g pure thorium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Th]",
+      "name": "Thorium",
+      "amount": 454580.72
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[Fe][Fe][Fe][Fe][Fe][Fe][Fe][Fe][Fe][S][S][S][S][S][S][S][S]",
+      "name": "Iron Nickel Sulfide (Pentlandite)",
+      "amount": 65.87
+    }
+  ]
+}

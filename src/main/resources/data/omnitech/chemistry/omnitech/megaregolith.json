@@ -1,0 +1,15 @@
+{
+  "note": "Lunar/planetary regolith — deeply compacted, fractured bedrock-like regolith, density ≈ 2400 kg/m³, 1 block = 1×1×1 m. 90% SiO2 / 10% Fe2O3 (space weathering iron staining) by mass.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 35952063.91
+    },
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide (Hematite)",
+      "amount": 1502911.89
+    }
+  ]
+}

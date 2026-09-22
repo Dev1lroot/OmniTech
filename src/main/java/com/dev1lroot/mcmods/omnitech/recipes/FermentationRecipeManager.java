@@ -30,11 +30,12 @@ import java.util.TreeMap;
  * Loads everything the Fermenter needs from data packs:
  * <ul>
  *   <li>{@code machine_recipe/fermentation/*.json} — the timed reactions, see {@link FermentationRecipe}</li>
- *   <li>{@code machine_recipe/fermenter_dissolve/*.json} — items the input slot dissolves into the
- *       solution: {@code { "item": "omnitech:wheat_flour", "fluid": "omnitech:flour", "amount": 250 }}</li>
+ *   <li>{@code machine_recipe/fermenter_dissolve/*.json} — items the input slot puts into the
+ *       solution: {@code { "item": "omnitech:wheat_flour", "fluid": "omnitech:flour", "amount": 250,
+ *       "dissolved": false }} ({@code dissolved} defaults to true; false = suspended dust)</li>
  *   <li>{@code machine_recipe/fermenter_microbes/*.json} — what can spontaneously appear in a batch
  *       with no live culture: {@code { "fluid": "omnitech:yeast", "amount": 1, "weight": 3,
- *       "requires": ["minecraft:water", "omnitech:sugar"] }}</li>
+ *       "dissolved": false, "requires": ["minecraft:water", "omnitech:sugar"] }}</li>
  * </ul>
  * Maps are sorted by file name so every server iterates reactions in the same order.
  */
@@ -69,7 +70,8 @@ public class FermentationRecipeManager {
         scan(rm, RECIPE_PATH, (name, json) -> loadedRecipes.put(name, parseRecipe(name, json)));
         scan(rm, DISSOLVE_PATH, (name, json) -> loadedDissolutions.put(name, new Dissolution(
                 parseId(json.get("item").getAsString()),
-                new FluidAmount(parseId(json.get("fluid").getAsString()), json.get("amount").getAsInt()))));
+                new FluidAmount(parseId(json.get("fluid").getAsString()), json.get("amount").getAsInt(),
+                        !json.has("dissolved") || json.get("dissolved").getAsBoolean()))));
         scan(rm, MICROBE_PATH, (name, json) -> {
             List<Identifier> requires = new ArrayList<>();
             if (json.has("requires")) {
@@ -77,7 +79,8 @@ public class FermentationRecipeManager {
             }
             loadedMicrobes.put(name, new Microbe(
                     new FluidAmount(parseId(json.get("fluid").getAsString()),
-                            json.has("amount") ? json.get("amount").getAsInt() : 1),
+                            json.has("amount") ? json.get("amount").getAsInt() : 1,
+                            !json.has("dissolved") || json.get("dissolved").getAsBoolean()),
                     json.has("weight") ? json.get("weight").getAsInt() : 1,
                     List.copyOf(requires)));
         });
@@ -124,7 +127,8 @@ public class FermentationRecipeManager {
         List<FluidAmount> out = new ArrayList<>(array.size());
         for (JsonElement e : array) {
             JsonObject o = e.getAsJsonObject();
-            out.add(new FluidAmount(parseId(o.get("fluid").getAsString()), o.get("amount").getAsInt()));
+            out.add(new FluidAmount(parseId(o.get("fluid").getAsString()), o.get("amount").getAsInt(),
+                    !o.has("dissolved") || o.get("dissolved").getAsBoolean()));
         }
         return List.copyOf(out);
     }

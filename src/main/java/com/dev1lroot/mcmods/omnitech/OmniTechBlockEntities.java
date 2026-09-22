@@ -9,6 +9,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.processing.centrifuge.ManualCentrifu
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticGeneratorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticPipeBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticReductorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.labware.ChemicalMixerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.ElectrolysisMachineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.FractionalDistillerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.SolvationMachineBlockEntity;
@@ -220,6 +221,11 @@ public class OmniTechBlockEntities {
             REGISTRY.register("heat_exchanger",
                     () -> new BlockEntityType<>(HeatExchangerBlockEntity::new,
                             OmniTechBlocks.HEAT_EXCHANGER.get()));
+
+    public static final Supplier<BlockEntityType<ChemicalMixerBlockEntity>> CHEMICAL_MIXER =
+            REGISTRY.register("chemical_mixer",
+                    () -> new BlockEntityType<>(ChemicalMixerBlockEntity::new,
+                            OmniTechBlocks.CHEMICAL_MIXER.get()));
 
     public static final Supplier<BlockEntityType<DecompressorBlockEntity>> DECOMPRESSOR =
             REGISTRY.register("decompressor",

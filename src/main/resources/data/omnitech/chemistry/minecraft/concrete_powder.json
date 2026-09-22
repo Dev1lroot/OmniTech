@@ -1,0 +1,15 @@
+{
+  "note": "Portland-cement + sand mix, loose density ≈ 1500 kg/m³, 1 block = 1×1×1 m. 30% tricalcium silicate clinker / 70% SiO2 sand by mass.",
+  "compounds": [
+    {
+      "smiles": "[Ca]O[Si]=O",
+      "name": "Tricalcium Silicate (Portland cement clinker)",
+      "amount": 1970831.7
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 17476697.7
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "note": "Loose topsoil, density ≈ 1300 kg/m³, 1 block = 1×1×1 m. 40% quartz sand, 20% clay, 30% moisture, 10% decayed organic matter (humus) by mass.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz sand fraction)",
+      "amount": 8655126.5
+    },
+    {
+      "smiles": "O=[Al]O[Si]=O",
+      "name": "Aluminosilicate Hydrate (Kaolinite clay)",
+      "amount": 1007049.3
+    },
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 21648626.1
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Humus (decayed organic matter, generic cellulose repeat unit)",
+      "amount": 801776.2
+    }
+  ]
+}

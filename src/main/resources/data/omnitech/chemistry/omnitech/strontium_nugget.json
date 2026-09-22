@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 293.33 g pure strontium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten strontium × real density 2.64 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Sr]",
+      "name": "Strontium",
+      "amount": 3347.79
+    }
+  ]
+}

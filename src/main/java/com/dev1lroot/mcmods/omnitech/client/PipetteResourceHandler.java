@@ -6,12 +6,10 @@ package com.dev1lroot.mcmods.omnitech.client;
 
 import com.dev1lroot.mcmods.omnitech.items.FlaskItem;
 import com.dev1lroot.mcmods.omnitech.items.PipetteItem;
-import com.dev1lroot.mcmods.omnitech.items.Solution;
 import net.neoforged.neoforge.transfer.ItemAccessResourceHandler;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.resource.ResourceStack;
 
 /**
  * Exposes a {@link PipetteItem}'s contents as a {@code ResourceHandler<FluidResource>}, purely
@@ -28,14 +26,17 @@ public final class PipetteResourceHandler extends ItemAccessResourceHandler<Flui
 
     @Override
     public boolean isValid(int index, FluidResource resource) {
-        return resource.isEmpty() || FlaskItem.canHold(resource.toStack(1).getFluid());
+        if (resource.isEmpty()) return true;
+        for (var part : com.dev1lroot.mcmods.omnitech.util.SolutionFluids.toSolution(resource, 1000).components()) {
+            if (!FlaskItem.canHold(part.fluid())) return false;
+        }
+        return true;
     }
 
     @Override
     protected FluidResource getResourceFrom(ItemResource accessResource, int index) {
-        Solution solution = PipetteItem.getSolution(accessResource.toStack(1));
-        ResourceStack<FluidResource> dominant = solution.dominant();
-        return dominant == null ? FluidResource.EMPTY : dominant.resource();
+        var stack = PipetteItem.toFluidStack(accessResource.toStack(1));
+        return stack.isEmpty() ? FluidResource.EMPTY : FluidResource.of(stack);
     }
 
     @Override

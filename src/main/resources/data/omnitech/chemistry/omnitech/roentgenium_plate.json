@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 28700.00 g pure roentgenium (1× the ingot-equivalent mass, 1000 mB (1 L) molten roentgenium × real density 28.7 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Rg]",
+      "name": "Roentgenium",
+      "amount": 102500.0
+    }
+  ]
+}

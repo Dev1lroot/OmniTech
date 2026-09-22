@@ -1,0 +1,10 @@
+{
+  "note": "1 coil ≈ 17820.00 g pure nickel (2× the ingot-equivalent mass, 1000 mB (1 L) molten nickel × real density 8.91 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ni]",
+      "name": "Nickel",
+      "amount": 303613.72
+    }
+  ]
+}

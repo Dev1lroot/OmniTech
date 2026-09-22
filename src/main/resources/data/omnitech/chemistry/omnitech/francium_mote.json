@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 93.50 g pure francium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten francium × real density 1.87 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Fr]",
+      "name": "Francium",
+      "amount": 419.28
+    }
+  ]
+}

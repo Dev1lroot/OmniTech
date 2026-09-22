@@ -1,0 +1,10 @@
+{
+  "note": "9× tin_ingot mass compacted into a block (≈ 65790.00 g pure tin, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Sn]",
+      "name": "Tin",
+      "amount": 554207.73
+    }
+  ]
+}

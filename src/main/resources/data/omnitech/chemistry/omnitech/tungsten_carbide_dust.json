@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 15630.00 g (1× the 1000 mB foundry-cast ingot mass, density 15.63 g/cm³). WC is a genuine stoichiometric ceramic compound (not an alloy), kept as one compound.",
+  "compounds": [
+    {
+      "smiles": "[W][C]",
+      "name": "Tungsten Carbide",
+      "amount": 79805.57
+    }
+  ]
+}

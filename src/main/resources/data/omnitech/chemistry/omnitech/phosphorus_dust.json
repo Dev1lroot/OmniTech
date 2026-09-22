@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 1820.00 g pure phosphorus (1× the ingot-equivalent mass, 1000 mB (1 L) molten phosphorus × real density 1.82 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[P]",
+      "name": "Phosphorus",
+      "amount": 58758.96
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "note": "red_sandstone.json scaled to 1/2 block volume (slab rule).",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 17801265.0
+    },
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide",
+      "amount": 216043.6
+    },
+    {
+      "smiles": "[Ca]=O",
+      "name": "Calcium Oxide",
+      "amount": 820256.8
+    }
+  ]
+}

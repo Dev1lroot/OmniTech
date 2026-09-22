@@ -9,6 +9,7 @@ import com.dev1lroot.mcmods.omnitech.gui.FermenterMenu;
 import com.dev1lroot.mcmods.omnitech.items.FlaskItem;
 import com.dev1lroot.mcmods.omnitech.items.PipetteItem;
 import com.dev1lroot.mcmods.omnitech.items.Solution;
+import com.dev1lroot.mcmods.omnitech.util.SolutionFluids;
 import com.dev1lroot.mcmods.omnitech.recipes.FermentationRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.FermentationRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.FermentationRecipeManager.Dissolution;
@@ -37,12 +38,12 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
-import net.neoforged.neoforge.transfer.resource.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -79,11 +80,14 @@ import java.util.Map;
  * {@code requires} fluids are present) appears on its own. It may be the wanted yeast or a mold
  * that ruins the batch.
  *
- * <p>The fluid handler has one slot per solution component so pumps and machines can pull any of them.
- * Reaction clocks are not persisted; they simply restart after a reload.
+ * <p>The fluid handler exposes the whole mixture as one resource (a {@code omnitech:solution} fluid
+ * carrying every component's ratio and dissolved flag, or the plain fluid once only one dissolved
+ * fluid is left), with the mixture's own temperature and pressure — so pipes, pumps, tanks and other
+ * machines handle it like any fluid. Reaction clocks are not persisted; they restart after a reload.
  *
  * <h3>ContainerData layout</h3>
- * 0 – total mB, 1 – capacity, 2 – number of reactions currently running, 3 – mB of live microbes.
+ * 0 – total mB, 1 – capacity, 2 – number of reactions currently running, 3 – mB of live microbes,
+ * 4 – temperature (°C), 5 – pressure (kPa).
  */
 public class FermenterBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
 
@@ -100,6 +104,15 @@ public class FermenterBlockEntity extends BaseContainerBlockEntity implements Wo
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
     private Solution solution = Solution.EMPTY;
+    /** Temperature (°C) and pressure (kPa) of the mixture as a whole. */
+    private int temperature = SolutionFluids.AMBIENT_TEMP;
+    private int pressure = SolutionFluids.AMBIENT_PRESSURE;
+    private int coolingTimer = 0;
+
+    // The mixture as a fluid resource, rebuilt only when something changed (pipes ask every tick).
+    private Solution cachedFor = null;
+    private int cachedTemp, cachedPressure;
+    private FluidResource cachedResource = FluidResource.EMPTY;
 
     private final Map<String, Integer> reactionTimers = new HashMap<>();
     private int dissolveTimer = 0;
@@ -115,6 +128,8 @@ public class FermenterBlockEntity extends BaseContainerBlockEntity implements Wo
                 case 1 -> TANK_CAPACITY;
                 case 2 -> activeReactions;
                 case 3 -> liveMicrobes;
+                case 4 -> temperature;
+                case 5 -> pressure;
                 default -> 0;
             };
         }
@@ -122,9 +137,11 @@ public class FermenterBlockEntity extends BaseContainerBlockEntity implements Wo
             switch (index) {
                 case 2 -> activeReactions = value;
                 case 3 -> liveMicrobes = value;
+                case 4 -> temperature = value;
+                case 5 -> pressure = value;
             }
         }
-        @Override public int getCount() { return 4; }
+        @Override public int getCount() { return 6; }
     };
 
     public FermenterBlockEntity(BlockPos pos, BlockState state) {
@@ -162,6 +179,8 @@ public class FermenterBlockEntity extends BaseContainerBlockEntity implements Wo
     }
 
     public Solution getSolution() { return solution; }
+    public int getTemperature()   { return temperature; }
+    public int getPressure()      { return pressure; }
 
     /**
      * Removes and returns a representative sample of up to {@code amount} mB, with every
@@ -174,17 +193,12 @@ public class FermenterBlockEntity extends BaseContainerBlockEntity implements Wo
         if (amount <= 0 || solution.isEmpty()) return Solution.EMPTY;
         Solution wanted = solution.scaledTo(amount);
 
-        // scaledTo's rounding can hand the last component slightly more than it holds; clamp.
         Solution drawn = Solution.EMPTY;
-        for (ResourceStack<FluidResource> c : wanted.components()) {
-            Fluid fluid = c.resource().toStack(1).getFluid();
-            if (!FlaskItem.canHold(fluid)) return Solution.EMPTY;
-            int take = Math.min(c.amount(), solution.amountOf(fluid));
-            if (take > 0) drawn = drawn.plus(fluid, take);
+        for (Solution.Part c : wanted.components()) {
+            if (!FlaskItem.canHold(c.fluid())) return Solution.EMPTY;
+            drawn = drawn.plus(c.fluid(), c.amount(), c.dissolved());
         }
-        for (ResourceStack<FluidResource> c : drawn.components()) {
-            solution = solution.minus(c.resource().toStack(1).getFluid(), c.amount());
-        }
+        solution = solution.minus(drawn);
         if (!drawn.isEmpty()) {
             setChanged();
             if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
@@ -196,19 +210,43 @@ public class FermenterBlockEntity extends BaseContainerBlockEntity implements Wo
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, FermenterBlockEntity be) {
         Solution before = be.solution;
+        int tempBefore = be.temperature, pressureBefore = be.pressure;
         ItemStack inputBefore = be.items.get(SLOT_INPUT).copy();
         ItemStack outputBefore = be.items.get(SLOT_OUTPUT).copy();
 
         be.tickInput();
         be.tickReactions();
         be.tickSpontaneousLife(level.getRandom());
+        be.tickConditions();
 
         if (!be.solution.equals(before)
+                || be.temperature != tempBefore || be.pressure != pressureBefore
                 || !ItemStack.matches(inputBefore, be.items.get(SLOT_INPUT))
                 || !ItemStack.matches(outputBefore, be.items.get(SLOT_OUTPUT))) {
             be.setChanged();
             level.sendBlockUpdated(pos, state, state, 3);
         }
+    }
+
+    /**
+     * The mixture slowly settles toward ambient temperature and pressure (1 unit per second), and an
+     * empty vessel is simply ambient.
+     */
+    private void tickConditions() {
+        if (solution.isEmpty()) {
+            temperature = SolutionFluids.AMBIENT_TEMP;
+            pressure = SolutionFluids.AMBIENT_PRESSURE;
+            coolingTimer = 0;
+            return;
+        }
+        if (temperature == SolutionFluids.AMBIENT_TEMP && pressure == SolutionFluids.AMBIENT_PRESSURE) {
+            coolingTimer = 0;
+            return;
+        }
+        if (++coolingTimer < 20) return;
+        coolingTimer = 0;
+        temperature += Integer.compare(SolutionFluids.AMBIENT_TEMP, temperature);
+        pressure += Integer.compare(SolutionFluids.AMBIENT_PRESSURE, pressure);
     }
 
     /** Dissolves items / pours flasks from the input slot into the solution. */
@@ -223,6 +261,10 @@ public class FermenterBlockEntity extends BaseContainerBlockEntity implements Wo
             Solution carried = FlaskItem.getSolution(in);
             if (carried.isEmpty() || !items.get(SLOT_OUTPUT).isEmpty()) return;
             if (solution.totalAmount() + carried.totalAmount() > TANK_CAPACITY) return;
+            temperature = SolutionFluids.blend(temperature, solution.totalAmount(),
+                    SolutionFluids.temperatureOf(in), carried.totalAmount());
+            pressure = SolutionFluids.blend(pressure, solution.totalAmount(),
+                    SolutionFluids.pressureOf(in), carried.totalAmount());
             solution = solution.plus(carried);
             ItemStack empty = in.copy();
             FlaskItem.setSolution(empty, Solution.EMPTY);
@@ -235,7 +277,7 @@ public class FermenterBlockEntity extends BaseContainerBlockEntity implements Wo
         if (rule != null) {
             Fluid fluid = rule.fluid().fluid();
             if (fluid == null || solution.totalAmount() + rule.fluid().amount() > TANK_CAPACITY) return;
-            solution = solution.plus(fluid, rule.fluid().amount());
+            solution = solution.plus(fluid, rule.fluid().amount(), rule.fluid().dissolved());
             in.shrink(1);
             return;
         }
@@ -340,8 +382,8 @@ public class FermenterBlockEntity extends BaseContainerBlockEntity implements Wo
 
     private int countLiveMicrobes() {
         int live = 0;
-        for (ResourceStack<FluidResource> c : solution.components()) {
-            if (FermentationRecipeManager.isLiveMicrobe(c.resource().toStack(1).getFluid())) live += c.amount();
+        for (Solution.Part c : solution.components()) {
+            if (FermentationRecipeManager.isLiveMicrobe(c.fluid())) live += c.amount();
         }
         return live;
     }
@@ -367,7 +409,7 @@ public class FermenterBlockEntity extends BaseContainerBlockEntity implements Wo
         for (Microbe m : eligible) {
             roll -= m.weight();
             if (roll < 0) {
-                solution = solution.plus(m.fluid().fluid(), m.fluid().amount());
+                solution = solution.plus(m.fluid().fluid(), m.fluid().amount(), m.fluid().dissolved());
                 liveMicrobes = m.fluid().amount();
                 return;
             }
@@ -382,47 +424,65 @@ public class FermenterBlockEntity extends BaseContainerBlockEntity implements Wo
         return true;
     }
 
-    // ── Fluid handler: one slot per solution component ──────────────────────────
+    // ── Fluid handler: the whole mixture is one resource ────────────────────────
 
-    private class SolutionHandler extends SnapshotJournal<Solution> implements ResourceHandler<FluidResource> {
-        @Override protected Solution createSnapshot() { return solution; }   // records are immutable
-        @Override protected void revertToSnapshot(Solution s) { solution = s; }
+    /** Everything the handler can roll back: contents plus the mixture's temperature and pressure. */
+    private record Snapshot(Solution solution, int temperature, int pressure) {}
 
-        @Override public int size() { return Math.max(1, solution.components().size()); }
-
-        @Override public FluidResource getResource(int index) {
-            var comps = solution.components();
-            return index >= 0 && index < comps.size() ? comps.get(index).resource() : FluidResource.EMPTY;
+    /** The mixture as a fluid resource — a plain fluid if only one dissolved fluid is left, else a {@code solution}. */
+    private FluidResource currentResource() {
+        if (cachedFor != solution || cachedTemp != temperature || cachedPressure != pressure) {
+            FluidStack stack = SolutionFluids.toStack(solution, temperature, pressure);
+            cachedResource = stack.isEmpty() ? FluidResource.EMPTY : FluidResource.of(stack);
+            cachedFor = solution;
+            cachedTemp = temperature;
+            cachedPressure = pressure;
         }
-        @Override public long getAmountAsLong(int index) {
-            var comps = solution.components();
-            return index >= 0 && index < comps.size() ? comps.get(index).amount() : 0;
-        }
-        @Override public long getCapacityAsLong(int index, FluidResource res) { return TANK_CAPACITY; }
-        @Override public boolean isValid(int index, FluidResource resource) { return true; }
+        return cachedResource;
+    }
 
-        /** Anything can be poured in; it merges into the mixture whatever the slot index. */
-        @Override public int insert(FluidResource resource, int amount, TransactionContext tx) {
-            if (resource.isEmpty() || amount <= 0) return 0;
-            int toFill = Math.min(amount, TANK_CAPACITY - solution.totalAmount());
-            if (toFill <= 0) return 0;
-            updateSnapshots(tx);
-            solution = solution.plus(resource.toStack(1).getFluid(), toFill);
-            return toFill;
+    /**
+     * One slot holding the whole mixture, so a pipe, pump or machine pulls it out — and pours
+     * it in — exactly as it would any fluid, composition and all. Pouring in merges every
+     * component with its dissolved flag and blends temperature / pressure by volume; drawing out
+     * takes every component in proportion to its share.
+     */
+    private class SolutionHandler extends SnapshotJournal<Snapshot> implements ResourceHandler<FluidResource> {
+        @Override protected Snapshot createSnapshot() { return new Snapshot(solution, temperature, pressure); }
+        @Override protected void revertToSnapshot(Snapshot s) {
+            solution = s.solution(); temperature = s.temperature(); pressure = s.pressure();
         }
+
+        @Override public int size() { return 1; }
+        @Override public FluidResource getResource(int index) { return index == 0 ? currentResource() : FluidResource.EMPTY; }
+        @Override public long getAmountAsLong(int index) { return index == 0 ? solution.totalAmount() : 0; }
+        @Override public long getCapacityAsLong(int index, FluidResource res) { return index == 0 ? TANK_CAPACITY : 0; }
+        @Override public boolean isValid(int index, FluidResource resource) { return index == 0; }
+
         @Override public int insert(int index, FluidResource resource, int amount, TransactionContext tx) {
-            return index == 0 ? insert(resource, amount, tx) : 0;
+            if (index != 0 || resource.isEmpty() || amount <= 0) return 0;
+            int current = solution.totalAmount();
+            int toFill = Math.min(amount, TANK_CAPACITY - current);
+            if (toFill <= 0) return 0;
+
+            FluidStack incoming = resource.toStack(toFill);
+            Solution add = SolutionFluids.toSolution(incoming);
+            if (add.isEmpty()) return 0;
+            updateSnapshots(tx);
+            temperature = SolutionFluids.blend(temperature, current, SolutionFluids.temperatureOf(incoming), toFill);
+            pressure = SolutionFluids.blend(pressure, current, SolutionFluids.pressureOf(incoming), toFill);
+            solution = solution.plus(add);
+            return toFill;
         }
 
         @Override public int extract(int index, FluidResource resource, int amount, TransactionContext tx) {
-            var comps = solution.components();
-            if (index < 0 || index >= comps.size() || amount <= 0) return 0;
-            ResourceStack<FluidResource> c = comps.get(index);
-            if (!c.resource().equals(resource)) return 0;
-            int toExtract = Math.min(amount, c.amount());
+            if (index != 0 || amount <= 0 || solution.isEmpty()) return 0;
+            if (!resource.equals(currentResource())) return 0;
+            Solution take = solution.scaledTo(Math.min(amount, solution.totalAmount()));
+            if (take.isEmpty()) return 0;
             updateSnapshots(tx);
-            solution = solution.minus(resource.toStack(1).getFluid(), toExtract);
-            return toExtract;
+            solution = solution.minus(take);
+            return take.totalAmount();
         }
     }
 
@@ -455,6 +515,8 @@ public class FermenterBlockEntity extends BaseContainerBlockEntity implements Wo
         items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(input, items);
         solution = input.read("Solution", Solution.CODEC).orElse(Solution.EMPTY);
+        temperature = input.getIntOr("Temperature", SolutionFluids.AMBIENT_TEMP);
+        pressure = input.getIntOr("Pressure", SolutionFluids.AMBIENT_PRESSURE);
     }
 
     @Override
@@ -462,5 +524,7 @@ public class FermenterBlockEntity extends BaseContainerBlockEntity implements Wo
         super.saveAdditional(output);
         ContainerHelper.saveAllItems(output, items);
         output.store("Solution", Solution.CODEC, solution);
+        output.putInt("Temperature", temperature);
+        output.putInt("Pressure", pressure);
     }
 }

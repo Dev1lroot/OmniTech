@@ -1,0 +1,5 @@
+{
+  "input":       { "fluid": "omnitech:hydrazine_hydrate", "amount": 1000 },
+  "outputFluid": { "fluid": "omnitech:hydrazine",         "amount": 700 },
+  "result":      { "item": "omnitech:sodium_chlorine_dust",    "amount": 1, "chance": 1.0 }
+}

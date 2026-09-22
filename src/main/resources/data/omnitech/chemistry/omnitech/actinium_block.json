@@ -1,0 +1,10 @@
+{
+  "note": "9× actinium_ingot mass compacted into a block (≈ 90630.00 g pure actinium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Ac]",
+      "name": "Actinium",
+      "amount": 399251.1
+    }
+  ]
+}

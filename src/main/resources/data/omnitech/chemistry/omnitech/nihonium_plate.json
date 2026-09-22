@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 16000.00 g pure nihonium (1× the ingot-equivalent mass, 1000 mB (1 L) molten nihonium × real density 16.0 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Nh]",
+      "name": "Nihonium",
+      "amount": 56338.03
+    }
+  ]
+}

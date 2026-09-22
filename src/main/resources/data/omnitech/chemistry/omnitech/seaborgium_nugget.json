@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 3888.89 g pure seaborgium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten seaborgium × real density 35.0 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Sg]",
+      "name": "Seaborgium",
+      "amount": 14350.14
+    }
+  ]
+}

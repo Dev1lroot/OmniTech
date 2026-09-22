@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 8540.00 g pure dysprosium (1× the ingot-equivalent mass, 1000 mB (1 L) molten dysprosium × real density 8.54 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Dy]",
+      "name": "Dysprosium",
+      "amount": 52553.85
+    }
+  ]
+}

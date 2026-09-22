@@ -1,0 +1,20 @@
+{
+  "note": "1 whole cake ≈ 500 g: 35% water, 30% starch, 15% fat.",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 9714.1
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Starch (amylose repeat unit)",
+      "amount": 925.1
+    },
+    {
+      "smiles": "CCCCCCCCC=CCCCCCCCC(=O)OCC(OC(=O)CCCCCCCC=CCCCCCCCC)COC(=O)CCCCCCCC=CCCCCCCCC",
+      "name": "Fat (Triolein, representative triglyceride)",
+      "amount": 84.7
+    }
+  ]
+}

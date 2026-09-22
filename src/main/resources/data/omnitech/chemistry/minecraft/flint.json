@@ -1,0 +1,10 @@
+{
+  "note": "1 flint ≈ 15 g — flint is cryptocrystalline quartz (chert), essentially pure SiO2.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 249.7
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "9× thulium_ingot mass compacted into a block (≈ 83880.00 g pure thulium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Tm]",
+      "name": "Thulium",
+      "amount": 496525.27
+    }
+  ]
+}

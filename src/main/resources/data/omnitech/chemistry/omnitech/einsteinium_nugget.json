@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 982.22 g pure einsteinium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten einsteinium × real density 8.84 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Es]",
+      "name": "Einsteinium",
+      "amount": 3897.71
+    }
+  ]
+}

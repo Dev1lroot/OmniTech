@@ -1,0 +1,10 @@
+{
+  "note": "Mafic (Fe/Mg-rich, Si-poor) volcanic rock, density ≈ 2900 kg/m³, 1 block = 1×1×1 m. 50% SiO2 / 14% Al2O3 / 12% Fe2O3 / 12% CaO / 12% MgO by mass.",
+  "compounds": [
+    { "smiles": "O=[Si]=O", "name": "Silicon Dioxide (Quartz)", "amount": 24134487.4 },
+    { "smiles": "O=[Al]O[Al]=O", "name": "Aluminium Oxide (feldspar component)", "amount": 3981953.7 },
+    { "smiles": "O=[Fe]O[Fe]=O", "name": "Iron(III) Oxide (Magnetite/olivine)", "amount": 2179222.2 },
+    { "smiles": "[Ca]=O", "name": "Calcium Oxide (pyroxene/plagioclase)", "amount": 6205420.8 },
+    { "smiles": "[Mg]=O", "name": "Magnesium Oxide (olivine/pyroxene)", "amount": 8635235.7 }
+  ]
+}

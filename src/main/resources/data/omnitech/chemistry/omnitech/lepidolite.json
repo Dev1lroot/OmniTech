@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 2.8 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 8% Lithium Aluminosilicate Mica / 92% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[lepidolite]",
+      "name": "Lithium Aluminosilicate Mica (Lepidolite)",
+      "amount": 589.47
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 42876.17
+    }
+  ]
+}

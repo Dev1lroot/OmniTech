@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 22590.00 g pure osmium (1× the ingot-equivalent mass, 1000 mB (1 L) molten osmium × real density 22.59 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Os]",
+      "name": "Osmium",
+      "amount": 118750.99
+    }
+  ]
+}

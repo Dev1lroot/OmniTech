@@ -1,0 +1,10 @@
+{
+  "note": "9× promethium_ingot mass compacted into a block (≈ 65340.00 g pure promethium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Pm]",
+      "name": "Promethium",
+      "amount": 450620.69
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "note": "Loose quartz sand, bulk density ≈ 1600 kg/m³, 1 block = 1×1×1 m. Essentially pure SiO2.",
+  "compounds": [
+    { "smiles": "O=[Si]=O", "name": "Silicon Dioxide (Quartz)", "amount": 26631158.5 }
+  ]
+}

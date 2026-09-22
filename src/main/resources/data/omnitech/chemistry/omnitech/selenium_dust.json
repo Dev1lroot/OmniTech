@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 4810.00 g pure selenium (1× the ingot-equivalent mass, 1000 mB (1 L) molten selenium × real density 4.81 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Se]",
+      "name": "Selenium",
+      "amount": 60908.43
+    }
+  ]
+}

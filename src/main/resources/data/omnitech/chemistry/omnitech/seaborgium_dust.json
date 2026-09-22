@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 35000.00 g pure seaborgium (1× the ingot-equivalent mass, 1000 mB (1 L) molten seaborgium × real density 35.0 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Sg]",
+      "name": "Seaborgium",
+      "amount": 129151.29
+    }
+  ]
+}

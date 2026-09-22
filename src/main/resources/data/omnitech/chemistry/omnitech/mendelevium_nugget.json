@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1144.44 g pure mendelevium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten mendelevium × real density 10.3 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Md]",
+      "name": "Mendelevium",
+      "amount": 4435.83
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 10490.00 g pure silver (1× the ingot-equivalent mass, 1000 mB (1 L) molten silver × real density 10.49 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ag]",
+      "name": "Silver",
+      "amount": 97248.49
+    }
+  ]
+}

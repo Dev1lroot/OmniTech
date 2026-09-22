@@ -1,0 +1,15 @@
+{
+  "note": "1 kelp item ≈ 20 g seaweed: 85% water, 10% alginate (algal polysaccharide, represented generically).",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 943.7
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Alginate (algal polysaccharide, generic uronic-acid repeat unit)",
+      "amount": 12.3
+    }
+  ]
+}

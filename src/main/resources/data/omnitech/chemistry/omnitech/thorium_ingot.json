@@ -1,0 +1,10 @@
+{
+  "note": "1 ingot ≈ 11720.00 g pure thorium (1× the ingot-equivalent mass, 1000 mB (1 L) molten thorium × real density 11.72 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Th]",
+      "name": "Thorium",
+      "amount": 50508.97
+    }
+  ]
+}

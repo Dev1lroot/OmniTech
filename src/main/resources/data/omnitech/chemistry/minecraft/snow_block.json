@@ -1,0 +1,10 @@
+{
+  "note": "Compacted snow, density ≈ 500 kg/m³, 1 block = 1×1×1 m.",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 27754648.9
+    }
+  ]
+}

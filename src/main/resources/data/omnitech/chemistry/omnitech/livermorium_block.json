@@ -1,0 +1,10 @@
+{
+  "note": "9× livermorium_ingot mass compacted into a block (≈ 116100.00 g pure livermorium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Lv]",
+      "name": "Livermorium",
+      "amount": 396245.73
+    }
+  ]
+}

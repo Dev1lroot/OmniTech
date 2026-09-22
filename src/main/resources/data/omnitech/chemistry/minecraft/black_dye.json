@@ -1,0 +1,10 @@
+{
+  "note": "1 dye item ≈ 100 mg extracted pigment.",
+  "compounds": [
+    {
+      "smiles": "[C]",
+      "name": "Carbon (Melanin pigment, from ink sac)",
+      "amount": 8.3
+    }
+  ]
+}

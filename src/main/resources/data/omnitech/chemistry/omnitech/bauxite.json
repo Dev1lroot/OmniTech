@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 2.42 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 25% Aluminium Hydroxide / 75% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[bauxite]",
+      "name": "Aluminium Hydroxide (Bauxite)",
+      "amount": 7756.11
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 30209.72
+    }
+  ]
+}

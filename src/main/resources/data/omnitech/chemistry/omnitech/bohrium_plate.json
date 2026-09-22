@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 37100.00 g pure bohrium (1× the ingot-equivalent mass, 1000 mB (1 L) molten bohrium × real density 37.1 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Bh]",
+      "name": "Bohrium",
+      "amount": 136397.06
+    }
+  ]
+}

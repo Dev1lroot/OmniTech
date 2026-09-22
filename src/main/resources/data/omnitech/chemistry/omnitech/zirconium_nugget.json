@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 724.44 g pure zirconium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten zirconium × real density 6.52 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Zr]",
+      "name": "Zirconium",
+      "amount": 7941.38
+    }
+  ]
+}

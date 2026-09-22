@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 10 g raw ore fragment (smaller/less-processed than dust).",
+  "compounds": [
+    {
+      "smiles": "[Si][O][O]",
+      "name": "Silicon Dioxide (Lunar/Planetary Regolith)",
+      "amount": 166.44
+    }
+  ]
+}

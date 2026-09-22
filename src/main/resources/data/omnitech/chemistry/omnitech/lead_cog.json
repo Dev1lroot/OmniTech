@@ -1,0 +1,10 @@
+{
+  "note": "1 cog ≈ 2268.00 g pure lead (0.2× the ingot-equivalent mass, 1000 mB (1 L) molten lead × real density 11.34 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Pb]",
+      "name": "Lead",
+      "amount": 10945.95
+    }
+  ]
+}

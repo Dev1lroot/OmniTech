@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 877.78 g pure gadolinium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten gadolinium × real density 7.9 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Gd]",
+      "name": "Gadolinium",
+      "amount": 5582.05
+    }
+  ]
+}

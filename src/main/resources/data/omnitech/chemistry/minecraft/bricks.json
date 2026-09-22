@@ -1,0 +1,10 @@
+{
+  "note": "Fired brick masonry, density ≈ 1900 kg/m³, 1 block = 1×1×1 m.",
+  "compounds": [
+    {
+      "smiles": "O=[Al]O[Si]=O",
+      "name": "Aluminosilicate (fired/dehydrated clay)",
+      "amount": 8553164.7
+    }
+  ]
+}

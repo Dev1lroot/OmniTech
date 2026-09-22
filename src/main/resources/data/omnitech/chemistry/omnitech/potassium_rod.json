@@ -1,0 +1,10 @@
+{
+  "note": "1 rod ≈ 890.00 g pure potassium (1× the ingot-equivalent mass, 1000 mB (1 L) molten potassium × real density 0.89 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[K]",
+      "name": "Potassium",
+      "amount": 22763.31
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 12450.00 g pure ruthenium (1× the ingot-equivalent mass, 1000 mB (1 L) molten ruthenium × real density 12.45 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ru]",
+      "name": "Ruthenium",
+      "amount": 123181.95
+    }
+  ]
+}

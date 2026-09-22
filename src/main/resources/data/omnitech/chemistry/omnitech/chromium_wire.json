@@ -1,0 +1,10 @@
+{
+  "note": "1 wire ≈ 3595.00 g pure chromium (0.5× the ingot-equivalent mass, 1000 mB (1 L) molten chromium × real density 7.19 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Cr]",
+      "name": "Chromium",
+      "amount": 69139.93
+    }
+  ]
+}

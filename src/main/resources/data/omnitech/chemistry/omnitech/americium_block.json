@@ -1,0 +1,10 @@
+{
+  "note": "9× americium_ingot mass compacted into a block (≈ 123210.00 g pure americium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Am]",
+      "name": "Americium",
+      "amount": 507037.04
+    }
+  ]
+}

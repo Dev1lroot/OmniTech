@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[Cu][Fe][S][S]",
+      "name": "Copper Iron Sulfide (Chalcopyrite)",
+      "amount": 272.46
+    }
+  ]
+}

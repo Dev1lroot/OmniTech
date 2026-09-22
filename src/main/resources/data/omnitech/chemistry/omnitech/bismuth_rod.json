@@ -1,0 +1,10 @@
+{
+  "note": "1 rod ≈ 9780.00 g pure bismuth (1× the ingot-equivalent mass, 1000 mB (1 L) molten bismuth × real density 9.78 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Bi]",
+      "name": "Bismuth",
+      "amount": 46798.74
+    }
+  ]
+}

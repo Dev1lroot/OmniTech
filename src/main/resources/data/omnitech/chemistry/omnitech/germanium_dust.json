@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 5320.00 g pure germanium (1× the ingot-equivalent mass, 1000 mB (1 L) molten germanium × real density 5.32 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ge]",
+      "name": "Germanium",
+      "amount": 73247.97
+    }
+  ]
+}

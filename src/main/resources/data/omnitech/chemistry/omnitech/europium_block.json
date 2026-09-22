@@ -1,0 +1,10 @@
+{
+  "note": "9× europium_ingot mass compacted into a block (≈ 47160.00 g pure europium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Eu]",
+      "name": "Europium",
+      "amount": 310336.66
+    }
+  ]
+}

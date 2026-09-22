@@ -1,0 +1,10 @@
+{
+  "note": "1 sheet ≈ 1 g cellulose fiber.",
+  "compounds": [
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Cellulose",
+      "amount": 6.2
+    }
+  ]
+}

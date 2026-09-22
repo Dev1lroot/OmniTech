@@ -33,7 +33,19 @@ import java.util.Set;
  */
 public final class SmilesParser {
 
-    private static final Set<String> ELEMENTS = Set.of("C", "N", "O", "S", "P", "F", "Cl", "Br", "I");
+    private static final Set<String> ELEMENTS = Set.of(
+            "C", "N", "O", "S", "P", "F", "Cl", "Br", "I",
+            // Common inorganic elements (metals/metalloids) — for ores, minerals, alloys and other
+            // non-organic compounds. These never get implicit hydrogens filled in (see
+            // Atom#standardValence — they fall through to its "unknown" default), since ionic
+            // bonding doesn't follow the covalent valence model the rest of this parser assumes.
+            "Li", "Na", "K", "Rb", "Cs",
+            "Mg", "Ca", "Sr", "Ba",
+            "B", "Al", "Si",
+            "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn",
+            "Zr", "Nb", "Mo", "Ag", "Cd", "Sn", "Sb",
+            "Hf", "Ta", "W", "Au", "Pt", "Hg", "Pb", "Bi",
+            "U");
 
     private SmilesParser() {}
 

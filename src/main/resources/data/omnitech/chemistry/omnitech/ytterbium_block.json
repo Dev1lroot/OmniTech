@@ -1,0 +1,10 @@
+{
+  "note": "9× ytterbium_ingot mass compacted into a block (≈ 62100.00 g pure ytterbium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Yb]",
+      "name": "Ytterbium",
+      "amount": 358866.19
+    }
+  ]
+}

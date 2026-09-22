@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[Mg][C][O][O][O]",
+      "name": "Magnesium Carbonate (Magnesite)",
+      "amount": 593.03
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 fired-clay item ≈ 50 g: dehydrated (metakaolin) clay.",
+  "compounds": [
+    {
+      "smiles": "O=[Al]O[Si]=O",
+      "name": "Aluminosilicate (fired/dehydrated clay)",
+      "amount": 225.1
+    }
+  ]
+}

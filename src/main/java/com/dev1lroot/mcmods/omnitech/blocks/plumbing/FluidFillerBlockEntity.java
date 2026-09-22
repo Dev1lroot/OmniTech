@@ -150,9 +150,10 @@ public class FluidFillerBlockEntity extends BaseContainerBlockEntity implements 
         ItemStack stack = items.get(SLOT_INPUT_CANISTER);
         if (!(stack.getItem() instanceof FlaskItem) || inputFluid.isEmpty() || amount <= 0) return false;
 
-        net.minecraft.world.level.material.Fluid fluid = inputFluid.getFluid();
         int want = Math.min(amount, inputFluid.getAmount());
-        int added = FlaskItem.addFluid(stack, fluid, want);
+        // A mixture is split back into its components (ratios, dissolved flags and the tank's
+        // temperature / pressure carried over) rather than stored as an opaque "solution" fluid.
+        int added = FlaskItem.addFluidStack(stack, inputFluid.copyWithAmount(want));
         if (added <= 0) return false;
 
         inputFluid.shrink(added);

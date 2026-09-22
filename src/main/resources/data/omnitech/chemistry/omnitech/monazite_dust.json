@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[Ce][P][O][O][O][O]",
+      "name": "Cerium Phosphate (Monazite, rare-earth ore)",
+      "amount": 212.69
+    }
+  ]
+}

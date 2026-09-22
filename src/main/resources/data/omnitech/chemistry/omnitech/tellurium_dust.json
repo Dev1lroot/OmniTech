@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 6240.00 g pure tellurium (1× the ingot-equivalent mass, 1000 mB (1 L) molten tellurium × real density 6.24 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Te]",
+      "name": "Tellurium",
+      "amount": 48902.82
+    }
+  ]
+}

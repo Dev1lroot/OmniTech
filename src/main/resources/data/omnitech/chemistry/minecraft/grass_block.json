@@ -1,0 +1,25 @@
+{
+  "note": "Same as dirt.json — the grass layer itself is too thin to meaningfully change the block's bulk composition.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz sand fraction)",
+      "amount": 8655126.5
+    },
+    {
+      "smiles": "O=[Al]O[Si]=O",
+      "name": "Aluminosilicate Hydrate (Kaolinite clay)",
+      "amount": 1007049.3
+    },
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 21648626.1
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Humus (decayed organic matter, generic cellulose repeat unit)",
+      "amount": 801776.2
+    }
+  ]
+}

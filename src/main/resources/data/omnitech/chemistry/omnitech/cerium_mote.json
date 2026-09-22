@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 338.50 g pure cerium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten cerium × real density 6.77 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ce]",
+      "name": "Cerium",
+      "amount": 2415.86
+    }
+  ]
+}

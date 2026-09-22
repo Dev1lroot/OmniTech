@@ -1,0 +1,9 @@
+{
+  "note": "Same oxide profile as stone_bricks.json, metamorphosed → denser: 3000 kg/m³, 1 block = 1×1×1 m.",
+  "compounds": [
+    { "smiles": "O=[Si]=O", "name": "Silicon Dioxide (Quartz)", "amount": 32456724.4 },
+    { "smiles": "O=[Al]O[Al]=O", "name": "Aluminium Oxide (feldspar/clay component)", "amount": 4413495.5 },
+    { "smiles": "O=[Fe]O[Fe]=O", "name": "Iron(III) Oxide (Hematite)", "amount": 1878639.9 },
+    { "smiles": "[Ca]=O", "name": "Calcium Oxide (bound in feldspar/calcite)", "amount": 5349500.7 }
+  ]
+}

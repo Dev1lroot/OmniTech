@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 439.50 g pure holmium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten holmium × real density 8.79 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ho]",
+      "name": "Holmium",
+      "amount": 2664.77
+    }
+  ]
+}

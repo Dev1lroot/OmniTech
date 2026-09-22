@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 7140.00 g pure zinc (1× the ingot-equivalent mass, 1000 mB (1 L) molten zinc × real density 7.14 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Zn]",
+      "name": "Zinc",
+      "amount": 109207.71
+    }
+  ]
+}

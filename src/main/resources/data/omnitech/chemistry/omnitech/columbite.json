@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 5.3 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 5% Iron Niobium Oxide / 95% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[columbite]",
+      "name": "Iron Niobium Oxide (Columbite)",
+      "amount": 784.83
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 83804.93
+    }
+  ]
+}

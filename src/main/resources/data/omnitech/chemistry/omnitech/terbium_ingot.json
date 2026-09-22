@@ -1,0 +1,10 @@
+{
+  "note": "1 ingot ≈ 8230.00 g pure terbium (1× the ingot-equivalent mass, 1000 mB (1 L) molten terbium × real density 8.23 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Tb]",
+      "name": "Terbium",
+      "amount": 51785.43
+    }
+  ]
+}

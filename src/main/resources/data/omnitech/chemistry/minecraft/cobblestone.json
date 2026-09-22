@@ -1,0 +1,9 @@
+{
+  "note": "Same parent rock as stone_bricks.json (unworked, uncut form) — see that file for the derivation.",
+  "compounds": [
+    { "smiles": "O=[Si]=O", "name": "Silicon Dioxide (Quartz)", "amount": 29211051.9 },
+    { "smiles": "O=[Al]O[Al]=O", "name": "Aluminium Oxide (feldspar/clay component)", "amount": 3972145.9 },
+    { "smiles": "O=[Fe]O[Fe]=O", "name": "Iron(III) Oxide (Hematite)", "amount": 1690775.9 },
+    { "smiles": "[Ca]=O", "name": "Calcium Oxide (bound in feldspar/calcite)", "amount": 4814550.6 }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 ingot ≈ 1550.00 g pure calcium (1× the ingot-equivalent mass, 1000 mB (1 L) molten calcium × real density 1.55 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ca]",
+      "name": "Calcium",
+      "amount": 38674.58
+    }
+  ]
+}

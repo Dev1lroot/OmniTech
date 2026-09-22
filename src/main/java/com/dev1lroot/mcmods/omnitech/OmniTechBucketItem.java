@@ -34,5 +34,17 @@ public class OmniTechBucketItem extends BucketItem {
             TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, display, tooltip, flag);
         FluidHazardUtil.appendHazardTooltip(new FluidStack(fluid, 1), tooltip);
+        String smiles = FluidChemistryRegistry.get(fluid);
+        if (smiles != null) {
+            com.dev1lroot.mcmods.omnitech.util.ChemistryTooltipUtil.appendLines(smiles, tooltip);
+        }
+    }
+
+    @Override
+    public java.util.Optional<net.minecraft.world.inventory.tooltip.TooltipComponent> getTooltipImage(ItemStack stack) {
+        String smiles = FluidChemistryRegistry.get(fluid);
+        return smiles == null
+                ? super.getTooltipImage(stack)
+                : com.dev1lroot.mcmods.omnitech.util.ChemistryTooltipUtil.structureImage(smiles);
     }
 }

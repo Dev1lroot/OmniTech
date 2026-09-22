@@ -1,0 +1,7 @@
+{
+  "note": "Chalcopyrite-bearing rock, density ≈ 2700 kg/m³, 1 block = 1×1×1 m. 5% CuFeS2 ore mineral / 95% SiO2 gangue by mass.",
+  "compounds": [
+    { "smiles": "[Cu]1[Fe](S1)S", "name": "Copper Iron Sulfide (Chalcopyrite)", "amount": 735574.6 },
+    { "smiles": "O=[Si]=O", "name": "Silicon Dioxide (host rock gangue)", "amount": 42693075.9 }
+  ]
+}

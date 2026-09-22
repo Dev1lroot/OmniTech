@@ -1,0 +1,10 @@
+{
+  "note": "9× zinc_ingot mass compacted into a block (≈ 64260.00 g pure zinc, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Zn]",
+      "name": "Zinc",
+      "amount": 982869.38
+    }
+  ]
+}

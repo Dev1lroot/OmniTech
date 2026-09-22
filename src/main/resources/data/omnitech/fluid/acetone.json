@@ -1,4 +1,6 @@
 {
+  "polarity": "both",
+  "smiles": "CC(=O)C",
   "density": 784,
   "viscosity": 330,
   "temperature": 293,

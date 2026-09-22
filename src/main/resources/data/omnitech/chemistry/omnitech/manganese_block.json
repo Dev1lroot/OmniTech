@@ -1,0 +1,10 @@
+{
+  "note": "9× manganese_ingot mass compacted into a block (≈ 64890.00 g pure manganese, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Mn]",
+      "name": "Manganese",
+      "amount": 1181149.66
+    }
+  ]
+}

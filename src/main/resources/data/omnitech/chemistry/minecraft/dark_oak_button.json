@@ -1,0 +1,20 @@
+{
+  "note": "dark_oak_planks.json scaled to 1/20 block volume (button rule).",
+  "compounds": [
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Cellulose (anhydroglucose repeat unit)",
+      "amount": 97138.3
+    },
+    {
+      "smiles": "OC1OCC(O)C(O)C1O",
+      "name": "Hemicellulose (xylan repeat unit)",
+      "amount": 66232.7
+    },
+    {
+      "smiles": "COc1cc(C=CCO)ccc1O",
+      "name": "Lignin (coniferyl-alcohol repeat unit)",
+      "amount": 48557.2
+    }
+  ]
+}

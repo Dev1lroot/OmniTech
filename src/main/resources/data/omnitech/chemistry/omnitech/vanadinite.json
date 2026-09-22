@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 6.9 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 5% Lead Vanadate Chloride / 95% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[vanadinite]",
+      "name": "Lead Vanadate Chloride (Vanadinite)",
+      "amount": 243.6
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 109104.53
+    }
+  ]
+}

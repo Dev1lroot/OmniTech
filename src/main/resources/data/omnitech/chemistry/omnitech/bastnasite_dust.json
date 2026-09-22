@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[Ce][C][O][O][O][F]",
+      "name": "Cerium Lanthanum Carbonate Fluoride (Bastnasite)",
+      "amount": 228.18
+    }
+  ]
+}

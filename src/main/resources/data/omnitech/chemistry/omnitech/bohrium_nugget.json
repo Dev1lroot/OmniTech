@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 4122.22 g pure bohrium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten bohrium × real density 37.1 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Bh]",
+      "name": "Bohrium",
+      "amount": 15155.23
+    }
+  ]
+}

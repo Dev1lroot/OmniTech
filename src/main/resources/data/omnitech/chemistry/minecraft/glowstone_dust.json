@@ -1,0 +1,10 @@
+{
+  "note": "1 dust item ≈ 5 g — pure zinc sulfide.",
+  "compounds": [
+    {
+      "smiles": "[Zn]=S",
+      "name": "Zinc Sulfide (phosphorescent mineral)",
+      "amount": 51.3
+    }
+  ]
+}

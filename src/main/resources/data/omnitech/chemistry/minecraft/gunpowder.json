@@ -1,0 +1,20 @@
+{
+  "note": "1 charge ≈ 3 g classic black-powder ratio: 75% potassium nitrate / 15% carbon / 10% sulfur.",
+  "compounds": [
+    {
+      "smiles": "[K]O[N](=O)=O",
+      "name": "Potassium Nitrate (oxidizer)",
+      "amount": 22.3
+    },
+    {
+      "smiles": "[C]",
+      "name": "Carbon (Charcoal)",
+      "amount": 37.5
+    },
+    {
+      "smiles": "[S]",
+      "name": "Sulfur",
+      "amount": 9.4
+    }
+  ]
+}

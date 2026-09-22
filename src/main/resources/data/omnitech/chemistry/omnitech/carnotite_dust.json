@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[K][K][U][U][O][O][O][O][V][V][O][O][O][O][O][O][O][O]",
+      "name": "Potassium Uranyl Vanadate Hydrate (Carnotite)",
+      "amount": 58.95
+    }
+  ]
+}

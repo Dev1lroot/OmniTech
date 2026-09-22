@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[Fe][Nb][Nb][O][O][O][O][O][O]",
+      "name": "Iron Niobium Oxide (Columbite)",
+      "amount": 148.08
+    }
+  ]
+}

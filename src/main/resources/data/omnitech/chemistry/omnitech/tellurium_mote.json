@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 312.00 g pure tellurium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten tellurium × real density 6.24 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Te]",
+      "name": "Tellurium",
+      "amount": 2445.14
+    }
+  ]
+}

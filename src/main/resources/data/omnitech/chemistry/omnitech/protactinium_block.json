@@ -1,0 +1,10 @@
+{
+  "note": "9× protactinium_ingot mass compacted into a block (≈ 138330.00 g pure protactinium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Pa]",
+      "name": "Protactinium",
+      "amount": 598737.86
+    }
+  ]
+}

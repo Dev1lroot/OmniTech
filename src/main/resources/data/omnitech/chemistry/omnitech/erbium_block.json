@@ -1,0 +1,10 @@
+{
+  "note": "9× erbium_ingot mass compacted into a block (≈ 81630.00 g pure erbium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Er]",
+      "name": "Erbium",
+      "amount": 488045.49
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "note": "Generic igneous rock (andesite-like), density ≈ 2700 kg/m³, 1 block = 1×1×1 m (1e6 cm³). Simplified 4-oxide breakdown representative of Minecraft 'Stone': 65% SiO2 / 15% Al2O3 / 10% Fe2O3 / 10% CaO by mass; trace MgO/Na2O/K2O omitted.",
+  "compounds": [
+    { "smiles": "O=[Si]=O", "name": "Silicon Dioxide (Quartz)", "amount": 29211051.9 },
+    { "smiles": "O=[Al]O[Al]=O", "name": "Aluminium Oxide (feldspar/clay component)", "amount": 3972145.9 },
+    { "smiles": "O=[Fe]O[Fe]=O", "name": "Iron(III) Oxide (Hematite)", "amount": 1690775.9 },
+    { "smiles": "[Ca]=O", "name": "Calcium Oxide (bound in feldspar/calcite)", "amount": 4814550.6 }
+  ]
+}

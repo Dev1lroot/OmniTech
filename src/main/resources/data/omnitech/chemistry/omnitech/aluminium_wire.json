@@ -1,0 +1,10 @@
+{
+  "note": "1 wire ≈ 1350.00 g pure aluminium (0.5× the ingot-equivalent mass, 1000 mB (1 L) molten aluminium × real density 2.7 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Al]",
+      "name": "Aluminium",
+      "amount": 50033.36
+    }
+  ]
+}

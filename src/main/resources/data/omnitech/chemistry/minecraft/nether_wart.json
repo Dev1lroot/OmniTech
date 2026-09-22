@@ -1,0 +1,15 @@
+{
+  "note": "1 wart item ≈ 5 g fungal/plant matter: 80% water, 15% cellulose.",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 222.0
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Cellulose",
+      "amount": 4.6
+    }
+  ]
+}

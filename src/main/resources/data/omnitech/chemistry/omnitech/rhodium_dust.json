@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 12410.00 g pure rhodium (1× the ingot-equivalent mass, 1000 mB (1 L) molten rhodium × real density 12.41 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Rh]",
+      "name": "Rhodium",
+      "amount": 120595.49
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 ingot ≈ 9900.00 g pure nobelium (1× the ingot-equivalent mass, 1000 mB (1 L) molten nobelium × real density 9.9 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[No]",
+      "name": "Nobelium",
+      "amount": 38223.94
+    }
+  ]
+}

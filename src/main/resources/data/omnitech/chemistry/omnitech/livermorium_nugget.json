@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1433.33 g pure livermorium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten livermorium × real density 12.9 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Lv]",
+      "name": "Livermorium",
+      "amount": 4891.92
+    }
+  ]
+}

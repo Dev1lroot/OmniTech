@@ -1,0 +1,10 @@
+{
+  "note": "Intermediate igneous rock, density ≈ 2800 kg/m³, 1 block = 1×1×1 m. 58% SiO2 / 17% Al2O3 / 5% Na2O / 10% Fe2O3 / 10% CaO by mass.",
+  "compounds": [
+    { "smiles": "O=[Si]=O", "name": "Silicon Dioxide (Quartz)", "amount": 27030625.8 },
+    { "smiles": "O=[Al]O[Al]=O", "name": "Aluminium Oxide (feldspar component)", "amount": 4668497.4 },
+    { "smiles": "[Na]O[Na]", "name": "Sodium Oxide (plagioclase feldspar)", "amount": 2258793.2 },
+    { "smiles": "O=[Fe]O[Fe]=O", "name": "Iron(III) Oxide (biotite/amphibole)", "amount": 1753397.2 },
+    { "smiles": "[Ca]=O", "name": "Calcium Oxide (plagioclase feldspar)", "amount": 4992867.3 }
+  ]
+}

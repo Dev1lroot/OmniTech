@@ -1,0 +1,15 @@
+{
+  "note": "9× steel_ingot.json compacted into a block (≈ 70650 g). 98% iron / 2% carbon by mass.",
+  "compounds": [
+    {
+      "smiles": "[Fe]",
+      "name": "Iron",
+      "amount": 1239806.61
+    },
+    {
+      "smiles": "[C]",
+      "name": "Carbon",
+      "amount": 117642.16
+    }
+  ]
+}

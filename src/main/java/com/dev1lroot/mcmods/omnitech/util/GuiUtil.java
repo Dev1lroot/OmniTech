@@ -10,6 +10,7 @@ import com.dev1lroot.mcmods.omnitech.FluidPhysicsRegistry;
 import com.dev1lroot.mcmods.omnitech.OmniTech;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.gui.tooltip.PhaseDiagramTooltipData;
+import com.dev1lroot.mcmods.omnitech.items.Solution;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -61,6 +62,12 @@ public class GuiUtil
     public static void renderFluidBar(GuiGraphicsExtractor graphics, FluidStack fluidStack, int amount, int capacity, int x, int y, int width, int height)
     {
         if (fluidStack.isEmpty() || amount <= 0 || capacity <= 0) return;
+
+        // A mixture is drawn as stacked bands, one per component, not as a single phase sprite.
+        if (SolutionFluids.isMixture(fluidStack)) {
+            renderMixtureBar(graphics, fluidStack, amount, capacity, x, y, width, height);
+            return;
+        }
 
         // ── Phase from T/P ────────────────────────────────────────────────────
         var physics = FluidPhysicsRegistry.get(fluidStack.getFluid());
@@ -120,6 +127,108 @@ public class GuiUtil
             }
         }
         graphics.disableScissor();
+    }
+
+    /**
+     * Draws a mixture's fill level as stacked bands — one per component, each in that fluid's own
+     * texture, in proportion to its share — so a tank holding "water + ethanol + yeast" shows all
+     * three instead of one anonymous colour. Bands too thin to reach a pixel are omitted here but
+     * still listed by {@link #buildFluidTooltip}.
+     */
+    public static void renderMixtureBar(GuiGraphicsExtractor graphics, FluidStack mixture,
+            int amount, int capacity, int x, int y, int width, int height) {
+        Solution solution = SolutionFluids.toSolution(mixture);
+        if (solution.isEmpty()) return;
+
+        int filled = Math.max(1, (int) ((long) amount * height / capacity));
+        int[] weights = new int[solution.components().size()];
+        for (int i = 0; i < weights.length; i++) weights[i] = solution.components().get(i).amount();
+        int[] bandHeights = Solution.apportion(weights, filled);
+
+        int bottom = y + height;
+        for (int i = 0; i < bandHeights.length; i++) {
+            if (bandHeights[i] <= 0) continue;
+            Solution.Part part = solution.components().get(i);
+            renderFluidBand(graphics, new FluidStack(part.fluid(), Math.max(1, part.amount())),
+                    x, bottom - bandHeights[i], width, bandHeights[i]);
+            bottom -= bandHeights[i];
+        }
+    }
+
+    /**
+     * Appends one line per component of a mixture: name, mB and share, whether it is dissolved or
+     * suspended, its boiling point at the mixture's pressure, and — when the mixture is at or above
+     * that point — that it is boiling right now.
+     */
+    public static void appendMixtureLines(List<Component> lines, FluidStack mixture) {
+        Solution solution = SolutionFluids.toSolution(mixture);
+        int total = solution.totalAmount();
+        int temp = fluidTempOf(mixture);
+        int pressure = fluidPressureOf(mixture);
+
+        for (Solution.Part part : solution.components()) {
+            int pct = total > 0 ? Math.round(100f * part.amount() / total) : 0;
+            var line = Component.literal(" ")
+                    .append(new FluidStack(part.fluid(), part.amount()).getHoverName().copy())
+                    .append(Component.literal(": " + part.amount() + " mB (" + pct + "%)"))
+                    .withStyle(ChatFormatting.WHITE);
+            line.append(Component.literal(part.dissolved() ? "  dissolved" : "  undissolved")
+                    .withStyle(part.dissolved() ? ChatFormatting.AQUA : ChatFormatting.GOLD));
+            // The phase this component is in at the mixture's temperature and pressure.
+            var phase = SolutionPhases.phaseOf(part, temp, pressure);
+            line.append(Component.literal("  ")
+                    .append(Component.translatable("omnitech.fluid.phase." + phase.phaseKey()))
+                    .withStyle(phaseColor(phase)));
+
+            var diagram = FluidPhysicsRegistry.get(part.fluid()).phaseDiagram();
+            if (part.dissolved() && diagram != null) {
+                int boils = FluidPhaseUtil.boilingPointAtPressure(pressure, diagram);
+                line.append(Component.literal("  BP " + boils + " °C").withStyle(ChatFormatting.GRAY));
+                if (temp >= boils)
+                    line.append(Component.literal("  BOILING").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
+            }
+            lines.add(line);
+        }
+
+        // Where the volume is: only worth a line when the mixture is split over several phases.
+        var fractions = SolutionPhases.fractions(solution, temp, pressure);
+        if (fractions.phaseCount() > 1 && total > 0) {
+            var summary = Component.literal(" ").withStyle(ChatFormatting.GRAY);
+            String sep = "";
+            String[][] labels = {
+                    {"solid", String.valueOf(fractions.solid().totalAmount())},
+                    {"liquid", String.valueOf(fractions.liquid().totalAmount())},
+                    {"vapour", String.valueOf(fractions.vapour().totalAmount())},
+                    {"gas", String.valueOf(fractions.gas().totalAmount())}};
+            for (String[] l : labels) {
+                int mb = Integer.parseInt(l[1]);
+                if (mb <= 0) continue;
+                summary.append(Component.literal(sep));
+                summary.append(Component.translatable("omnitech.fluid.phase." + l[0]));
+                summary.append(Component.literal(" " + Math.round(100f * mb / total) + "%"));
+                sep = " · ";
+            }
+            lines.add(summary);
+        }
+    }
+
+    private static ChatFormatting phaseColor(com.dev1lroot.mcmods.omnitech.FluidPhase phase) {
+        return switch (phase) {
+            case SOLID -> ChatFormatting.WHITE;
+            case LIQUID -> ChatFormatting.BLUE;
+            case VAPOUR -> ChatFormatting.YELLOW;
+            default -> ChatFormatting.LIGHT_PURPLE;
+        };
+    }
+
+    private static int fluidTempOf(FluidStack stack) {
+        Integer t = stack.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
+        return t != null ? t : 20;
+    }
+
+    private static int fluidPressureOf(FluidStack stack) {
+        Integer p = stack.get(OmniTechDataComponents.FLUID_PRESSURE.get());
+        return p != null ? p : 101;
     }
 
     /**
@@ -185,6 +294,14 @@ public class GuiUtil
                                     : pressure >  101  ? ChatFormatting.YELLOW
                                     :                    ChatFormatting.GRAY;
             lines.add(Component.literal(pressure + " kPa").withStyle(pressFmt));
+            if (SolutionFluids.isMixture(fluid)) appendMixtureLines(lines, fluid);
+
+            // Molecular formula / SMILES / shift-structure hint, for a chemical_compound stack
+            // (per-stack SMILES component) or any statically-registered fluid that opted in via
+            // "smiles" in its JSON (ethanol, acetone, …) — see FluidChemistryRegistry.
+            String smiles = fluid.get(OmniTechDataComponents.SMILES.get());
+            if (smiles == null) smiles = com.dev1lroot.mcmods.omnitech.FluidChemistryRegistry.get(fluid.getFluid());
+            if (smiles != null) ChemistryTooltipUtil.appendLines(smiles, lines::add);
         }
         return lines;
     }

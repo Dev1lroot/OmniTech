@@ -1,0 +1,10 @@
+{
+  "note": "1 rod ≈ 41000.00 g pure hassium (1× the ingot-equivalent mass, 1000 mB (1 L) molten hassium × real density 41.0 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Hs]",
+      "name": "Hassium",
+      "amount": 151851.85
+    }
+  ]
+}

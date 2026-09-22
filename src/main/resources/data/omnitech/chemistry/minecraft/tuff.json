@@ -1,0 +1,9 @@
+{
+  "note": "Compacted volcanic ash, same oxide profile as stone_bricks.json but porous/lighter: 2200 kg/m³, 1 block = 1×1×1 m.",
+  "compounds": [
+    { "smiles": "O=[Si]=O", "name": "Silicon Dioxide (Quartz)", "amount": 23801597.9 },
+    { "smiles": "O=[Al]O[Al]=O", "name": "Aluminium Oxide (feldspar/clay component)", "amount": 3236563.4 },
+    { "smiles": "O=[Fe]O[Fe]=O", "name": "Iron(III) Oxide (Hematite)", "amount": 1377669.2 },
+    { "smiles": "[Ca]=O", "name": "Calcium Oxide (bound in feldspar/calcite)", "amount": 3922967.2 }
+  ]
+}

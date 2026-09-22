@@ -1,0 +1,10 @@
+{
+  "note": "9× gadolinium_ingot mass compacted into a block (≈ 71100.00 g pure gadolinium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Gd]",
+      "name": "Gadolinium",
+      "amount": 452146.26
+    }
+  ]
+}

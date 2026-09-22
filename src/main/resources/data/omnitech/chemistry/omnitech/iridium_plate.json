@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 22560.00 g pure iridium (1× the ingot-equivalent mass, 1000 mB (1 L) molten iridium × real density 22.56 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ir]",
+      "name": "Iridium",
+      "amount": 117367.35
+    }
+  ]
+}

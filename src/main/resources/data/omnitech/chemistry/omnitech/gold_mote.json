@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 5.00 g pure gold (0.05× the ingot-equivalent mass, anchored to the vanilla gold_ingot.json mass (100.0 g)).",
+  "compounds": [
+    {
+      "smiles": "[Au]",
+      "name": "Gold",
+      "amount": 25.38
+    }
+  ]
+}

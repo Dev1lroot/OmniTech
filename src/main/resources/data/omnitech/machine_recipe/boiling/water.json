@@ -1,0 +1,4 @@
+{
+  "input":  { "fluid": "minecraft:water", "amount": 1000 },
+  "result": { "item": "omnitech:sodium_chlorine_mote", "amount": 1, "chance": 1.0 }
+}

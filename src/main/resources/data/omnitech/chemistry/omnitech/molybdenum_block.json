@@ -1,0 +1,10 @@
+{
+  "note": "9× molybdenum_ingot mass compacted into a block (≈ 92520.00 g pure molybdenum, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Mo]",
+      "name": "Molybdenum",
+      "amount": 964252.21
+    }
+  ]
+}

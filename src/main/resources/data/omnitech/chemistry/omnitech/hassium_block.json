@@ -1,0 +1,10 @@
+{
+  "note": "9× hassium_ingot mass compacted into a block (≈ 369000.00 g pure hassium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Hs]",
+      "name": "Hassium",
+      "amount": 1366666.67
+    }
+  ]
+}

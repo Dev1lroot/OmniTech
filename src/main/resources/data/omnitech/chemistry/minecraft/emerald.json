@@ -1,0 +1,10 @@
+{
+  "note": "1 gem ≈ 1 g. Beryl (Be3Al2Si6O18) with trace chromium giving the green color; treated as one compound since it has no simple decomposition.",
+  "compounds": [
+    {
+      "smiles": "[Be]",
+      "name": "Beryllium Aluminium Silicate (Beryl)",
+      "amount": 1.9
+    }
+  ]
+}

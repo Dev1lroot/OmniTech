@@ -1,0 +1,10 @@
+{
+  "note": "9× tungsten_ingot mass compacted into a block (≈ 173250.00 g pure tungsten, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[W]",
+      "name": "Tungsten",
+      "amount": 942395.56
+    }
+  ]
+}

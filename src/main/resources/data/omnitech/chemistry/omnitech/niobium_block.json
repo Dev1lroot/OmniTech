@@ -1,0 +1,10 @@
+{
+  "note": "9× niobium_ingot mass compacted into a block (≈ 77130.00 g pure niobium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Nb]",
+      "name": "Niobium",
+      "amount": 830193.96
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 plate ≈ 7520.00 g pure samarium (1× the ingot-equivalent mass, 1000 mB (1 L) molten samarium × real density 7.52 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Sm]",
+      "name": "Samarium",
+      "amount": 50013.3
+    }
+  ]
+}

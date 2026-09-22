@@ -1,0 +1,15 @@
+{
+  "note": "Loose quartz sand stained with iron oxide, bulk density ≈ 1600 kg/m³, 1 block = 1×1×1 m. 97% SiO2 / 3% Fe2O3 by mass.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 25832223.7
+    },
+    {
+      "smiles": "O=[Fe]O[Fe]=O",
+      "name": "Iron(III) Oxide",
+      "amount": 300582.4
+    }
+  ]
+}

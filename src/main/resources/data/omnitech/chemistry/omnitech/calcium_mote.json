@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 77.50 g pure calcium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten calcium × real density 1.55 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ca]",
+      "name": "Calcium",
+      "amount": 1933.73
+    }
+  ]
+}

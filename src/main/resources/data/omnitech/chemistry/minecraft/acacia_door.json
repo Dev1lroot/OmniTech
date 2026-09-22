@@ -1,0 +1,20 @@
+{
+  "note": "Same 750 kg/m³ wood density as acacia_planks.json, scaled to 1/6 block volume (door rule — same thin-panel category as a trapdoor).",
+  "compounds": [
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Cellulose (anhydroglucose repeat unit)",
+      "amount": 346922.4
+    },
+    {
+      "smiles": "OC1OCC(O)C(O)C1O",
+      "name": "Hemicellulose (xylan repeat unit)",
+      "amount": 236545.3
+    },
+    {
+      "smiles": "COc1cc(C=CCO)ccc1O",
+      "name": "Lignin (coniferyl-alcohol repeat unit)",
+      "amount": 173418.4
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "note": "1 lump ≈ 10 g, mostly amorphous carbon.",
+  "compounds": [
+    { "smiles": "[C]", "name": "Carbon (Coal)", "amount": 832.6 }
+  ]
+}

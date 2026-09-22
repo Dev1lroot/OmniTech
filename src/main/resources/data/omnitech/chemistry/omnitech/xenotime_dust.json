@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[Y][P][O][O][O][O]",
+      "name": "Yttrium Phosphate (Xenotime)",
+      "amount": 271.92
+    }
+  ]
+}

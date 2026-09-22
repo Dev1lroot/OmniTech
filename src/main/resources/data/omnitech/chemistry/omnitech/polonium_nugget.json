@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1022.22 g pure polonium (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten polonium × real density 9.2 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Po]",
+      "name": "Polonium",
+      "amount": 4891.02
+    }
+  ]
+}

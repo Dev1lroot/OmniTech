@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 113.35 g pure carbon (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten carbon × real density 2.267 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[C]",
+      "name": "Carbon",
+      "amount": 9437.18
+    }
+  ]
+}

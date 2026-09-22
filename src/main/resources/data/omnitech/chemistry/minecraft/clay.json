@@ -1,0 +1,10 @@
+{
+  "note": "Wet clay block, density ≈ 1800 kg/m³, 1 block = 1×1×1 m, essentially pure kaolinite.",
+  "compounds": [
+    {
+      "smiles": "O=[Al]O[Si]=O",
+      "name": "Aluminosilicate Hydrate (Kaolinite clay)",
+      "amount": 6971880.1
+    }
+  ]
+}

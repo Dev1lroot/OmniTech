@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 5.7 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 10% Zirconium Dioxide / 90% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[baddeleyite]",
+      "name": "Zirconium Dioxide (Baddeleyite)",
+      "amount": 4625.8
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 85386.15
+    }
+  ]
+}

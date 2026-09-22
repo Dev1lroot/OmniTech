@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[Zr][Si][O][O][O][O]",
+      "name": "Zirconium Silicate (Zircon)",
+      "amount": 272.77
+    }
+  ]
+}

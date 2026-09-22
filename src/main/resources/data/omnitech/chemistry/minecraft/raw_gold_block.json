@@ -1,0 +1,15 @@
+{
+  "note": "9× raw_gold.json compacted into a block.",
+  "compounds": [
+    {
+      "smiles": "[Au]",
+      "name": "Gold (native)",
+      "amount": 4386.5
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (matrix)",
+      "amount": 3595.2
+    }
+  ]
+}

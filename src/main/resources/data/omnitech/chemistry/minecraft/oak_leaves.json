@@ -1,0 +1,20 @@
+{
+  "note": "Sparse foliage, density ≈ 50 kg/m³ (mostly air), 1 block = 1×1×1 m. 60% water, 39% cellulose, 1% chlorophyll (representative of leaf blocks generally).",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 1665278.9
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Cellulose",
+      "amount": 120266.4
+    },
+    {
+      "smiles": "COC(=O)C1=C(C)C2=CC3=[N]4C(=CC5=C(C)C(C=C)=C6C=C7C(C)=C(CCC(=O)OCC=C(C)CCCC(C)CCCC(C)CCCC(C)C)C4=CC7=NC6=C5CC(=O)O)C(C)=C3CC(=O)O",
+      "name": "Chlorophyll (Mg-porphyrin pigment)",
+      "amount": 559.6
+    }
+  ]
+}

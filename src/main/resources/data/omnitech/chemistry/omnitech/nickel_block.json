@@ -1,0 +1,10 @@
+{
+  "note": "9× nickel_ingot mass compacted into a block (≈ 80190.00 g pure nickel, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Ni]",
+      "name": "Nickel",
+      "amount": 1366261.73
+    }
+  ]
+}

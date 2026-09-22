@@ -1,0 +1,10 @@
+{
+  "note": "9× aluminium_ingot mass compacted into a block (≈ 24300.00 g pure aluminium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Al]",
+      "name": "Aluminium",
+      "amount": 900600.4
+    }
+  ]
+}

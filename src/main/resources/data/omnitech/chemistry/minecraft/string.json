@@ -1,0 +1,10 @@
+{
+  "note": "1 string item ≈ 1 g plant/silk fiber, represented as cellulose.",
+  "compounds": [
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Cellulose (fiber)",
+      "amount": 6.2
+    }
+  ]
+}

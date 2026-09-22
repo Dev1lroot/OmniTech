@@ -66,6 +66,7 @@
     "omnitech:electrolysis_machine",
     "omnitech:rotary_compressor",
     "omnitech:heat_exchanger",
+    "omnitech:chemical_mixer",
     "omnitech:decompressor",
     "omnitech:fractional_distiller",
     "omnitech:chemical_reactor",

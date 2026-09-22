@@ -1,0 +1,10 @@
+{
+  "note": "1 nugget ≈ 1142.22 g pure molybdenum (0.1111× the ingot-equivalent mass, 1000 mB (1 L) molten molybdenum × real density 10.28 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Mo]",
+      "name": "Molybdenum",
+      "amount": 11904.35
+    }
+  ]
+}

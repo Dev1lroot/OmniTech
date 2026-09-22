@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 250.00 g pure oganesson (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten oganesson × real density 5.0 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Og]",
+      "name": "Oganesson",
+      "amount": 850.34
+    }
+  ]
+}

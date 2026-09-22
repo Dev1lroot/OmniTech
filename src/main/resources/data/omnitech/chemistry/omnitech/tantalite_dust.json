@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[Fe][Ta][Ta][O][O][O][O][O][O]",
+      "name": "Iron Tantalum Oxide (Tantalite)",
+      "amount": 97.33
+    }
+  ]
+}

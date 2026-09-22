@@ -1,0 +1,10 @@
+{
+  "note": "1 dye item ≈ 200 mg extracted pigment.",
+  "compounds": [
+    {
+      "smiles": "O=P(=O)(O)O.[Ca]",
+      "name": "Calcium Phosphate (Hydroxyapatite, from bone meal)",
+      "amount": 0.4
+    }
+  ]
+}

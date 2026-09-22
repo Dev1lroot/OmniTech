@@ -1,0 +1,20 @@
+{
+  "note": "Acacia (dense hardwood), density ≈ 750 kg/m³, 1 log round = 1×1×1 m. Same 45% cellulose / 25% hemicellulose / 25% lignin dry-mass split used for oak_planks.json (≈ 5% extractives/ash omitted).",
+  "compounds": [
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1O",
+      "name": "Cellulose (anhydroglucose repeat unit)",
+      "amount": 2081534.5
+    },
+    {
+      "smiles": "OC1OCC(O)C(O)C1O",
+      "name": "Hemicellulose (xylan repeat unit)",
+      "amount": 1419271.8
+    },
+    {
+      "smiles": "COc1cc(C=CCO)ccc1O",
+      "name": "Lignin (coniferyl-alcohol repeat unit)",
+      "amount": 1040510.5
+    }
+  ]
+}

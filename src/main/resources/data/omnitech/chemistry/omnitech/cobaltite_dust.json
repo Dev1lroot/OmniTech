@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[Co][As][S]",
+      "name": "Cobalt Arsenic Sulfide (Cobaltite)",
+      "amount": 301.36
+    }
+  ]
+}

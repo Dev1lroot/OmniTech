@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 2070.00 g pure sulfur (1× the ingot-equivalent mass, 1000 mB (1 L) molten sulfur × real density 2.07 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[S]",
+      "name": "Sulfur",
+      "amount": 64566.44
+    }
+  ]
+}

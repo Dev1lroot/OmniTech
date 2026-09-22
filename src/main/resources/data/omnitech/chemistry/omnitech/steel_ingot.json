@@ -1,0 +1,15 @@
+{
+  "note": "1 ingot ≈ 7850.00 g (1× the 1000 mB foundry-cast ingot mass, density 7.85 g/cm³). Real steel: ~98% iron, ~2% carbon by mass (simplified plain-carbon steel).",
+  "compounds": [
+    {
+      "smiles": "[Fe]",
+      "name": "Iron",
+      "amount": 137756.29
+    },
+    {
+      "smiles": "[C]",
+      "name": "Carbon",
+      "amount": 13071.35
+    }
+  ]
+}

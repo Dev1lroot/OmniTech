@@ -1,0 +1,7 @@
+{
+  "note": "Average household candle estimated as a cylinder r=1cm h=15cm (≈ 47.1 cm³), paraffin wax density 0.9 g/cm³ (≈ 42.4 g wax) plus a small cotton wick.",
+  "compounds": [
+    { "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCC", "name": "Paraffin Wax (C25H52, representative alkane)", "amount": 120.3 },
+    { "smiles": "OC1OC(CO)C(O)C(O)C1O", "name": "Cellulose (cotton wick)", "amount": 1.9 }
+  ]
+}

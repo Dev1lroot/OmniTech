@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 350.50 g pure neodymium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten neodymium × real density 7.01 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Nd]",
+      "name": "Neodymium",
+      "amount": 2429.94
+    }
+  ]
+}

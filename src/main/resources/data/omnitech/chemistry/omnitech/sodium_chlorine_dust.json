@@ -1,0 +1,10 @@
+{
+  "note": "1 dust ≈ 50 g of raw ground ore mineral.",
+  "compounds": [
+    {
+      "smiles": "[Na][Cl]",
+      "name": "Sodium Chloride (refined salt)",
+      "amount": 855.58
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 dye item ≈ 40 mg extracted pigment.",
+  "compounds": [
+    {
+      "smiles": "OCC1OC2OC3(CO)OC(CO)(OC3O)C1O2",
+      "name": "Phycocyanobilin-like pigment (Cyan pigment, from blue orchid/algae)",
+      "amount": 0.1
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 445.50 g pure nickel (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten nickel × real density 8.91 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ni]",
+      "name": "Nickel",
+      "amount": 7590.34
+    }
+  ]
+}

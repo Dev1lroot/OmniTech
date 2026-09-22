@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 739.50 g pure berkelium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten berkelium × real density 14.79 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Bk]",
+      "name": "Berkelium",
+      "amount": 2993.93
+    }
+  ]
+}

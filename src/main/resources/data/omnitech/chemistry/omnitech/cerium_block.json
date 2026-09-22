@@ -1,0 +1,10 @@
+{
+  "note": "9× cerium_ingot mass compacted into a block (≈ 60930.00 g pure cerium, 9× the 1000 mB foundry-cast ingot mass).",
+  "compounds": [
+    {
+      "smiles": "[Ce]",
+      "name": "Cerium",
+      "amount": 434853.98
+    }
+  ]
+}

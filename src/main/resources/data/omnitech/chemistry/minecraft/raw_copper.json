@@ -1,0 +1,15 @@
+{
+  "note": "1 unsmelted ore chunk ≈ 120 g: 60% chalcopyrite, 40% SiO2 matrix.",
+  "compounds": [
+    {
+      "smiles": "[Cu]1[Fe](S1)S",
+      "name": "Copper Iron Sulfide (Chalcopyrite)",
+      "amount": 392.3
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (matrix)",
+      "amount": 798.9
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "Densely compacted ice, density ≈ 917 kg/m³ (real ice cannot compress further), 1 block = 1×1×1 m.",
+  "compounds": [
+    {
+      "smiles": "O",
+      "name": "Water",
+      "amount": 50902026.1
+    }
+  ]
+}

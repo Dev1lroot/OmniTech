@@ -1,0 +1,15 @@
+{
+  "note": "Ore-bearing rock, density ≈ 10.97 g/cm³ (as a compacted deposit), 1 block = 1×1×1 m. 3% Uranium Dioxide / 97% SiO2 host-rock gangue by mass.",
+  "compounds": [
+    {
+      "smiles": "[uraninite]",
+      "name": "Uranium Dioxide (Uraninite/Pitchblende)",
+      "amount": 1218.77
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (host rock gangue)",
+      "amount": 177112.18
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 10 g raw ore fragment (smaller/less-processed than dust).",
+  "compounds": [
+    {
+      "smiles": "[Na][Cl]",
+      "name": "Sodium Chloride (refined salt)",
+      "amount": 171.12
+    }
+  ]
+}

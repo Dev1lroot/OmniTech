@@ -1,0 +1,10 @@
+{
+  "note": "1 mote ≈ 503.50 g pure actinium (0.05× the ingot-equivalent mass, 1000 mB (1 L) molten actinium × real density 10.07 g/cm³, per the foundry casting recipe).",
+  "compounds": [
+    {
+      "smiles": "[Ac]",
+      "name": "Actinium",
+      "amount": 2218.06
+    }
+  ]
+}

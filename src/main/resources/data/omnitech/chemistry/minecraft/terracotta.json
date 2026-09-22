@@ -1,0 +1,10 @@
+{
+  "note": "Fired clay block, density ≈ 1600 kg/m³, 1 block = 1×1×1 m.",
+  "compounds": [
+    {
+      "smiles": "O=[Al]O[Si]=O",
+      "name": "Aluminosilicate (fired/dehydrated clay)",
+      "amount": 7202665.0
+    }
+  ]
+}
