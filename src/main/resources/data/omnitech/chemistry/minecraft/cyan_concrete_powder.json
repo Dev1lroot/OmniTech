@@ -1,0 +1,20 @@
+{
+  "note": "Portland-cement + sand mix dyed with Cyan Dye (8 sand + 8 gravel + 1 dye -> 8 concrete powder), loose density \u2248 1500 kg/m\u00b3, 1 block = 1\u00d71\u00d71 m. Same 30/70 clinker/sand split as concrete_powder.json plus 1/8 of the dye's pigment amount.",
+  "compounds": [
+    {
+      "smiles": "[Ca]O[Si]=O",
+      "name": "Tricalcium Silicate (Portland cement clinker)",
+      "amount": 1970831.7
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 17476697.7
+    },
+    {
+      "smiles": "OCC1OC2OC3(CO)OC(CO)(OC3O)C1O2",
+      "name": "Phycocyanobilin-like pigment (Cyan pigment, from blue orchid/algae), from Cyan Dye",
+      "amount": 0.0125
+    }
+  ]
+}

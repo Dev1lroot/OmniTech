@@ -1,0 +1,20 @@
+{
+  "note": "Hardened red concrete_powder (water contact), density \u2248 2400 kg/m\u00b3, 1 block = 1\u00d71\u00d71 m. Same clinker/silica ratio as concrete.json; pigment concentration carried over from red_concrete_powder.json and scaled \u00d71.6 for the density increase on hardening.",
+  "compounds": [
+    {
+      "smiles": "[Ca]O[Si]=O",
+      "name": "Tricalcium Silicate (Portland cement clinker)",
+      "amount": 3153330.7
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 27962716.4
+    },
+    {
+      "smiles": "OC1OC(CO)C(O)C(O)C1n1cc(-c2ccc(O)c(O)c2)c(=O)c2c1cc(O)cc2O",
+      "name": "Betanin (Betalain pigment, from beetroot/poppy), from Red Dye",
+      "amount": 0.02
+    }
+  ]
+}

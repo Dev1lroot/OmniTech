@@ -1,0 +1,20 @@
+{
+  "note": "1 wool item \u2248 50 g raw fleece dyed with 1 Yellow Dye (1:1 dye:wool dyeing recipe), same keratin/lanolin base as white_wool.json plus the dye's full pigment amount absorbed onto the fiber.",
+  "compounds": [
+    {
+      "smiles": "NCC(=O)O",
+      "name": "Keratin Protein (amino-acid content, as glycine-equivalent)",
+      "amount": 566.1
+    },
+    {
+      "smiles": "CCCCCCCCC=CCCCCCCCC(=O)OCC(OC(=O)CCCCCCCC=CCCCCCCCC)COC(=O)CCCCCCCC=CCCCCCCCC",
+      "name": "Lanolin Wax (representative wax ester)",
+      "amount": 5.6
+    },
+    {
+      "smiles": "Oc1ccc(cc1)C1=C(O)C(=O)c2c(O)cc(O)cc2O1",
+      "name": "Quercetin (Flavonoid pigment, from dandelion), from Yellow Dye",
+      "amount": 0.2
+    }
+  ]
+}

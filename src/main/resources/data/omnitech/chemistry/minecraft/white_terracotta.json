@@ -1,0 +1,15 @@
+{
+  "note": "Fired clay block dyed with White Dye (8 terracotta + 1 dye -> 8 dyed terracotta), density \u2248 1600 kg/m\u00b3, 1 block = 1\u00d71\u00d71 m. Same aluminosilicate base as terracotta.json plus 1/8 of the dye's pigment amount (split across the 8-block batch).",
+  "compounds": [
+    {
+      "smiles": "O=[Al]O[Si]=O",
+      "name": "Aluminosilicate (fired/dehydrated clay)",
+      "amount": 7202665.0
+    },
+    {
+      "smiles": "O=P(=O)(O)O.[Ca]",
+      "name": "Calcium Phosphate (Hydroxyapatite, from bone meal), from White Dye",
+      "amount": 0.05
+    }
+  ]
+}

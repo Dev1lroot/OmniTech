@@ -1,0 +1,25 @@
+{
+  "note": "Soda-lime glass dyed with Cyan Dye (8 glass + 1 dye -> 8 stained glass), density \u2248 2500 kg/m\u00b3, 1 block = 1\u00d71\u00d71 m. Same composition as glass.json plus 1/8 of the dye's pigment amount.",
+  "compounds": [
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz sand)",
+      "amount": 31208388.8
+    },
+    {
+      "smiles": "[Na]O[Na]",
+      "name": "Sodium Oxide (from soda ash flux)",
+      "amount": 6050338.8
+    },
+    {
+      "smiles": "[Ca]=O",
+      "name": "Calcium Oxide (from limestone, stabilizer)",
+      "amount": 4457917.3
+    },
+    {
+      "smiles": "OCC1OC2OC3(CO)OC(CO)(OC3O)C1O2",
+      "name": "Phycocyanobilin-like pigment (Cyan pigment, from blue orchid/algae), from Cyan Dye",
+      "amount": 0.0125
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "note": "Hardened white concrete_powder (water contact), density \u2248 2400 kg/m\u00b3, 1 block = 1\u00d71\u00d71 m. Same clinker/silica ratio as concrete.json; pigment concentration carried over from white_concrete_powder.json and scaled \u00d71.6 for the density increase on hardening.",
+  "compounds": [
+    {
+      "smiles": "[Ca]O[Si]=O",
+      "name": "Tricalcium Silicate (Portland cement clinker)",
+      "amount": 3153330.7
+    },
+    {
+      "smiles": "O=[Si]=O",
+      "name": "Silicon Dioxide (Quartz)",
+      "amount": 27962716.4
+    },
+    {
+      "smiles": "O=P(=O)(O)O.[Ca]",
+      "name": "Calcium Phosphate (Hydroxyapatite, from bone meal), from White Dye",
+      "amount": 0.08
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "note": "1 wool item \u2248 50 g raw fleece dyed with 1 Lime Dye (1:1 dye:wool dyeing recipe), same keratin/lanolin base as white_wool.json plus the dye's full pigment amount absorbed onto the fiber.",
+  "compounds": [
+    {
+      "smiles": "NCC(=O)O",
+      "name": "Keratin Protein (amino-acid content, as glycine-equivalent)",
+      "amount": 566.1
+    },
+    {
+      "smiles": "CCCCCCCCC=CCCCCCCCC(=O)OCC(OC(=O)CCCCCCCC=CCCCCCCCC)COC(=O)CCCCCCCC=CCCCCCCCC",
+      "name": "Lanolin Wax (representative wax ester)",
+      "amount": 5.6
+    },
+    {
+      "smiles": "COC(=O)C1=C(C)C2=CC3=[N]4C(=CC5=C(C)C(C=C)=C6C=C7C(C)=C(CCC(=O)OCC=C(C)CCCC(C)CCCC(C)CCCC(C)C)C4=CC7=NC6=C5CC(=O)O)C(C)=C3CC(=O)O",
+      "name": "Chlorophyll (Mg-porphyrin pigment, light shade, from cactus), from Lime Dye",
+      "amount": 0.0
+    }
+  ]
+}
