@@ -1,0 +1,25 @@
+{
+  "interval": 200,
+  "inputs": [
+    {
+      "fluid": "omnitech:sugar",
+      "amount": 1
+    },
+    {
+      "fluid": "minecraft:water",
+      "amount": 1
+    }
+  ],
+  "catalysts": [
+    {
+      "fluid": "omnitech:mold",
+      "amount": 1
+    }
+  ],
+  "outputs": [
+    {
+      "fluid": "omnitech:citric_acid",
+      "amount": 2
+    }
+  ]
+}

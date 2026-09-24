@@ -14,6 +14,10 @@
     "omnitech:wheat_flour",
     "omnitech:corn_flour",
     "omnitech:tomato",
-    "omnitech:jalapeno"
+    "omnitech:jalapeno",
+    "omnitech:grapes",
+    "omnitech:lemon_sapling",
+    "omnitech:lemon_leaves",
+    "omnitech:lemon"
   ]
 }

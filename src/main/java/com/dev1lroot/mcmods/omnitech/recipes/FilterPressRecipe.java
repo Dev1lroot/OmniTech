@@ -25,6 +25,10 @@ import net.neoforged.neoforge.fluids.FluidStack;
  *   "outputItem":  { "item":  "minecraft:sand",  "amount": 1 }
  * }
  * }</pre>
+ *
+ * <p>{@code outputFluid} is optional. These recipes only apply to a plain fluid: a <em>mixture</em>
+ * is always strained generically — see
+ * {@link com.dev1lroot.mcmods.omnitech.blocks.labware.FilterPressBlockEntity}.
  */
 public class FilterPressRecipe {
 

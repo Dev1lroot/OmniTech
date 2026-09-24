@@ -1,4 +1,5 @@
 {
+  "formula": "H2O",
   "density": 1000,
   "viscosity": 10,
   "temperature": 20,

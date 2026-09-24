@@ -15,7 +15,14 @@
     "place_transmitter": {
       "trigger": "minecraft:placed_block",
       "conditions": {
-        "block": "omnitech:radio_transmitter"
+        "location": {
+          "type": "minecraft:location_check",
+          "predicate": {
+            "block": {
+              "blocks": "omnitech:radio_transmitter"
+            }
+          }
+        }
       }
     }
   }

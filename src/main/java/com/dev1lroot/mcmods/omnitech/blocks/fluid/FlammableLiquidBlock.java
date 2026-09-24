@@ -4,9 +4,11 @@
  */
 package com.dev1lroot.mcmods.omnitech.blocks.fluid;
 
+import com.dev1lroot.mcmods.omnitech.util.AdvancementUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.monster.cubemob.MagmaCube;
 import net.minecraft.world.level.BlockGetter;
@@ -67,6 +69,15 @@ public class FlammableLiquidBlock extends LiquidBlock {
             // same" fluid (e.g. omnitech:naphtha vs omnitech:flowing_naphtha) — match
             // both, or the flood-fill stops dead at the first non-source block.
             igniteConnected(level, pos, this.fluid.getSource(), this.fluid.getFlowing());
+            awardNearbyPlayers(level, pos);
+        }
+    }
+
+    /** "I Love the Smell of Napalm in the Morning" — awarded to whoever's around to see the burn. */
+    private static void awardNearbyPlayers(ServerLevel level, BlockPos pos) {
+        AABB witnessBox = new AABB(pos).inflate(16);
+        for (ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, witnessBox)) {
+            AdvancementUtil.award(player, "progression/napalm", "burned_flammable");
         }
     }
 

@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "omnitech:block/thermal_conductor"
+    "model": "omnitech:item/thermal_conductor"
   }
 }

@@ -1,0 +1,26 @@
+{
+  "interval": 100,
+  "inputs": [
+    {
+      "fluid": "minecraft:milk",
+      "amount": 2
+    }
+  ],
+  "catalysts": [
+    {
+      "fluid": "omnitech:lactic_acid_bacteria",
+      "amount": 1
+    }
+  ],
+  "outputs": [
+    {
+      "fluid": "omnitech:lactic_acid",
+      "amount": 1
+    },
+    {
+      "fluid": "omnitech:lactic_acid_bacteria",
+      "amount": 1,
+      "dissolved": false
+    }
+  ]
+}

@@ -183,7 +183,8 @@ public class OmniTechClient
         event.register(
                 java.util.List.of(net.minecraft.client.color.block.BlockTintSources.foliage()),
                 OmniTechBlocks.VANILLA_VINE.get(),
-                OmniTechBlocks.CINNAMON_LEAVES.get());
+                OmniTechBlocks.CINNAMON_LEAVES.get(),
+                OmniTechBlocks.LEMON_LEAVES.get());
         event.register(
                 java.util.List.of(net.minecraft.client.color.block.BlockTintSources.doubleTallGrass()),
                 OmniTechBlocks.NETTLE.get());
@@ -196,6 +197,12 @@ public class OmniTechClient
         event.register(
                 Identifier.fromNamespaceAndPath(OmniTech.MODID, "flask"),
                 com.dev1lroot.mcmods.omnitech.client.FlaskItemModel.Unbaked.MAP_CODEC);
+        event.register(
+                Identifier.fromNamespaceAndPath(OmniTech.MODID, "reaction_flask"),
+                com.dev1lroot.mcmods.omnitech.client.ReactionFlaskItemModel.Unbaked.MAP_CODEC);
+        event.register(
+                Identifier.fromNamespaceAndPath(OmniTech.MODID, "drinking_bottle"),
+                com.dev1lroot.mcmods.omnitech.client.DrinkingBottleItemModel.Unbaked.MAP_CODEC);
         event.register(
                 Identifier.fromNamespaceAndPath(OmniTech.MODID, "pipette"),
                 com.dev1lroot.mcmods.omnitech.client.PipetteItemModel.Unbaked.MAP_CODEC);

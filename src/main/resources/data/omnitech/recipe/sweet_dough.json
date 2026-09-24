@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:wheat_flour",
+    "minecraft:sugar",
+    "omnitech:yeast",
+    "minecraft:milk_bucket"
+  ],
+  "result": {
+    "id": "omnitech:sweet_dough",
+    "count": 2
+  }
+}

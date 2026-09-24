@@ -117,6 +117,8 @@ public class OmniTechFluids
             this.type = TYPE_REGISTRY.register(name,
                     name.equals("chemical_compound")
                             ? () -> new ChemicalCompoundFluidType(typeProps.descriptionId("fluid.omnitech." + name))
+                            : name.equals("solution")
+                            ? () -> new SolutionFluidType(typeProps.descriptionId("fluid.omnitech." + name))
                             : () -> new FluidType(typeProps.descriptionId("fluid.omnitech." + name)));
             this.source = REGISTRY.register(name,
                     () -> new BaseFlowingFluid.Source(this.makeProperties()));

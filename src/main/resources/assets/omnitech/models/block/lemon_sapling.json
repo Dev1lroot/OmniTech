@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "omnitech:block/lemon_sapling"
+  }
+}

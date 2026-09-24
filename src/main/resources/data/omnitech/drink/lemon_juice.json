@@ -1,0 +1,12 @@
+{
+  "fluid": "omnitech:lemon_juice",
+  "nutrition": 1,
+  "saturation": 0.2,
+  "effects": [
+    {
+      "id": "minecraft:nausea",
+      "duration": 100,
+      "chance": 0.3
+    }
+  ]
+}

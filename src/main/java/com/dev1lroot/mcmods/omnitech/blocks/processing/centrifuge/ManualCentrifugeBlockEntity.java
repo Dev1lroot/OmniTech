@@ -7,6 +7,9 @@ package com.dev1lroot.mcmods.omnitech.blocks.processing.centrifuge;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.gui.ManualCentrifugeMenu;
 import com.dev1lroot.mcmods.omnitech.io.IKineticReceiver;
+import com.dev1lroot.mcmods.omnitech.items.MixtureDustItem;
+import com.dev1lroot.mcmods.omnitech.items.Solution;
+import com.dev1lroot.mcmods.omnitech.recipes.SolidFormManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualCentrifugeRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualCentrifugeRecipeManager;
 import net.minecraft.core.BlockPos;
@@ -28,8 +31,18 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+/**
+ * Manual Centrifuge. Items with a {@link ManualCentrifugeRecipe} spin into that recipe's outputs.
+ * Mixture Dust needs no recipe: each spin separates one dust into its ingredients, each into its
+ * own output — its solid form (see {@link SolidFormManager}) or else a pure dust. With more
+ * ingredients than output slots, the first ones (in the dust's listed order) are separated into
+ * the first slots and the rest stay together as Mixture Dust in the last slot. Amounts below one
+ * whole output wait in an internal buffer for the next dust.
+ */
 public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implements IKineticReceiver, WorldlyContainer {
     public static final int SLOT_INPUT    = 0;
     public static final int SLOT_OUTPUT_1 = 1;
@@ -59,6 +72,16 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
     private int spinningTimer = 0;
     private ManualCentrifugeRecipe currentRecipe = null;
     private String currentRecipeId = null;
+
+    /** Kinetic force needed to separate one Mixture Dust. */
+    public static final int SEPARATE_KINETIC_FORCE = 40;
+    private static final String SEPARATE_ID = "#separate";
+    /** True while the input is Mixture Dust, which is separated instead of processed by recipe. */
+    private boolean separating = false;
+    /** Separated ingredients (undissolved), waiting to make up one whole output each. */
+    private Solution separated = Solution.EMPTY;
+    /** Ingredients beyond the output slots, waiting to fill a whole Mixture Dust. */
+    private Solution residue = Solution.EMPTY;
 
     protected final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -108,26 +131,18 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
     public static void serverTick(Level level, BlockPos pos, BlockState state, ManualCentrifugeBlockEntity be) {
         if (be.spinningTimer > 0) be.spinningTimer--;
 
-        ManualCentrifugeRecipeManager.findRecipe(be.items.get(SLOT_INPUT)).ifPresentOrElse(
-                recipe -> {
-                    if (!recipe.getId().equals(be.currentRecipeId)) {
-                        be.currentRecipe = recipe;
-                        be.currentRecipeId = recipe.getId();
-                        be.kineticForce = 0;
-                        be.requiredKineticForce = recipe.getRequiredKineticForce();
-                        be.setChanged();
-                    }
-                },
-                () -> {
-                    if (be.currentRecipe != null) {
-                        be.currentRecipe = null;
-                        be.currentRecipeId = null;
-                        be.kineticForce = 0;
-                        be.requiredKineticForce = 0;
-                        be.setChanged();
-                    }
-                }
-        );
+        ItemStack input = be.items.get(SLOT_INPUT);
+        ManualCentrifugeRecipe recipe = ManualCentrifugeRecipeManager.findRecipe(input).orElse(null);
+        boolean separate = recipe == null && input.getItem() instanceof MixtureDustItem && isSeparable(input);
+        String recipeId = separate ? SEPARATE_ID : recipe != null ? recipe.getId() : null;
+        if (!Objects.equals(recipeId, be.currentRecipeId)) {
+            be.separating = separate;
+            be.currentRecipe = recipe;
+            be.currentRecipeId = recipeId;
+            be.kineticForce = 0;
+            be.requiredKineticForce = separate ? SEPARATE_KINETIC_FORCE : recipe != null ? recipe.getRequiredKineticForce() : 0;
+            be.setChanged();
+        }
 
         if (!be.hasOutputSpace() && (be.kineticForce != 0 || be.spinningTimer != 0)) {
             be.kineticForce = 0;
@@ -143,11 +158,11 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
 
     /** Only draw from the KF network when there is something to process. */
     @Override
-    public float getKfDemand() { return currentRecipe != null ? 0.1F : 0; }
+    public float getKfDemand() { return currentRecipe != null || separating ? 0.1F : 0; }
 
     @Override
     public boolean addKineticForce(float amount) {
-        if (currentRecipe == null) return false;
+        if (currentRecipe == null && !separating) return false;
         if (!hasOutputSpace()) return false;
 
         spinningTimer = SPIN_DECAY_TICKS;
@@ -169,6 +184,7 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
     }
 
     private boolean process() {
+        if (separating) return separate();
         if (currentRecipe == null) return false;
 
         RandomSource random = level != null ? level.getRandom() : RandomSource.create();
@@ -230,6 +246,94 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
         return true;
     }
 
+    /**
+     * Spins one Mixture Dust apart. Everything it yields must fit the output slots, otherwise
+     * nothing happens (and the input stays).
+     */
+    private boolean separate() {
+        ItemStack input = items.get(SLOT_INPUT);
+        List<Solution.Part> parts = MixtureDustItem.getMixture(input).toSolution(MixtureDustItem.UNIT).components();
+
+        // More ingredients than slots: the first ones get a slot each, the rest share the last
+        boolean overflow = parts.size() > OUTPUT_SLOTS.length;
+        int own = overflow ? OUTPUT_SLOTS.length - 1 : parts.size();
+        Solution nextSeparated = separated;
+        Solution nextResidue = residue;
+        for (int i = 0; i < parts.size(); i++) {
+            Solution.Part p = parts.get(i);
+            if (i < own) nextSeparated = nextSeparated.plus(p.fluid(), p.amount(), false);
+            else         nextResidue   = nextResidue.plus(p.fluid(), p.amount(), false);
+        }
+
+        List<ItemStack> pure = new ArrayList<>();
+        for (Solution.Part p : List.copyOf(nextSeparated.components())) {
+            SolidFormManager.SolidForm form = SolidFormManager.find(p.fluid());
+            int unit = form != null ? form.amount() : MixtureDustItem.UNIT;
+            int count = p.amount() / unit;
+            if (count == 0) continue;
+            Solution one = Solution.EMPTY.plus(p.fluid(), unit, false);
+            pure.add((form != null ? form.stack() : MixtureDustItem.of(one)).copyWithCount(count));
+            nextSeparated = nextSeparated.minus(Solution.EMPTY.plus(p.fluid(), unit * count, false));
+        }
+        List<ItemStack> mixed = new ArrayList<>();
+        while (nextResidue.totalAmount() >= MixtureDustItem.UNIT) {
+            Solution portion = nextResidue.scaledTo(MixtureDustItem.UNIT);
+            mixed.add(MixtureDustItem.of(portion));
+            nextResidue = nextResidue.minus(portion);
+        }
+
+        // Separated outputs use every slot but the last while there's overflow; residue only the last
+        int[] pureSlots = overflow ? java.util.Arrays.copyOf(OUTPUT_SLOTS, OUTPUT_SLOTS.length - 1) : OUTPUT_SLOTS;
+        int[] residueSlots = { OUTPUT_SLOTS[OUTPUT_SLOTS.length - 1] };
+        NonNullList<ItemStack> trial = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
+        for (int i = 0; i < SLOT_COUNT; i++) trial.set(i, items.get(i).copy());
+        if (!placeAll(trial, pure, pureSlots) || !placeAll(trial, mixed, residueSlots)) {
+            kineticForce = 0;
+            return false;
+        }
+
+        for (int slot : OUTPUT_SLOTS) items.set(slot, trial.get(slot));
+        input.shrink(1);
+        separated = nextSeparated;
+        residue = nextResidue;
+        kineticForce = 0;
+        setChanged();
+        return true;
+    }
+
+    /** Mixture Dust of several ingredients, or of one that has a solid form (a pure dust with none is final). */
+    private static boolean isSeparable(ItemStack dust) {
+        var entries = MixtureDustItem.getMixture(dust).entries();
+        if (entries.size() > 1) return true;
+        return entries.size() == 1 && SolidFormManager.find(entries.get(0).fluid()) != null;
+    }
+
+    /** Puts every stack into one of {@code slots} of {@code inv} (stacking / blending dust), or fails. */
+    private static boolean placeAll(NonNullList<ItemStack> inv, List<ItemStack> stacks, int[] slots) {
+        for (ItemStack stack : stacks) {
+            boolean placed = false;
+            for (int slot : slots) {
+                if (inv.get(slot).isEmpty()) continue;
+                if (MixtureDustItem.canMerge(inv.get(slot), stack)) {
+                    inv.set(slot, MixtureDustItem.merge(inv.get(slot), stack));
+                    placed = true;
+                    break;
+                }
+            }
+            if (!placed) {
+                for (int slot : slots) {
+                    if (inv.get(slot).isEmpty()) {
+                        inv.set(slot, stack.copy());
+                        placed = true;
+                        break;
+                    }
+                }
+            }
+            if (!placed) return false;
+        }
+        return true;
+    }
+
     public ContainerData getContainerData() { return dataAccess; }
 
     @Override
@@ -240,6 +344,8 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
         this.kineticForce = input.getIntOr("KineticForce", 0);
         this.requiredKineticForce = input.getIntOr("RequiredKineticForce", 0);
         this.spinningTimer = input.getIntOr("SpinningTimer", 0);
+        this.separated = input.read("Separated", Solution.CODEC).orElse(Solution.EMPTY);
+        this.residue = input.read("Residue", Solution.CODEC).orElse(Solution.EMPTY);
     }
 
     @Override
@@ -249,6 +355,8 @@ public class ManualCentrifugeBlockEntity extends BaseContainerBlockEntity implem
         output.putInt("KineticForce", this.kineticForce);
         output.putInt("RequiredKineticForce", this.requiredKineticForce);
         output.putInt("SpinningTimer", this.spinningTimer);
+        output.store("Separated", Solution.CODEC, this.separated);
+        output.store("Residue", Solution.CODEC, this.residue);
     }
 
     /** Output slots are extraction-only; input slot accepts items. */

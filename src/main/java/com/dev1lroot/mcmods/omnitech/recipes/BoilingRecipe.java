@@ -110,4 +110,6 @@ public class BoilingRecipe {
 
     public String getId()       { return id; }
     public int getInputAmount() { return inputAmount; }
+    public int getOutputAmount() { return outputAmount; }
+    public float getResultChance() { return resultChance; }
 }

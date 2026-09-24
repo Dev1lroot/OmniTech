@@ -141,6 +141,7 @@ public class FermentationRecipeManager {
 
     public static List<FermentationRecipe> getAllRecipes() { return recipes; }
     public static List<Microbe> getMicrobes()              { return microbes; }
+    public static List<Dissolution> getDissolutions()      { return dissolutions; }
 
     /** The dissolution rule for {@code stack}, or {@code null} if the input slot can't dissolve it. */
     public static @Nullable Dissolution findDissolution(ItemStack stack) {

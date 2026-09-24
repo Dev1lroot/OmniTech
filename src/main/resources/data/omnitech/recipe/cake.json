@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:cake_base",
+    "omnitech:white_chocolate",
+    "#omnitech:cake_berries"
+  ],
+  "result": {
+    "id": "minecraft:cake"
+  }
+}

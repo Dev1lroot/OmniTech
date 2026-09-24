@@ -1,0 +1,22 @@
+{
+  "interval": 400,
+  "inputs": [
+    {
+      "fluid": "omnitech:cider",
+      "amount": 1
+    }
+  ],
+  "catalysts": [
+    {
+      "fluid": "omnitech:acetic_acid_bacteria",
+      "amount": 1
+    }
+  ],
+  "outputs": [
+    {
+      "fluid": "omnitech:acetic_acid_bacteria",
+      "amount": 1,
+      "dissolved": false
+    }
+  ]
+}

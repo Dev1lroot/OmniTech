@@ -175,6 +175,8 @@ public class OmniTechItems
 
     public static final DeferredItem<BlockItem> FILTER_PRESS_ITEM = REGISTRY.registerSimpleBlockItem(
             "filter_press", OmniTechBlocks.FILTER_PRESS);
+    public static final DeferredItem<BlockItem> PRESS_ITEM = REGISTRY.registerSimpleBlockItem(
+            "press", OmniTechBlocks.PRESS);
 
     public static final DeferredItem<BlockItem> FERMENTER_ITEM = REGISTRY.registerSimpleBlockItem(
             "fermenter", OmniTechBlocks.FERMENTER);
@@ -217,6 +219,12 @@ public class OmniTechItems
 
     public static final DeferredItem<com.dev1lroot.mcmods.omnitech.items.FlaskItem> FLASK =
             REGISTRY.registerItem("flask", com.dev1lroot.mcmods.omnitech.items.FlaskItem::new);
+
+    public static final DeferredItem<com.dev1lroot.mcmods.omnitech.items.ReactionFlaskItem> REACTION_FLASK =
+            REGISTRY.registerItem("reaction_flask", com.dev1lroot.mcmods.omnitech.items.ReactionFlaskItem::new);
+
+    public static final DeferredItem<com.dev1lroot.mcmods.omnitech.items.DrinkingBottleItem> DRINKING_BOTTLE =
+            REGISTRY.registerItem("drinking_bottle", com.dev1lroot.mcmods.omnitech.items.DrinkingBottleItem::new);
 
     public static final DeferredItem<com.dev1lroot.mcmods.omnitech.items.MixtureDustItem> MIXTURE_DUST =
             REGISTRY.registerItem("mixture_dust", com.dev1lroot.mcmods.omnitech.items.MixtureDustItem::new);
@@ -339,6 +347,24 @@ public class OmniTechItems
                     p -> new com.dev1lroot.mcmods.omnitech.items.JalapenoItem(OmniTechBlocks.JALAPENO.get(), p),
                     p -> p.useItemDescriptionPrefix().food(
                             new net.minecraft.world.food.FoodProperties.Builder().nutrition(2).saturationModifier(0.2F).build()));
+
+    /**
+     * A {@link BlockItem} for {@link OmniTechBlocks#GRAPE_BUSH} that's also food — eat it, or plant
+     * it to grow a bush (the same trick vanilla uses for {@code sweet_berries}).
+     */
+    public static final DeferredItem<BlockItem> LEMON_LEAVES_ITEM =
+            REGISTRY.registerSimpleBlockItem("lemon_leaves", OmniTechBlocks.LEMON_LEAVES);
+    public static final DeferredItem<BlockItem> LEMON_SAPLING_ITEM =
+            REGISTRY.registerSimpleBlockItem("lemon_sapling", OmniTechBlocks.LEMON_SAPLING);
+    /** Picked from ripe {@link OmniTechBlocks#LEMON_LEAVES}; sour, but it is food. */
+    public static final DeferredItem<Item> LEMON =
+            REGISTRY.registerItem("lemon", Item::new,
+                    p -> p.food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(2).saturationModifier(0.2F).build()));
+
+    public static final DeferredItem<BlockItem> GRAPES =
+            REGISTRY.registerItem("grapes",
+                    p -> new BlockItem(OmniTechBlocks.GRAPE_BUSH.get(), p.useItemDescriptionPrefix()),
+                    p -> p.food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(2).saturationModifier(0.1F).build()));
 
     // ── Research ──────────────────────────────────────────────────────────────
     public static final DeferredItem<BlueprintItem> BLUEPRINT =

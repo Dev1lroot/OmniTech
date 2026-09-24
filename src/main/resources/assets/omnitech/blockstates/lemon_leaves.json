@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "ripe=false": {
+      "model": "omnitech:block/lemon_leaves"
+    },
+    "ripe=true": {
+      "model": "omnitech:block/lemon_leaves_ripe"
+    }
+  }
+}

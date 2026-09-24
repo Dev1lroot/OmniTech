@@ -1,0 +1,13 @@
+{
+  "requiredKineticForce": 10,
+  "input": "omnitech:grapes",
+  "outputFluid": {
+    "fluid": "omnitech:grape_juice",
+    "amount": 100
+  },
+  "outputItem": {
+    "item": "omnitech:grape_pomace",
+    "count": 1,
+    "chance": 1.0
+  }
+}

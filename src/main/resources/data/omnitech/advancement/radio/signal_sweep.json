@@ -15,7 +15,14 @@
     "place_scanner": {
       "trigger": "minecraft:placed_block",
       "conditions": {
-        "block": "omnitech:radio_scanner"
+        "location": {
+          "type": "minecraft:location_check",
+          "predicate": {
+            "block": {
+              "blocks": "omnitech:radio_scanner"
+            }
+          }
+        }
       }
     }
   }

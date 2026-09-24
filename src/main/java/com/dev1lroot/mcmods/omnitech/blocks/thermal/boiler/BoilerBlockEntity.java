@@ -389,11 +389,11 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity
 
             Solution portion = dustBuffer.scaledTo(MixtureDustItem.UNIT);
             ItemStack dust = MixtureDustItem.of(portion);
-            if (!canStore(dust)) break;
-
             ItemStack slot = items.get(SLOT_OUTPUT);
-            if (slot.isEmpty()) items.set(SLOT_OUTPUT, dust);
-            else slot.grow(1);
+            if (!MixtureDustItem.canMerge(slot, dust)) break;
+
+            // Piles of the same ingredients blend, so slightly different ratios don't jam the slot
+            items.set(SLOT_OUTPUT, MixtureDustItem.merge(slot, dust));
             dustBuffer = dustBuffer.minus(portion);
             changed = true;
         }

@@ -7,6 +7,7 @@ package com.dev1lroot.mcmods.omnitech.radiation;
 import com.dev1lroot.mcmods.omnitech.OmniTechSounds;
 import com.dev1lroot.mcmods.omnitech.network.NuclearExplosionFxPacket;
 import com.dev1lroot.mcmods.omnitech.network.RadiationSyncPacket;
+import com.dev1lroot.mcmods.omnitech.util.AdvancementUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.SectionPos;
@@ -76,8 +77,13 @@ public class NuclearExplosion {
         data.addCenter(center.immutable());
 
         RadiationSyncPacket syncPkt = new RadiationSyncPacket(new ArrayList<>(data.getCenters()));
+        double witnessRadiusSq = (KILL_RADIUS * 2.0) * (KILL_RADIUS * 2.0);
         for (ServerPlayer sp : level.getServer().getPlayerList().getPlayers()) {
             PacketDistributor.sendToPlayer(sp, syncPkt);
+            // "Now I Am Become Death" — anyone close enough to see the explosion FX below.
+            if (sp.level() == level && sp.distanceToSqr(center.getX() + 0.5, center.getY() + 0.5, center.getZ() + 0.5) <= witnessRadiusSq) {
+                AdvancementUtil.award(sp, "progression/nuclear_explosion_witnessed", "witnessed_explosion");
+            }
         }
 
         PacketDistributor.sendToPlayersNear(level, null,

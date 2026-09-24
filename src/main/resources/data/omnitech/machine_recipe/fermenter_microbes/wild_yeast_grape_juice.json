@@ -1,0 +1,9 @@
+{
+  "fluid": "omnitech:yeast",
+  "amount": 1,
+  "weight": 4,
+  "requires": [
+    "omnitech:grape_juice"
+  ],
+  "dissolved": false
+}

@@ -1,0 +1,22 @@
+{
+  "requiredTemperature": 90,
+  "productionTime": 200,
+  "input": {
+    "fluid": "omnitech:wine",
+    "amount": 1000
+  },
+  "outputs": [
+    {
+      "fluid": "minecraft:water",
+      "amount": 700
+    },
+    {
+      "fluid": "omnitech:brandy",
+      "amount": 280
+    },
+    {
+      "fluid": "omnitech:methanol",
+      "amount": 20
+    }
+  ]
+}

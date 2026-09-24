@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:cheese_curd",
+    "omnitech:cheese_curd",
+    "omnitech:cheese_curd",
+    "omnitech:sodium_chlorine_dust",
+    "omnitech:mold_culture"
+  ],
+  "result": {
+    "id": "omnitech:blue_cheese",
+    "count": 2
+  }
+}

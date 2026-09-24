@@ -1,0 +1,19 @@
+{
+  "fluid": "omnitech:brandy",
+  "nutrition": 1,
+  "saturation": 0.1,
+  "effects": [
+    {
+      "id": "minecraft:resistance",
+      "duration": 600,
+      "amplifier": 0,
+      "chance": 1.0
+    },
+    {
+      "id": "minecraft:nausea",
+      "duration": 400,
+      "amplifier": 0,
+      "chance": 0.5
+    }
+  ]
+}

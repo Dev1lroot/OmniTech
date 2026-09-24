@@ -10,6 +10,7 @@ import com.dev1lroot.mcmods.omnitech.FluidPhase;
 import com.dev1lroot.mcmods.omnitech.FluidPhaseUtil;
 import com.dev1lroot.mcmods.omnitech.FluidPhysicsRegistry;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
+import com.dev1lroot.mcmods.omnitech.chemistry.MixtureNaming;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -158,6 +159,8 @@ public class FlaskItem extends Item {
     public Component getName(ItemStack stack) {
         Solution solution = getSolution(stack);
         if (solution.isEmpty()) return Component.literal("Flask");
+        Component known = MixtureNaming.nameOf(solution);
+        if (known != null) return known.copy().append(Component.literal(" Flask"));
         if (solution.components().size() == 1) {
             Solution.Part only = solution.components().get(0);
             return only.resource().toStack(only.amount()).getHoverName().copy()

@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:tnt"
+    },
+    "title": {"translate": "advancement.omnitech.progression.nuclear_explosion_witnessed.title"},
+    "description": {"translate": "advancement.omnitech.progression.nuclear_explosion_witnessed.description"},
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "omnitech:progression/nuclear_bomb_acquired",
+  "criteria": {
+    "witnessed_explosion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "omnitech:block/radio_locator"
+    "model": "omnitech:item/radio_locator"
   }
 }

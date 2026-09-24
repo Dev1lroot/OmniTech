@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:cocoa_mass",
+    "omnitech:cocoa_mass",
+    "omnitech:cocoa_butter",
+    "minecraft:sugar"
+  ],
+  "result": {
+    "id": "omnitech:dark_chocolate",
+    "count": 3
+  }
+}

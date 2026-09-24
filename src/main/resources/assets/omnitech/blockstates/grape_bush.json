@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "ripe=false": {
+      "model": "omnitech:block/grape_bush_unripe"
+    },
+    "ripe=true": {
+      "model": "omnitech:block/grape_bush_ripe"
+    }
+  }
+}

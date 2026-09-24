@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.minecraft.world.food.FoodProperties;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.jarcontents.JarContents;
 
@@ -31,7 +32,8 @@ import java.nio.file.Paths;
  *   "stack_size":    64,     // max items per stack (ignored when durability > 0)
  *   "durability":     0,     // damage capacity; > 0 forces stack_size = 1 (MC rule)
  *   "formula":       null,   // chemical formula shown in tooltip, e.g. "W"
- *   "fire_resistant": false  // true = item survives lava/fire (burns: false in yml)
+ *   "fire_resistant": false, // true = item survives lava/fire (burns: false in yml)
+ *   "food":          null    // makes it edible: { "nutrition": 5, "saturation": 0.6, "always_edible": false }
  * }
  * }</pre>
  *
@@ -74,6 +76,7 @@ public class ItemLoader {
                 int durability     = json.has("durability")    ? json.get("durability").getAsInt()     : 0;
                 String formula     = json.has("formula")       ? json.get("formula").getAsString()     : null;
                 boolean fireRes    = json.has("fire_resistant") && json.get("fire_resistant").getAsBoolean();
+                FoodProperties food = json.has("food") ? parseFood(json.getAsJsonObject("food")) : null;
 
                 if (durability > 0 && stackSize != 64) {
                     OmniTech.LOGGER.warn(
@@ -90,6 +93,7 @@ public class ItemLoader {
                     if (finalDurability > 0) p = p.durability(finalDurability);
                     else if (finalStackSize != 64) p = p.stacksTo(finalStackSize);
                     if (finalFireRes) p = p.fireResistant();
+                    if (food != null) p = p.food(food);
                     if (finalFormula != null)
                         p = p.component(OmniTechDataComponents.FORMULA.get(), finalFormula);
                     return p;
@@ -106,6 +110,14 @@ public class ItemLoader {
         });
 
         OmniTech.LOGGER.info("[ItemLoader] {} items registered from JSON", count[0]);
+    }
+
+    private static FoodProperties parseFood(JsonObject food) {
+        var builder = new FoodProperties.Builder()
+                .nutrition(food.has("nutrition") ? food.get("nutrition").getAsInt() : 1)
+                .saturationModifier(food.has("saturation") ? food.get("saturation").getAsFloat() : 0.1F);
+        if (food.has("always_edible") && food.get("always_edible").getAsBoolean()) builder.alwaysEdible();
+        return builder.build();
     }
 
     // ── Dev-mode resource generation ──────────────────────────────────────────

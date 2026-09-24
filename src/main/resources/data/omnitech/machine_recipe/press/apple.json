@@ -1,0 +1,13 @@
+{
+  "requiredKineticForce": 20,
+  "input": "minecraft:apple",
+  "outputFluid": {
+    "fluid": "omnitech:apple_juice",
+    "amount": 150
+  },
+  "outputItem": {
+    "item": "omnitech:apple_puree",
+    "count": 1,
+    "chance": 1.0
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "#omnitech:wheat_doughs",
+    "omnitech:cinnamon_dust",
+    "minecraft:sugar"
+  ],
+  "result": {
+    "id": "omnitech:cinnamon_dough"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:sweet_dough",
+    "omnitech:cocoa_powder",
+    "minecraft:sugar"
+  ],
+  "result": {
+    "id": "omnitech:chocolate_dough"
+  }
+}

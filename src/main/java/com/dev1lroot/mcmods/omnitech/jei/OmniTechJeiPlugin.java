@@ -9,21 +9,32 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
 import com.dev1lroot.mcmods.omnitech.recipes.AlloyFurnaceRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.AlloyFurnaceRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.BoilingRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.BoilingRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ChemicalReactorRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.ChemicalReactorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ElectrolysisRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.ElectrolysisRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.FermentationRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.FermentationRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.FilterPressRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.FilterPressRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.FluidCollectorRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.FluidCollectorRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.FoundryRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.FoundryRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.GlassBlowingRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.GlassBlowingRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.FractionalDistillationRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.FractionalDistillationRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualCentrifugeRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualCentrifugeRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualMaceratorRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.ManualMaceratorRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.PressRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.PressRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.SmelterRecipe;
+import com.dev1lroot.mcmods.omnitech.recipes.SolidFormManager;
 import com.dev1lroot.mcmods.omnitech.recipes.SmelterRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.SolvationRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.SolvationRecipeManager;
@@ -43,10 +54,13 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.List;
@@ -88,6 +102,30 @@ public class OmniTechJeiPlugin implements IModPlugin {
 
     public static final IRecipeType<FluidFillerRecipe> FLUID_FILLER =
             IRecipeType.create(OmniTech.MODID, "fluid_filler", FluidFillerRecipe.class);
+
+    public static final IRecipeType<FilterPressRecipe> FILTER_PRESS =
+            IRecipeType.create(OmniTech.MODID, "filter_press", FilterPressRecipe.class);
+
+    public static final IRecipeType<GlassBlowingRecipe> GLASS_BLOWING =
+            IRecipeType.create(OmniTech.MODID, "glass_blowing", GlassBlowingRecipe.class);
+
+    public static final IRecipeType<PressRecipe> PRESS =
+            IRecipeType.create(OmniTech.MODID, "press", PressRecipe.class);
+
+    public static final IRecipeType<BoilingRecipe> BOILING =
+            IRecipeType.create(OmniTech.MODID, "boiling", BoilingRecipe.class);
+
+    public static final IRecipeType<SolidFormManager.SolidForm> SOLID_FORM =
+            IRecipeType.create(OmniTech.MODID, "solid_form", SolidFormManager.SolidForm.class);
+
+    public static final IRecipeType<FermentationRecipe> FERMENTATION =
+            IRecipeType.create(OmniTech.MODID, "fermentation", FermentationRecipe.class);
+
+    public static final IRecipeType<FermentationRecipeManager.Dissolution> FERMENTER_DISSOLVE =
+            IRecipeType.create(OmniTech.MODID, "fermenter_dissolve", FermentationRecipeManager.Dissolution.class);
+
+    public static final IRecipeType<FermentationRecipeManager.Microbe> FERMENTER_MICROBES =
+            IRecipeType.create(OmniTech.MODID, "fermenter_microbes", FermentationRecipeManager.Microbe.class);
 
     /**
      * Not backed by any recipe JSON — filling a bucket is a generic capability
@@ -133,7 +171,15 @@ public class OmniTechJeiPlugin implements IModPlugin {
                 new FractionalDistillationCategory(gui),
                 new SolvationCategory(gui),
                 new FluidCollectorCategory(gui),
-                new FluidFillerCategory(gui)
+                new FluidFillerCategory(gui),
+                new FilterPressCategory(gui),
+                new SolidFormCategory(gui),
+                new BoilingCategory(gui),
+                new PressCategory(gui),
+                new GlassBlowingCategory(gui),
+                new FermentationCategory(gui),
+                new FermenterDissolveCategory(gui),
+                new FermenterMicrobeCategory(gui)
         );
     }
 
@@ -152,6 +198,32 @@ public class OmniTechJeiPlugin implements IModPlugin {
         registration.addRecipes(SOLVATION,                SolvationRecipeManager.getAllRecipes());
         registration.addRecipes(FLUID_COLLECTOR,          FluidCollectorRecipeManager.getAllRecipes());
         registration.addRecipes(FLUID_FILLER,             buildFluidFillerRecipes());
+        registration.addRecipes(FILTER_PRESS,             FilterPressRecipeManager.getAllRecipes());
+        registration.addRecipes(SOLID_FORM,               SolidFormManager.getAll());
+        registration.addRecipes(BOILING,                  BoilingRecipeManager.getAllRecipes());
+        registration.addRecipes(PRESS,                    PressRecipeManager.getAllRecipes());
+        registration.addRecipes(GLASS_BLOWING,            GlassBlowingRecipeManager.getAllRecipes());
+        registration.addRecipes(FERMENTATION,             FermentationRecipeManager.getAllRecipes());
+        registration.addRecipes(FERMENTER_DISSOLVE,       FermentationRecipeManager.getDissolutions());
+        registration.addRecipes(FERMENTER_MICROBES,       FermentationRecipeManager.getMicrobes());
+
+        // Straining and separating mixtures isn't a fixed recipe, so explain it on the items themselves
+        registration.addItemStackInfo(new ItemStack(OmniTechBlocks.FILTER_PRESS.get()),
+                Component.translatable("jei.omnitech.info.filter_press"));
+        registration.addItemStackInfo(new ItemStack(OmniTechBlocks.MANUAL_CENTRIFUGE.get()),
+                Component.translatable("jei.omnitech.info.manual_centrifuge"));
+        registration.addItemStackInfo(new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.fromNamespaceAndPath(OmniTech.MODID, "mixture_dust"))),
+                Component.translatable("jei.omnitech.info.mixture_dust"));
+        registration.addItemStackInfo(new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.fromNamespaceAndPath(OmniTech.MODID, "yeast"))),
+                Component.translatable("jei.omnitech.info.yeast"));
+        registration.addItemStackInfo(new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.fromNamespaceAndPath(OmniTech.MODID, "mold_culture"))),
+                Component.translatable("jei.omnitech.info.mold_culture"));
+        registration.addItemStackInfo(new ItemStack(OmniTechBlocks.PRESS.get()),
+                Component.translatable("jei.omnitech.info.press"));
+        for (String id : List.of("lactic_acid_bacteria", "cheese_curd", "ricotta", "grapes", "mother_of_vinegar", "drinking_bottle", "lemon", "citric_acid")) {
+            registration.addItemStackInfo(new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.fromNamespaceAndPath(OmniTech.MODID, id))),
+                    Component.translatable("jei.omnitech.info." + id));
+        }
     }
 
     // ── Catalyst registration ─────────────────────────────────────────────────
@@ -170,6 +242,14 @@ public class OmniTechJeiPlugin implements IModPlugin {
         registration.addCraftingStation(FLUID_COLLECTOR,         OmniTechBlocks.FLUID_COLLECTOR.get());
         registration.addCraftingStation(FLUID_FILLER,            OmniTechBlocks.FLUID_FILLER.get());
         registration.addCraftingStation(FLUID_FILLER,            OmniTechBlocks.FLUID_TANK.get());
+        registration.addCraftingStation(FILTER_PRESS,            OmniTechBlocks.FILTER_PRESS.get());
+        registration.addCraftingStation(SOLID_FORM,              OmniTechBlocks.MANUAL_CENTRIFUGE.get());
+        registration.addCraftingStation(BOILING,                 OmniTechBlocks.BOILER.get());
+        registration.addCraftingStation(PRESS,                   OmniTechBlocks.PRESS.get());
+        registration.addCraftingStation(GLASS_BLOWING,           OmniTechBlocks.GLASS_BLOWING_STATION.get());
+        registration.addCraftingStation(FERMENTATION,            OmniTechBlocks.FERMENTER.get());
+        registration.addCraftingStation(FERMENTER_DISSOLVE,      OmniTechBlocks.FERMENTER.get());
+        registration.addCraftingStation(FERMENTER_MICROBES,      OmniTechBlocks.FERMENTER.get());
     }
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -645,6 +725,346 @@ public class OmniTechJeiPlugin implements IModPlugin {
         @Override
         public void draw(FluidFillerRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
             arrow.draw(graphics, 44, 12);
+        }
+    }
+
+    // ── Shared fluid-slot helper for the fermenter / filter press categories ──
+
+    /** A fluid slot filled to the brim with {@code amount} mB, with optional grey tooltip lines. */
+    private static void fluidSlot(IRecipeLayoutBuilder builder, RecipeIngredientRole role, int x, int y,
+                                  Fluid fluid, int amount, Component... notes) {
+        var slot = builder.addSlot(role, x, y).add(fluid, amount).setFluidRenderer(amount, false, 16, 36);
+        if (notes.length > 0) {
+            slot.addRichTooltipCallback((view, tooltip) -> {
+                for (Component note : notes) tooltip.add(note.copy().withStyle(ChatFormatting.GRAY));
+            });
+        }
+    }
+
+    // ── Filter Press: fluid (or a mixture carrying it undissolved) → item + filtrate ──
+
+    static class FilterPressCategory implements IRecipeCategory<FilterPressRecipe> {
+        private final IDrawable icon;
+        private final IDrawable arrow;
+
+        FilterPressCategory(IGuiHelper gui) {
+            this.icon  = gui.createDrawableItemLike(OmniTechBlocks.FILTER_PRESS.get());
+            this.arrow = gui.getRecipeArrow();
+        }
+
+        @Override public IRecipeType<FilterPressRecipe> getRecipeType() { return FILTER_PRESS; }
+        @Override public Component getTitle() { return Component.translatable("jei.omnitech.filter_press"); }
+        @Override public int getWidth()  { return 160; }
+        @Override public int getHeight() { return 65; }
+        @Override public IDrawable getIcon() { return icon; }
+
+        @Override
+        public void setRecipe(IRecipeLayoutBuilder builder, FilterPressRecipe recipe, IFocusGroup focuses) {
+            FluidStack in = recipe.getInputFluid();
+            if (!in.isEmpty())
+                fluidSlot(builder, RecipeIngredientRole.INPUT, 0, 2, in.getFluid(), in.getAmount());
+
+            ItemStack outItem = recipe.getOutputItemStack();
+            if (!outItem.isEmpty())
+                builder.addOutputSlot(82, 12).add(outItem).setOutputSlotBackground();
+
+            FluidStack out = recipe.getOutputFluid();
+            if (!out.isEmpty())
+                fluidSlot(builder, RecipeIngredientRole.OUTPUT, 106, 2, out.getFluid(), out.getAmount());
+        }
+
+        @Override
+        public void draw(FilterPressRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+            Font font = Minecraft.getInstance().font;
+            arrow.draw(graphics, 44, 12);
+            graphics.text(font, "KF: " + recipe.getRequiredKineticForce(), 0, 46, 0x555555, false);
+        }
+    }
+
+    // ── Manual Centrifuge: an ingredient separated out of Mixture Dust → its solid form ──
+
+    static class SolidFormCategory implements IRecipeCategory<SolidFormManager.SolidForm> {
+        private final IDrawable icon;
+        private final IDrawable arrow;
+
+        SolidFormCategory(IGuiHelper gui) {
+            this.icon  = gui.createDrawableItemLike(OmniTechBlocks.MANUAL_CENTRIFUGE.get());
+            this.arrow = gui.getRecipeArrow();
+        }
+
+        @Override public IRecipeType<SolidFormManager.SolidForm> getRecipeType() { return SOLID_FORM; }
+        @Override public Component getTitle() { return Component.translatable("jei.omnitech.solid_form"); }
+        @Override public int getWidth()  { return 120; }
+        @Override public int getHeight() { return 50; }
+        @Override public IDrawable getIcon() { return icon; }
+
+        @Override
+        public void setRecipe(IRecipeLayoutBuilder builder, SolidFormManager.SolidForm recipe, IFocusGroup focuses) {
+            Fluid fluid = recipe.fluid();
+            if (fluid != null)
+                fluidSlot(builder, RecipeIngredientRole.INPUT, 0, 2, fluid, recipe.amount(),
+                        Component.translatable("jei.omnitech.solid_form.source"));
+            ItemStack out = recipe.stack();
+            if (!out.isEmpty())
+                builder.addOutputSlot(82, 12).add(out).setOutputSlotBackground();
+        }
+
+        @Override
+        public void draw(SolidFormManager.SolidForm recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+            arrow.draw(graphics, 44, 12);
+        }
+    }
+
+    // ── Glass Blowing Station: one item melted and blown into glassware at a minimum heat ──
+
+    static class GlassBlowingCategory implements IRecipeCategory<GlassBlowingRecipe> {
+        private final IDrawable icon;
+        private final IDrawable arrow;
+
+        GlassBlowingCategory(IGuiHelper gui) {
+            this.icon  = gui.createDrawableItemLike(OmniTechBlocks.GLASS_BLOWING_STATION.get());
+            this.arrow = gui.getRecipeArrow();
+        }
+
+        @Override public IRecipeType<GlassBlowingRecipe> getRecipeType() { return GLASS_BLOWING; }
+        @Override public Component getTitle() { return Component.translatable("jei.omnitech.glass_blowing"); }
+        @Override public int getWidth()  { return 120; }
+        @Override public int getHeight() { return 50; }
+        @Override public IDrawable getIcon() { return icon; }
+
+        @Override
+        public void setRecipe(IRecipeLayoutBuilder builder, GlassBlowingRecipe recipe, IFocusGroup focuses) {
+            if (recipe.getInput() != null)
+                builder.addInputSlot(0, 12).add(new ItemStack(recipe.getInput())).setStandardSlotBackground();
+            ItemStack result = recipe.getResult();
+            if (!result.isEmpty())
+                builder.addOutputSlot(82, 12).add(result).setOutputSlotBackground();
+        }
+
+        @Override
+        public void draw(GlassBlowingRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+            Font font = Minecraft.getInstance().font;
+            arrow.draw(graphics, 44, 12);
+            graphics.text(font, recipe.getRequiredMinimalTemperature() + "°C", 0, 36, 0x555555, false);
+        }
+    }
+
+    // ── Press: one item → juice + leftover pulp ──
+
+    static class PressCategory implements IRecipeCategory<PressRecipe> {
+        private final IDrawable icon;
+        private final IDrawable arrow;
+
+        PressCategory(IGuiHelper gui) {
+            this.icon  = gui.createDrawableItemLike(OmniTechBlocks.PRESS.get());
+            this.arrow = gui.getRecipeArrow();
+        }
+
+        @Override public IRecipeType<PressRecipe> getRecipeType() { return PRESS; }
+        @Override public Component getTitle() { return Component.translatable("jei.omnitech.press"); }
+        @Override public int getWidth()  { return 140; }
+        @Override public int getHeight() { return 65; }
+        @Override public IDrawable getIcon() { return icon; }
+
+        @Override
+        public void setRecipe(IRecipeLayoutBuilder builder, PressRecipe recipe, IFocusGroup focuses) {
+            if (recipe.getInput() != null)
+                builder.addInputSlot(0, 12).add(new ItemStack(recipe.getInput())).setStandardSlotBackground();
+
+            ItemStack pulp = recipe.getOutputItem();
+            if (!pulp.isEmpty()) {
+                var slot = builder.addOutputSlot(82, 12).add(pulp).setOutputSlotBackground();
+                if (recipe.getOutputItemChance() < 1f) {
+                    int percent = Math.round(recipe.getOutputItemChance() * 100f);
+                    slot.addRichTooltipCallback((view, tooltip) -> tooltip.add(
+                            Component.translatable("jei.omnitech.boiler.chance", percent).withStyle(ChatFormatting.GRAY)));
+                }
+            }
+
+            FluidStack juice = recipe.getOutputFluid();
+            if (!juice.isEmpty())
+                fluidSlot(builder, RecipeIngredientRole.OUTPUT, 106, 2, juice.getFluid(), juice.getAmount());
+        }
+
+        @Override
+        public void draw(PressRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+            Font font = Minecraft.getInstance().font;
+            arrow.draw(graphics, 44, 12);
+            graphics.text(font, "KF: " + recipe.getRequiredKineticForce(), 0, 46, 0x555555, false);
+        }
+    }
+
+    // ── Boiler: fluid boiled off → residue item and/or a different vapour ──
+
+    static class BoilingCategory implements IRecipeCategory<BoilingRecipe> {
+        private final IDrawable icon;
+        private final IDrawable arrow;
+
+        BoilingCategory(IGuiHelper gui) {
+            this.icon  = gui.createDrawableItemLike(OmniTechBlocks.BOILER.get());
+            this.arrow = gui.getRecipeArrow();
+        }
+
+        @Override public IRecipeType<BoilingRecipe> getRecipeType() { return BOILING; }
+        @Override public Component getTitle() { return Component.translatable("jei.omnitech.boiler"); }
+        @Override public int getWidth()  { return 140; }
+        @Override public int getHeight() { return 50; }
+        @Override public IDrawable getIcon() { return icon; }
+
+        @Override
+        public void setRecipe(IRecipeLayoutBuilder builder, BoilingRecipe recipe, IFocusGroup focuses) {
+            Fluid in = recipe.getInputFluid();
+            if (in != null)
+                fluidSlot(builder, RecipeIngredientRole.INPUT, 0, 2, in, recipe.getInputAmount());
+
+            if (recipe.hasResult()) {
+                ItemStack result = recipe.resultStack();
+                var slot = builder.addOutputSlot(82, 12).add(result).setOutputSlotBackground();
+                if (recipe.getResultChance() < 1f) {
+                    int percent = Math.round(recipe.getResultChance() * 100f);
+                    slot.addRichTooltipCallback((view, tooltip) -> tooltip.add(
+                            Component.translatable("jei.omnitech.boiler.chance", percent).withStyle(ChatFormatting.GRAY)));
+                }
+            }
+            if (recipe.convertsFluid() && recipe.getOutputFluid() != null)
+                fluidSlot(builder, RecipeIngredientRole.OUTPUT, 106, 2, recipe.getOutputFluid(), recipe.getOutputAmount(),
+                        Component.translatable("jei.omnitech.boiler.vapour"));
+        }
+
+        @Override
+        public void draw(BoilingRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+            arrow.draw(graphics, 44, 12);
+        }
+    }
+
+    // ── Fermenter: timed reaction inside the mixture (inputs + catalysts → outputs) ──
+
+    static class FermentationCategory implements IRecipeCategory<FermentationRecipe> {
+        private final IDrawable icon;
+        private final IDrawable arrow;
+
+        FermentationCategory(IGuiHelper gui) {
+            this.icon  = gui.createDrawableItemLike(OmniTechBlocks.FERMENTER.get());
+            this.arrow = gui.getRecipeArrow();
+        }
+
+        @Override public IRecipeType<FermentationRecipe> getRecipeType() { return FERMENTATION; }
+        @Override public Component getTitle() { return Component.translatable("jei.omnitech.fermentation"); }
+        @Override public int getWidth()  { return 176; }
+        @Override public int getHeight() { return 65; }
+        @Override public IDrawable getIcon() { return icon; }
+
+        @Override
+        public void setRecipe(IRecipeLayoutBuilder builder, FermentationRecipe recipe, IFocusGroup focuses) {
+            int x = 0;
+            for (FermentationRecipe.FluidAmount in : recipe.getInputs()) {
+                if (in.fluid() == null) continue;
+                fluidSlot(builder, RecipeIngredientRole.INPUT, x, 2, in.fluid(), in.amount(),
+                        Component.translatable("jei.omnitech.fermentation.consumed"));
+                x += 18;
+            }
+            for (FermentationRecipe.FluidAmount cat : recipe.getCatalysts()) {
+                if (cat.fluid() == null) continue;
+                fluidSlot(builder, RecipeIngredientRole.INPUT, x, 2, cat.fluid(), cat.amount(),
+                        Component.translatable("jei.omnitech.fermentation.catalyst"));
+                x += 18;
+            }
+
+            x = 106;
+            for (FermentationRecipe.FluidAmount out : recipe.getOutputs()) {
+                if (out.fluid() == null) continue;
+                if (out.dissolved()) fluidSlot(builder, RecipeIngredientRole.OUTPUT, x, 2, out.fluid(), out.amount());
+                else fluidSlot(builder, RecipeIngredientRole.OUTPUT, x, 2, out.fluid(), out.amount(),
+                        Component.translatable("jei.omnitech.fermentation.undissolved"));
+                x += 18;
+            }
+            ItemStack item = recipe.getOutputItemStack();
+            if (!item.isEmpty())
+                builder.addOutputSlot(x, 12).add(item).setOutputSlotBackground();
+        }
+
+        @Override
+        public void draw(FermentationRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+            Font font = Minecraft.getInstance().font;
+            arrow.draw(graphics, 76, 12);
+            graphics.text(font, Component.translatable("jei.omnitech.fermentation.interval", recipe.getInterval()),
+                    0, 46, 0x555555, false);
+        }
+    }
+
+    // ── Fermenter: item dropped in the input slot dissolves into the mixture ──
+
+    static class FermenterDissolveCategory implements IRecipeCategory<FermentationRecipeManager.Dissolution> {
+        private final IDrawable icon;
+        private final IDrawable arrow;
+
+        FermenterDissolveCategory(IGuiHelper gui) {
+            this.icon  = gui.createDrawableItemLike(OmniTechBlocks.FERMENTER.get());
+            this.arrow = gui.getRecipeArrow();
+        }
+
+        @Override public IRecipeType<FermentationRecipeManager.Dissolution> getRecipeType() { return FERMENTER_DISSOLVE; }
+        @Override public Component getTitle() { return Component.translatable("jei.omnitech.fermenter_dissolve"); }
+        @Override public int getWidth()  { return 120; }
+        @Override public int getHeight() { return 50; }
+        @Override public IDrawable getIcon() { return icon; }
+
+        @Override
+        public void setRecipe(IRecipeLayoutBuilder builder, FermentationRecipeManager.Dissolution recipe, IFocusGroup focuses) {
+            BuiltInRegistries.ITEM.getOptional(recipe.itemId()).ifPresent(item ->
+                    builder.addInputSlot(0, 12).add(new ItemStack(item)).setStandardSlotBackground());
+
+            FermentationRecipe.FluidAmount out = recipe.fluid();
+            if (out.fluid() == null) return;
+            if (out.dissolved()) fluidSlot(builder, RecipeIngredientRole.OUTPUT, 82, 2, out.fluid(), out.amount());
+            else fluidSlot(builder, RecipeIngredientRole.OUTPUT, 82, 2, out.fluid(), out.amount(),
+                    Component.translatable("jei.omnitech.fermentation.undissolved"));
+        }
+
+        @Override
+        public void draw(FermentationRecipeManager.Dissolution recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+            arrow.draw(graphics, 44, 12);
+        }
+    }
+
+    // ── Fermenter: microbes that appear on their own once their food is present ──
+
+    static class FermenterMicrobeCategory implements IRecipeCategory<FermentationRecipeManager.Microbe> {
+        private final IDrawable icon;
+        private final IDrawable arrow;
+
+        FermenterMicrobeCategory(IGuiHelper gui) {
+            this.icon  = gui.createDrawableItemLike(OmniTechBlocks.FERMENTER.get());
+            this.arrow = gui.getRecipeArrow();
+        }
+
+        @Override public IRecipeType<FermentationRecipeManager.Microbe> getRecipeType() { return FERMENTER_MICROBES; }
+        @Override public Component getTitle() { return Component.translatable("jei.omnitech.fermenter_microbes"); }
+        @Override public int getWidth()  { return 160; }
+        @Override public int getHeight() { return 65; }
+        @Override public IDrawable getIcon() { return icon; }
+
+        @Override
+        public void setRecipe(IRecipeLayoutBuilder builder, FermentationRecipeManager.Microbe recipe, IFocusGroup focuses) {
+            int x = 0;
+            for (var id : recipe.requires()) {
+                Fluid fluid = BuiltInRegistries.FLUID.getOptional(id).orElse(null);
+                if (fluid == null) continue;
+                fluidSlot(builder, RecipeIngredientRole.INPUT, x, 2, fluid, 1000,
+                        Component.translatable("jei.omnitech.fermenter_microbes.requires"));
+                x += 18;
+            }
+            FermentationRecipe.FluidAmount microbe = recipe.fluid();
+            if (microbe.fluid() != null)
+                fluidSlot(builder, RecipeIngredientRole.OUTPUT, 106, 2, microbe.fluid(), microbe.amount());
+        }
+
+        @Override
+        public void draw(FermentationRecipeManager.Microbe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+            Font font = Minecraft.getInstance().font;
+            arrow.draw(graphics, 76, 12);
+            // Weighted only against the other microbes whose food is also present, so no fixed %
+            graphics.text(font, Component.translatable("jei.omnitech.fermenter_microbes.weight", recipe.weight()), 0, 46, 0x555555, false);
         }
     }
 }

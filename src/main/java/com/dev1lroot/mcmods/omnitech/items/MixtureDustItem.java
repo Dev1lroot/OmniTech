@@ -12,8 +12,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -45,6 +48,38 @@ public class MixtureDustItem extends Item {
     public static Mixture getMixture(ItemStack stack) {
         Mixture m = stack.get(OmniTechDataComponents.MIXTURE.get());
         return m == null ? new Mixture(java.util.List.of()) : m;
+    }
+
+    /** The solids {@code stack} stands for: {@value #UNIT} mB per item, in its own ratios. */
+    public static Solution solidsOf(ItemStack stack) {
+        return getMixture(stack).toSolution(stack.getCount() * UNIT);
+    }
+
+    /** The set of ingredients in {@code stack} — two dust piles blend only if these match. */
+    private static Set<Fluid> ingredients(ItemStack stack) {
+        Set<Fluid> set = new HashSet<>();
+        for (Mixture.Entry e : getMixture(stack).entries()) set.add(e.fluid());
+        return set;
+    }
+
+    /**
+     * True if {@code dust} can be put onto {@code slot}: an empty slot, an identical stack, or a pile
+     * of mixture dust made of the same ingredients in other ratios (the powders simply blend) —
+     * as long as the stack limit allows.
+     */
+    public static boolean canMerge(ItemStack slot, ItemStack dust) {
+        if (slot.isEmpty()) return true;
+        if (slot.getCount() + dust.getCount() > slot.getMaxStackSize()) return false;
+        if (ItemStack.isSameItemSameComponents(slot, dust)) return true;
+        return slot.getItem() instanceof MixtureDustItem && dust.getItem() instanceof MixtureDustItem
+                && ingredients(slot).equals(ingredients(dust));
+    }
+
+    /** {@code dust} put onto {@code slot} (see {@link #canMerge}); blended piles share one ratio. */
+    public static ItemStack merge(ItemStack slot, ItemStack dust) {
+        if (slot.isEmpty()) return dust.copy();
+        if (ItemStack.isSameItemSameComponents(slot, dust)) return slot.copyWithCount(slot.getCount() + dust.getCount());
+        return of(solidsOf(slot).plus(solidsOf(dust))).copyWithCount(slot.getCount() + dust.getCount());
     }
 
     @Override

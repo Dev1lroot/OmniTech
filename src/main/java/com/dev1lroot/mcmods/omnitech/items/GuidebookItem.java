@@ -6,7 +6,9 @@ package com.dev1lroot.mcmods.omnitech.items;
 
 import com.dev1lroot.mcmods.omnitech.gui.guidebook.GuidebookLoader;
 import com.dev1lroot.mcmods.omnitech.gui.guidebook.GuidebookScreen;
+import com.dev1lroot.mcmods.omnitech.util.AdvancementUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -23,6 +25,8 @@ public class GuidebookItem extends Item {
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         if (level.isClientSide()) {
             Minecraft.getInstance().gui.setScreen(new GuidebookScreen(GuidebookLoader.getPages()));
+        } else if (player instanceof ServerPlayer serverPlayer) {
+            AdvancementUtil.award(serverPlayer, "progression/getting_started", "read_guide");
         }
         return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
     }

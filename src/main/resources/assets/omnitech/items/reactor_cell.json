@@ -1,1 +1,6 @@
-{ "parent": "omnitech:block/reactor_cell_empty" }
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "omnitech:item/reactor_cell"
+  }
+}

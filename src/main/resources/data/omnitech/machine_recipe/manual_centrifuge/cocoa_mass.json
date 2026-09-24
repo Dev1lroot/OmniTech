@@ -1,0 +1,16 @@
+{
+  "requiredKineticForce": 40,
+  "input": "omnitech:cocoa_mass",
+  "output": [
+    {
+      "item": "omnitech:cocoa_butter",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:cocoa_powder",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

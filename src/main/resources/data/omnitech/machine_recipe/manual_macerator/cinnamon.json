@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:cinnamon",
+  "output": [
+    {
+      "item": "omnitech:cinnamon_dust",
+      "count": 2,
+      "chance": 1.0
+    }
+  ]
+}

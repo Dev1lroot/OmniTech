@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "omnitech:block/fluid/distilled_water"
+    }
+  }
+}

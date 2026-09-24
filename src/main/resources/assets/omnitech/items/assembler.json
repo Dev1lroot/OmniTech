@@ -1,1 +1,6 @@
-{ "parent": "omnitech:block/assembler" }
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "omnitech:item/assembler"
+  }
+}

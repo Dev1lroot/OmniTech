@@ -131,6 +131,13 @@ public class FluidLoader {
                     FluidChemistryRegistry.register(name, json.get("smiles").getAsString());
                 }
 
+                // Optional chemical formula — see FluidFormulaRegistry. Used by ReactionFlaskItem
+                // to feed this fluid into ReactionEngine; independent of "smiles" since most
+                // inorganic acids/bases here have a formula but no meaningful SMILES structure.
+                if (json.has("formula")) {
+                    FluidFormulaRegistry.register(name, json.get("formula").getAsString());
+                }
+
                 OmniTechFluids.registerFluid(name, props, worldPlaceable, flammable);
                 FluidPhysicsRegistry.register(name,
                         new FluidPhysicsRegistry.FluidPhysics(minTemp, maxTemp, minPressure, maxPressure,

@@ -1,0 +1,11 @@
+{
+  "input": {
+    "fluid": "omnitech:whey",
+    "amount": 1000
+  },
+  "result": {
+    "item": "omnitech:ricotta",
+    "amount": 1,
+    "chance": 1.0
+  }
+}

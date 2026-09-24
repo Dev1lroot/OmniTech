@@ -1,1 +1,6 @@
-{ "parent": "omnitech:block/nuclear_bomb" }
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "omnitech:block/nuclear_bomb"
+  }
+}

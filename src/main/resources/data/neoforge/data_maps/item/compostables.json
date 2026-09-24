@@ -1,0 +1,25 @@
+{
+  "values": {
+    "omnitech:grapes": {
+      "chance": 0.3
+    },
+    "omnitech:grape_pomace": {
+      "chance": 0.65
+    },
+    "omnitech:apple_puree": {
+      "chance": 0.65
+    },
+    "omnitech:lemon": {
+      "chance": 0.65
+    },
+    "omnitech:lemon_peel": {
+      "chance": 0.5
+    },
+    "omnitech:lemon_leaves": {
+      "chance": 0.3
+    },
+    "omnitech:lemon_sapling": {
+      "chance": 0.3
+    }
+  }
+}

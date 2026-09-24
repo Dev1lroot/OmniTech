@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 25,
+  "input": "omnitech:roasted_cocoa_beans",
+  "output": [
+    {
+      "item": "omnitech:cocoa_mass",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

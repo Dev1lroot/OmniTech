@@ -1,0 +1,21 @@
+{
+  "interval": 100,
+  "inputs": [
+    {
+      "fluid": "omnitech:grape_juice",
+      "amount": 2
+    }
+  ],
+  "catalysts": [
+    {
+      "fluid": "omnitech:yeast",
+      "amount": 1
+    }
+  ],
+  "outputs": [
+    {
+      "fluid": "omnitech:wine",
+      "amount": 2
+    }
+  ]
+}

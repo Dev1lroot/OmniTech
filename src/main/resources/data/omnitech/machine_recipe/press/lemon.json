@@ -1,0 +1,13 @@
+{
+  "requiredKineticForce": 15,
+  "input": "omnitech:lemon",
+  "outputFluid": {
+    "fluid": "omnitech:lemon_juice",
+    "amount": 100
+  },
+  "outputItem": {
+    "item": "omnitech:lemon_peel",
+    "count": 1,
+    "chance": 1.0
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:nettle",
+    "omnitech:nettle",
+    "omnitech:nettle",
+    "omnitech:sodium_chlorine_dust",
+    "minecraft:water_bucket"
+  ],
+  "result": {
+    "id": "omnitech:rennet",
+    "count": 2
+  }
+}

@@ -1,5 +1,6 @@
 {
   "model": {
-    "type": "minecraft:spawn_egg"
+    "type": "minecraft:model",
+    "model": "omnitech:item/penguin_egg"
   }
 }

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:flask",
+    "minecraft:redstone"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:reaction_flask"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:cocoa_butter",
+    "omnitech:cocoa_butter",
+    "minecraft:sugar",
+    "minecraft:milk_bucket"
+  ],
+  "result": {
+    "id": "omnitech:white_chocolate",
+    "count": 3
+  }
+}

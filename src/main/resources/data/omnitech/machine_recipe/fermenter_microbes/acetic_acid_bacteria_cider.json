@@ -1,0 +1,9 @@
+{
+  "fluid": "omnitech:acetic_acid_bacteria",
+  "amount": 1,
+  "weight": 2,
+  "requires": [
+    "omnitech:cider"
+  ],
+  "dissolved": false
+}

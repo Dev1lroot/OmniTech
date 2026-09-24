@@ -1,0 +1,19 @@
+{
+  "fluid": "omnitech:cider",
+  "nutrition": 2,
+  "saturation": 0.2,
+  "effects": [
+    {
+      "id": "minecraft:speed",
+      "duration": 300,
+      "amplifier": 0,
+      "chance": 1.0
+    },
+    {
+      "id": "minecraft:nausea",
+      "duration": 160,
+      "amplifier": 0,
+      "chance": 0.2
+    }
+  ]
+}

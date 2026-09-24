@@ -165,6 +165,8 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> SOLAR_PANEL;
     public static final DeferredBlock<Block> SOLVATION_MACHINE;
     public static final DeferredBlock<Block> FILTER_PRESS;
+    /** Squeezes fruit into juice + pulp, see {@link com.dev1lroot.mcmods.omnitech.blocks.processing.press.PressBlockEntity}. */
+    public static final DeferredBlock<Block> PRESS;
     public static final DeferredBlock<Block> FERMENTER;
     public static final DeferredBlock<Block> STRUCTURE_TABLE;
     public static final DeferredBlock<Block> ELECTROLYSIS_MACHINE;
@@ -238,6 +240,11 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> CORN_PLANT;
     public static final DeferredBlock<Block> TOMATO;
     public static final DeferredBlock<Block> JALAPENO;
+    /** A berry bush that bears grapes; planted with {@code grapes}, see {@link BerryPlantBlock}. */
+    public static final DeferredBlock<Block> GRAPE_BUSH;
+    /** Leaves of the lemon tree; bear lemons, see {@link com.dev1lroot.mcmods.omnitech.blocks.plants.FruitLeavesBlock}. */
+    public static final DeferredBlock<Block> LEMON_LEAVES;
+    public static final DeferredBlock<Block> LEMON_SAPLING;
 
     static {
         ALLOY_FURNACE = register("alloy_furnace", AlloyFurnaceBlock::new);
@@ -364,6 +371,9 @@ public class OmniTechBlocks {
         FILTER_PRESS = register("filter_press",
                 p -> new com.dev1lroot.mcmods.omnitech.blocks.labware.FilterPressBlock(
                         p.mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.METAL)));
+        PRESS = register("press",
+                p -> new com.dev1lroot.mcmods.omnitech.blocks.processing.press.PressBlock(
+                        p.mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD)));
         FERMENTER = register("fermenter",
                 p -> new com.dev1lroot.mcmods.omnitech.blocks.labware.FermenterBlock(
                         p.mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.METAL)));
@@ -555,6 +565,25 @@ public class OmniTechBlocks {
 
         JALAPENO = register("jalapeno",
                 p -> new BerryPlantBlock(() -> OmniTechItems.JALAPENO.get(),
+                        p.mapColor(MapColor.PLANT).randomTicks().noCollision()
+                                .sound(SoundType.SWEET_BERRY_BUSH).pushReaction(PushReaction.POPPED)));
+
+        LEMON_LEAVES = register("lemon_leaves",
+                p -> new com.dev1lroot.mcmods.omnitech.blocks.plants.FruitLeavesBlock(() -> OmniTechItems.LEMON.get(),
+                        AmbientLeavesBlockSoundPlayer.noAmbientSound(),
+                        p.mapColor(MapColor.PLANT).strength(0.2F).randomTicks().sound(SoundType.GRASS)
+                                .noOcclusion().isValidSpawn((state, level, pos, type) -> false)
+                                .isSuffocating((state, level, pos) -> false)
+                                .isViewBlocking((state, level, pos, nearPlaneBox) -> false)
+                                .ignitedByLava().pushReaction(PushReaction.POPPED)
+                                .isRedstoneConductor((state, level, pos) -> false)));
+
+        LEMON_SAPLING = register("lemon_sapling",
+                p -> new com.dev1lroot.mcmods.omnitech.blocks.plants.LemonSaplingBlock(p.mapColor(MapColor.PLANT).noCollision().randomTicks()
+                        .instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.POPPED)));
+
+        GRAPE_BUSH = register("grape_bush",
+                p -> new BerryPlantBlock(() -> OmniTechItems.GRAPES.get(),
                         p.mapColor(MapColor.PLANT).randomTicks().noCollision()
                                 .sound(SoundType.SWEET_BERRY_BUSH).pushReaction(PushReaction.POPPED)));
     }

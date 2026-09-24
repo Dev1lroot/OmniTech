@@ -1,0 +1,6 @@
+{
+  "fluid": "minecraft:milk",
+  "nutrition": 2,
+  "saturation": 0.2,
+  "clears_effects": true
+}

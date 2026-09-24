@@ -135,6 +135,10 @@ public class OmniTech {
         modEventBus.addListener(this::registerPayloads);
         modEventBus.addListener(OmniTechDatagen::gatherData);
 
+        // Milk as a real fluid (minecraft:milk): milk buckets pour into tanks, flasks and the
+        // Fermenter, where it sours and curdles into cheese
+        net.neoforged.neoforge.common.NeoForgeMod.enableMilkFluid();
+
         // Load blocks and ore spawn configs before registries fire so deferred entries are queued
         BlockLoader.loadAll();
         OreSpawnLoader.loadAll();   // must run after BlockLoader
@@ -230,6 +234,16 @@ public class OmniTech {
                     if (side == facing) return ((SolvationMachineBlockEntity) be).inputFluidHandler;
                     if (side == facing.getOpposite()) return ((SolvationMachineBlockEntity) be).outputFluidHandler;
                     return null;
+                }
+        );
+        // Press: juice comes out the back (FACING.getOpposite()), extract-only
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.PRESS.get(),
+                (be, side) -> {
+                    if (side == null || be.getLevel() == null) return null;
+                    Direction facing = be.getBlockState().getValue(com.dev1lroot.mcmods.omnitech.blocks.processing.press.PressBlock.FACING);
+                    return side == facing.getOpposite() ? be.outputFluidHandler : null;
                 }
         );
         event.registerBlockEntity(
@@ -427,13 +441,16 @@ public class OmniTech {
                 OmniTechItems.FLUID_CANISTER.get()
         );
 
-        // Flask exposes its stored fluid the same way, so Fluid Tank / Fluid Filler
-        // right-click filling works on it automatically with no new interaction code —
-        // its ResourceHandler's isValid() rejects fluids it can't hold.
+        // Flask (and Reaction Flask, which only adds ticking simulation on top) exposes its
+        // stored fluid the same way, so Fluid Tank / Fluid Filler right-click filling works on
+        // it automatically with no new interaction code — its ResourceHandler's isValid()
+        // rejects fluids it can't hold.
         event.registerItem(
                 Capabilities.Fluid.ITEM,
                 (stack, access) -> new com.dev1lroot.mcmods.omnitech.client.FlaskResourceHandler(access),
-                OmniTechItems.FLASK.get()
+                OmniTechItems.FLASK.get(),
+                OmniTechItems.REACTION_FLASK.get(),
+                OmniTechItems.DRINKING_BOTTLE.get()
         );
 
         // Pipette exposes its stored fluid the same way, purely so DynamicFluidContainerModel
@@ -865,6 +882,33 @@ public class OmniTech {
                     PreparationBarrier barrier, Executor reloadExecutor) {
                 return CompletableFuture.runAsync(() -> {
                     com.dev1lroot.mcmods.omnitech.recipes.FermentationRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "drinks"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    com.dev1lroot.mcmods.omnitech.recipes.DrinkManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "press_recipes"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    com.dev1lroot.mcmods.omnitech.recipes.PressRecipeManager.loadRecipes(sharedState.resourceManager());
+                }, taskExecutor).thenCompose(barrier::wait);
+            }
+        });
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "solid_forms"), new PreparableReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor taskExecutor,
+                    PreparationBarrier barrier, Executor reloadExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    com.dev1lroot.mcmods.omnitech.recipes.SolidFormManager.loadRecipes(sharedState.resourceManager());
                 }, taskExecutor).thenCompose(barrier::wait);
             }
         });

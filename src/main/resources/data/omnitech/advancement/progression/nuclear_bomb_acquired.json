@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "omnitech:nuclear_bomb"
+    },
+    "title": {"translate": "advancement.omnitech.progression.nuclear_bomb_acquired.title"},
+    "description": {"translate": "advancement.omnitech.progression.nuclear_bomb_acquired.description"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "omnitech:progression/napalm",
+  "criteria": {
+    "has_nuclear_bomb": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {"items": "omnitech:nuclear_bomb"}
+        ]
+      }
+    }
+  }
+}

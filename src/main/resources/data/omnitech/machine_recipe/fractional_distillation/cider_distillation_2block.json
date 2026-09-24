@@ -1,0 +1,18 @@
+{
+  "requiredTemperature": 90,
+  "productionTime": 200,
+  "input": {
+    "fluid": "omnitech:cider",
+    "amount": 1000
+  },
+  "outputs": [
+    {
+      "fluid": "minecraft:water",
+      "amount": 750
+    },
+    {
+      "fluid": "omnitech:apple_brandy",
+      "amount": 250
+    }
+  ]
+}

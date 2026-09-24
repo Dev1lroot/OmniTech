@@ -1,0 +1,18 @@
+{
+  "requiredTemperature": 118,
+  "productionTime": 200,
+  "input": {
+    "fluid": "omnitech:apple_cider_vinegar",
+    "amount": 1000
+  },
+  "outputs": [
+    {
+      "fluid": "omnitech:acetic_acid",
+      "amount": 80
+    },
+    {
+      "fluid": "omnitech:distilled_water",
+      "amount": 920
+    }
+  ]
+}

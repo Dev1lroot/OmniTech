@@ -1,0 +1,30 @@
+{
+  "interval": 100,
+  "inputs": [
+    {
+      "fluid": "minecraft:milk",
+      "amount": 10
+    }
+  ],
+  "catalysts": [
+    {
+      "fluid": "omnitech:rennet",
+      "amount": 1
+    },
+    {
+      "fluid": "omnitech:lactic_acid",
+      "amount": 1
+    }
+  ],
+  "outputs": [
+    {
+      "fluid": "omnitech:curd",
+      "amount": 2,
+      "dissolved": false
+    },
+    {
+      "fluid": "omnitech:whey",
+      "amount": 8
+    }
+  ]
+}

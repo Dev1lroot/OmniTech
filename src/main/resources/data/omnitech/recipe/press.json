@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "P": "minecraft:piston",
+    "W": "#minecraft:planks",
+    "B": "minecraft:bucket"
+  },
+  "pattern": [
+    "IPI",
+    "W W",
+    "WBW"
+  ],
+  "result": {
+    "id": "omnitech:press"
+  }
+}

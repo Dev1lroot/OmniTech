@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:cooked_curd",
+    "omnitech:cooked_curd",
+    "omnitech:cooked_curd",
+    "omnitech:sodium_chlorine_dust"
+  ],
+  "result": {
+    "id": "omnitech:parmesan_cheese",
+    "count": 2
+  }
+}

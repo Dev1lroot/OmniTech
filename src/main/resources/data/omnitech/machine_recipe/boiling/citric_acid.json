@@ -1,0 +1,15 @@
+{
+  "input": {
+    "fluid": "omnitech:citric_acid",
+    "amount": 250
+  },
+  "outputFluid": {
+    "fluid": "minecraft:water",
+    "amount": 250
+  },
+  "result": {
+    "item": "omnitech:citric_acid",
+    "amount": 1,
+    "chance": 1.0
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "fluid": "omnitech:lactic_acid_bacteria",
+  "amount": 1,
+  "weight": 4,
+  "requires": [
+    "minecraft:milk"
+  ],
+  "dissolved": false
+}

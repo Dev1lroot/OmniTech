@@ -49,9 +49,10 @@ public class FilterPressRecipeManager {
                     String inFluid = inFluidObj.get("fluid").getAsString();
                     int    inFAmt  = inFluidObj.get("amount").getAsInt();
 
+                    // Optional: straining a mixture needs no filtrate declared (see FilterPressRecipe)
                     JsonObject outFluidObj = json.getAsJsonObject("outputFluid");
-                    String outFluid = outFluidObj.get("fluid").getAsString();
-                    int    outFAmt  = outFluidObj.get("amount").getAsInt();
+                    String outFluid = outFluidObj != null ? outFluidObj.get("fluid").getAsString() : "minecraft:empty";
+                    int    outFAmt  = outFluidObj != null ? outFluidObj.get("amount").getAsInt()   : 0;
 
                     JsonObject outItemObj = json.getAsJsonObject("outputItem");
                     String outItem = outItemObj.get("item").getAsString();

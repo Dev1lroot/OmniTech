@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:fire_charge"
+    },
+    "title": {"translate": "advancement.omnitech.progression.napalm.title"},
+    "description": {"translate": "advancement.omnitech.progression.napalm.description"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "omnitech:progression/heavy_metal",
+  "criteria": {
+    "burned_flammable": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

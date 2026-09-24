@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {
+      "id": "omnitech:guidebook"
+    },
+    "title": {"translate": "advancement.omnitech.progression.getting_started.title"},
+    "description": {"translate": "advancement.omnitech.progression.getting_started.description"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "omnitech:root",
+  "criteria": {
+    "read_guide": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

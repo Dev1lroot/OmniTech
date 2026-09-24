@@ -1,1 +1,6 @@
-{"elements":[]}
+{
+  "elements": [],
+  "textures": {
+    "particle": "omnitech:block/coke_brick"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "fluid": "omnitech:methanol",
+  "nutrition": 0,
+  "saturation": 0.0,
+  "effects": [
+    {
+      "id": "minecraft:blindness",
+      "duration": 600,
+      "amplifier": 0,
+      "chance": 1.0,
+      "scale": false
+    },
+    {
+      "id": "minecraft:poison",
+      "duration": 400,
+      "amplifier": 0,
+      "chance": 1.0
+    },
+    {
+      "id": "minecraft:nausea",
+      "duration": 300,
+      "amplifier": 0,
+      "chance": 1.0
+    }
+  ]
+}

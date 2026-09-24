@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:milk_bucket",
+    "omnitech:rennet",
+    "omnitech:lactic_acid_bacteria"
+  ],
+  "result": {
+    "id": "omnitech:cheese_curd",
+    "count": 2
+  }
+}

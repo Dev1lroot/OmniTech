@@ -1,1 +1,6 @@
-{ "parent": "omnitech:block/orrery" }
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "omnitech:item/orrery"
+  }
+}

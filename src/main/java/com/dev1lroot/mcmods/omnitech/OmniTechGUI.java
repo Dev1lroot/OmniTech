@@ -86,6 +86,8 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.ELECTRIC_FURNACE.get(), ElectricFurnaceScreen::new);
         event.register(OmniTechMenuTypes.SOLAR_PANEL.get(), SolarPanelScreen::new);
         event.register(OmniTechMenuTypes.SOLVATION_MACHINE.get(), SolvationMachineScreen::new);
+        event.register(OmniTechMenuTypes.PRESS.get(),
+                com.dev1lroot.mcmods.omnitech.gui.PressScreen::new);
         event.register(OmniTechMenuTypes.FILTER_PRESS.get(),
                 com.dev1lroot.mcmods.omnitech.gui.FilterPressScreen::new);
         event.register(OmniTechMenuTypes.FERMENTER.get(),

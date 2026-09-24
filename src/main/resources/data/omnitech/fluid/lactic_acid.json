@@ -1,0 +1,24 @@
+{
+  "formula": "C3H6O3",
+  "polarity": "polar",
+  "density": 1209,
+  "viscosity": 40,
+  "temperature": 293,
+  "light_level": 0,
+  "min_temp": 17,
+  "max_temp": 600,
+  "min_pressure": 0,
+  "max_pressure": 200000,
+  "toxic": false,
+  "flammable": false,
+  "phase_diagram": {
+    "melting_point": 17,
+    "boiling_point": 122,
+    "boiling_slope": 42,
+    "critical_temp": 402,
+    "critical_pressure": 5960,
+    "triple_point_temp": 17,
+    "triple_point_pressure": 1,
+    "has_solid": true
+  }
+}

@@ -1,1 +1,6 @@
-{ "parent": "omnitech:block/power_relay" }
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "omnitech:block/power_relay"
+  }
+}

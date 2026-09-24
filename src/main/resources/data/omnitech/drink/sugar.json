@@ -1,0 +1,11 @@
+{
+  "fluid": "omnitech:sugar",
+  "nutrition": 2,
+  "saturation": 0.1,
+  "effects": [
+    {
+      "id": "minecraft:speed",
+      "duration": 400
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "omnitech:block/fluid/spent_fuel_solution"
+    }
+  }
+}

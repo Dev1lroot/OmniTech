@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "#omnitech:cake_doughs",
+    "#omnitech:cake_doughs",
+    "#omnitech:cake_doughs"
+  ],
+  "result": {
+    "id": "omnitech:cake_base"
+  }
+}

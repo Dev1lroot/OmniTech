@@ -1,1 +1,6 @@
-{ "parent": "omnitech:block/reactor_port" }
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "omnitech:item/reactor_port"
+  }
+}

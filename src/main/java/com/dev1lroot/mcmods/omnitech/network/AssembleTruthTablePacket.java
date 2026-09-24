@@ -8,6 +8,7 @@ import com.dev1lroot.mcmods.omnitech.OmniTech;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.OmniTechItems;
 import com.dev1lroot.mcmods.omnitech.items.TruthTableItem;
+import com.dev1lroot.mcmods.omnitech.util.AdvancementUtil;
 import com.dev1lroot.mcmods.omnitech.util.LogicGate;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
@@ -66,6 +67,7 @@ public record AssembleTruthTablePacket(int bits, boolean doAssemble) implements 
                     sp.setItemInHand(hand, template);
                     sp.sendSystemMessage(Component.translatable("gui.omnitech.truth_table.assembled",
                             template.getHoverName()));
+                    AdvancementUtil.award(sp, "progression/truth_table_created", "made_truth_table");
                     return;
                 }
             }

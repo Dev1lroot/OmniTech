@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "omnitech:steel_ingot"
+    },
+    "title": {"translate": "advancement.omnitech.progression.heavy_metal.title"},
+    "description": {"translate": "advancement.omnitech.progression.heavy_metal.description"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "omnitech:progression/getting_started",
+  "criteria": {
+    "any_foundry_product": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {"items": "#omnitech:foundry_product"}
+        ]
+      }
+    }
+  }
+}

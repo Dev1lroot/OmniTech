@@ -8,9 +8,12 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.gui.FilterPressMenu;
 import com.dev1lroot.mcmods.omnitech.io.IKineticReceiver;
+import com.dev1lroot.mcmods.omnitech.items.MixtureDustItem;
+import com.dev1lroot.mcmods.omnitech.items.Solution;
 import com.dev1lroot.mcmods.omnitech.recipes.FilterPressRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.FilterPressRecipeManager;
 import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
+import com.dev1lroot.mcmods.omnitech.util.SolutionFluids;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -37,12 +40,15 @@ import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Optional;
 
 /**
  * Filter Press — the inverse of the {@link SolvationMachineBlockEntity Solvation Machine}: pulls
  * in a fluid that still carries undissolved solids and, once given enough kinetic force, strains
  * it back apart into the clean solution and the solid residue caught by the filter.
+ *
+ * <p>A plain fluid is pressed by its {@link FilterPressRecipe}. A <em>mixture</em> needs no recipe:
+ * every undissolved solid in it is caught and pressed into Mixture Dust (to be separated in a
+ * Manual Centrifuge), and the dissolved rest runs on as filtrate.
  *
  * <p>Orientation matches Solvation: {@code FACING} is the fluid-input face, the opposite face is
  * fluid-output. The filtered-out item collects in {@link #SLOT_OUTPUT_ITEM} for the player (or a
@@ -64,6 +70,16 @@ public class FilterPressBlockEntity extends BaseContainerBlockEntity
     private float requiredKineticForce = 0f;
     private FilterPressRecipe currentRecipe = null;
     private String currentRecipeId = null;
+
+    /** Kinetic force per batch when straining a mixture (no recipe involved). */
+    public static final float STRAIN_KINETIC_FORCE = 10f;
+    /** mB of mixture one straining pass handles. */
+    public static final int STRAIN_BATCH = 250;
+    private static final String STRAIN_ID = "#strain";
+    /** True while the input is a mixture, which is strained generically instead of by recipe. */
+    private boolean straining = false;
+    /** Solids caught from mixtures, waiting to fill a whole Mixture Dust. */
+    private Solution dustBuffer = Solution.EMPTY;
 
     public final ResourceHandler<FluidResource> inputFluidHandler = new InputTankHandler();
     public final ResourceHandler<FluidResource> outputFluidHandler = new OutputTankHandler();
@@ -124,14 +140,19 @@ public class FilterPressBlockEntity extends BaseContainerBlockEntity
 
     // ── IKineticReceiver ──────────────────────────────────────────────────────
 
+    /** True while there's something to press: a plain-fluid recipe, or any mixture to strain. */
+    private boolean hasWork() {
+        return (currentRecipe != null || straining) && canProcess();
+    }
+
     @Override
     public float getKfDemand() {
-        return (currentRecipe != null && canProcess()) ? 0.1f : 0f;
+        return hasWork() ? 0.1f : 0f;
     }
 
     @Override
     public boolean addKineticForce(float amount) {
-        if (currentRecipe == null || !canProcess()) return false;
+        if (!hasWork()) return false;
         kineticForce += amount;
         setChanged();
         if (kineticForce >= requiredKineticForce) {
@@ -152,33 +173,30 @@ public class FilterPressBlockEntity extends BaseContainerBlockEntity
             }
         }
 
-        // 2. Recipe tracking
-        Optional<FilterPressRecipe> found = FilterPressRecipeManager.findRecipe(be.inputFluid);
-        if (found.isPresent()) {
-            FilterPressRecipe recipe = found.get();
-            if (!recipe.getId().equals(be.currentRecipeId)) {
-                be.currentRecipe = recipe;
-                be.currentRecipeId = recipe.getId();
-                be.kineticForce = 0f;
-                be.requiredKineticForce = recipe.getRequiredKineticForce();
-                changed = true;
-            }
-        } else if (be.currentRecipe != null) {
-            be.currentRecipe = null;
-            be.currentRecipeId = null;
+        // 2. Recipe tracking: a mixture is always strained; a plain fluid needs a recipe
+        boolean strain = SolutionFluids.isMixture(be.inputFluid);
+        FilterPressRecipe recipe = strain ? null : FilterPressRecipeManager.findRecipe(be.inputFluid).orElse(null);
+        String recipeId = strain ? STRAIN_ID : recipe != null ? recipe.getId() : null;
+        if (!java.util.Objects.equals(recipeId, be.currentRecipeId)) {
+            be.straining = strain;
+            be.currentRecipe = recipe;
+            be.currentRecipeId = recipeId;
             be.kineticForce = 0f;
-            be.requiredKineticForce = 0f;
+            be.requiredKineticForce = strain ? STRAIN_KINETIC_FORCE : recipe != null ? recipe.getRequiredKineticForce() : 0f;
             changed = true;
         }
 
-        // 3. LIT state
-        boolean shouldBeLit = be.currentRecipe != null && be.canProcess();
+        // 3. Press any caught solids that are waiting for room in the output slot
+        changed |= be.flushDust();
+
+        // 4. LIT state
+        boolean shouldBeLit = be.hasWork();
         if (state.getValue(FilterPressBlock.LIT) != shouldBeLit) {
             level.setBlock(pos, state.setValue(FilterPressBlock.LIT, shouldBeLit), 3);
             changed = true;
         }
 
-        // 4. Push the clean filtrate out
+        // 5. Push the clean filtrate out
         if (!be.outputFluid.isEmpty()) {
             Direction back = facing.getOpposite();
             var neighbor = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(back), back.getOpposite());
@@ -194,12 +212,18 @@ public class FilterPressBlockEntity extends BaseContainerBlockEntity
     }
 
     private boolean canProcess() {
-        if (currentRecipe == null) return false;
-        if (inputFluid.isEmpty() || !inputFluid.is(currentRecipe.getInputFluid().getFluid())) return false;
-        if (inputFluid.getAmount() < currentRecipe.getInputFluidAmount()) return false;
+        if (straining) {
+            if (!SolutionFluids.isMixture(inputFluid)) return false;
+            // Caught solids must have somewhere to go before more are caught
+            if (dustBuffer.totalAmount() >= MixtureDustItem.UNIT) return false;
+            int filtrate = liquidPart(strainBatch()).totalAmount();
+            return filtrate == 0 || (OUTPUT_TANK_CAPACITY - outputFluid.getAmount()) >= filtrate;
+        }
+
+        if (currentRecipe == null || !currentRecipe.matches(inputFluid)) return false;
 
         FluidStack outFluid = currentRecipe.getOutputFluid();
-        if (!outputFluid.isEmpty()) {
+        if (!outputFluid.isEmpty() && !outFluid.isEmpty()) {
             if (!outputFluid.is(outFluid.getFluid())) return false;
             if ((OUTPUT_TANK_CAPACITY - outputFluid.getAmount()) < outFluid.getAmount()) return false;
         }
@@ -213,10 +237,66 @@ public class FilterPressBlockEntity extends BaseContainerBlockEntity
     }
 
     private void process() {
-        if (currentRecipe == null) return;
+        if (straining) strain();
+        else if (currentRecipe != null) pressRecipe();
+        kineticForce = 0f;
+        setChanged();
+    }
 
-        int toConsume = currentRecipe.getInputFluidAmount();
-        inputFluid.shrink(toConsume);
+    /**
+     * One batch of a mixture through the filter: every undissolved solid in it is caught (and
+     * pressed into Mixture Dust, {@value MixtureDustItem#UNIT} mB per item, once enough has
+     * collected); everything dissolved runs through into the output tank as filtrate.
+     */
+    private void strain() {
+        int temp = fluidTemp(inputFluid);
+        int pressure = fluidPressure(inputFluid);
+        Solution batch = strainBatch();
+        Solution liquid = liquidPart(batch);
+
+        inputFluid = SolutionFluids.toStack(SolutionFluids.toSolution(inputFluid).minus(batch), temp, pressure);
+        dustBuffer = dustBuffer.plus(batch.minus(liquid));
+        if (!liquid.isEmpty()) {
+            FluidStack out = SolutionFluids.toStack(liquid, temp, pressure);
+            outputFluid = FluidNetworkUtil.blendInto(outputFluid, FluidResource.of(out), out.getAmount());
+        }
+        flushDust();
+    }
+
+    /** The slice of the input mixture that one pass of the press handles. */
+    private Solution strainBatch() {
+        return SolutionFluids.toSolution(inputFluid).scaledTo(STRAIN_BATCH);
+    }
+
+    /** The dissolved components of {@code batch} — what passes through the filter. */
+    private static Solution liquidPart(Solution batch) {
+        Solution liquid = Solution.EMPTY;
+        for (Solution.Part p : batch.components()) {
+            if (p.dissolved()) liquid = liquid.plus(p.fluid(), p.amount(), true);
+        }
+        return liquid;
+    }
+
+    /**
+     * Presses whole {@value MixtureDustItem#UNIT} mB portions of the caught solids into Mixture
+     * Dust while the output slot takes them; a smaller remainder waits for the next batch.
+     */
+    private boolean flushDust() {
+        boolean changed = false;
+        while (dustBuffer.totalAmount() >= MixtureDustItem.UNIT) {
+            Solution portion = dustBuffer.scaledTo(MixtureDustItem.UNIT);
+            ItemStack dust = MixtureDustItem.of(portion);
+            ItemStack slot = items.get(SLOT_OUTPUT_ITEM);
+            if (!MixtureDustItem.canMerge(slot, dust)) break;
+            items.set(SLOT_OUTPUT_ITEM, MixtureDustItem.merge(slot, dust));
+            dustBuffer = dustBuffer.minus(portion);
+            changed = true;
+        }
+        return changed;
+    }
+
+    private void pressRecipe() {
+        inputFluid.shrink(currentRecipe.getInputFluidAmount());
         if (inputFluid.getAmount() <= 0) inputFluid = FluidStack.EMPTY;
 
         FluidStack outFluid = currentRecipe.getOutputFluid();
@@ -237,9 +317,6 @@ public class FilterPressBlockEntity extends BaseContainerBlockEntity
         ItemStack slot = items.get(SLOT_OUTPUT_ITEM);
         if (slot.isEmpty()) items.set(SLOT_OUTPUT_ITEM, outItem);
         else slot.grow(outItem.getCount());
-
-        kineticForce = 0f;
-        setChanged();
     }
 
     // ── Fluid attribute helpers ───────────────────────────────────────────────
@@ -325,6 +402,7 @@ public class FilterPressBlockEntity extends BaseContainerBlockEntity
         outputFluid = input.read("OutputFluid", FluidStack.OPTIONAL_CODEC).orElse(FluidStack.EMPTY);
         kineticForce = input.getFloatOr("KineticForce", 0f);
         requiredKineticForce = input.getFloatOr("RequiredKineticForce", 0f);
+        dustBuffer = input.read("DustBuffer", Solution.CODEC).orElse(Solution.EMPTY);
     }
 
     @Override
@@ -335,5 +413,6 @@ public class FilterPressBlockEntity extends BaseContainerBlockEntity
         output.store("OutputFluid", FluidStack.OPTIONAL_CODEC, outputFluid);
         output.putFloat("KineticForce", kineticForce);
         output.putFloat("RequiredKineticForce", requiredKineticForce);
+        output.store("DustBuffer", Solution.CODEC, dustBuffer);
     }
 }

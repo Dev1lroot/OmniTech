@@ -1,0 +1,13 @@
+{
+  "fluid": "omnitech:apple_cider_vinegar",
+  "nutrition": 0,
+  "saturation": 0.0,
+  "effects": [
+    {
+      "id": "minecraft:nausea",
+      "duration": 100,
+      "amplifier": 0,
+      "chance": 0.5
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {
+      "id": "omnitech:truth_table"
+    },
+    "title": {"translate": "advancement.omnitech.progression.truth_table_created.title"},
+    "description": {"translate": "advancement.omnitech.progression.truth_table_created.description"},
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "omnitech:progression/radiation_effect_received",
+  "criteria": {
+    "made_truth_table": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

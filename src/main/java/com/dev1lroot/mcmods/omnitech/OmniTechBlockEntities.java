@@ -192,6 +192,11 @@ public class OmniTechBlockEntities {
                     () -> new BlockEntityType<>(SolvationMachineBlockEntity::new,
                             OmniTechBlocks.SOLVATION_MACHINE.get()));
 
+    public static final Supplier<BlockEntityType<com.dev1lroot.mcmods.omnitech.blocks.processing.press.PressBlockEntity>> PRESS =
+            REGISTRY.register("press",
+                    () -> new BlockEntityType<>(com.dev1lroot.mcmods.omnitech.blocks.processing.press.PressBlockEntity::new,
+                            OmniTechBlocks.PRESS.get()));
+
     public static final Supplier<BlockEntityType<com.dev1lroot.mcmods.omnitech.blocks.labware.FilterPressBlockEntity>> FILTER_PRESS =
             REGISTRY.register("filter_press",
                     () -> new BlockEntityType<>(com.dev1lroot.mcmods.omnitech.blocks.labware.FilterPressBlockEntity::new,

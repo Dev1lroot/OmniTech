@@ -1,0 +1,19 @@
+{
+  "fluid": "omnitech:ethanol",
+  "nutrition": 0,
+  "saturation": 0.0,
+  "effects": [
+    {
+      "id": "minecraft:nausea",
+      "duration": 600,
+      "amplifier": 0,
+      "chance": 0.6
+    },
+    {
+      "id": "minecraft:slowness",
+      "duration": 400,
+      "amplifier": 0,
+      "chance": 0.4
+    }
+  ]
+}
