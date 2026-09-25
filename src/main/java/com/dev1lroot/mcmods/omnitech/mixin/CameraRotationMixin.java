@@ -5,6 +5,8 @@
 package com.dev1lroot.mcmods.omnitech.mixin;
 
 import com.dev1lroot.mcmods.omnitech.client.GravityFieldManager;
+import com.dev1lroot.mcmods.omnitech.util.GravityUtil;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
@@ -27,10 +29,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * finalRotation = gravQ × vanillaRotation
  *
  * <p><b>2. alignWithEntity</b> — corrects the eye-position offset. Vanilla always
- * offsets the camera by eyeHeight along world-Y. When gravity tilts the player, the
- * eye must instead be offset along the gravity-up direction so the camera sits at the
- * player's actual head, not at their feet.
- * correctedPos = entityFeetPos + gravUp_smoothed × eyeHeight
+ * offsets the camera by eyeHeight along world-Y. When gravity turns the player, the eye
+ * must follow the turned body: the body turns about a pivot (its centre in a gravity field —
+ * the same point the model turns about, so the camera sits in the drawn head — and its eyes
+ * while floating free, so a zero-g roll spins the view in place), see
+ * {@link GravityUtil#pivotHeight}.
+ * correctedPos = feet + pivot·worldUp + gravQ·((eyeHeight − pivot)·worldUp)
  */
 @Mixin(Camera.class)
 public abstract class CameraRotationMixin {
@@ -69,20 +73,11 @@ public abstract class CameraRotationMixin {
         if (!Minecraft.getInstance().options.getCameraType().isFirstPerson()) return;
         Quaternionf gravQ = GravityFieldManager.getGravityQ();
         if (gravQ.w > 0.9999f) return;
-
-        // smoothed gravity-up = gravQ applied to world-up (0,1,0)
-        // this is in sync with the rotation smoothing from OmniTechClient
-        Vector3f gravUp = new Vector3f(0f, 1f, 0f);
-        gravQ.transform(gravUp);
+        Entity entity = Minecraft.getInstance().getCameraEntity();
+        if (entity == null) return;
 
         float eyeH = Mth.lerp(partialTicks, this.eyeHeightOld, this.eyeHeight);
-
-        // Vanilla added (0, eyeH, 0); we replace that with gravUp * eyeH.
-        // delta = (gravUp - world_up) * eyeH
-        setPosition(this.position.add(
-            gravUp.x * eyeH,
-            (gravUp.y - 1.0) * eyeH,
-            gravUp.z * eyeH
-        ));
+        float pivot = GravityUtil.pivotHeight(entity, eyeH, GravityUtil.fieldStrength(entity));
+        setPosition(this.position.add(GravityUtil.eyeOffset(gravQ, eyeH, pivot)));
     }
 }

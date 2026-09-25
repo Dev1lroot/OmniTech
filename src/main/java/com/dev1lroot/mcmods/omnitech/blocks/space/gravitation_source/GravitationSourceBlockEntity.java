@@ -64,9 +64,10 @@ public class GravitationSourceBlockEntity extends BaseContainerBlockEntity {
 
     /**
      * All currently loaded, active GravitationSource block entities on the server.
-     * Updated every tick by {@link #serverTick}; entries removed in {@link #setRemoved}.
+     * Updated every tick by {@link #serverTick}; entries removed in {@link #setRemoved}. Keyed by
+     * dimension + position, so sources at the same coordinates in different dimensions coexist.
      */
-    public static final ConcurrentHashMap<BlockPos, GravityEntry> SERVER_ACTIVE_SOURCES =
+    public static final ConcurrentHashMap<net.minecraft.core.GlobalPos, GravityEntry> SERVER_ACTIVE_SOURCES =
             new ConcurrentHashMap<>();
 
     // ── State ─────────────────────────────────────────────────────────────────
@@ -138,7 +139,7 @@ public class GravitationSourceBlockEntity extends BaseContainerBlockEntity {
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
                                    GravitationSourceBlockEntity be) {
-        SERVER_ACTIVE_SOURCES.put(pos.immutable(),
+        SERVER_ACTIVE_SOURCES.put(net.minecraft.core.GlobalPos.of(level.dimension(), pos.immutable()),
                 new GravityEntry(level.dimension(), be.outerRadius, be.innerRadius));
     }
 
@@ -146,7 +147,9 @@ public class GravitationSourceBlockEntity extends BaseContainerBlockEntity {
 
     @Override
     public void setRemoved() {
-        SERVER_ACTIVE_SOURCES.remove(getBlockPos().immutable());
+        if (level != null) {
+            SERVER_ACTIVE_SOURCES.remove(net.minecraft.core.GlobalPos.of(level.dimension(), getBlockPos().immutable()));
+        }
         super.setRemoved();
     }
 

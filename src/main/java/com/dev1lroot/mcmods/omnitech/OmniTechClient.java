@@ -72,6 +72,13 @@ public class OmniTechClient
 {
     public static KeyMapping OPEN_ROCKET_GUI;
     public static KeyMapping PUSH_TO_TALK;
+    /** Held to roll the view left / right around the look axis while floating free in zero-g. */
+    public static KeyMapping ROLL_LEFT;
+    public static KeyMapping ROLL_RIGHT;
+
+    /** Zero-g roll speed while a roll key is held. */
+    private static final float ROLL_DEGREES_PER_SECOND = 90f;
+    private static long lastCameraFrameNanos = 0L;
 
     /** Smoothly-interpolated gravity rotation quaternion applied to the camera each frame. */
     private static final org.joml.Quaternionf cameraGravityQ = new org.joml.Quaternionf();
@@ -85,6 +92,7 @@ public class OmniTechClient
         modEventBus.addListener(this::registerCustomEnvironmentRenderers);
         modEventBus.addListener(this::registerRenderPipelines);
         modEventBus.addListener(this::registerKeys);
+        modEventBus.addListener(this::registerRenderStateModifiers);
         modEventBus.addListener(this::onAddClientReloadListeners);
         modEventBus.addListener(this::registerItemColors);
         modEventBus.addListener(this::registerBlockColors);
@@ -212,6 +220,19 @@ public class OmniTechClient
         event.registerPipeline(SpaceMapSkyboxRenderer.SKY_BODY_PIPELINE);
     }
 
+    /** Hands each player's gravity frame to their render state (see GravityPose). */
+    void registerRenderStateModifiers(net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent event) {
+        event.registerAvatarEntityModifier(new net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier() {
+            @Override
+            public <T extends net.minecraft.world.entity.Avatar & net.minecraft.client.entity.ClientAvatarEntity> void accept(
+                    T avatar, net.minecraft.client.renderer.entity.state.AvatarRenderState state) {
+                if (avatar instanceof net.minecraft.world.entity.player.Player player) {
+                    com.dev1lroot.mcmods.omnitech.client.GravityPose.extract(player, state);
+                }
+            }
+        });
+    }
+
     void registerKeys(RegisterKeyMappingsEvent event) {
         KeyMapping.Category category = new KeyMapping.Category(
                 Identifier.fromNamespaceAndPath(OmniTech.MODID, "categories"));
@@ -226,6 +247,16 @@ public class OmniTechClient
                 InputConstants.UNKNOWN.getValue(),
                 category);
         event.register(PUSH_TO_TALK);
+        ROLL_LEFT = new KeyMapping(
+                "key.omnitech.roll_left",
+                InputConstants.KEY_Z,
+                category);
+        event.register(ROLL_LEFT);
+        ROLL_RIGHT = new KeyMapping(
+                "key.omnitech.roll_right",
+                InputConstants.KEY_C,
+                category);
+        event.register(ROLL_RIGHT);
     }
 
     public static void onSoundOptionsOpening(ScreenEvent.Opening event) {
@@ -282,6 +313,9 @@ public class OmniTechClient
         DisplayBlockEntityRenderer.cleanupAll();
         GravityFieldManager.clear();
         cameraGravityQ.identity();
+        com.dev1lroot.mcmods.omnitech.util.PlayerFrames.clearClient();
+        com.dev1lroot.mcmods.omnitech.client.GravityPose.clear();
+        lastSentFrame = null;
     }
 
     /**
@@ -315,6 +349,8 @@ public class OmniTechClient
         // Audio cleanup is handled by onLevelUnload; this return just keeps the
         // rest of the tick logic from running without a valid player/level.
         if (mc.player == null || mc.level == null) return;
+
+        sendFrameToServer();
 
         // Deactivate keyboard capture if window loses focus
         if (KeyboardCaptureManager.isActive() && !mc.isWindowActive()) {
@@ -353,29 +389,108 @@ public class OmniTechClient
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 
-        Vec3 camPos = event.getCamera().position();
+        long now = System.nanoTime();
+        float frameSeconds = lastCameraFrameNanos == 0L ? 0f : Math.min(0.1f, (now - lastCameraFrameNanos) / 1e9f);
+        lastCameraFrameNanos = now;
 
-        // Build target gravity quaternion: rotationTo(world_up, gravity_up).
-        // α < 1 fades the tilt in the outer fringe of the field.
-        org.joml.Quaternionf targetQ = new org.joml.Quaternionf(); // identity = no tilt
-        if (!mc.player.isCreative()) {
-            Vec3 gv = GravityFieldManager.computeGravityVec(camPos.x, camPos.y, camPos.z);
-            double gLen = gv.length();
-            if (gLen >= 0.01) {
-                Vector3f gravUp = new Vector3f(
-                        (float)(-gv.x / gLen), (float)(-gv.y / gLen), (float)(-gv.z / gLen));
-                org.joml.Quaternionf fullQ = new org.joml.Quaternionf()
-                        .rotationTo(new Vector3f(0f, 1f, 0f), gravUp);
-                float alpha = (float) Math.min(1.0, gLen);
-                targetQ = new org.joml.Quaternionf().slerp(fullQ, alpha);
+        // Sample the field where the physics and the body pivot do: at the body's centre
+        Vec3 feet = mc.player.getPosition(event.getPartialTick());
+        Vec3 gv = GravityFieldManager.computeGravityVec(feet.x, feet.y + mc.player.getBbHeight() * 0.5, feet.z);
+        double gLen = gv.length();
+        boolean ignoresGravity = mc.player.isCreative() || mc.player.isSpectator();
+        boolean zeroGDim = com.dev1lroot.mcmods.omnitech.util.GravityUtil.isZeroGravityDimension(mc.level);
+
+        // Zero-g, outside every field: nothing defines "up", so the player keeps whatever
+        // orientation they have (no easing back to upright) and may roll it around the view axis.
+        boolean freeFloating = !ignoresGravity && zeroGDim && gLen < 0.01;
+        GravityFieldManager.setFreeFloating(freeFloating);
+        if (freeFloating) {
+            int roll = (ROLL_RIGHT != null && ROLL_RIGHT.isDown() ? 1 : 0)
+                     - (ROLL_LEFT  != null && ROLL_LEFT.isDown()  ? 1 : 0);
+            if (roll != 0 && frameSeconds > 0f && mc.gui.screen() == null) {
+                // The look direction is already in the rolled frame (EntityViewVectorGravityMixin).
+                // Rotating the frame about it by +θ tips the camera's up toward its right: roll right.
+                Vec3 look = mc.player.getViewVector(event.getPartialTick());
+                Vector3f axis = new Vector3f((float) look.x, (float) look.y, (float) look.z).normalize();
+                float angle = (float) Math.toRadians(ROLL_DEGREES_PER_SECOND * frameSeconds * roll);
+                cameraGravityQ.premul(new org.joml.Quaternionf().rotationAxis(angle, axis)).normalize();
+            }
+            publishFrame(mc);
+            return;
+        }
+
+        // Where the frame's "up" should point. In a field: away from the attractor — in a normal
+        // dimension blended with world-up by the field strength α (the fringe tilts only partly);
+        // in zero-g there is no world-up to blend with, so a weak field just aligns more slowly.
+        // No field (or creative/spectator): world-up.
+        Vector3f worldUp = new Vector3f(0f, 1f, 0f);
+        Vector3f targetUp = new Vector3f(worldUp);
+        float alpha = (float) Math.min(1.0, gLen);
+        float rate = 1f;
+        boolean backToUpright = ignoresGravity || gLen < 0.01;
+        if (!backToUpright) {
+            Vector3f gravUp = new Vector3f((float) (-gv.x / gLen), (float) (-gv.y / gLen), (float) (-gv.z / gLen));
+            if (zeroGDim) {
+                targetUp.set(gravUp);
+                rate = alpha;
+            } else {
+                Vector3f blend = new Vector3f(worldUp).lerp(gravUp, alpha);
+                targetUp.set(blend.lengthSquared() > 1e-4f ? blend.normalize() : gravUp);
             }
         }
 
-        // Smoothly interpolate toward target each frame.
-        // CameraRotationMixin reads this via GravityFieldManager.getGravityQ()
-        // and left-multiplies the camera quaternion AFTER vanilla builds it from yaw/pitch.
-        cameraGravityQ.slerp(targetQ, 0.15f);
+        // Turn the current frame by the *smallest* rotation that brings its up onto the target.
+        // Rebuilding the frame from world-up every frame instead (rotationTo(worldUp, gravUp))
+        // flips unpredictably under an attractor (the axis of a 180° turn is undefined) and twists
+        // the view's heading as the player walks around an asteroid.
+        // Smoothing is per second, not per frame: 15%/frame at 60 fps, whatever the frame rate.
+        Vector3f currentUp = cameraGravityQ.transform(new Vector3f(worldUp));
+        float blendNow = 1f - (float) Math.pow(0.85, frameSeconds * 60f * rate);
+        org.joml.Quaternionf step = new org.joml.Quaternionf().rotationTo(currentUp, targetUp);
+        cameraGravityQ.premul(new org.joml.Quaternionf().slerp(step, blendNow)).normalize();
+
+        // Upright again: whatever is left of the frame is a turn about world-up (heading picked
+        // up walking around an attractor). Hand it to the player's yaw and drop the frame, so the
+        // player is plain vanilla again — the view, WASD, the server and other players all agree.
+        if (backToUpright && !com.dev1lroot.mcmods.omnitech.util.PlayerFrames.isUpright(cameraGravityQ)
+                && cameraGravityQ.transform(new Vector3f(worldUp)).y > 0.99995f) {
+            float twistDegrees = (float) Math.toDegrees(2.0 * Math.atan2(cameraGravityQ.y, cameraGravityQ.w));
+            mc.player.setYRot(mc.player.getYRot() - twistDegrees);
+            mc.player.yRotO -= twistDegrees;
+            mc.player.setYHeadRot(mc.player.getYHeadRot() - twistDegrees);
+            cameraGravityQ.identity();
+        }
+        publishFrame(mc);
+    }
+
+    /**
+     * Shares the local player's frame: the camera mixins read it via
+     * {@link GravityFieldManager#getGravityQ()}, rendering / aiming via
+     * {@link com.dev1lroot.mcmods.omnitech.util.PlayerFrames}.
+     */
+    private static void publishFrame(Minecraft mc) {
         GravityFieldManager.setGravityQ(cameraGravityQ);
+        com.dev1lroot.mcmods.omnitech.util.PlayerFrames.setLocal(mc.player.getId(), cameraGravityQ);
+    }
+
+    /** Last frame reported to the server, and ticks since, see {@link #sendFrameToServer}. */
+    private static org.joml.Quaternionf lastSentFrame = null;
+    private static int ticksSinceFrameSent = 0;
+
+    /**
+     * Reports the local player's frame to the server whenever it has turned by more than half a
+     * degree (at most once a tick), plus a heartbeat every two seconds while not upright.
+     */
+    private static void sendFrameToServer() {
+        org.joml.Quaternionf frame = GravityFieldManager.getGravityQ();
+        ticksSinceFrameSent++;
+        boolean turned = lastSentFrame == null
+                || 2.0 * Math.acos(Math.min(1.0, Math.abs(frame.dot(lastSentFrame)))) > Math.toRadians(0.5);
+        boolean heartbeat = ticksSinceFrameSent >= 40 && !com.dev1lroot.mcmods.omnitech.util.PlayerFrames.isUpright(frame);
+        if (!turned && !heartbeat) return;
+        ClientPacketDistributor.sendToServer(com.dev1lroot.mcmods.omnitech.network.PlayerFramePacket.of(frame));
+        lastSentFrame = frame;
+        ticksSinceFrameSent = 0;
     }
 
     private static void tickMicrophoneCapture(Minecraft mc) {

@@ -174,6 +174,7 @@ public class OmniTech {
         NeoForge.EVENT_BUS.addListener(OmniTech::onServerStopping);
         NeoForge.EVENT_BUS.addListener(OmniTech::onPlayerLoggedIn);
         NeoForge.EVENT_BUS.addListener(OmniTech::onPlayerLoggedOut);
+        NeoForge.EVENT_BUS.addListener(OmniTech::onStartTracking);
         modEventBus.addListener(OmniTech::registerAttributes);
         modEventBus.addListener(OmniTechEntities::registerSpawnPlacements);
 
@@ -660,6 +661,14 @@ public class OmniTech {
                 GravityFieldSyncPacket.TYPE,
                 GravityFieldSyncPacket.CODEC,
                 GravityFieldSyncPacket::handle);
+        event.registrar("1").playToServer(
+                com.dev1lroot.mcmods.omnitech.network.PlayerFramePacket.TYPE,
+                com.dev1lroot.mcmods.omnitech.network.PlayerFramePacket.CODEC,
+                com.dev1lroot.mcmods.omnitech.network.PlayerFramePacket::handle);
+        event.registrar("1").playToClient(
+                com.dev1lroot.mcmods.omnitech.network.PlayerFrameUpdatePacket.TYPE,
+                com.dev1lroot.mcmods.omnitech.network.PlayerFrameUpdatePacket.CODEC,
+                com.dev1lroot.mcmods.omnitech.network.PlayerFrameUpdatePacket::handle);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -725,7 +734,7 @@ public class OmniTech {
                 double maxRangeSq = 150.0 * 150.0;
                 for (var entry : GravitationSourceBlockEntity.SERVER_ACTIVE_SOURCES.entrySet()) {
                     if (!entry.getValue().dimension().equals(sp.level().dimension())) continue;
-                    BlockPos bp = entry.getKey();
+                    BlockPos bp = entry.getKey().pos();
                     double dx = bp.getX() + 0.5 - px;
                     double dy = bp.getY() + 0.5 - py;
                     double dz = bp.getZ() + 0.5 - pz;
@@ -773,7 +782,17 @@ public class OmniTech {
     public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.getEntity() instanceof ServerPlayer sp) {
             KeyboardBlock.clearSession(sp.getUUID());
+            com.dev1lroot.mcmods.omnitech.util.PlayerFrames.setServer(sp.getUUID(), null);
         }
+    }
+
+    /** A player coming into view is drawn with their current gravity frame straight away. */
+    public static void onStartTracking(PlayerEvent.StartTracking event) {
+        if (!(event.getEntity() instanceof ServerPlayer viewer)) return;
+        if (!(event.getTarget() instanceof ServerPlayer target)) return;
+        org.joml.Quaternionf frame = com.dev1lroot.mcmods.omnitech.util.PlayerFrames.getServer(target.getUUID());
+        PacketDistributor.sendToPlayer(viewer, com.dev1lroot.mcmods.omnitech.network.PlayerFrameUpdatePacket.of(
+                target.getId(), frame != null ? frame : new org.joml.Quaternionf()));
     }
 
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {

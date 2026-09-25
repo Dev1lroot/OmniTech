@@ -12,6 +12,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -27,6 +28,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  *   <li>{@code travel()} RETURN — build worldInput from camera forward/left,
  *       project onto the gravity-horizontal plane, then add the impulse.</li>
  * </ol>
+ *
+ * <p>While free-floating in zero-g (no field at all, see
+ * {@link GravityFieldManager#isFreeFloating}) there is no horizontal plane: the input is applied
+ * straight along the camera's forward/left, so a rolled or upside-down player still moves where
+ * they look.
  */
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMovementClientMixin {
@@ -36,9 +42,11 @@ public abstract class LivingEntityMovementClientMixin {
 
     private transient float omnitech$savedXxa;
     private transient float omnitech$savedZza;
+    @Unique private transient boolean omnitech$freeFloat;
 
-    /** Matches MC's on-ground moveRelative speed formula: 0.16277136 / friction³, friction=0.6. */
-    private static final float GROUND_SPEED_FACTOR = 0.16277136f / (0.6f * 0.6f * 0.6f);
+    /** Vanilla's airborne input speed (LivingEntity#getFlyingSpeed for a player). */
+    @Unique private static final float AIR_SPEED = 0.02f;
+    @Unique private static final float AIR_SPEED_SPRINTING = 0.026f;
 
     // ── travel() HEAD: intercept input ────────────────────────────────────────
 
@@ -46,6 +54,7 @@ public abstract class LivingEntityMovementClientMixin {
     private void gravityMovementHead(Vec3 travelVec, CallbackInfo ci) {
         omnitech$savedXxa = 0f;
         omnitech$savedZza = 0f;
+        omnitech$freeFloat = false;
 
         LivingEntity self = (LivingEntity)(Object)this;
         if (!self.level().isClientSide()) return;
@@ -55,7 +64,10 @@ public abstract class LivingEntityMovementClientMixin {
 
         Vec3 gv = GravityFieldManager.computeGravityVec(
                 self.getX(), self.getY() + self.getBbHeight() * 0.5, self.getZ());
-        if (gv.lengthSqr() < 1e-8) return;
+        if (gv.lengthSqr() < 1e-8) {
+            if (!GravityFieldManager.isFreeFloating()) return;
+            omnitech$freeFloat = true;
+        }
 
         omnitech$savedXxa = xxa;
         omnitech$savedZza = zza;
@@ -73,6 +85,11 @@ public abstract class LivingEntityMovementClientMixin {
 
         LivingEntity self = (LivingEntity)(Object)this;
 
+        if (omnitech$freeFloat) {
+            omnitech$floatMove(self, savedXxa, savedZza);
+            return;
+        }
+
         Vec3 gv = GravityFieldManager.computeGravityVec(
                 self.getX(), self.getY() + self.getBbHeight() * 0.5, self.getZ());
         double gLen = gv.length();
@@ -82,16 +99,11 @@ public abstract class LivingEntityMovementClientMixin {
         Vector3f gravDown = new Vector3f(
                 (float)(gv.x / gLen), (float)(gv.y / gLen), (float)(gv.z / gLen));
 
-        // Camera vectors are gravity-rotated by CameraRotationMixin: gravQ × vanillaVector.
-        // Use them directly — they represent the actual world-space directions the player
-        // sees as forward/left on screen.
-        // Sign: xxa > 0 = A key = strafe LEFT = add camLeft (not subtract).
-        net.minecraft.client.Camera cam = Minecraft.getInstance().gameRenderer.mainCamera();
-        Vector3f camFwd  = new Vector3f(cam.forwardVector());
-        Vector3f camLeft = new Vector3f(cam.leftVector());
-
-        Vector3f worldInput = new Vector3f(camFwd).mul(savedZza)
-                .add(new Vector3f(camLeft).mul(savedXxa));
+        // The player's own turned forward/left (not the camera's: in third-person front view
+        // the camera faces the player, which would invert the controls).
+        // Sign: xxa > 0 = A key = strafe LEFT = add left (not subtract).
+        Vector3f worldInput = omnitech$forward(self).mul(savedZza)
+                .add(omnitech$left(self).mul(savedXxa));
 
         float inputLen = worldInput.length();
         if (inputLen < 0.001f) return;
@@ -107,13 +119,41 @@ public abstract class LivingEntityMovementClientMixin {
         // Speed mirrors vanilla moveRelative
         float normalizedInput = Math.min(inputLen, 1.0f);
         boolean onSurface = self.onGround() || self.horizontalCollision || self.verticalCollision;
+        // Vanilla (26.3) walks at plain getSpeed() on normal-friction ground
         float moveSpeed = normalizedInput
-                * (onSurface ? self.getSpeed() * GROUND_SPEED_FACTOR : 0.02f);
+                * (onSurface ? self.getSpeed() : (self.isSprinting() ? AIR_SPEED_SPRINTING : AIR_SPEED));
 
         Vec3 vel = self.getDeltaMovement();
         self.setDeltaMovement(
                 vel.x + worldInput.x * moveSpeed,
                 vel.y + worldInput.y * moveSpeed,
                 vel.z + worldInput.z * moveSpeed);
+    }
+
+    /** Zero-g: push along the player's own turned forward/left at vanilla's airborne speed. */
+    @Unique
+    private static void omnitech$floatMove(LivingEntity self, float xxa, float zza) {
+        Vector3f input = omnitech$forward(self).mul(zza).add(omnitech$left(self).mul(xxa));
+        float inputLen = input.length();
+        if (inputLen < 0.001f) return;
+        input.div(inputLen);
+
+        float moveSpeed = Math.min(inputLen, 1.0f) * (self.isSprinting() ? AIR_SPEED_SPRINTING : AIR_SPEED);
+        self.setDeltaMovement(self.getDeltaMovement().add(
+                input.x * moveSpeed, input.y * moveSpeed, input.z * moveSpeed));
+    }
+
+    /** Look direction turned by the gravity frame (what the crosshair points along). */
+    @Unique
+    private static Vector3f omnitech$forward(LivingEntity self) {
+        Vec3 look = net.minecraft.world.entity.Entity.calculateViewVector(self.getXRot(), self.getYRot());
+        return GravityFieldManager.getGravityQ().transform(new Vector3f((float) look.x, (float) look.y, (float) look.z));
+    }
+
+    /** The player's left (vanilla: level, perpendicular to yaw) turned by the gravity frame. */
+    @Unique
+    private static Vector3f omnitech$left(LivingEntity self) {
+        float yaw = (float) Math.toRadians(self.getYRot());
+        return GravityFieldManager.getGravityQ().transform(new Vector3f((float) Math.cos(yaw), 0f, (float) Math.sin(yaw)));
     }
 }

@@ -6,7 +6,9 @@
     "SkyRendererMixin",
     "LivingEntityGravityMixin",
     "EntityGravityPhysicsMixin",
-    "FallingBlockEntityGravityMixin"
+    "FallingBlockEntityGravityMixin",
+    "ItemGravityAimMixin",
+    "ProjectileGravityAimMixin"
   ],
   "client": [
     "KeyboardHandlerMixin",

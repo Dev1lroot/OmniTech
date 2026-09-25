@@ -1783,5 +1783,7 @@
   "item.omnitech.citric_acid": "Citric Acid",
   "fluid.omnitech.solution.lemonade": "Lemonade",
   "jei.omnitech.info.lemon": "Picked from ripe Lemon Leaves on lemon trees, which grow wild in savannas. Press lemons for Lemon Juice and Lemon Peel. For Lemonade, mix water, lemon juice (or citric acid) and sugar in a Fermenter and bottle it — but don't leave it standing: wild yeast loves sugar water.",
-  "jei.omnitech.info.citric_acid": "Crystals left behind when Lemon Juice or a citric acid solution is boiled down in a Boiler. Industrially, black mold fed on sugar water in a Fermenter makes the solution by the tank-load."
+  "jei.omnitech.info.citric_acid": "Crystals left behind when Lemon Juice or a citric acid solution is boiled down in a Boiler. Industrially, black mold fed on sugar water in a Fermenter makes the solution by the tank-load.",
+  "key.omnitech.roll_left": "Roll Left (Zero-G)",
+  "key.omnitech.roll_right": "Roll Right (Zero-G)"
 }

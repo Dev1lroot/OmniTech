@@ -5,6 +5,7 @@
 package com.dev1lroot.mcmods.omnitech.mixin;
 
 import com.dev1lroot.mcmods.omnitech.client.GravityFieldManager;
+import com.dev1lroot.mcmods.omnitech.util.GravityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -25,9 +26,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * <ul>
  *   <li><b>getViewVector</b> — vanilla direction is based on yaw/pitch only.
  *       Rotating by gravQ produces the same direction the camera shows.</li>
- *   <li><b>getEyePosition</b> — vanilla adds eyeHeight along world-Y.  When the player
- *       is on a wall or ceiling, the eye must instead be offset along gravity-up so the
- *       ray starts at the player's actual head position, not at foot level.</li>
+ *   <li><b>getEyePosition</b> — vanilla adds eyeHeight along world-Y.  When the player's
+ *       body is turned, the ray must start where the turned head is — the same eye point the
+ *       camera uses ({@link GravityUtil#pivotHeight}, {@link GravityUtil#eyeOffset}).</li>
  * </ul>
  */
 @Mixin(Entity.class)
@@ -54,16 +55,8 @@ public class EntityViewVectorGravityMixin {
         if (Minecraft.getInstance().player != (Object)self) return;
         Quaternionf gravQ = GravityFieldManager.getGravityQ();
         if (gravQ.w > 0.9999f) return;
-        // Gravity-up = gravQ applied to world-up.  Same quaternion as the camera uses.
-        Vector3f gravUp = new Vector3f(0f, 1f, 0f);
-        gravQ.transform(gravUp);
         float eyeH = self.getEyeHeight();
-        // Vanilla added (0, eyeH, 0); redirect that offset to gravUp * eyeH.
-        // delta = (gravUp - worldUp) * eyeH
-        Vec3 vanilla = cir.getReturnValue();
-        cir.setReturnValue(vanilla.add(
-                gravUp.x * eyeH,
-                (gravUp.y - 1.0) * eyeH,
-                gravUp.z * eyeH));
+        float pivot = GravityUtil.pivotHeight(self, eyeH, GravityUtil.fieldStrength(self));
+        cir.setReturnValue(cir.getReturnValue().add(GravityUtil.eyeOffset(gravQ, eyeH, pivot)));
     }
 }

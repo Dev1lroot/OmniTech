@@ -4,6 +4,9 @@
  */
 package com.dev1lroot.mcmods.omnitech.mixin;
 
+import com.dev1lroot.mcmods.omnitech.client.GravityPose;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+
 import com.dev1lroot.mcmods.omnitech.client.GravityFieldManager;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -22,6 +25,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Rotates entity models so their "bottom" face points toward the combined gravity
  * attractor direction.  The rotation is weighted by the combined field strength α
  * so models gradually tilt as entities enter the outer zone.
+ *
+ * <p>Players are turned by their own gravity frame instead ({@link GravityPose}) — exactly the
+ * rotation their camera has, including a zero-g barrel roll, which pivots about the head.
  */
 @Mixin(LivingEntityRenderer.class)
 public abstract class EntityGravityRenderMixin {
@@ -36,6 +42,15 @@ public abstract class EntityGravityRenderMixin {
             SubmitNodeCollector collector,
             CameraRenderState cameraState,
             CallbackInfo ci) {
+
+        if (state instanceof AvatarRenderState) {
+            GravityPose pose = state.getRenderData(GravityPose.KEY);
+            if (pose == null) return;
+            poseStack.translate(0.0, pose.pivot(), 0.0);
+            poseStack.rotate(pose.frame());
+            poseStack.translate(0.0, -pose.pivot(), 0.0);
+            return;
+        }
 
         double entityCX = state.x;
         double entityCY = state.y + state.boundingBoxHeight * 0.5;

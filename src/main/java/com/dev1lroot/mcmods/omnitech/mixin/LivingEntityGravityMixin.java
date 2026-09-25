@@ -5,15 +5,10 @@
 package com.dev1lroot.mcmods.omnitech.mixin;
 
 import com.dev1lroot.mcmods.omnitech.util.GravityUtil;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.Set;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -56,11 +51,6 @@ public abstract class LivingEntityGravityMixin {
     /** Threshold for "entity is meaningfully inside a gravity field". */
     private static final double FIELD_THRESHOLD_SQ = 1e-8;
 
-    /** Dimensions where vanilla gravity is completely absent (no ambient pull). */
-    private static final Set<ResourceKey<Level>> ZERO_GRAVITY_DIMS = Set.of(
-        ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath("omnitech", "kuiper_belt"))
-    );
-
     @Shadow protected abstract float getJumpPower();
     @Shadow public abstract void jumpFromGround();
     @Shadow protected boolean jumping;
@@ -92,7 +82,7 @@ public abstract class LivingEntityGravityMixin {
         }
         // In zero-gravity dimensions, suppress vanilla gravity even between asteroid fields
         LivingEntity self = (LivingEntity)(Object)this;
-        if (ZERO_GRAVITY_DIMS.contains(self.level().dimension())) {
+        if (GravityUtil.isZeroGravityDimension(self.level())) {
             cir.setReturnValue(0.0);
         }
     }

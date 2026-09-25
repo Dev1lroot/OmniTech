@@ -27,6 +27,8 @@ public final class GravityFieldManager {
     private static final List<Integer>        OUTER_RADII  = new ArrayList<>();
     private static final List<Integer>        INNER_RADII  = new ArrayList<>();
     private static final org.joml.Quaternionf GRAVITY_Q    = new org.joml.Quaternionf();
+    /** Local player floating free in zero-g (no field pulling), see {@code OmniTechClient#onComputeCameraAngles}. */
+    private static volatile boolean freeFloating = false;
 
     private GravityFieldManager() {}
 
@@ -47,12 +49,22 @@ public final class GravityFieldManager {
         return new org.joml.Quaternionf(GRAVITY_Q);
     }
 
+    /**
+     * True while the local player floats in zero gravity outside every field: their orientation
+     * is their own (it no longer eases back to upright, and can be rolled), the camera pivots at
+     * the eyes rather than swinging around the feet, and movement follows the camera.
+     */
+    public static boolean isFreeFloating() { return freeFloating; }
+
+    public static void setFreeFloating(boolean value) { freeFloating = value; }
+
     /** Clear all active sources (call on world unload). */
     public static synchronized void clear() {
         POSITIONS.clear();
         OUTER_RADII.clear();
         INNER_RADII.clear();
         GRAVITY_Q.identity();
+        freeFloating = false;
     }
 
     /**
