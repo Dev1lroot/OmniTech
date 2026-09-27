@@ -33,6 +33,15 @@
       "source": "cook_progress"
     },
     {
+      "id": "power_readout",
+      "type": "power_label",
+      "x": 0,
+      "y": 18,
+      "centered": true,
+      "color_active": "FF55FF55",
+      "color_inactive": "FF888888"
+    },
+    {
       "id": "energy_readout",
       "type": "energy_label",
       "x": 0,

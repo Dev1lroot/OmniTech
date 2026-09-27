@@ -9,6 +9,8 @@ import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.electric_heater.ElectricHeaterBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
+import com.dev1lroot.mcmods.omnitech.util.ElectricUnits;
+import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -43,7 +45,7 @@ public class ElectricHeaterMenu extends AbstractContainerMenu {
     public ElectricHeaterMenu(int containerId, Inventory playerInventory, FriendlyByteBuf buf) {
         this(containerId, playerInventory,
                 playerInventory.player.level().getBlockEntity(buf.readBlockPos()),
-                new SimpleContainerData(4));
+                new SimpleContainerData(7));
     }
 
     /** Server-side constructor. */
@@ -69,6 +71,17 @@ public class ElectricHeaterMenu extends AbstractContainerMenu {
     public float getEuPerTick() {
         return ElectricHeaterBlockEntity.computeEuPerTick(getTargetTemp());
     }
+
+    // ── Electrical readings ──────────────────────────────────────────────────
+
+    /** Power received from the grid in W (1 s average). */
+    public float getInputWatts()  { return data.get(4); }
+    /** Line voltage at the input terminals in V (0 = no supply). */
+    public float getVoltage()     { return PowerMeter.decodeVolts(data.get(5)); }
+    /** Power consumed by the process in W (1 s average). */
+    public float getLoadWatts()   { return data.get(6); }
+    /** Power drawn while the machine is running, in W. */
+    public float getRatedWatts()  { return (float) ElectricUnits.toWatts(getEuPerTick()); }
 
     // ── Button handling ───────────────────────────────────────────────────────
 

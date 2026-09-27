@@ -55,10 +55,21 @@ public class PressRecipeManager {
                         chance = out.has("chance") ? out.get("chance").getAsFloat() : 1f;
                     }
 
+                    List<PressRecipe.MixturePart> mixture = new ArrayList<>();
+                    if (json.has("outputMixture")) {
+                        for (var el : json.getAsJsonArray("outputMixture")) {
+                            JsonObject c = el.getAsJsonObject();
+                            mixture.add(new PressRecipe.MixturePart(
+                                    Identifier.parse(c.get("fluid").getAsString()),
+                                    c.get("amount").getAsInt(),
+                                    !c.has("dissolved") || c.get("dissolved").getAsBoolean()));
+                        }
+                    }
+
                     String recipeId = id.getPath().replace(PATH + "/", "").replace(".json", "");
                     loaded.add(new PressRecipe(recipeId, json.get("requiredKineticForce").getAsInt(),
                             Identifier.parse(json.get("input").getAsString()),
-                            fluid, fluidAmount, item, count, chance));
+                            fluid, fluidAmount, item, count, chance, mixture));
                 } catch (Exception e) {
                     OmniTech.LOGGER.error("Failed to load press recipe: {}", id, e);
                 }

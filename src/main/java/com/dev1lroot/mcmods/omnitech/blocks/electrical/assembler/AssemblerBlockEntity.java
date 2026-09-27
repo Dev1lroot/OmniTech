@@ -9,6 +9,7 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.gui.AssemblerMenu;
 import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
+import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
 import com.dev1lroot.mcmods.omnitech.items.BlueprintItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -46,10 +47,14 @@ public class AssemblerBlockEntity extends BaseContainerBlockEntity
     }
 
     public static final float MAX_EU = 1000f;
-    private static final float EU_PER_RECIPE = 1000f;
+    public static final float EU_PER_RECIPE = 1000f;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
     private float energyStored = 0f;
+    /** Energy received from the grid (with line voltage). */
+    private final PowerMeter inputMeter = new PowerMeter();
+    /** Energy consumed by the machine's own process. */
+    private final PowerMeter loadMeter  = new PowerMeter();
     private int craftProgress = 0;
     private int currentProcessingTime = 0;
 
@@ -61,6 +66,9 @@ public class AssemblerBlockEntity extends BaseContainerBlockEntity
                 case 2 -> craftProgress;
                 case 3 -> currentProcessingTime;
                 case 4 -> (int)(EU_PER_RECIPE * 10f);
+                case 5 -> inputMeter.syncWatts();
+                case 6 -> inputMeter.syncDeciVolts();
+                case 7 -> loadMeter.syncWatts();
                 default -> 0;
             };
         }
@@ -71,7 +79,7 @@ public class AssemblerBlockEntity extends BaseContainerBlockEntity
                 case 3 -> currentProcessingTime = value;
             }
         }
-        @Override public int getCount() { return 5; }
+        @Override public int getCount() { return 8; }
     };
 
     public AssemblerBlockEntity(BlockPos pos, BlockState state) {
@@ -95,10 +103,11 @@ public class AssemblerBlockEntity extends BaseContainerBlockEntity
     // ── IElectricReceiver ─────────────────────────────────────────────────────
 
     @Override
-    public float addElectricity(float amount) {
+    public float addElectricity(float amount, float volts) {
         float space = MAX_EU - energyStored;
-        if (space <= 0f) return 0f;
-        float accepted = Math.min(amount, space);
+        float accepted = Math.max(0f, Math.min(amount, space));
+        inputMeter.add(accepted, volts);
+        if (accepted <= 0f) return 0f;
         energyStored += accepted;
         setChanged();
         return accepted;
@@ -132,6 +141,8 @@ public class AssemblerBlockEntity extends BaseContainerBlockEntity
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
                                   AssemblerBlockEntity be) {
+        be.inputMeter.tick();
+        be.loadMeter.tick();
         boolean changed = false;
 
         Optional<AssemblerLoader.AssemblerRecipe> recipeOpt = be.findMatchingRecipe();
@@ -144,6 +155,7 @@ public class AssemblerBlockEntity extends BaseContainerBlockEntity
             ItemStack output = recipe.createOutput();
             if (!output.isEmpty() && be.canAddOutput(output) && be.energyStored >= euPerTick) {
                 be.energyStored -= euPerTick;
+                be.loadMeter.add(euPerTick);
                 if (be.energyStored < 0f) be.energyStored = 0f;
                 be.craftProgress++;
                 changed = true;

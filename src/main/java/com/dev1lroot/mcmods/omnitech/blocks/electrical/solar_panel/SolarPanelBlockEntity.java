@@ -8,6 +8,7 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.gui.SolarPanelMenu;
 import com.dev1lroot.mcmods.omnitech.io.IElectricSupplier;
 import com.dev1lroot.mcmods.omnitech.util.ElectricNetworkUtil;
+import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -26,44 +27,62 @@ import net.minecraft.util.Mth;
 /**
  * Block entity for the Solar Panel.
  *
- * <h3>EU generation model</h3>
+ * <h3>Generation model</h3>
  * <p>Each network clock ({@value #CLOCK_INTERVAL} ticks) the panel:
  * <ol>
  *   <li>Checks that the dimension has a sky and that the block directly
  *       above the panel can see the sky (via the lighting engine).</li>
  *   <li>Calculates the sun intensity from the time-of-day using a
  *       sine curve: 0 at sunrise/sunset, 1.0 at solar noon, 0 at night.</li>
- *   <li>Propagates {@code intensity × CLOCK_INTERVAL} EU into the
+ *   <li>Propagates {@code intensity × CLOCK_INTERVAL} kJ into the
  *       electric wire network from all 6 faces.</li>
  * </ol>
  *
+ * <p>Peak output is {@value #EU_PER_TICK} kJ/tick (20 kW). The terminal voltage follows
+ * the photovoltaic open-circuit law: it depends logarithmically on irradiance G,
+ * {@code U = U_mpp · (1 + k · ln G)}, so it stays near {@value #MPP_VOLTAGE} V for most
+ * of the day and only sags at dawn and dusk.
+ *
  * <h3>ContainerData layout</h3>
  * <ul>
- *   <li>0 – currentOutput × 1000 (fixed-point, decode ÷ 1000)</li>
+ *   <li>0 – currentOutput × 1000 (generated kJ/tick, fixed-point, decode ÷ 1000)</li>
  *   <li>1 – effective sky light (raw sky light minus skyDarken, 0–15)</li>
+ *   <li>2 – power actually delivered to the network in W (1 s average)</li>
+ *   <li>3 – terminal voltage × 10</li>
  * </ul>
  */
 public class SolarPanelBlockEntity extends BaseContainerBlockEntity implements IElectricSupplier {
 
-    /** Max EU output per game tick at solar noon. */
+    /** Max output in kJ per game tick at solar noon (20 kW). */
     public static final float EU_PER_TICK = 1f;
+
+    /** Maximum-power-point voltage of the panel string at full irradiance. */
+    public static final float MPP_VOLTAGE = 380f;
+
+    /** Logarithmic voltage coefficient of the PV cells (per ln of irradiance). */
+    private static final float PV_LOG_COEFF = 0.05f;
 
     /** Network clock interval (ticks). BFS fires once per this many ticks. */
     private static final int CLOCK_INTERVAL = 5;
 
     private int clockCounter = 0;
 
-    /** Current EU/tick output (0..EU_PER_TICK). Updated every clock cycle. */
+    /** Current generated kJ/tick (0..EU_PER_TICK). Updated every clock cycle. */
     private float currentOutput = 0f;
 
     /** Sky light level directly above the panel (0-15). Updated every clock cycle. */
     private int skyLight = 0;
+
+    /** Energy actually accepted by the network. */
+    private final PowerMeter outputMeter = new PowerMeter();
 
     protected final ContainerData dataAccess = new ContainerData() {
         @Override public int get(int index) {
             return switch (index) {
                 case 0 -> (int)(currentOutput * 1000f);
                 case 1 -> skyLight;
+                case 2 -> outputMeter.syncWatts();
+                case 3 -> PowerMeter.encodeVolts(getSupplyVoltage());
                 default -> 0;
             };
         }
@@ -71,7 +90,7 @@ public class SolarPanelBlockEntity extends BaseContainerBlockEntity implements I
             if (index == 0) currentOutput = value / 1000f;
             if (index == 1) skyLight = value;
         }
-        @Override public int getCount() { return 2; }
+        @Override public int getCount() { return 4; }
     };
 
     public SolarPanelBlockEntity(BlockPos pos, BlockState state) {
@@ -97,12 +116,24 @@ public class SolarPanelBlockEntity extends BaseContainerBlockEntity implements I
     @Override
     public float getEuSupply() { return currentOutput; }
 
+    @Override
+    public float getSupplyVoltage() { return pvVoltage(currentOutput / EU_PER_TICK); }
+
+    /** PV terminal voltage at relative irradiance {@code g} (0..1). */
+    public static float pvVoltage(float g) {
+        if (g <= 0f) return 0f;
+        float v = MPP_VOLTAGE * (1f + PV_LOG_COEFF * (float) Math.log(Math.max(g, 0.01f)));
+        return Math.max(0f, v);
+    }
+
     public ContainerData getContainerData() { return dataAccess; }
 
     // ── Server tick ───────────────────────────────────────────────────────────
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
             SolarPanelBlockEntity be) {
+
+        be.outputMeter.tick();
 
         be.clockCounter++;
         if (be.clockCounter < CLOCK_INTERVAL) return;
@@ -127,13 +158,16 @@ public class SolarPanelBlockEntity extends BaseContainerBlockEntity implements I
         if (output <= 0f) return;
 
         float burst = output * CLOCK_INTERVAL;
-        ElectricNetworkUtil.propagateElectricity(level, pos, burst, Direction.values());
+        float volts = be.getSupplyVoltage();
+        float delivered = ElectricNetworkUtil.propagateElectricity(
+                level, pos, burst, volts, Direction.values());
+        be.outputMeter.add(delivered, volts);
     }
 
-    // ── EU calculation ────────────────────────────────────────────────────────
+    // ── Output calculation ────────────────────────────────────────────────────────
 
     /**
-     * Computes EU/tick output using a sine curve over the overworld day cycle.
+     * Computes the kJ/tick output using a sine curve over the overworld day cycle.
      *
      * <p>Time mapping (Minecraft overworld, 24 000 ticks/day):
      * <ul>

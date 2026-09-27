@@ -1,0 +1,10 @@
+{
+  "note": "1 bar = 75 mB of beeswax ≈ 72 g (represented as a triglyceride-like wax ester).",
+  "compounds": [
+    {
+      "smiles": "CCCCCCCCC=CCCCCCCCC(=O)OCC(OC(=O)CCCCCCCC=CCCCCCCCC)COC(=O)CCCCCCCC=CCCCCCCCC",
+      "name": "Beeswax (representative wax ester)",
+      "amount": 81.4
+    }
+  ]
+}

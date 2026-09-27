@@ -10,6 +10,8 @@ import com.dev1lroot.mcmods.omnitech.blocks.electrical.assembler.AssemblerBlockE
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
+import com.dev1lroot.mcmods.omnitech.util.ElectricUnits;
+import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
 import com.dev1lroot.mcmods.omnitech.items.BlueprintItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
@@ -36,7 +38,7 @@ public class AssemblerMenu extends AbstractContainerMenu {
     public AssemblerMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
         this(containerId, playerInventory,
                 playerInventory.player.level().getBlockEntity(extraData.readBlockPos()),
-                new SimpleContainerData(5));
+                new SimpleContainerData(8));
     }
 
     /** Server-side constructor. */
@@ -75,6 +77,18 @@ public class AssemblerMenu extends AbstractContainerMenu {
     public int   getCraftProgress()      { return data.get(2); }
     public int   getProcessingTime()     { return data.get(3); }
     public float getEuPerRecipe()        { return data.get(4) / 10f; }
+
+    // ── Electrical readings ──────────────────────────────────────────────────
+
+    /** Power received from the grid in W (1 s average). */
+    public float getInputWatts()  { return data.get(5); }
+    /** Line voltage at the input terminals in V (0 = no supply). */
+    public float getVoltage()     { return PowerMeter.decodeVolts(data.get(6)); }
+    /** Power consumed by the process in W (1 s average). */
+    public float getLoadWatts()   { return data.get(7); }
+    /** Power drawn while the machine is running, in W. */
+    public float getRatedWatts()  { return getProcessingTime() > 0
+            ? (float) ElectricUnits.toWatts(getEuPerRecipe() / getProcessingTime()) : 0f; }
 
     public float getCraftProgressScaled() {
         int max = getProcessingTime();

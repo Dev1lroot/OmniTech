@@ -25,6 +25,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.electrical.assembler.AssemblerBlockE
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorCellBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_capacitor.ElectricCapacitorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_transformer.PowerTransformerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_charger.ElectricChargerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.chemical_infuser.ChemicalInfuserBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.extractor.ExtractorBlockEntity;
@@ -176,6 +177,11 @@ public class OmniTechBlockEntities {
             REGISTRY.register("electric_capacitor",
                     () -> new BlockEntityType<>(ElectricCapacitorBlockEntity::new,
                             OmniTechBlocks.ELECTRIC_CAPACITOR.get()));
+
+    public static final Supplier<BlockEntityType<PowerTransformerBlockEntity>> POWER_TRANSFORMER =
+            REGISTRY.register("power_transformer",
+                    () -> new BlockEntityType<>(PowerTransformerBlockEntity::new,
+                            OmniTechBlocks.POWER_TRANSFORMER.get()));
 
     public static final Supplier<BlockEntityType<ElectricFurnaceBlockEntity>> ELECTRIC_FURNACE =
             REGISTRY.register("electric_furnace",

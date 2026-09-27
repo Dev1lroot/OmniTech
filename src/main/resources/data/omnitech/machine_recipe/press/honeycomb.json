@@ -1,0 +1,15 @@
+{
+  "requiredKineticForce": 20,
+  "input": "minecraft:honeycomb",
+  "outputMixture": [
+    {
+      "fluid": "omnitech:honey",
+      "amount": 175
+    },
+    {
+      "fluid": "omnitech:beeswax",
+      "amount": 75,
+      "dissolved": false
+    }
+  ]
+}

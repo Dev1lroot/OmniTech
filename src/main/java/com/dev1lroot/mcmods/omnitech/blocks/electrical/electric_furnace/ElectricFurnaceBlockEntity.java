@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_furnace;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
+import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricFurnaceMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -48,6 +49,10 @@ public class ElectricFurnaceBlockEntity extends BaseContainerBlockEntity
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
     private float energyStored = 0f;
+    /** Energy received from the grid (with line voltage). */
+    private final PowerMeter inputMeter = new PowerMeter();
+    /** Energy consumed by the machine's own process. */
+    private final PowerMeter loadMeter  = new PowerMeter();
     private int cookProgress = 0;
 
     protected final ContainerData dataAccess = new ContainerData() {
@@ -58,6 +63,9 @@ public class ElectricFurnaceBlockEntity extends BaseContainerBlockEntity
                 case 2 -> cookProgress;
                 case 3 -> COOK_TIME;
                 case 4 -> (int)(EU_PER_RECIPE * 10f);
+                case 5 -> inputMeter.syncWatts();
+                case 6 -> inputMeter.syncDeciVolts();
+                case 7 -> loadMeter.syncWatts();
                 default -> 0;
             };
         }
@@ -67,7 +75,7 @@ public class ElectricFurnaceBlockEntity extends BaseContainerBlockEntity
                 case 2 -> cookProgress = value;
             }
         }
-        @Override public int getCount() { return 5; }
+        @Override public int getCount() { return 8; }
     };
 
     public ElectricFurnaceBlockEntity(BlockPos pos, BlockState state) {
@@ -91,10 +99,11 @@ public class ElectricFurnaceBlockEntity extends BaseContainerBlockEntity
     // ── IElectricReceiver ─────────────────────────────────────────────────────
 
     @Override
-    public float addElectricity(float amount) {
+    public float addElectricity(float amount, float volts) {
         float space = MAX_EU - energyStored;
-        if (space <= 0f) return 0f;
-        float accepted = Math.min(amount, space);
+        float accepted = Math.max(0f, Math.min(amount, space));
+        inputMeter.add(accepted, volts);
+        if (accepted <= 0f) return 0f;
         energyStored += accepted;
         setChanged();
         return accepted;
@@ -143,6 +152,8 @@ public class ElectricFurnaceBlockEntity extends BaseContainerBlockEntity
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
                                   ElectricFurnaceBlockEntity be) {
+        be.inputMeter.tick();
+        be.loadMeter.tick();
 
         boolean changed = false;
 
@@ -152,6 +163,7 @@ public class ElectricFurnaceBlockEntity extends BaseContainerBlockEntity
         if (recipeOpt.isPresent() && be.canSmelt(recipeOpt.get().value())) {
             if (be.energyStored >= EU_PER_TICK) {
                 be.energyStored -= EU_PER_TICK;
+                be.loadMeter.add(EU_PER_TICK);
                 if (be.energyStored < 0f) be.energyStored = 0f;
                 be.cookProgress++;
                 changed = true;

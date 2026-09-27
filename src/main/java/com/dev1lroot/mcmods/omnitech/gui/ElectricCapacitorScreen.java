@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_capacitor.ElectricCapacitorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
@@ -31,7 +32,12 @@ public class ElectricCapacitorScreen extends AbstractContainerScreen<ElectricCap
 
         this.dataCtx = new GuiDataContext()
                 .value("energy_stored", () -> (float) menu.getStoredEu())
-                .value("energy_max",    () -> (float) menu.getMaxEu());
+                .value("energy_max",    () -> (float) menu.getMaxEu())
+                .value("capacitance",   () -> (float) ElectricCapacitorBlockEntity.CAPACITANCE)
+                .value("voltage",       menu::getVoltage)
+                .value("input_voltage", menu::getInputVoltage)
+                .value("power_in",      menu::getInputWatts)
+                .value("power_out",     menu::getOutputWatts);
     }
 
     @Override
@@ -46,5 +52,14 @@ public class ElectricCapacitorScreen extends AbstractContainerScreen<ElectricCap
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractLabels(graphics, mouseX, mouseY);
         GuiLayoutRenderer.renderLabels(graphics, this.font, LAYOUT, dataCtx, LAYOUT.width);
+    }
+
+    @Override
+    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractTooltip(graphics, mouseX, mouseY);
+        if (hoveredSlot == null) {
+            GuiLayoutRenderer.setElectricTooltip(graphics, this.font, LAYOUT, dataCtx,
+                    mouseX, mouseY, this.leftPos, this.topPos, LAYOUT.width);
+        }
     }
 }

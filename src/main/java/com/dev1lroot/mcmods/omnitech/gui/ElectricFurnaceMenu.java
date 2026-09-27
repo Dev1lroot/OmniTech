@@ -10,6 +10,8 @@ import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_furnace.Electric
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
+import com.dev1lroot.mcmods.omnitech.util.ElectricUnits;
+import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -46,7 +48,7 @@ public class ElectricFurnaceMenu extends AbstractContainerMenu {
     public ElectricFurnaceMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
         this(containerId, playerInventory,
                 playerInventory.player.level().getBlockEntity(extraData.readBlockPos()),
-                new SimpleContainerData(5));
+                new SimpleContainerData(8));
     }
 
     /** Server-side constructor. */
@@ -88,6 +90,18 @@ public class ElectricFurnaceMenu extends AbstractContainerMenu {
     public int getCookTime()       { return data.get(3); }
     /** EU consumed per recipe (decoded from fixed-point). */
     public float getEuPerRecipe()  { return data.get(4) / 10f; }
+
+    // ── Electrical readings ──────────────────────────────────────────────────
+
+    /** Power received from the grid in W (1 s average). */
+    public float getInputWatts()  { return data.get(5); }
+    /** Line voltage at the input terminals in V (0 = no supply). */
+    public float getVoltage()     { return PowerMeter.decodeVolts(data.get(6)); }
+    /** Power consumed by the process in W (1 s average). */
+    public float getLoadWatts()   { return data.get(7); }
+    /** Power drawn while the machine is running, in W. */
+    public float getRatedWatts()  { return getCookTime() > 0
+            ? (float) ElectricUnits.toWatts(getEuPerRecipe() / getCookTime()) : 0f; }
 
     /** Cook progress as 0–100 float for the progressbar JSON element. */
     public float getCookProgressScaled() {

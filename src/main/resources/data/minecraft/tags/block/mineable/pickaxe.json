@@ -1,3 +1,6 @@
 {
-  "values": ["omnitech:alloy_furnace"]
+  "values": [
+    "omnitech:alloy_furnace",
+    "omnitech:power_transformer"
+  ]
 }

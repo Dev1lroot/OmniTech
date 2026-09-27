@@ -8,6 +8,8 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
+import com.dev1lroot.mcmods.omnitech.util.ElectricUnits;
+import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -23,6 +25,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
  * <ul>
  *   <li>0 – currentOutput × 1000 (fixed-point, decode ÷ 1000)</li>
  *   <li>1 – sky light level above the panel (0–15)</li>
+ *   <li>2 – power delivered to the network in W</li>
+ *   <li>3 – terminal voltage × 10</li>
  * </ul>
  */
 public class SolarPanelMenu extends AbstractContainerMenu {
@@ -35,7 +39,7 @@ public class SolarPanelMenu extends AbstractContainerMenu {
     public SolarPanelMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
         this(containerId, playerInventory,
                 playerInventory.player.level().getBlockEntity(extraData.readBlockPos()),
-                new SimpleContainerData(2));
+                new SimpleContainerData(4));
     }
 
     /** Server-side constructor. */
@@ -51,8 +55,17 @@ public class SolarPanelMenu extends AbstractContainerMenu {
         layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
-    /** Current EU/tick output (decoded from fixed-point ×1000). */
+    /** Currently generated kJ/tick (decoded from fixed-point ×1000). */
     public float getCurrentOutput() { return data.get(0) / 1000f; }
+
+    /** Currently generated power in W. */
+    public float getGeneratedWatts() { return (float) ElectricUnits.toWatts(getCurrentOutput()); }
+
+    /** Power actually accepted by the network in W (1 s average). */
+    public float getDeliveredWatts() { return data.get(2); }
+
+    /** Panel terminal voltage in V. */
+    public float getVoltage() { return PowerMeter.decodeVolts(data.get(3)); }
 
     /** Sky light level directly above the panel (0–15). */
     public int getSkyLight() { return data.get(1); }

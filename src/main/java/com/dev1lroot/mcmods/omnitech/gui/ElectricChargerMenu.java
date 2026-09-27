@@ -9,6 +9,9 @@ import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
+import com.dev1lroot.mcmods.omnitech.util.ElectricUnits;
+import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_charger.ElectricChargerBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -34,7 +37,7 @@ public class ElectricChargerMenu extends AbstractContainerMenu {
     public ElectricChargerMenu(int containerId, Inventory playerInventory, FriendlyByteBuf buf) {
         this(containerId, playerInventory,
                 playerInventory.player.level().getBlockEntity(buf.readBlockPos()),
-                new SimpleContainerData(4));
+                new SimpleContainerData(7));
     }
 
     /** Server-side constructor. */
@@ -66,6 +69,17 @@ public class ElectricChargerMenu extends AbstractContainerMenu {
     public float getMaxEu()        { return data.get(1) / 10f; }
     public int   getItemEu()       { return data.get(2); }
     public int   getItemMaxEu()    { return data.get(3); }
+
+    // ── Electrical readings ──────────────────────────────────────────────────
+
+    /** Power received from the grid in W (1 s average). */
+    public float getInputWatts()  { return data.get(4); }
+    /** Line voltage at the input terminals in V (0 = no supply). */
+    public float getVoltage()     { return PowerMeter.decodeVolts(data.get(5)); }
+    /** Power consumed by the process in W (1 s average). */
+    public float getLoadWatts()   { return data.get(6); }
+    /** Power drawn while the machine is running, in W. */
+    public float getRatedWatts()  { return (float) ElectricUnits.toWatts(ElectricChargerBlockEntity.CHARGE_RATE); }
 
     /** Item charge 0–100 for a progressbar element. */
     public float getItemChargeScaled() {

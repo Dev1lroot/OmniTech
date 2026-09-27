@@ -555,6 +555,12 @@ public class OmniTechClient
         boolean shift = Minecraft.getInstance().hasShiftDown();
         boolean shiftGatedContent = false;
 
+        // Electrical specs (production / consumption / capacity) for electric machines.
+        if (id != null && id.getNamespace().equals(OmniTech.MODID)) {
+            com.dev1lroot.mcmods.omnitech.gui.ElectricItemTooltip.append(
+                    id.getPath(), event.getToolTip()::add);
+        }
+
         // Machine blurb: any item with a "tooltip.omnitech.<path>.desc" lang key gets a
         // one-line description on shift. Which items show this is controlled entirely by which
         // lang keys exist — no separate registry to keep in sync.

@@ -147,8 +147,10 @@ public final class FluidMixing {
         Solution parts = SolutionFluids.toSolution(a);
         Solution others = SolutionFluids.toSolution(b);
         for (Solution.Part p : parts.components()) {
+            // A suspended (undissolved) solid rides along in any carrier — no miscibility needed
+            if (!p.dissolved()) continue;
             for (Solution.Part q : others.components()) {
-                if (p.fluid() == q.fluid()) continue;
+                if (!q.dissolved() || p.fluid() == q.fluid()) continue;
                 if (!miscible(p.fluid(), q.fluid(), gases)) return false;
             }
         }

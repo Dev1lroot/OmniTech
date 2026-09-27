@@ -72,16 +72,25 @@
       "id": "energy_readout",
       "type": "energy_label",
       "x": 0,
-      "y": 95,
+      "y": 74,
       "centered": true,
       "color_active": "FF44AAFF",
+      "color_inactive": "FF888888"
+    },
+    {
+      "id": "power_readout",
+      "type": "power_label",
+      "x": 0,
+      "y": 83,
+      "centered": true,
+      "color_active": "FF55FF55",
       "color_inactive": "FF888888"
     },
     {
       "id": "eu_cost",
       "type": "eu_cost_label",
       "x": 0,
-      "y": 85,
+      "y": 92,
       "centered": true,
       "color": "FF888888"
     }

@@ -135,6 +135,8 @@ public class OmniTechItems
             "power_relay", OmniTechBlocks.POWER_RELAY);
     public static final DeferredItem<BlockItem> ELECTRIC_CAPACITOR_ITEM = REGISTRY.registerSimpleBlockItem(
             "electric_capacitor", OmniTechBlocks.ELECTRIC_CAPACITOR);
+    public static final DeferredItem<BlockItem> POWER_TRANSFORMER_ITEM = REGISTRY.registerSimpleBlockItem(
+            "power_transformer", OmniTechBlocks.POWER_TRANSFORMER);
     public static final DeferredItem<BlockItem> ELECTRIC_WIRE_ITEM = REGISTRY.registerSimpleBlockItem(
             "electric_wire", OmniTechBlocks.ELECTRIC_WIRE);
     public static final DeferredItem<BlockItem> ASSEMBLER_ITEM = REGISTRY.registerSimpleBlockItem(
@@ -516,17 +518,17 @@ public class OmniTechItems
             INCORRECT_FOR_INDUSTRIAL_BORE, 10000, 18.0f, 1.0f, 14,
             ItemTags.create(Identifier.fromNamespaceAndPath(OmniTech.MODID, "repairs_bore")));
 
-    /** Iron-tier bore: 2000 EU capacity, 5 EU/block, 8× speed. */
+    /** Iron-tier bore: 2 MJ battery, 5 kJ/block, 8× speed. */
     public static final DeferredItem<BoreItem> BASIC_BORE =
             REGISTRY.registerItem("basic_bore",
                     props -> new BoreItem(BASIC_BORE_MATERIAL, 2000, 5, props));
 
-    /** Diamond-tier bore: 10 000 EU capacity, 3 EU/block, 12× speed. */
+    /** Diamond-tier bore: 10 MJ battery, 3 kJ/block, 12× speed. */
     public static final DeferredItem<BoreItem> ADVANCED_BORE =
             REGISTRY.registerItem("advanced_bore",
                     props -> new BoreItem(ADVANCED_BORE_MATERIAL, 10000, 3, props));
 
-    /** Ultimate-tier bore: 50 000 EU capacity, 2 EU/block, 18× speed. */
+    /** Ultimate-tier bore: 50 MJ battery, 2 kJ/block, 18× speed. */
     public static final DeferredItem<BoreItem> INDUSTRIAL_BORE =
             REGISTRY.registerItem("industrial_bore",
                     props -> new BoreItem(INDUSTRIAL_BORE_MATERIAL, 50000, 2, props));

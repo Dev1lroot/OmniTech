@@ -4,14 +4,27 @@
  */
 package com.dev1lroot.mcmods.omnitech.io;
 
+import net.minecraft.core.Direction;
+
 /**
- * Implemented by block entities that produce Electric Units (EU) and inject
- * them into the electric network each tick.
+ * Implemented by block entities that produce electric energy and inject
+ * it into the electric network each tick.
  *
- * <p>EU scale: 1 unit = 1 EU.
- * Example: Electric Engine produces 10 EU/tick at 1 KF input.
+ * <p>Energy is in kilojoules: 1 kJ/tick = 20 kW
+ * (see {@link com.dev1lroot.mcmods.omnitech.util.ElectricUnits}).
  */
 public interface IElectricSupplier {
-    /** EU produced per network tick. Returns 0 when not producing. */
+    /** Energy produced per tick in kJ. Returns 0 when not producing. */
     float getEuSupply();
+
+    /** Terminal voltage of this source in volts. Returns 0 when not producing. */
+    float getSupplyVoltage();
+
+    /**
+     * Whether this block outputs energy through {@code side}. Used by wires to
+     * decide which faces to connect to. Defaults to every face.
+     */
+    default boolean outputsElectricityTo(Direction side) {
+        return true;
+    }
 }

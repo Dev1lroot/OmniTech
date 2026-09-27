@@ -9,6 +9,7 @@ import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutRenderer;
+import com.dev1lroot.mcmods.omnitech.util.ElectricUnits;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -16,18 +17,21 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
+import java.util.Optional;
+
 /**
  * Screen for the Electric Heater.
  *
  * <p>Layout (panel-relative y):
  * <ul>
  *   <li>y=6  – title "Electric Heater" (by super)</li>
- *   <li>y=22 – "Target:" label</li>
+ *   <li>y=22 – "Target:" label, line voltage · current (right)</li>
  *   <li>y=35 – six +/− buttons with target temperature display between them</li>
  *   <li>y=51 – "Current: X °C"</li>
- *   <li>y=61 – "EU/tick: X EU/t    Buffer: Y/Z EU"</li>
+ *   <li>y=61 – heating power at target (kW)    buffer "Y kJ / Z MJ"</li>
  *   <li>y=72 – "Inventory" label (by super)</li>
  * </ul>
+ * Hovering the electrical readouts shows the full electrical tooltip.
  */
 public class ElectricHeaterScreen extends AbstractContainerScreen<ElectricHeaterMenu> {
 
@@ -61,7 +65,11 @@ public class ElectricHeaterScreen extends AbstractContainerScreen<ElectricHeater
 
         this.dataCtx = new GuiDataContext()
                 .value("energy_stored", menu::getEnergyStored)
-                .value("energy_max",    menu::getMaxEu);
+                .value("energy_max",    menu::getMaxEu)
+                .value("voltage",       menu::getVoltage)
+                .value("power_in",      menu::getInputWatts)
+                .value("power_load",    menu::getLoadWatts)
+                .value("rated_power",   menu::getRatedWatts);
 
         int by = this.topPos + BTN_Y;
 
@@ -118,6 +126,15 @@ public class ElectricHeaterScreen extends AbstractContainerScreen<ElectricHeater
         // "Target:" header
         graphics.text(this.font, "Target:", 6, 22, 0xFFAAAAAA, false);
 
+        // Line voltage · input current (right-aligned)
+        float volts = menu.getVoltage();
+        String lineStr = volts > 0f
+                ? ElectricUnits.formatVoltage(volts) + " · "
+                  + ElectricUnits.formatCurrent(ElectricUnits.current(menu.getInputWatts(), volts))
+                : Component.translatable("gui.omnitech.electric.no_supply").getString();
+        graphics.text(this.font, lineStr, LAYOUT.width - 6 - this.font.width(lineStr), 22,
+                volts > 0f ? 0xFF55FF55 : 0xFF888888, false);
+
         // Target temperature — centered in the display area between the buttons
         String targetStr = formatTemp(menu.getTargetTemp());
         int tw = this.font.width(targetStr);
@@ -128,12 +145,27 @@ public class ElectricHeaterScreen extends AbstractContainerScreen<ElectricHeater
         String curStr = "Current: " + formatTemp(menu.getCurrentTemp());
         graphics.text(this.font, curStr, 6, 51, heatColor(menu.getCurrentTemp()), false);
 
-        // EU/tick + buffer
-        String euStr = formatEuPerTick(menu.getEuPerTick());
-        graphics.text(this.font, euStr, 6, 62, 0xFF44AAFF, false);
-        String bufStr = String.format("%.0f/%.0f EU", menu.getEnergyStored(), menu.getMaxEu());
+        // Heating power at the target temperature + buffer
+        String powerStr = ElectricUnits.formatPowerPerTick(menu.getEuPerTick());
+        graphics.text(this.font, powerStr, 6, 62, 0xFF44AAFF, false);
+        String bufStr = ElectricUnits.formatEnergy(menu.getEnergyStored()) + " / "
+                + ElectricUnits.formatEnergy(menu.getMaxEu());
         int bx = LAYOUT.width - 6 - this.font.width(bufStr);
         graphics.text(this.font, bufStr, bx, 62, 0xFF888888, false);
+    }
+
+    @Override
+    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractTooltip(graphics, mouseX, mouseY);
+        int rx = mouseX - this.leftPos;
+        int ry = mouseY - this.topPos;
+        boolean overVoltage = ry >= 21 && ry < 31 && rx >= LAYOUT.width / 2 && rx < LAYOUT.width;
+        boolean overPower   = ry >= 61 && ry < 71 && rx >= 0 && rx < LAYOUT.width;
+        if (hoveredSlot == null && (overVoltage || overPower)) {
+            graphics.setTooltipForNextFrame(this.font,
+                    GuiLayoutRenderer.buildElectricTooltip(dataCtx), Optional.empty(),
+                    mouseX, mouseY);
+        }
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
@@ -147,12 +179,6 @@ public class ElectricHeaterScreen extends AbstractContainerScreen<ElectricHeater
         if (temp < 1_000)       return temp + " °C";
         if (temp < 1_000_000)   return String.format("%.1fk °C", temp / 1_000f);
         return String.format("%.2fM °C", temp / 1_000_000f);
-    }
-
-    private static String formatEuPerTick(float eu) {
-        if (eu < 1_000f)       return String.format("%.2f EU/t", eu);
-        if (eu < 1_000_000f)   return String.format("%.1fk EU/t", eu / 1_000f);
-        return String.format("%.2fM EU/t", eu / 1_000_000f);
     }
 
     private static int heatColor(float heat) {

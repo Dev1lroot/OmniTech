@@ -10,6 +10,8 @@ import com.dev1lroot.mcmods.omnitech.blocks.labware.ElectrolysisMachineBlockEnti
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiElementDef;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
+import com.dev1lroot.mcmods.omnitech.util.ElectricUnits;
+import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -34,7 +36,7 @@ public class ElectrolysisMachineMenu extends AbstractContainerMenu {
             FriendlyByteBuf extraData) {
         this(containerId, playerInventory,
                 playerInventory.player.level().getBlockEntity(extraData.readBlockPos()),
-                new SimpleContainerData(13));
+                new SimpleContainerData(18));
     }
 
     // Server constructor
@@ -100,6 +102,18 @@ public class ElectrolysisMachineMenu extends AbstractContainerMenu {
     public int getCathodeFluidCapacity() { return data.get(10); }
     public int getSolutionFluidAmount()  { return data.get(11); }
     public int getSolutionFluidCapacity(){ return data.get(12); }
+
+    // ── Electrical readings ──────────────────────────────────────────────────
+
+    /** Power received from the grid in W (1 s average). */
+    public float getInputWatts()  { return data.get(15); }
+    /** Line voltage at the input terminals in V (0 = no supply). */
+    public float getVoltage()     { return PowerMeter.decodeVolts(data.get(16)); }
+    /** Power consumed by the process in W (1 s average). */
+    public float getLoadWatts()   { return data.get(17); }
+    /** Power drawn while the machine is running, in W. */
+    public float getRatedWatts()  { return getCookTime() > 0
+            ? (float) ElectricUnits.toWatts(getEuPerRecipe() / getCookTime()) : 0f; }
 
     public float getCookProgressScaled() {
         int max = getCookTime();

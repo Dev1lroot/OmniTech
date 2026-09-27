@@ -33,7 +33,11 @@ public class ElectricChargerScreen extends AbstractContainerScreen<ElectricCharg
         this.dataCtx = new GuiDataContext()
                 .value("energy_stored",   menu::getEnergyStored)
                 .value("energy_max",      menu::getMaxEu)
-                .value("charge_progress", menu::getItemChargeScaled);
+                .value("charge_progress", menu::getItemChargeScaled)
+                .value("voltage",       menu::getVoltage)
+                .value("power_in",      menu::getInputWatts)
+                .value("power_load",    menu::getLoadWatts)
+                .value("rated_power",   menu::getRatedWatts);
     }
 
     @Override
@@ -48,5 +52,14 @@ public class ElectricChargerScreen extends AbstractContainerScreen<ElectricCharg
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractLabels(graphics, mouseX, mouseY);
         GuiLayoutRenderer.renderLabels(graphics, this.font, LAYOUT, dataCtx, LAYOUT.width);
+    }
+
+    @Override
+    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractTooltip(graphics, mouseX, mouseY);
+        if (hoveredSlot == null) {
+            GuiLayoutRenderer.setElectricTooltip(graphics, this.font, LAYOUT, dataCtx,
+                    mouseX, mouseY, this.leftPos, this.topPos, LAYOUT.width);
+        }
     }
 }

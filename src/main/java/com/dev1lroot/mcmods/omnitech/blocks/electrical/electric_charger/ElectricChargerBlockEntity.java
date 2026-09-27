@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_charger;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
+import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricChargerMenu;
 import com.dev1lroot.mcmods.omnitech.items.BoreItem;
 import net.minecraft.core.BlockPos;
@@ -48,6 +49,10 @@ public class ElectricChargerBlockEntity extends BaseContainerBlockEntity
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
     private float energyStored = 0f;
+    /** Energy received from the grid (with line voltage). */
+    private final PowerMeter inputMeter = new PowerMeter();
+    /** Energy consumed by the machine's own process. */
+    private final PowerMeter loadMeter  = new PowerMeter();
 
     protected final ContainerData dataAccess = new ContainerData() {
         @Override public int get(int index) {
@@ -62,13 +67,16 @@ public class ElectricChargerBlockEntity extends BaseContainerBlockEntity
                     ItemStack s = items.get(SLOT_ITEM);
                     yield s.getItem() instanceof BoreItem b ? b.maxEu : 0;
                 }
+                case 4 -> inputMeter.syncWatts();
+                case 5 -> inputMeter.syncDeciVolts();
+                case 6 -> loadMeter.syncWatts();
                 default -> 0;
             };
         }
         @Override public void set(int index, int value) {
             if (index == 0) energyStored = value / 10f;
         }
-        @Override public int getCount() { return 4; }
+        @Override public int getCount() { return 7; }
     };
 
     public ElectricChargerBlockEntity(BlockPos pos, BlockState state) {
@@ -92,10 +100,11 @@ public class ElectricChargerBlockEntity extends BaseContainerBlockEntity
     // ── IElectricReceiver ─────────────────────────────────────────────────────
 
     @Override
-    public float addElectricity(float amount) {
+    public float addElectricity(float amount, float volts) {
         float space = MAX_EU - energyStored;
-        if (space <= 0f) return 0f;
-        float accepted = Math.min(amount, space);
+        float accepted = Math.max(0f, Math.min(amount, space));
+        inputMeter.add(accepted, volts);
+        if (accepted <= 0f) return 0f;
         energyStored += accepted;
         setChanged();
         return accepted;
@@ -105,6 +114,8 @@ public class ElectricChargerBlockEntity extends BaseContainerBlockEntity
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
             ElectricChargerBlockEntity be) {
+        be.inputMeter.tick();
+        be.loadMeter.tick();
 
         boolean changed = false;
         ItemStack item = be.items.get(SLOT_ITEM);
@@ -119,6 +130,7 @@ public class ElectricChargerBlockEntity extends BaseContainerBlockEntity
                 if (toTransfer > 0) {
                     BoreItem.setEu(item, itemEu + toTransfer);
                     be.energyStored -= toTransfer;
+                    be.loadMeter.add(toTransfer);
                     changed = true;
                     charging = true;
                 }

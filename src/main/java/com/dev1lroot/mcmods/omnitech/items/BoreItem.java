@@ -5,6 +5,7 @@
 package com.dev1lroot.mcmods.omnitech.items;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
+import com.dev1lroot.mcmods.omnitech.util.ElectricUnits;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,7 +32,12 @@ import java.util.function.Consumer;
  */
 public class BoreItem extends Item {
 
+    /** Nominal voltage of the bore's battery pack. */
+    public static final float BATTERY_VOLTAGE = 48f;
+
+    /** Battery capacity in kJ. */
     public final int maxEu;
+    /** Energy in kJ spent per block mined. */
     public final int euPerBlock;
 
     public BoreItem(ToolMaterial material, int maxEu, int euPerBlock, Properties properties) {
@@ -120,9 +126,19 @@ public class BoreItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context,
             TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
-        tooltip.accept(Component.literal(getEu(stack) + " / " + maxEu + " EU")
+        int eu = getEu(stack);
+        int pct = maxEu > 0 ? Math.round(eu * 100f / maxEu) : 0;
+        tooltip.accept(Component.literal(ElectricUnits.formatEnergy(eu) + " / "
+                        + ElectricUnits.formatEnergy(maxEu) + " (" + pct + "%)")
                 .withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.literal("3×3 Tunnel Bore  (" + euPerBlock + " EU/block)")
+        // Battery pack: charge Q = E / U, shown in amp-hours (1 Ah = 3600 C)
+        double ampHours = ElectricUnits.toJoules(maxEu) / BATTERY_VOLTAGE / 3600.0;
+        tooltip.accept(Component.literal("Battery: " + ElectricUnits.formatVoltage(BATTERY_VOLTAGE)
+                        + ", " + ElectricUnits.formatSi(ampHours, "Ah")
+                        + " (" + ElectricUnits.formatKwh(maxEu) + ")")
+                .withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.literal("3×3 Tunnel Bore  ("
+                        + ElectricUnits.formatEnergy(euPerBlock) + "/block)")
                 .withStyle(ChatFormatting.DARK_GRAY));
     }
 }

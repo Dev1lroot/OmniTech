@@ -14,10 +14,34 @@
       "id": "energy_readout",
       "type": "energy_label",
       "x": 0,
-      "y": 58,
+      "y": 22,
       "centered": true,
       "color_active": "FF44AAFF",
       "color_inactive": "FF888888"
+    },
+    {
+      "id": "charge_readout",
+      "type": "power_label",
+      "x": 0,
+      "y": 38,
+      "centered": true,
+      "color_active": "FF55FF55",
+      "color_inactive": "FF888888",
+      "label": "gui.omnitech.electric.input",
+      "source": "power_in",
+      "voltage_source": "input_voltage"
+    },
+    {
+      "id": "discharge_readout",
+      "type": "power_label",
+      "x": 0,
+      "y": 50,
+      "centered": true,
+      "color_active": "FF44AAFF",
+      "color_inactive": "FF888888",
+      "label": "gui.omnitech.electric.output",
+      "source": "power_out",
+      "voltage_source": "voltage"
     }
   ]
 }

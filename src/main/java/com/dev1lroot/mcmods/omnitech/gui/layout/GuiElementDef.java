@@ -14,9 +14,17 @@ package com.dev1lroot.mcmods.omnitech.gui.layout;
  *   <li>{@code slot}        – renders a slot frame at {@code x},{@code y}.</li>
  *   <li>{@code progressbar} – renders a progress arrow. Needs {@code source} (0-100 float), {@code w}.</li>
  *   <li>{@code fluid_label} – renders a HudWriter label for a fluid. Needs {@code source}.</li>
- *   <li>{@code energy_label}   – renders "stored/max EU". Uses fixed data keys {@code energy_stored}/{@code energy_max}.</li>
- *   <li>{@code eu_cost_label}  – renders "X EU/cycle" hint. Uses fixed data key {@code eu_per_cycle}.</li>
+ *   <li>{@code energy_label}   – renders "stored / max" energy in SI units (kJ, MJ…).
+ *       Uses fixed data keys {@code energy_stored}/{@code energy_max} (kJ).</li>
+ *   <li>{@code eu_cost_label}  – renders "X kJ/cycle · Y kW" hint. Uses fixed data keys
+ *       {@code eu_per_cycle} (kJ) and optional {@code rated_power} (W).</li>
+ *   <li>{@code power_label}    – renders "[label] U V · I A · P W". Uses the voltage key named by
+ *       {@code voltage_source} (V, default {@code voltage}) and the power key named by
+ *       {@code source} (W, default {@code power_in}).</li>
  * </ul>
+ *
+ * <p>Hovering any of the three electric labels shows a detailed electrical tooltip
+ * (see {@link GuiLayoutRenderer#buildElectricTooltip}).
  */
 public class GuiElementDef {
 
@@ -62,6 +70,12 @@ public class GuiElementDef {
     public String  color_active   = "FF44AAFF";
     /** AARRGGBB hex — colour when energy == 0 (energy_label). */
     public String  color_inactive = "FF888888";
+
+    // ── power_label ──────────────────────────────────────────────────────────
+    /** Optional translation key rendered as a prefix, e.g. {@code "gui.omnitech.electric.input"}. */
+    public String  label          = "";
+    /** Data key of the voltage to show (V). */
+    public String  voltage_source = "voltage";
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 

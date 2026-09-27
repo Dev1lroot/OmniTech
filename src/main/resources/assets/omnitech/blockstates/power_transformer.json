@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "omnitech:block/power_transformer"
+    },
+    "facing=south": {
+      "model": "omnitech:block/power_transformer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "omnitech:block/power_transformer",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "omnitech:block/power_transformer",
+      "y": 90
+    },
+    "facing=up": {
+      "model": "omnitech:block/power_transformer",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "omnitech:block/power_transformer",
+      "x": 90
+    }
+  }
+}

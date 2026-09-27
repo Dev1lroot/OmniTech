@@ -5,15 +5,18 @@
 package com.dev1lroot.mcmods.omnitech.gui.layout;
 
 import com.dev1lroot.mcmods.omnitech.OmniTech;
+import com.dev1lroot.mcmods.omnitech.util.ElectricUnits;
 import com.dev1lroot.mcmods.omnitech.util.GuiUtil;
 import com.dev1lroot.mcmods.omnitech.util.HudWriter;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,9 +38,22 @@ import java.util.Optional;
  * <p><b>Background-pass elements</b> (non-text): {@code fluid_tank}, {@code slot},
  * {@code progressbar}.<br>
  * <b>Labels-pass elements</b> (text): {@code fluid_label}, {@code energy_label},
- * {@code eu_cost_label}.<br>
+ * {@code eu_cost_label}, {@code power_label}.<br>
  * <b>Tooltip-pass</b>: hover over any {@code fluid_tank} shows a MC-style tooltip
- * with the fluid name and fill level.
+ * with the fluid name and fill level; hover over an electric label shows the
+ * machine's electrical readings.
+ *
+ * <h3>Electric data keys</h3>
+ * All optional; the tooltip lists only the ones a screen registers.
+ * <ul>
+ *   <li>{@code energy_stored}, {@code energy_max} – kJ</li>
+ *   <li>{@code eu_per_cycle} – kJ per recipe</li>
+ *   <li>{@code voltage} – V (terminal / line voltage)</li>
+ *   <li>{@code input_voltage} – V (line voltage of the charging source, if it differs)</li>
+ *   <li>{@code power_in}, {@code power_out}, {@code power_load}, {@code power_gen},
+ *       {@code power_peak}, {@code power_loss}, {@code rated_power} – W</li>
+ *   <li>{@code capacitance} – F</li>
+ * </ul>
  */
 public final class GuiLayoutRenderer {
 
@@ -96,6 +112,7 @@ public final class GuiLayoutRenderer {
                 case "fluid_label"   -> renderFluidLabel  (graphics, font, el, ctx, imageWidth);
                 case "energy_label"  -> renderEnergyLabel (graphics, font, el, ctx, imageWidth);
                 case "eu_cost_label" -> renderEuCostLabel (graphics, font, el, ctx, imageWidth);
+                case "power_label"   -> renderPowerLabel  (graphics, font, el, ctx, imageWidth);
             }
         }
     }
@@ -143,6 +160,124 @@ public final class GuiLayoutRenderer {
         return false;
     }
 
+    /**
+     * If the mouse is over an {@code energy_label}, {@code eu_cost_label} or
+     * {@code power_label}, schedules the electrical tooltip. Call like
+     * {@link #setFluidTooltip}.
+     *
+     * @return {@code true} if a tooltip was queued
+     */
+    public static boolean setElectricTooltip(GuiGraphicsExtractor graphics, Font font,
+            GuiLayout layout, GuiDataContext ctx,
+            int mouseX, int mouseY, int guiLeft, int guiTop, int imageWidth) {
+
+        for (GuiElementDef el : layout.elements) {
+            switch (el.type) {
+                case "energy_label", "eu_cost_label", "power_label" -> {}
+                default -> { continue; }
+            }
+            int ex = guiLeft + (el.centered ? 0 : el.x);
+            int ew = el.centered ? imageWidth : (el.w > 0 ? el.w : imageWidth - el.x);
+            int ey = guiTop + el.y;
+            if (mouseX < ex || mouseX >= ex + ew) continue;
+            if (mouseY < ey - 1 || mouseY >= ey + 9) continue;
+
+            graphics.setTooltipForNextFrame(font, buildElectricTooltip(ctx), Optional.empty(),
+                    mouseX, mouseY);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Builds the electrical readout tooltip from whichever electric data keys
+     * {@code ctx} provides (see class docs). Usable by hand-drawn screens too.
+     */
+    public static List<Component> buildElectricTooltip(GuiDataContext ctx) {
+        List<Component> lines = new ArrayList<>();
+        lines.add(Component.translatable("gui.omnitech.electric.header")
+                .withStyle(ChatFormatting.YELLOW));
+
+        float volts = ctx.getFloat("voltage");
+
+        if (ctx.has("energy_stored") && ctx.has("energy_max")) {
+            float stored = ctx.getFloat("energy_stored");
+            float max    = ctx.getFloat("energy_max");
+            int   pct    = max > 0f ? Math.round(stored * 100f / max) : 0;
+            lines.add(line("gui.omnitech.electric.stored",
+                    ElectricUnits.formatEnergy(stored) + " / " + ElectricUnits.formatEnergy(max)
+                            + " (" + pct + "%)"));
+            lines.add(Component.literal("  " + ElectricUnits.formatKwh(stored) + " / "
+                    + ElectricUnits.formatKwh(max)).withStyle(ChatFormatting.DARK_GRAY));
+        }
+        if (ctx.has("capacitance")) {
+            lines.add(line("gui.omnitech.electric.capacitance",
+                    ElectricUnits.formatCapacitance(ctx.getFloat("capacitance"))));
+        }
+        if (ctx.has("voltage")) {
+            lines.add(volts > 0f
+                    ? line("gui.omnitech.electric.voltage", ElectricUnits.formatVoltage(volts))
+                    : line("gui.omnitech.electric.voltage",
+                            Component.translatable("gui.omnitech.electric.no_supply").getString()));
+        }
+
+        powerLine(lines, ctx, "power_peak", "gui.omnitech.electric.peak",      -1f);
+        powerLine(lines, ctx, "power_gen",  "gui.omnitech.electric.generated", -1f);
+        powerLine(lines, ctx, "power_in",   "gui.omnitech.electric.input",
+                ctx.has("input_voltage") ? ctx.getFloat("input_voltage") : volts);
+        powerLine(lines, ctx, "power_out",  "gui.omnitech.electric.output", volts);
+        powerLine(lines, ctx, "power_load", "gui.omnitech.electric.load",   -1f);
+        powerLine(lines, ctx, "power_loss", "gui.omnitech.electric.losses", -1f);
+
+        if (ctx.has("rated_power") && ctx.getFloat("rated_power") > 0f) {
+            float rated = ctx.getFloat("rated_power");
+            lines.add(line("gui.omnitech.electric.rated", ElectricUnits.formatPower(rated)));
+            if (volts > 0f) {
+                lines.add(line("gui.omnitech.electric.rated_current",
+                        ElectricUnits.formatCurrent(ElectricUnits.current(rated, volts))));
+                lines.add(line("gui.omnitech.electric.resistance",
+                        ElectricUnits.formatResistance(ElectricUnits.resistance(rated, volts))));
+            }
+        }
+        if (ctx.has("eu_per_cycle") && ctx.getFloat("eu_per_cycle") > 0f) {
+            lines.add(line("gui.omnitech.electric.per_cycle",
+                    ElectricUnits.formatEnergy(ctx.getFloat("eu_per_cycle"))));
+        }
+
+        // Time to full / empty from the net power flow into the buffer
+        if (ctx.has("energy_stored") && ctx.has("energy_max")) {
+            double net = ctx.getFloat("power_in") - ctx.getFloat("power_out")
+                    - ctx.getFloat("power_load") - ctx.getFloat("power_loss");
+            float stored = ctx.getFloat("energy_stored");
+            float max    = ctx.getFloat("energy_max");
+            if (net > 1.0 && stored < max) {
+                double s = ElectricUnits.toJoules(max - stored) / net;
+                lines.add(line("gui.omnitech.electric.time_full", ElectricUnits.formatDuration(s)));
+            } else if (net < -1.0 && stored > 0f) {
+                double s = ElectricUnits.toJoules(stored) / -net;
+                lines.add(line("gui.omnitech.electric.time_empty", ElectricUnits.formatDuration(s)));
+            }
+        }
+        return lines;
+    }
+
+    /** "Label: P (I)" — current shown only when {@code volts} > 0. */
+    private static void powerLine(List<Component> lines, GuiDataContext ctx, String key,
+            String labelKey, float volts) {
+        if (!ctx.has(key)) return;
+        float watts = ctx.getFloat(key);
+        String value = ElectricUnits.formatPower(watts);
+        if (volts > 0f && watts > 0f) {
+            value += "  (" + ElectricUnits.formatCurrent(ElectricUnits.current(watts, volts)) + ")";
+        }
+        lines.add(line(labelKey, value));
+    }
+
+    private static Component line(String labelKey, String value) {
+        return Component.translatable(labelKey).withStyle(ChatFormatting.GRAY)
+                .append(Component.literal(" " + value).withStyle(ChatFormatting.WHITE));
+    }
+
     // ── Private helpers ───────────────────────────────────────────────────────
 
     private static void renderFluidLabel(GuiGraphicsExtractor graphics, Font font,
@@ -176,7 +311,7 @@ public final class GuiLayoutRenderer {
 
         float stored = ctx.getFloat("energy_stored");
         float max    = ctx.getFloat("energy_max");
-        String text  = String.format("%.0f/%.0f EU", stored, max);
+        String text  = ElectricUnits.formatEnergy(stored) + " / " + ElectricUnits.formatEnergy(max);
         int color    = stored > 0f ? el.getColorActive() : el.getColorInactive();
         int x        = el.centered ? (imageWidth - font.width(text)) / 2 : el.x;
         graphics.text(font, text, x, el.y, color, false);
@@ -187,8 +322,37 @@ public final class GuiLayoutRenderer {
 
         float cost = ctx.getFloat("eu_per_cycle");
         if (cost <= 0f) return;
-        String text = String.format("%.0f EU/cycle", cost);
+        String text = ElectricUnits.formatEnergy(cost) + "/cycle";
+        float rated = ctx.getFloat("rated_power");
+        if (rated > 0f) text += " · " + ElectricUnits.formatPower(rated);
         int x       = el.centered ? (imageWidth - font.width(text)) / 2 : el.x;
         graphics.text(font, text, x, el.y, el.getColor(), false);
+    }
+
+    private static void renderPowerLabel(GuiGraphicsExtractor graphics, Font font,
+            GuiElementDef el, GuiDataContext ctx, int imageWidth) {
+
+        float volts = ctx.getFloat(el.voltage_source.isEmpty() ? "voltage" : el.voltage_source);
+        float watts = ctx.getFloat(el.source.isEmpty() ? "power_in" : el.source);
+        String text = powerLineText(el.label, volts, watts);
+        int color   = volts > 0f && watts > 0f ? el.getColorActive() : el.getColorInactive();
+        int x = el.centered ? (imageWidth - font.width(text)) / 2 : el.x;
+        graphics.text(font, text, x, el.y, color, false);
+    }
+
+    /**
+     * Formats a one-line power readout: {@code "[label] 400 V · 50.0 A · 20.0 kW"},
+     * or {@code "[label] No supply"} when {@code volts} is 0.
+     *
+     * @param labelKey translation key of the prefix, or empty for none
+     */
+    public static String powerLineText(String labelKey, float volts, float watts) {
+        String prefix = labelKey.isEmpty() ? "" : Component.translatable(labelKey).getString() + " ";
+        if (volts <= 0f) {
+            return prefix + Component.translatable("gui.omnitech.electric.no_supply").getString();
+        }
+        return prefix + ElectricUnits.formatVoltage(volts) + " · "
+                + ElectricUnits.formatCurrent(ElectricUnits.current(watts, volts)) + " · "
+                + ElectricUnits.formatPower(watts);
     }
 }

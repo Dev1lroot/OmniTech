@@ -7,6 +7,8 @@ package com.dev1lroot.mcmods.omnitech.jei;
 import com.dev1lroot.mcmods.omnitech.OmniTech;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
+import com.dev1lroot.mcmods.omnitech.blocks.labware.ElectrolysisMachineBlockEntity;
+import com.dev1lroot.mcmods.omnitech.util.ElectricUnits;
 import com.dev1lroot.mcmods.omnitech.recipes.AlloyFurnaceRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.AlloyFurnaceRecipeManager;
 import com.dev1lroot.mcmods.omnitech.recipes.BoilingRecipe;
@@ -220,7 +222,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
                 Component.translatable("jei.omnitech.info.mold_culture"));
         registration.addItemStackInfo(new ItemStack(OmniTechBlocks.PRESS.get()),
                 Component.translatable("jei.omnitech.info.press"));
-        for (String id : List.of("lactic_acid_bacteria", "cheese_curd", "ricotta", "grapes", "mother_of_vinegar", "drinking_bottle", "lemon", "citric_acid")) {
+        for (String id : List.of("lactic_acid_bacteria", "cheese_curd", "ricotta", "grapes", "mother_of_vinegar", "drinking_bottle", "lemon", "citric_acid", "beeswax")) {
             registration.addItemStackInfo(new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.fromNamespaceAndPath(OmniTech.MODID, id))),
                     Component.translatable("jei.omnitech.info." + id));
         }
@@ -243,7 +245,8 @@ public class OmniTechJeiPlugin implements IModPlugin {
         registration.addCraftingStation(FLUID_FILLER,            OmniTechBlocks.FLUID_FILLER.get());
         registration.addCraftingStation(FLUID_FILLER,            OmniTechBlocks.FLUID_TANK.get());
         registration.addCraftingStation(FILTER_PRESS,            OmniTechBlocks.FILTER_PRESS.get());
-        registration.addCraftingStation(SOLID_FORM,              OmniTechBlocks.MANUAL_CENTRIFUGE.get());
+        registration.addCraftingStation(SOLID_FORM,              OmniTechBlocks.MANUAL_CENTRIFUGE.get(),
+                                                                 OmniTechBlocks.FILTER_PRESS.get());
         registration.addCraftingStation(BOILING,                 OmniTechBlocks.BOILER.get());
         registration.addCraftingStation(PRESS,                   OmniTechBlocks.PRESS.get());
         registration.addCraftingStation(GLASS_BLOWING,           OmniTechBlocks.GLASS_BLOWING_STATION.get());
@@ -562,7 +565,10 @@ public class OmniTechJeiPlugin implements IModPlugin {
         public void draw(ElectrolysisRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
             Font font = Minecraft.getInstance().font;
             arrow.draw(graphics, 60, 12);
-            graphics.text(font, recipe.getEnergyRequired() + " EU", 0, 48, 0x555555, false);
+            graphics.text(font, ElectricUnits.formatEnergy(recipe.getEnergyRequired())
+                    + " · " + ElectricUnits.formatPowerPerTick(
+                            recipe.getEnergyRequired() / ElectrolysisMachineBlockEntity.COOK_TIME),
+                    0, 48, 0x555555, false);
         }
     }
 
@@ -862,7 +868,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
 
         @Override public IRecipeType<PressRecipe> getRecipeType() { return PRESS; }
         @Override public Component getTitle() { return Component.translatable("jei.omnitech.press"); }
-        @Override public int getWidth()  { return 140; }
+        @Override public int getWidth()  { return 160; }
         @Override public int getHeight() { return 65; }
         @Override public IDrawable getIcon() { return icon; }
 
@@ -881,9 +887,18 @@ public class OmniTechJeiPlugin implements IModPlugin {
                 }
             }
 
-            FluidStack juice = recipe.getOutputFluid();
-            if (!juice.isEmpty())
-                fluidSlot(builder, RecipeIngredientRole.OUTPUT, 106, 2, juice.getFluid(), juice.getAmount());
+            // A mixture output shows each component side by side, undissolved ones marked
+            var parts = recipe.getOutputComponents();
+            boolean mixture = parts.size() > 1 || (parts.size() == 1 && !parts.get(0).dissolved());
+            for (int i = 0; i < parts.size(); i++) {
+                var p = parts.get(i);
+                Component note = !mixture ? null
+                        : Component.translatable(p.dissolved() ? "jei.omnitech.press.mixture_part"
+                                                               : "jei.omnitech.press.mixture_suspended")
+                                   .withStyle(ChatFormatting.GRAY);
+                if (note == null) fluidSlot(builder, RecipeIngredientRole.OUTPUT, 106 + i * 18, 2, p.fluid(), p.amount());
+                else              fluidSlot(builder, RecipeIngredientRole.OUTPUT, 106 + i * 18, 2, p.fluid(), p.amount(), note);
+            }
         }
 
         @Override

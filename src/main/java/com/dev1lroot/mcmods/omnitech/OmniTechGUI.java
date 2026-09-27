@@ -24,6 +24,7 @@ import com.dev1lroot.mcmods.omnitech.gui.ElectricChargerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ChemicalInfuserScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ExtractorScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricCapacitorScreen;
+import com.dev1lroot.mcmods.omnitech.gui.PowerTransformerScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricEngineScreen;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricFurnaceScreen;
 import com.dev1lroot.mcmods.omnitech.gui.FoundryScreen;
@@ -83,6 +84,7 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.ASSEMBLER.get(), AssemblerScreen::new);
         event.register(OmniTechMenuTypes.REACTOR.get(), ReactorScreen::new);
         event.register(OmniTechMenuTypes.ELECTRIC_CAPACITOR.get(), ElectricCapacitorScreen::new);
+        event.register(OmniTechMenuTypes.POWER_TRANSFORMER.get(), PowerTransformerScreen::new);
         event.register(OmniTechMenuTypes.ELECTRIC_FURNACE.get(), ElectricFurnaceScreen::new);
         event.register(OmniTechMenuTypes.SOLAR_PANEL.get(), SolarPanelScreen::new);
         event.register(OmniTechMenuTypes.SOLVATION_MACHINE.get(), SolvationMachineScreen::new);

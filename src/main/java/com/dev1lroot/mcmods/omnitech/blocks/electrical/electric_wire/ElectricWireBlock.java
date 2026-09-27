@@ -112,7 +112,9 @@ public class ElectricWireBlock extends Block {
         if (neighborState.getBlock() instanceof PowerRelayBlock)
             return PowerRelayBlock.allowsConnection(neighborState, fromWireToNeighbor);
         BlockEntity be = level.getBlockEntity(neighborPos);
-        return be instanceof IElectricReceiver || be instanceof IElectricSupplier;
+        Direction neighborFace = fromWireToNeighbor.getOpposite();
+        return (be instanceof IElectricReceiver r && r.acceptsElectricityFrom(neighborFace))
+            || (be instanceof IElectricSupplier s && s.outputsElectricityTo(neighborFace));
     }
 
     /** Recomputes all 6 connection properties from the current level state. */

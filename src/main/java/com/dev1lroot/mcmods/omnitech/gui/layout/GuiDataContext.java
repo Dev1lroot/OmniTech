@@ -85,6 +85,11 @@ public class GuiDataContext {
         return e != null ? e.capacity().getAsInt() : 0;
     }
 
+    /** Whether a float value with this key has been registered. */
+    public boolean has(String id) {
+        return floats.containsKey(id);
+    }
+
     public float getFloat(String id) {
         Supplier<Float> s = floats.get(id);
         return s != null ? s.get() : 0f;

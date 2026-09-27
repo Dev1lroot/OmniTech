@@ -63,6 +63,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.logistic.conveyor_belt.ConveyorBeltB
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.crank.CrankBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.pressure.decompressor.DecompressorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_capacitor.ElectricCapacitorBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_transformer.PowerTransformerBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_charger.ElectricChargerBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_engine.ElectricEngineBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.assembler.AssemblerBlock;
@@ -160,6 +161,7 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> ELECTRIC_ENGINE_STATOR;
     public static final DeferredBlock<Block> POWER_RELAY;
     public static final DeferredBlock<Block> ELECTRIC_CAPACITOR;
+    public static final DeferredBlock<Block> POWER_TRANSFORMER;
     public static final DeferredBlock<Block> ELECTRIC_WIRE;
     public static final DeferredBlock<Block> ELECTRIC_FURNACE;
     public static final DeferredBlock<Block> SOLAR_PANEL;
@@ -355,6 +357,9 @@ public class OmniTechBlocks {
         ELECTRIC_CAPACITOR = register("electric_capacitor",
                 p -> new ElectricCapacitorBlock(p.mapColor(MapColor.METAL).strength(3.0F)
                         .sound(SoundType.METAL)));
+        POWER_TRANSFORMER = register("power_transformer",
+                p -> new PowerTransformerBlock(p.mapColor(MapColor.METAL).strength(3.5F)
+                        .sound(SoundType.METAL).requiresCorrectToolForDrops()));
         ELECTRIC_WIRE = register("electric_wire",
                 p -> new ElectricWireBlock(p.mapColor(MapColor.METAL).strength(1.5F)
                         .sound(SoundType.METAL).noOcclusion()

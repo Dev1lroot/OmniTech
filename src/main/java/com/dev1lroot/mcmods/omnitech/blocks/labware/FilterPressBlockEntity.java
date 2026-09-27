@@ -12,6 +12,7 @@ import com.dev1lroot.mcmods.omnitech.items.MixtureDustItem;
 import com.dev1lroot.mcmods.omnitech.items.Solution;
 import com.dev1lroot.mcmods.omnitech.recipes.FilterPressRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.FilterPressRecipeManager;
+import com.dev1lroot.mcmods.omnitech.recipes.SolidFormManager;
 import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.util.SolutionFluids;
 import net.minecraft.core.BlockPos;
@@ -48,7 +49,9 @@ import org.jspecify.annotations.Nullable;
  *
  * <p>A plain fluid is pressed by its {@link FilterPressRecipe}. A <em>mixture</em> needs no recipe:
  * every undissolved solid in it is caught and pressed into Mixture Dust (to be separated in a
- * Manual Centrifuge), and the dissolved rest runs on as filtrate.
+ * Manual Centrifuge), and the dissolved rest runs on as filtrate. When everything caught is one
+ * pure ingredient with a {@link SolidFormManager solid form} (e.g. beeswax strained out of raw
+ * honey), it comes out directly as that item instead.
  *
  * <p>Orientation matches Solvation: {@code FACING} is the fluid-input face, the opposite face is
  * fluid-output. The filtered-out item collects in {@link #SLOT_OUTPUT_ITEM} for the player (or a
@@ -215,7 +218,7 @@ public class FilterPressBlockEntity extends BaseContainerBlockEntity
         if (straining) {
             if (!SolutionFluids.isMixture(inputFluid)) return false;
             // Caught solids must have somewhere to go before more are caught
-            if (dustBuffer.totalAmount() >= MixtureDustItem.UNIT) return false;
+            if (dustBuffer.totalAmount() >= outputUnit()) return false;
             int filtrate = liquidPart(strainBatch()).totalAmount();
             return filtrate == 0 || (OUTPUT_TANK_CAPACITY - outputFluid.getAmount()) >= filtrate;
         }
@@ -278,12 +281,43 @@ public class FilterPressBlockEntity extends BaseContainerBlockEntity
     }
 
     /**
-     * Presses whole {@value MixtureDustItem#UNIT} mB portions of the caught solids into Mixture
-     * Dust while the output slot takes them; a smaller remainder waits for the next batch.
+     * The solid form of the caught solids if they are a single pure ingredient that has one
+     * (they then leave as that item), otherwise {@code null} (they leave as Mixture Dust).
+     */
+    private SolidFormManager.@Nullable SolidForm pureSolidForm() {
+        if (dustBuffer.components().size() != 1) return null;
+        return SolidFormManager.find(dustBuffer.components().get(0).fluid());
+    }
+
+    /** mB of caught solids that make one output item. */
+    private int outputUnit() {
+        SolidFormManager.SolidForm form = pureSolidForm();
+        return form != null ? form.amount() : MixtureDustItem.UNIT;
+    }
+
+    /**
+     * Presses the caught solids into items while the output slot takes them: whole solid-form
+     * portions of a pure ingredient (e.g. 75 mB beeswax → 1 Beeswax), otherwise whole
+     * {@value MixtureDustItem#UNIT} mB portions of Mixture Dust. A smaller remainder waits for
+     * the next batch.
      */
     private boolean flushDust() {
         boolean changed = false;
-        while (dustBuffer.totalAmount() >= MixtureDustItem.UNIT) {
+        SolidFormManager.SolidForm form;
+        while ((form = pureSolidForm()) != null && dustBuffer.totalAmount() >= form.amount()) {
+            ItemStack item = form.stack();
+            ItemStack slot = items.get(SLOT_OUTPUT_ITEM);
+            if (slot.isEmpty()) {
+                items.set(SLOT_OUTPUT_ITEM, item);
+            } else if (ItemStack.isSameItemSameComponents(slot, item) && slot.getCount() < slot.getMaxStackSize()) {
+                slot.grow(1);
+            } else {
+                break;
+            }
+            dustBuffer = dustBuffer.minus(form.fluid(), form.amount());
+            changed = true;
+        }
+        while (pureSolidForm() == null && dustBuffer.totalAmount() >= MixtureDustItem.UNIT) {
             Solution portion = dustBuffer.scaledTo(MixtureDustItem.UNIT);
             ItemStack dust = MixtureDustItem.of(portion);
             ItemStack slot = items.get(SLOT_OUTPUT_ITEM);

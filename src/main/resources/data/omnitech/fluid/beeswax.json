@@ -1,0 +1,22 @@
+{
+  "density": 960,
+  "viscosity": 1500,
+  "temperature": 20,
+  "min_temp": -40,
+  "max_temp": 400,
+  "min_pressure": 0,
+  "max_pressure": 200000,
+  "world_placeable": false,
+  "flammable": true,
+  "polarity": "nonpolar",
+  "phase_diagram": {
+    "melting_point": 63,
+    "boiling_point": 360,
+    "boiling_slope": 40,
+    "critical_temp": 700,
+    "critical_pressure": 1500,
+    "triple_point_temp": 63,
+    "triple_point_pressure": 1,
+    "has_solid": true
+  }
+}

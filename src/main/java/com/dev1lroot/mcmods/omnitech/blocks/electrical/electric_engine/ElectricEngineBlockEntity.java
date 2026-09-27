@@ -11,6 +11,8 @@ import com.dev1lroot.mcmods.omnitech.io.IKineticReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IKineticSupplier;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricEngineMenu;
 import com.dev1lroot.mcmods.omnitech.util.ElectricNetworkUtil;
+import com.dev1lroot.mcmods.omnitech.util.ElectricUnits;
+import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
 import com.dev1lroot.mcmods.omnitech.util.KineticNetworkUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,40 +31,48 @@ import net.minecraft.world.level.storage.ValueOutput;
 /**
  * Block entity for the Electric Engine — bidirectional converter.
  *
- * <h3>Forward mode (KF → EU, default)</h3>
+ * <p>Energy is in kJ (1 kJ/tick = 20 kW, see {@link ElectricUnits}).
+ *
+ * <h3>Forward mode (KF → electricity, default) — generator</h3>
  * <ul>
  *   <li>Accepts KF from the {@code FACING} face (IKineticReceiver, demand 1.0 KF).</li>
- *   <li>Pushes {@value #EU_OUTPUT} EU/tick to the 5 non-facing electric faces.</li>
+ *   <li>Pushes {@value #EU_OUTPUT} kJ/tick (18 kW) at {@value #LINE_VOLTAGE} V
+ *       to the 5 non-facing electric faces.</li>
  * </ul>
  *
- * <h3>Reverse mode (EU → KF)</h3>
+ * <h3>Reverse mode (electricity → KF) — motor</h3>
  * <ul>
- *   <li>Accepts EU from the 5 non-facing electric faces (IElectricReceiver).</li>
- *   <li>Buffers EU; while buffer ≥ {@value #EU_CONSUME} per tick, consumes it
+ *   <li>Accepts energy from the 5 non-facing electric faces (IElectricReceiver).</li>
+ *   <li>Buffers it; while buffer ≥ {@value #EU_CONSUME} kJ per tick (20 kW), consumes it
  *       and pushes {@value #KF_OUTPUT} KF to the {@code FACING} face (IKineticSupplier).</li>
  * </ul>
  *
- * <h3>ContainerData layout (4 slots)</h3>
+ * <h3>ContainerData layout (6 slots)</h3>
  * <ul>
  *   <li>0 – powered (1 = active, 0 = idle)</li>
  *   <li>1 – forward: lastKfAmount × 100; reverse: euBuffer × 10</li>
  *   <li>2 – forward: EU_OUTPUT × 10 when active; reverse: KF_OUTPUT × 100 when active</li>
  *   <li>3 – mode (0 = forward KF→EU, 1 = reverse EU→KF)</li>
+ *   <li>4 – electric power at the terminals in W (delivered or drawn, 1 s average)</li>
+ *   <li>5 – terminal voltage × 10</li>
  * </ul>
  */
 public class ElectricEngineBlockEntity extends BaseContainerBlockEntity
         implements IKineticReceiver, IElectricSupplier, IElectricReceiver, IKineticSupplier {
 
-    /** EU produced per tick in forward mode (KF → EU). 10 % conversion loss. */
+    /** Generator output voltage (forward mode). */
+    public static final float LINE_VOLTAGE = ElectricUnits.GRID_VOLTAGE;
+
+    /** kJ produced per tick in forward mode (KF → EU). 10 % conversion loss. */
     public static final float EU_OUTPUT = 0.9f;
 
-    /** EU consumed per tick in reverse mode (EU → KF). */
+    /** kJ consumed per tick in reverse mode (EU → KF). */
     public static final float EU_CONSUME = 1.0f;
 
     /** KF produced per tick in reverse mode (EU → KF). 10 % conversion loss. */
     public static final float KF_OUTPUT = 0.9f;
 
-    /** Max EU the engine can buffer in reverse mode (10 ticks). */
+    /** Max kJ the engine can buffer in reverse mode (10 ticks). */
     public static final float MAX_EU_BUFFER = 10f;
 
     /** Propagate electricity every N ticks to reduce BFS overhead. */
@@ -77,8 +87,11 @@ public class ElectricEngineBlockEntity extends BaseContainerBlockEntity
     /** KF units received last network clock (forward mode display). */
     private float lastKfAmount = 0f;
 
-    /** EU buffered for conversion (reverse mode). */
+    /** kJ buffered for conversion (reverse mode). */
     private float euBuffer = 0f;
+
+    /** Electric terminal meter — output in forward mode, input in reverse mode. */
+    private final PowerMeter electricMeter = new PowerMeter();
 
     /** true = reverse mode (EU→KF); false = forward mode (KF→EU, default). */
     private boolean reverseMode = false;
@@ -94,6 +107,8 @@ public class ElectricEngineBlockEntity extends BaseContainerBlockEntity
                         ? (reverseMode ? (int)(KF_OUTPUT * 100f) : (int)(EU_OUTPUT * 10f))
                         : 0;
                 case 3 -> reverseMode ? 1 : 0;
+                case 4 -> electricMeter.syncWatts();
+                case 5 -> electricMeter.syncDeciVolts();
                 default -> 0;
             };
         }
@@ -107,7 +122,7 @@ public class ElectricEngineBlockEntity extends BaseContainerBlockEntity
                 case 3 -> reverseMode = value == 1;
             }
         }
-        @Override public int getCount() { return 4; }
+        @Override public int getCount() { return 6; }
     };
 
     public ElectricEngineBlockEntity(BlockPos pos, BlockState state) {
@@ -151,17 +166,34 @@ public class ElectricEngineBlockEntity extends BaseContainerBlockEntity
         return (!reverseMode && isPowered()) ? EU_OUTPUT : 0f;
     }
 
+    @Override
+    public float getSupplyVoltage() {
+        return (!reverseMode && isPowered()) ? LINE_VOLTAGE : 0f;
+    }
+
     // ── IElectricReceiver (reverse mode only) ─────────────────────────────────
 
     @Override
-    public float addElectricity(float amount) {
+    public float addElectricity(float amount, float volts) {
         if (!reverseMode) return 0f;   // reject EU in forward mode
         float space = MAX_EU_BUFFER - euBuffer;
-        if (space <= 0f) return 0f;
-        float accepted = Math.min(amount, space);
+        float accepted = Math.max(0f, Math.min(amount, space));
+        electricMeter.add(accepted, volts);
+        if (accepted <= 0f) return 0f;
         euBuffer += accepted;
         setChanged();
         return accepted;
+    }
+
+    /** Electric terminals are the 5 non-front faces; the front is the kinetic shaft. */
+    @Override
+    public boolean acceptsElectricityFrom(Direction side) {
+        return side != getBlockState().getValue(ElectricEngineBlock.FACING);
+    }
+
+    @Override
+    public boolean outputsElectricityTo(Direction side) {
+        return side != getBlockState().getValue(ElectricEngineBlock.FACING);
     }
 
     // ── IKineticSupplier (reverse mode only) ──────────────────────────────────
@@ -187,6 +219,7 @@ public class ElectricEngineBlockEntity extends BaseContainerBlockEntity
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
             ElectricEngineBlockEntity be) {
+        be.electricMeter.tick();
         if (be.reverseMode) {
             tickReverse(level, pos, state, be);
         } else {
@@ -223,8 +256,9 @@ public class ElectricEngineBlockEntity extends BaseContainerBlockEntity
         if (be.clockCounter >= CLOCK_INTERVAL) {
             be.clockCounter = 0;
             Direction front = state.getValue(ElectricEngineBlock.FACING);
-            ElectricNetworkUtil.propagateElectricity(
-                    level, pos, EU_OUTPUT * CLOCK_INTERVAL, outputFaces(front));
+            float delivered = ElectricNetworkUtil.propagateElectricity(
+                    level, pos, EU_OUTPUT * CLOCK_INTERVAL, LINE_VOLTAGE, outputFaces(front));
+            be.electricMeter.add(delivered, LINE_VOLTAGE);
         }
     }
 

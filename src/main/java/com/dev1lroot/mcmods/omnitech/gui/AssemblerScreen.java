@@ -33,7 +33,11 @@ public class AssemblerScreen extends AbstractContainerScreen<AssemblerMenu> {
                 .value("craft_progress", menu::getCraftProgressScaled)
                 .value("energy_stored",  menu::getEnergyStored)
                 .value("energy_max",     menu::getMaxEu)
-                .value("eu_per_cycle",   menu::getEuPerRecipe);
+                .value("eu_per_cycle",   menu::getEuPerRecipe)
+                .value("voltage",       menu::getVoltage)
+                .value("power_in",      menu::getInputWatts)
+                .value("power_load",    menu::getLoadWatts)
+                .value("rated_power",   menu::getRatedWatts);
     }
 
     @Override
@@ -48,5 +52,14 @@ public class AssemblerScreen extends AbstractContainerScreen<AssemblerMenu> {
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractLabels(graphics, mouseX, mouseY);
         GuiLayoutRenderer.renderLabels(graphics, this.font, LAYOUT, dataCtx, LAYOUT.width);
+    }
+
+    @Override
+    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractTooltip(graphics, mouseX, mouseY);
+        if (hoveredSlot == null) {
+            GuiLayoutRenderer.setElectricTooltip(graphics, this.font, LAYOUT, dataCtx,
+                    mouseX, mouseY, this.leftPos, this.topPos, LAYOUT.width);
+        }
     }
 }

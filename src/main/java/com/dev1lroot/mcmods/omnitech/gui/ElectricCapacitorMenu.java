@@ -8,6 +8,8 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
+import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_capacitor.ElectricCapacitorBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -26,7 +28,7 @@ public class ElectricCapacitorMenu extends AbstractContainerMenu {
     public ElectricCapacitorMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
         this(containerId, playerInventory,
                 playerInventory.player.level().getBlockEntity(extraData.readBlockPos()),
-                new SimpleContainerData(2));
+                new SimpleContainerData(5));
     }
 
     /** Server-side constructor. */
@@ -42,10 +44,20 @@ public class ElectricCapacitorMenu extends AbstractContainerMenu {
         layout.addPlayerInventory(playerInventory, this::addSlot);
     }
 
-    /** Stored EU (0..maxEu). */
+    /** Stored energy in kJ (0..maxEu). */
     public int getStoredEu()  { return data.get(0); }
-    /** Maximum EU. */
+    /** Capacity in kJ. */
     public int getMaxEu()     { return data.get(1); }
+    /** Charging power in W (1 s average). */
+    public float getInputWatts()   { return data.get(2); }
+    /** Discharging power in W (1 s average). */
+    public float getOutputWatts()  { return data.get(3); }
+    /** Line voltage of the charging source in V. */
+    public float getInputVoltage() { return PowerMeter.decodeVolts(data.get(4)); }
+    /** Terminal voltage across the plates in V, from E = ½·C·U². */
+    public float getVoltage() {
+        return ElectricCapacitorBlockEntity.terminalVoltage(getStoredEu(), getMaxEu());
+    }
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) { return ItemStack.EMPTY; }

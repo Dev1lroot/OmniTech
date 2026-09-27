@@ -9,6 +9,7 @@ import com.dev1lroot.mcmods.omnitech.OmniTechMenuTypes;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_engine.ElectricEngineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
+import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -28,6 +29,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
  *   <li>1 – forward: lastKfAmount × 100; reverse: euBuffer × 10</li>
  *   <li>2 – forward: EU/tick × 10 when active; reverse: KF output × 100 when active</li>
  *   <li>3 – mode (0 = forward KF→EU, 1 = reverse EU→KF)</li>
+ *   <li>4 – electric terminal power in W (1 s average)</li>
+ *   <li>5 – terminal voltage × 10</li>
  * </ul>
  *
  * <h3>Button IDs</h3>
@@ -43,7 +46,7 @@ public class ElectricEngineMenu extends AbstractContainerMenu {
     public ElectricEngineMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
         this(containerId, playerInventory,
                 playerInventory.player.level().getBlockEntity(extraData.readBlockPos()),
-                new SimpleContainerData(4));
+                new SimpleContainerData(6));
     }
 
     /** Server-side constructor. */
@@ -75,6 +78,12 @@ public class ElectricEngineMenu extends AbstractContainerMenu {
     public float getEuBuffer()   { return data.get(1) / 10f; }
     /** KF output (decoded from fixed-point ×100). Only meaningful in reverse mode. */
     public float getKfOutput()   { return data.get(2) / 100f; }
+
+    // Electrical terminal readings (both modes)
+    /** Electric power at the terminals in W — delivered (forward) or drawn (reverse). */
+    public float getTerminalWatts() { return data.get(4); }
+    /** Terminal voltage in V. */
+    public float getVoltage()       { return PowerMeter.decodeVolts(data.get(5)); }
 
     // ── Button handling ────────────────────────────────────────────────────────
 

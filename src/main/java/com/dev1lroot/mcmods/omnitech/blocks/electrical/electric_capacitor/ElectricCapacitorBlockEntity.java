@@ -9,6 +9,8 @@ import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IElectricSupplier;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricCapacitorMenu;
 import com.dev1lroot.mcmods.omnitech.util.ElectricNetworkUtil;
+import com.dev1lroot.mcmods.omnitech.util.ElectricUnits;
+import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -32,28 +34,49 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * <p>Implements both {@link IElectricReceiver} (charges from 5 non-front sides)
  * and {@link IElectricSupplier} (discharges from the front face).
  *
- * <p>Stored EU is a float for precise distribution when multiple capacitors are
- * connected to a single engine. ContainerData encodes it as an int (×1 for display,
- * clamped to MAX_EU which fits in a short).
+ * <p>Stored energy (kJ) is a float for precise distribution when multiple capacitors
+ * are connected to a single engine.
  *
  * <p>Discharge propagation happens every {@value #CLOCK_INTERVAL} ticks to keep
- * BFS overhead low, delivering the accumulated EU burst at once.
+ * BFS overhead low, delivering the accumulated energy burst at once.
  *
- * <p>Capacity: {@value #MAX_EU} EU. Discharge rate: {@value #DISCHARGE_RATE} EU/tick.
+ * <h3>Electrical model</h3>
+ * <p>Capacity: {@value #MAX_EU} kJ (50 MJ ≈ 13.9 kWh). Max discharge: {@value #DISCHARGE_RATE} kJ/tick
+ * (800 kW). The terminal voltage follows the ideal capacitor law {@code E = ½·C·U²}, so
+ * {@code U = RATED_VOLTAGE · √(E / E_max)} — 400 V when full, falling as it discharges.
+ *
+ * <h3>ContainerData layout</h3>
+ * <ul>
+ *   <li>0 – stored kJ</li>
+ *   <li>1 – capacity kJ</li>
+ *   <li>2 – charging power in W (1 s average)</li>
+ *   <li>3 – discharging power in W (1 s average)</li>
+ *   <li>4 – charging line voltage × 10</li>
+ * </ul>
  */
 public class ElectricCapacitorBlockEntity extends BaseContainerBlockEntity
         implements IElectricReceiver, IElectricSupplier {
 
     public static final int MAX_EU = 50_000;
 
-    /** EU discharged into the network per tick (effective rate). */
-    private static final float DISCHARGE_RATE = 40f;
+    /** Voltage across the plates when fully charged. */
+    public static final float RATED_VOLTAGE = ElectricUnits.GRID_VOLTAGE;
+
+    /** Capacitance in farads, derived from E = ½·C·U² at full charge (625 F). */
+    public static final double CAPACITANCE =
+            2.0 * ElectricUnits.toJoules(MAX_EU) / (RATED_VOLTAGE * RATED_VOLTAGE);
+
+    /** Energy in kJ discharged into the network per tick (effective rate). */
+    public static final float DISCHARGE_RATE = 40f;
 
     /** Propagate electricity every N ticks. */
     private static final int CLOCK_INTERVAL = 5;
 
     float storedEu = 0f;
     private int clockCounter = 0;
+
+    private final PowerMeter inputMeter  = new PowerMeter();
+    private final PowerMeter outputMeter = new PowerMeter();
 
     /** NeoForge-compatible energy handler (transaction-aware). */
     public final CapacitorEnergyHandler energyHandler = new CapacitorEnergyHandler();
@@ -63,13 +86,16 @@ public class ElectricCapacitorBlockEntity extends BaseContainerBlockEntity
             return switch (index) {
                 case 0 -> (int) storedEu;
                 case 1 -> MAX_EU;
+                case 2 -> inputMeter.syncWatts();
+                case 3 -> outputMeter.syncWatts();
+                case 4 -> inputMeter.syncDeciVolts();
                 default -> 0;
             };
         }
         @Override public void set(int index, int value) {
             if (index == 0) storedEu = value;
         }
-        @Override public int getCount() { return 2; }
+        @Override public int getCount() { return 5; }
     };
 
     public ElectricCapacitorBlockEntity(BlockPos pos, BlockState state) {
@@ -93,25 +119,52 @@ public class ElectricCapacitorBlockEntity extends BaseContainerBlockEntity
     // ── IElectricReceiver ─────────────────────────────────────────────────────
 
     @Override
-    public float addElectricity(float amount) {
-        float accepted = Math.min(amount, MAX_EU - storedEu);
+    public float addElectricity(float amount, float volts) {
+        float accepted = Math.max(0f, Math.min(amount, MAX_EU - storedEu));
+        inputMeter.add(accepted, volts);
         if (accepted <= 0f) return 0f;
         storedEu += accepted;
         setChanged();
         return accepted;
     }
 
+    /** Charges through the 5 non-front faces only. */
+    @Override
+    public boolean acceptsElectricityFrom(Direction side) {
+        return side != getBlockState().getValue(ElectricCapacitorBlock.FACING);
+    }
+
     // ── IElectricSupplier ─────────────────────────────────────────────────────
+
+    /** Discharges through the front face only. */
+    @Override
+    public boolean outputsElectricityTo(Direction side) {
+        return side == getBlockState().getValue(ElectricCapacitorBlock.FACING);
+    }
 
     @Override
     public float getEuSupply() {
         return Math.min(DISCHARGE_RATE, storedEu);
     }
 
+    @Override
+    public float getSupplyVoltage() {
+        return terminalVoltage(storedEu, MAX_EU);
+    }
+
+    /** Terminal voltage of an ideal capacitor holding {@code stored} of {@code max} kJ. */
+    public static float terminalVoltage(float stored, float max) {
+        if (stored <= 0f || max <= 0f) return 0f;
+        return RATED_VOLTAGE * (float) Math.sqrt(Math.min(1f, stored / max));
+    }
+
     // ── Server tick ───────────────────────────────────────────────────────────
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
             ElectricCapacitorBlockEntity be) {
+
+        be.inputMeter.tick();
+        be.outputMeter.tick();
 
         boolean wasLit = state.getValue(ElectricCapacitorBlock.LIT);
         boolean isLit  = be.storedEu > MAX_EU / 10f;
@@ -131,8 +184,10 @@ public class ElectricCapacitorBlockEntity extends BaseContainerBlockEntity
             be.clockCounter = 0;
             Direction front = state.getValue(ElectricCapacitorBlock.FACING);
             float burstAmount = Math.min(DISCHARGE_RATE * CLOCK_INTERVAL, be.storedEu);
+            float volts = be.getSupplyVoltage();
             float actualDelivered = ElectricNetworkUtil.propagateElectricity(
-                    level, pos, burstAmount, new Direction[]{ front });
+                    level, pos, burstAmount, volts, new Direction[]{ front });
+            be.outputMeter.add(actualDelivered, volts);
             if (actualDelivered > 0f) {
                 be.storedEu -= actualDelivered;
                 if (be.storedEu < 0f) be.storedEu = 0f;

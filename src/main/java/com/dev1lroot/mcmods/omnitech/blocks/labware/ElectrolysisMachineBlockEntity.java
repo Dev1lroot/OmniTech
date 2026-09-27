@@ -9,6 +9,7 @@ import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.gui.ElectrolysisMachineMenu;
 import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
+import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
 import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
 import com.dev1lroot.mcmods.omnitech.recipes.ElectrolysisRecipe;
 import com.dev1lroot.mcmods.omnitech.recipes.ElectrolysisRecipeManager;
@@ -95,6 +96,10 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
     private FluidStack solutionFluid = FluidStack.EMPTY;
 
     private float energyStored        = 0f;
+    /** Energy received from the grid (with line voltage). */
+    private final PowerMeter inputMeter = new PowerMeter();
+    /** Energy consumed by the machine's own process. */
+    private final PowerMeter loadMeter  = new PowerMeter();
     private int   cookProgress        = 0;
     private float currentRecipeEnergy = 0f;
     private int   temperature         = 0;
@@ -127,6 +132,9 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
                 case 12 -> OUTPUT_TANK_CAPACITY;
                 case 13 -> temperature;
                 case 14 -> requiredTemperature;
+                case 15 -> inputMeter.syncWatts();
+                case 16 -> inputMeter.syncDeciVolts();
+                case 17 -> loadMeter.syncWatts();
                 default -> 0;
             };
         }
@@ -138,7 +146,7 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
                 case 14 -> requiredTemperature = value;
             }
         }
-        @Override public int getCount() { return 15; }
+        @Override public int getCount() { return 18; }
     };
 
     public ElectrolysisMachineBlockEntity(BlockPos pos, BlockState state) {
@@ -178,10 +186,11 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
     // ── IElectricReceiver ─────────────────────────────────────────────────────
 
     @Override
-    public float addElectricity(float amount) {
+    public float addElectricity(float amount, float volts) {
         float space = MAX_EU - energyStored;
-        if (space <= 0f) return 0f;
-        float accepted = Math.min(amount, space);
+        float accepted = Math.max(0f, Math.min(amount, space));
+        inputMeter.add(accepted, volts);
+        if (accepted <= 0f) return 0f;
         energyStored += accepted;
         setChanged();
         return accepted;
@@ -204,6 +213,8 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
             ElectrolysisMachineBlockEntity be) {
+        be.inputMeter.tick();
+        be.loadMeter.tick();
         boolean changed = false;
         Direction facing = state.getValue(ElectrolysisMachineBlock.FACING);
 
@@ -256,6 +267,7 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
             float euPerTick = be.currentRecipeEnergy / COOK_TIME;
             if (be.energyStored >= euPerTick) {
                 be.energyStored -= euPerTick;
+                be.loadMeter.add(euPerTick);
                 if (be.energyStored < 0f) be.energyStored = 0f;
                 be.cookProgress++;
                 changed = true;

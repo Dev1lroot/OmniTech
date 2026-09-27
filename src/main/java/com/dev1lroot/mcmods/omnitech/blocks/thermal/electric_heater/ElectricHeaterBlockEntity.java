@@ -7,6 +7,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.thermal.electric_heater;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricHeaterMenu;
 import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
+import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
 import com.dev1lroot.mcmods.omnitech.io.IThermalNode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -64,6 +65,10 @@ public class ElectricHeaterBlockEntity extends BaseContainerBlockEntity
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
 
     private float energyStored  = 0f;
+    /** Energy received from the grid (with line voltage). */
+    private final PowerMeter inputMeter = new PowerMeter();
+    /** Energy consumed by the machine's own process. */
+    private final PowerMeter loadMeter  = new PowerMeter();
     private float currentTemp   = AMBIENT_TEMP;
     private int   targetTemp    = (int) AMBIENT_TEMP;
     private int   heatLossTimer = 0;
@@ -86,6 +91,9 @@ public class ElectricHeaterBlockEntity extends BaseContainerBlockEntity
                 case 1 -> (int)(currentTemp  * 10f);
                 case 2 -> targetTemp;
                 case 3 -> (int)(MAX_EU       * 10f);
+                case 4 -> inputMeter.syncWatts();
+                case 5 -> inputMeter.syncDeciVolts();
+                case 6 -> loadMeter.syncWatts();
                 default -> 0;
             };
         }
@@ -96,7 +104,7 @@ public class ElectricHeaterBlockEntity extends BaseContainerBlockEntity
                 case 2 -> targetTemp   = value;
             }
         }
-        @Override public int getCount() { return 4; }
+        @Override public int getCount() { return 7; }
     };
 
     // ── Constructor ───────────────────────────────────────────────────────────
@@ -124,10 +132,11 @@ public class ElectricHeaterBlockEntity extends BaseContainerBlockEntity
     // ── IElectricReceiver ─────────────────────────────────────────────────────
 
     @Override
-    public float addElectricity(float amount) {
+    public float addElectricity(float amount, float volts) {
         float space = MAX_EU - energyStored;
-        if (space <= 0f) return 0f;
-        float accepted = Math.min(amount, space);
+        float accepted = Math.max(0f, Math.min(amount, space));
+        inputMeter.add(accepted, volts);
+        if (accepted <= 0f) return 0f;
         energyStored += accepted;
         setChanged();
         return accepted;
@@ -169,6 +178,8 @@ public class ElectricHeaterBlockEntity extends BaseContainerBlockEntity
 
     public static void serverTick(Level level, BlockPos pos, BlockState state,
             ElectricHeaterBlockEntity be) {
+        be.inputMeter.tick();
+        be.loadMeter.tick();
         boolean wasLit = state.getValue(ElectricHeaterBlock.LIT);
 
         float euNeeded = computeEuPerTick(be.targetTemp);
@@ -176,6 +187,7 @@ public class ElectricHeaterBlockEntity extends BaseContainerBlockEntity
 
         if (be.currentTemp < be.targetTemp && be.energyStored >= euNeeded) {
             be.energyStored -= euNeeded;
+            be.loadMeter.add(euNeeded);
             be.currentTemp = Math.min(be.targetTemp, be.currentTemp + HEAT_RATE);
             active = true;
         }
