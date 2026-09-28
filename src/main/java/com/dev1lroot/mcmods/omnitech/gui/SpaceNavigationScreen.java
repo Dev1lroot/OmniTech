@@ -5,6 +5,7 @@
 package com.dev1lroot.mcmods.omnitech.gui;
 
 import com.dev1lroot.mcmods.omnitech.client.spacemap.SpaceMapRenderState;
+import com.dev1lroot.mcmods.omnitech.client.spacemap.SpaceScene;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntity;
 import com.dev1lroot.mcmods.omnitech.network.SpaceTravelPacket;
 import com.dev1lroot.mcmods.omnitech.space.CelestialBody;
@@ -71,7 +72,16 @@ public class SpaceNavigationScreen extends Screen {
     private float yaw = 35f, pitch = 25f;
     private double zoom = 1.0, targetZoom = 1.0;
     private final Vector3f focusPos = new Vector3f(), focusTarget = new Vector3f();
-    private boolean dragging;
+    /**
+     * Orbit-control gesture: a left press anywhere in the scene starts it; dragging more
+     * than {@link #DRAG_SLOP} px rotates, releasing without moving selects what's under the
+     * cursor. (26.x numbers mouse buttons from 1: LEFT = InputConstants.MOUSE_BUTTON_LEFT.)
+     */
+    private boolean pressed, rotating;
+    private double pressX, pressY, lastX, lastY;
+    private long lastSelectTime;
+    private @Nullable Object lastSelected;
+    private static final double DRAG_SLOP = 3.0;
     private boolean snapFocus = true;
 
     /** Positions of every pickable object this frame (scene units). */
@@ -86,8 +96,6 @@ public class SpaceNavigationScreen extends Screen {
     private static final int TOP_H = 50, BOTTOM_H = 64, PANEL_W = 124;
     private static final double ORBIT_SPEED = (2 * Math.PI) / 600.0;
     private static final double ZOOM_MIN = 0.4, ZOOM_MAX = 60.0;
-    /** Moon orbits are drawn at this fraction of their JSON orbital_radius plus an offset. */
-    private static final float MOON_SCALE = 0.1f, MOON_OFFSET = 5f;
 
     private static final int C_BG = 0xFF020208, C_TITLE = 0xFF88DDFF, C_SUB = 0xFF556677, C_BODY = 0xFFCCDDEE,
             C_CUR = 0xFF40EE88, C_SEL = 0xFF80FFCC, C_NA = 0xFF6A7A8A, C_OK = 0xFF40EE70, C_BAD = 0xFFEE4040,
@@ -205,7 +213,7 @@ public class SpaceNavigationScreen extends Screen {
     private double focusZoom(@Nullable Object item) {
         if (item instanceof CelestialBody b && !b.isBelt()) {
             double sats = 0;
-            for (CelestialBody s : b.satellites()) sats = Math.max(sats, moonRadius(s));
+            for (CelestialBody s : b.satellites()) sats = Math.max(sats, SpaceScene.moonRadius(s));
             double extent = sceneExtent();
             return sats > 0 ? Math.min(ZOOM_MAX, extent / (sats * 1.6)) : Math.min(ZOOM_MAX, extent / 30.0);
         }
@@ -229,14 +237,11 @@ public class SpaceNavigationScreen extends Screen {
         switch (level) {
             case UNIVERSE -> { if (spaceMap.galaxies != null) for (Galaxy g : spaceMap.galaxies) max = Math.max(max, g.orbital_radius + 60); }
             case GALAXY -> { if (galaxy != null && galaxy.star_systems != null) for (StarSystem s : galaxy.star_systems) max = Math.max(max, s.orbital_radius * 1.1f); }
-            case SYSTEM -> { if (system != null && system.bodies != null) for (CelestialBody b : system.bodies) max = Math.max(max, b.orbital_radius * (1 + (b.isBelt() ? b.belt_width : 0))); }
+            case SYSTEM -> { if (system != null) max = SpaceScene.systemExtent(system); }
         }
         return max;
     }
 
-    private static float moonRadius(CelestialBody moon) {
-        return MOON_OFFSET + moon.orbital_radius * MOON_SCALE;
-    }
 
     /** Fixed position on a plane for things that don't orbit (galaxies, star systems). */
     private static Vector3f planeOffset(String id, float r) {
@@ -244,10 +249,6 @@ public class SpaceNavigationScreen extends Screen {
         return new Vector3f((float) (r * Math.cos(a)), 0f, (float) (r * Math.sin(a)));
     }
 
-    private static float orbitAngle(CelestialBody b, double time, float fallbackSpeed) {
-        float speed = b.orbital_speed > 0 ? b.orbital_speed : fallbackSpeed;
-        return (float) (time * ORBIT_SPEED * speed + (Math.abs(b.id.hashCode()) % 628) / 100.0);
-    }
 
     private SpaceMapRenderState buildScene(int x0, int y0, int x1, int y1, double time) {
         positions.clear();
@@ -264,7 +265,7 @@ public class SpaceNavigationScreen extends Screen {
                     float half = 45f;
                     Identifier tex = parse(g.texture);
                     if (tex != null) planes.add(new SpaceMapRenderState.Plane(p.x, p.y, p.z, half, tex, 0xFFFFFFFF));
-                    else cubes.add(new SpaceMapRenderState.Cube(p.x, p.y, p.z, 6, null, 0xFF9966FF, 0));
+                    else cubes.add(new SpaceMapRenderState.Cube(p.x, p.y, p.z, 6, null, null, 0xFF9966FF, 0));
                     put(g, p, half * 0.7f);
                 }
             }
@@ -275,34 +276,18 @@ public class SpaceNavigationScreen extends Screen {
                 if (galaxy != null && galaxy.star_systems != null) for (StarSystem s : galaxy.star_systems) {
                     Vector3f p = planeOffset(s.id, s.orbital_radius);
                     p.y = 2f;   // just above the disc
-                    cubes.add(new SpaceMapRenderState.Cube(p.x, p.y, p.z, 4f, parse(s.texture), tint(s.texture, starColor(s)), 0));
+                    cubes.add(new SpaceMapRenderState.Cube(p.x, p.y, p.z, 4f, parse(s.texture), null, SpaceScene.tint(s.texture, SpaceScene.starColor(s)), 0));
                     put(s, p, 5f);
                 }
             }
             case SYSTEM -> {
                 if (system == null) break;
-                cubes.add(new SpaceMapRenderState.Cube(0, 0, 0, 10f, parse(system.texture), tint(system.texture, starColor(system)),
-                        SolarSystemScene.axialAngle(system, time)));
-                put(system, new Vector3f(), 10f);
-                if (system.bodies != null) for (CelestialBody b : system.bodies) {
-                    rings.add(new SpaceMapRenderState.Ring(0, 0, 0, b.orbital_radius, b.orbital_inclination, b.ascending_node,
-                            b == destination ? 0xFF40EE88 : 0xFF3A4A60));
-                    if (b.isBelt()) { belt(cubes, b, new Vector3f(), b.orbital_radius, time); continue; }
-                    Vector3f p = SolarSystemScene.cartesian(b.orbital_radius, orbitAngle(b, time, 1f), b.orbital_inclination, b.ascending_node);
-                    float half = bodyHalf(b, 2.2f);
-                    cubes.add(new SpaceMapRenderState.Cube(p.x, p.y, p.z, half, parse(b.texture), tint(b.texture, bodyColor(b)), SolarSystemScene.axialAngle(b, time)));
-                    put(b, p, half);
-                    for (CelestialBody s : b.satellites()) {
-                        float mr = moonRadius(s);
-                        rings.add(new SpaceMapRenderState.Ring(p.x, p.y, p.z, mr, s.orbital_inclination, s.ascending_node,
-                                s == destination ? 0xFF40EE88 : 0xFF2A3446));
-                        if (s.isBelt()) { belt(cubes, s, p, mr, time); continue; }
-                        Vector3f mp = SolarSystemScene.cartesian(mr, orbitAngle(s, time, 3f), s.orbital_inclination, s.ascending_node).add(p);
-                        float mh = bodyHalf(s, 0.8f);
-                        cubes.add(new SpaceMapRenderState.Cube(mp.x, mp.y, mp.z, mh, parse(s.texture), tint(s.texture, bodyColor(s)), SolarSystemScene.axialAngle(s, time)));
-                        put(s, mp, mh);
-                    }
-                }
+                SpaceScene.Scene scene = SpaceScene.buildSystem(system, time, destination, yaw);
+                cubes.addAll(scene.cubes);
+                rings.addAll(scene.rings);
+                positions.putAll(scene.positions);
+                sizes.putAll(scene.sizes);
+                beltPoints.addAll(scene.beltPoints);
             }
         }
 
@@ -338,28 +323,7 @@ public class SpaceNavigationScreen extends Screen {
         sizes.put(item, half);
     }
 
-    private void belt(List<SpaceMapRenderState.Cube> cubes, CelestialBody belt, Vector3f center, float r, double time) {
-        int count = Math.max(50, belt.belt_particles);
-        long seed = belt.id.hashCode() * 0x9E3779B97F4A7C15L;
-        double drift = time * ORBIT_SPEED * 0.15 * (belt.orbital_speed > 0 ? belt.orbital_speed : 1.0);
-        int color = belt == destination ? 0xFF60F0A0 : 0xFF8C8478;
-        float bit = Math.max(0.25f, r * 0.004f);
-        for (int k = 0; k < count; k++) {
-            seed = mix(seed); double ang = (seed >>> 11) * 0x1.0p-53 * 2 * Math.PI + drift;
-            seed = mix(seed); double rr = r * (1 + ((seed >>> 11) * 0x1.0p-53 - 0.5) * 2 * belt.belt_width);
-            seed = mix(seed); double hh = ((seed >>> 11) * 0x1.0p-53 - 0.5) * r * belt.belt_width * 0.35;
-            Vector3f p = SolarSystemScene.cartesian((float) rr, (float) ang, belt.orbital_inclination, belt.ascending_node).add(center);
-            p.y += (float) hh;
-            cubes.add(new SpaceMapRenderState.Cube(p.x, p.y, p.z, bit, null, color, 0));
-            if ((k & 3) == 0) beltPoints.add(Map.entry(belt, p));
-        }
-        Vector3f labelAt = SolarSystemScene.cartesian(r, (float) Math.toRadians(90 - yaw), belt.orbital_inclination, belt.ascending_node).add(center);
-        put(belt, labelAt, 0f);
-    }
 
-    private static float bodyHalf(CelestialBody b, float base) {
-        return base * (b.size > 0 ? (float) Math.max(0.6, Math.min(3.0, Math.sqrt(b.size) * 1.2)) : 1f);
-    }
 
     /** Scene point → GUI coordinates, the same transform the PIP renderer applies. */
     private float[] project(Vector3f p, int cx, int cy) {
@@ -475,33 +439,50 @@ public class SpaceNavigationScreen extends Screen {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (super.mouseClicked(event, doubleClick)) return true;
-        if (event.button() != 0 || event.x() < PANEL_W || event.y() < TOP_H || event.y() > height - BOTTOM_H) return false;
-        int cx = (PANEL_W + width) / 2, cy = (TOP_H + height - BOTTOM_H) / 2;
-        Object hit = pick(event.x(), event.y(), cx, cy);
-        if (hit != null) {
-            if (doubleClick && (hit instanceof Galaxy || hit instanceof StarSystem) && level != Level.SYSTEM) enter(hit);
-            else select(hit);
-            return true;
-        }
-        dragging = true;
+        if (super.mouseClicked(event, doubleClick)) return true;   // side list, buttons
+        if (event.button() != com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT || !inScene(event.x(), event.y())) return false;
+        pressed = true;
+        rotating = false;
+        pressX = lastX = event.x();
+        pressY = lastY = event.y();
         return true;
     }
 
     @Override
-    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
-        if (dragging) {
-            yaw = (yaw + (float) dx * 0.6f) % 360f;
-            pitch = Math.max(-89f, Math.min(89f, pitch + (float) dy * 0.6f));
-            return true;
-        }
-        return super.mouseDragged(event, dx, dy);
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (pressed && event.button() == com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT) finishPress(event.x(), event.y());
+        return super.mouseReleased(event);
+    }
+
+    private boolean inScene(double x, double y) {
+        return x >= PANEL_W && y >= TOP_H && y <= height - BOTTOM_H;
     }
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
-        dragging = false;
-        return super.mouseReleased(event);
+    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+        if (!pressed) return super.mouseDragged(event, dx, dy);
+        if (!rotating && Math.hypot(event.x() - pressX, event.y() - pressY) > DRAG_SLOP) rotating = true;
+        if (rotating) {
+            yaw = (yaw + (float) (event.x() - lastX) * 0.6f) % 360f;
+            pitch = Math.max(-89f, Math.min(89f, pitch + (float) (event.y() - lastY) * 0.6f));
+        }
+        lastX = event.x();
+        lastY = event.y();
+        return true;
+    }
+
+    private void finishPress(double x, double y) {
+        pressed = false;
+        if (rotating) { rotating = false; return; }
+        int cx = (PANEL_W + width) / 2, cy = (TOP_H + height - BOTTOM_H) / 2;
+        Object hit = pick(pressX, pressY, cx, cy);
+        if (hit == null) return;
+        long now = System.currentTimeMillis();
+        boolean doubleClick = hit == lastSelected && now - lastSelectTime < 400;
+        lastSelected = hit;
+        lastSelectTime = now;
+        if (doubleClick && (hit instanceof Galaxy || hit instanceof StarSystem) && level != Level.SYSTEM) enter(hit);
+        else select(hit);
     }
 
     @Override
@@ -548,35 +529,9 @@ public class SpaceNavigationScreen extends Screen {
         return sb.toString();
     }
 
-    /** Textures render untinted; the colour is only for bodies without one. */
-    private static int tint(@Nullable String texture, int fallback) {
-        return texture != null && !texture.isEmpty() ? 0xFFFFFFFF : fallback;
-    }
 
-    private static int starColor(StarSystem s) {
-        return switch (s.id) {
-            case "tau_ceti" -> 0xFFFFEE88;
-            case "alpha_centauri" -> 0xFFFFCC66;
-            default -> 0xFFFFDD44;
-        };
-    }
 
-    private static int bodyColor(CelestialBody b) {
-        return switch (b.id) {
-            case "mercury" -> 0xFF9A8874; case "venus" -> 0xFFE8C87A; case "earth" -> 0xFF2244BB;
-            case "mars" -> 0xFFBB4422; case "jupiter" -> 0xFFCC9966; case "saturn" -> 0xFFDDB870;
-            case "uranus" -> 0xFF99DDCC; case "neptune" -> 0xFF3355AA; case "moon" -> 0xFF888888;
-            case "io" -> 0xFFFFCC33; case "europa" -> 0xFFDDEEFF; case "ganymede" -> 0xFF998877;
-            case "titan" -> 0xFFCC9944;
-            default -> b.dimension != null ? 0xFF4477CC : 0xFF556677;
-        };
-    }
 
-    private static long mix(long z) {
-        z = (z ^ (z >>> 30)) * 0xBF58476D1CE4E5B9L;
-        z = (z ^ (z >>> 27)) * 0x94D049BB133111EBL;
-        return z ^ (z >>> 31);
-    }
 
     private static String formatKm(long km) {
         if (km < 1_000_000L) return String.format("%,d km", km);

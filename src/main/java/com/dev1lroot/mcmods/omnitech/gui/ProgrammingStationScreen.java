@@ -164,7 +164,7 @@ public class ProgrammingStationScreen extends AbstractContainerScreen<Programmin
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == 0) {
+        if (event.button() == com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT) {
             double mx = event.x(), my = event.y();
             int ex = this.leftPos + EDITOR_X;
             int ey = this.topPos  + EDITOR_Y;

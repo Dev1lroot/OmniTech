@@ -225,7 +225,7 @@ public class GuidebookScreen extends Screen {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == 0) {
+        if (event.button() == com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT) {
             double mx = event.x(), my = event.y();
             for (RenderedLink link : renderedLinks) {
                 if (mx >= link.x() && mx < link.x() + link.w()

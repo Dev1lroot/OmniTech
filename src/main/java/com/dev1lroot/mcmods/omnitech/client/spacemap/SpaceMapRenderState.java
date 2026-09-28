@@ -31,8 +31,12 @@ public record SpaceMapRenderState(
         @Nullable ScreenRectangle bounds
 ) implements PictureInPictureRenderState {
 
-    /** Textured (or plain coloured) box, like the orrery's bodies; {@code spin} rotates it about Y. */
-    public record Cube(float x, float y, float z, float half, @Nullable Identifier texture, int color, float spin) {}
+    /**
+     * Box like the orrery's bodies: a standalone {@code texture}, else a block-atlas {@code sprite}
+     * (e.g. stone for belt particles), else white; {@code spin} rotates textured boxes about Y.
+     */
+    public record Cube(float x, float y, float z, float half, @Nullable Identifier texture,
+                       @Nullable Identifier sprite, int color, float spin) {}
 
     /** Circular orbit line around (cx, cy, cz) with the body's inclination / ascending node. */
     public record Ring(float cx, float cy, float cz, float r, float inclination, float node, int color) {}

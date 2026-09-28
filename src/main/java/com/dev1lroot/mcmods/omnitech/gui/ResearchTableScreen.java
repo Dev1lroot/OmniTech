@@ -263,8 +263,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
 
             if (getActiveResearchName() == null) return true; // no research active
 
-            if (event.button() == 0) leftClick(row, col);
-            else if (event.button() == 1) rightClick(row, col);
+            // 26.x numbers mouse buttons from 1 (LEFT = 1, RIGHT = 3)
+            if (event.button() == com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT) leftClick(row, col);
+            else if (event.button() == com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_RIGHT) rightClick(row, col);
             return true;
         }
 
