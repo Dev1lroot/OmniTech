@@ -1,0 +1,279 @@
+{
+  "type": "minecraft:sequence",
+  "sequence": [
+    {
+      "type": "minecraft:condition",
+      "if_true": {
+        "type": "minecraft:vertical_gradient",
+        "random_name": "omnitech:mars_bedrock_floor",
+        "true_at_and_below": {
+          "above_bottom": 0
+        },
+        "false_at_and_above": {
+          "above_bottom": 3
+        }
+      },
+      "then_run": {
+        "type": "minecraft:block",
+        "result_state": "minecraft:bedrock"
+      }
+    },
+    {
+      "type": "minecraft:condition",
+      "if_true": {
+        "type": "minecraft:stone_depth",
+        "add_surface_depth": false,
+        "offset": 0,
+        "secondary_depth_range": 0,
+        "surface_type": "floor"
+      },
+      "then_run": {
+        "type": "minecraft:sequence",
+        "sequence": [
+          {
+            "type": "minecraft:condition",
+            "if_true": {
+              "type": "minecraft:y_above",
+              "anchor": {
+                "absolute": 116
+              },
+              "surface_depth_multiplier": 1,
+              "add_stone_depth": false
+            },
+            "then_run": {
+              "type": "minecraft:block",
+              "result_state": "minecraft:snow_block"
+            }
+          },
+          {
+            "type": "minecraft:condition",
+            "if_true": {
+              "type": "minecraft:steep"
+            },
+            "then_run": {
+              "type": "minecraft:block",
+              "result_state": "omnitech:mars_stone"
+            }
+          },
+          {
+            "type": "minecraft:condition",
+            "if_true": {
+              "type": "minecraft:y_above",
+              "anchor": {
+                "absolute": 106
+              },
+              "surface_depth_multiplier": 1,
+              "add_stone_depth": false
+            },
+            "then_run": {
+              "type": "minecraft:block",
+              "result_state": "omnitech:mars_frost"
+            }
+          },
+          {
+            "type": "minecraft:block",
+            "result_state": "omnitech:mars_regolith"
+          }
+        ]
+      }
+    },
+    {
+      "type": "minecraft:condition",
+      "if_true": {
+        "type": "minecraft:stone_depth",
+        "add_surface_depth": true,
+        "offset": 0,
+        "secondary_depth_range": 0,
+        "surface_type": "floor"
+      },
+      "then_run": {
+        "type": "minecraft:sequence",
+        "sequence": [
+          {
+            "type": "minecraft:condition",
+            "if_true": {
+              "type": "minecraft:y_above",
+              "anchor": {
+                "absolute": 118
+              },
+              "surface_depth_multiplier": 1,
+              "add_stone_depth": false
+            },
+            "then_run": {
+              "type": "minecraft:block",
+              "result_state": "minecraft:snow_block"
+            }
+          },
+          {
+            "type": "minecraft:condition",
+            "if_true": {
+              "type": "minecraft:steep"
+            },
+            "then_run": {
+              "type": "minecraft:block",
+              "result_state": "omnitech:mars_stone"
+            }
+          },
+          {
+            "type": "minecraft:block",
+            "result_state": "omnitech:mars_regolith"
+          }
+        ]
+      }
+    },
+    {
+      "type": "minecraft:condition",
+      "if_true": {
+        "type": "minecraft:biome",
+        "biome_is": [
+          "omnitech:mars_plains"
+        ]
+      },
+      "then_run": {
+        "type": "minecraft:condition",
+        "if_true": {
+          "type": "minecraft:not",
+          "invert": {
+            "type": "minecraft:y_above",
+            "anchor": {
+              "absolute": 66
+            },
+            "surface_depth_multiplier": 1,
+            "add_stone_depth": false
+          }
+        },
+        "then_run": {
+          "type": "minecraft:condition",
+          "if_true": {
+            "type": "minecraft:y_above",
+            "anchor": {
+              "absolute": 38
+            },
+            "surface_depth_multiplier": 1,
+            "add_stone_depth": false
+          },
+          "then_run": {
+            "type": "minecraft:sequence",
+            "sequence": [
+              {
+                "type": "minecraft:condition",
+                "if_true": {
+                  "type": "minecraft:y_above",
+                  "anchor": {
+                    "absolute": 60
+                  },
+                  "surface_depth_multiplier": 1,
+                  "add_stone_depth": false
+                },
+                "then_run": {
+                  "type": "minecraft:block",
+                  "result_state": "omnitech:mars_mudstone"
+                }
+              },
+              {
+                "type": "minecraft:condition",
+                "if_true": {
+                  "type": "minecraft:y_above",
+                  "anchor": {
+                    "absolute": 57
+                  },
+                  "surface_depth_multiplier": 1,
+                  "add_stone_depth": false
+                },
+                "then_run": {
+                  "type": "minecraft:block",
+                  "result_state": "omnitech:mars_gypsum"
+                }
+              },
+              {
+                "type": "minecraft:condition",
+                "if_true": {
+                  "type": "minecraft:y_above",
+                  "anchor": {
+                    "absolute": 50
+                  },
+                  "surface_depth_multiplier": 1,
+                  "add_stone_depth": false
+                },
+                "then_run": {
+                  "type": "minecraft:block",
+                  "result_state": "omnitech:mars_mudstone"
+                }
+              },
+              {
+                "type": "minecraft:condition",
+                "if_true": {
+                  "type": "minecraft:y_above",
+                  "anchor": {
+                    "absolute": 47
+                  },
+                  "surface_depth_multiplier": 1,
+                  "add_stone_depth": false
+                },
+                "then_run": {
+                  "type": "minecraft:block",
+                  "result_state": "omnitech:mars_gypsum"
+                }
+              },
+              {
+                "type": "minecraft:condition",
+                "if_true": {
+                  "type": "minecraft:y_above",
+                  "anchor": {
+                    "absolute": 43
+                  },
+                  "surface_depth_multiplier": 1,
+                  "add_stone_depth": false
+                },
+                "then_run": {
+                  "type": "minecraft:block",
+                  "result_state": "omnitech:mars_mudstone"
+                }
+              },
+              {
+                "type": "minecraft:condition",
+                "if_true": {
+                  "type": "minecraft:y_above",
+                  "anchor": {
+                    "absolute": 41
+                  },
+                  "surface_depth_multiplier": 1,
+                  "add_stone_depth": false
+                },
+                "then_run": {
+                  "type": "minecraft:block",
+                  "result_state": "omnitech:mars_gypsum"
+                }
+              },
+              {
+                "type": "minecraft:block",
+                "result_state": "omnitech:mars_mudstone"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "minecraft:condition",
+      "if_true": {
+        "type": "minecraft:vertical_gradient",
+        "random_name": "omnitech:mars_basalt",
+        "true_at_and_below": {
+          "absolute": 34
+        },
+        "false_at_and_above": {
+          "absolute": 42
+        }
+      },
+      "then_run": {
+        "type": "minecraft:block",
+        "result_state": "omnitech:mars_basalt"
+      }
+    },
+    {
+      "type": "minecraft:block",
+      "result_state": "omnitech:mars_stone"
+    }
+  ]
+}

@@ -300,8 +300,12 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
         mv.translate(0.0f, SKY_SPHERE_R, 0.0f);
         mv.scale(scale, 1.0f, scale);
 
+        // Pass a copy, never the live stack: the transform storage keeps the last written
+        // Transform and reuses its slice for the next equal one. Holding `mv` itself, that
+        // record would change after popMatrix() and hand this sky body's matrix to later
+        // draws (GUI items, the inventory player preview) that happen to match the stack.
         GpuBufferSlice dyn = RenderSystem.getDynamicUniforms()
-                .writeTransform(mv, new Vector4f(1.0f, 1.0f, 1.0f, brightness),
+                .writeTransform(new Matrix4f(mv), new Vector4f(1.0f, 1.0f, 1.0f, brightness),
                         new Vector3f(), new Matrix4f());
         RenderTarget mainRenderTarget = Minecraft.getInstance().gameRenderer.mainRenderTarget();
         GpuTextureView color = mainRenderTarget.getColorTextureView();

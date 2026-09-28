@@ -1,0 +1,26 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:magnetite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:iron_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:titanium_mote",
+      "count": 1,
+      "chance": 0.08
+    },
+    {
+      "item": "omnitech:vanadium_mote",
+      "count": 1,
+      "chance": 0.06
+    }
+  ]
+}

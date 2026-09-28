@@ -1,0 +1,16 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:gypsum_dust",
+  "output": [
+    {
+      "item": "omnitech:calcium_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:sulfur_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

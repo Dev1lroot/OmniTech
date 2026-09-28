@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:mars_gypsum",
+  "output": [
+    {
+      "item": "omnitech:gypsum_dust",
+      "count": 3,
+      "chance": 1.0
+    }
+  ]
+}

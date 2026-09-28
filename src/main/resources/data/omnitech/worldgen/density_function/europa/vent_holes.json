@@ -1,0 +1,140 @@
+{
+  "type": "minecraft:cache",
+  "input": {
+    "type": "minecraft:clamp",
+    "input": {
+      "type": "minecraft:mul",
+      "left": {
+        "type": "minecraft:clamp",
+        "input": {
+          "type": "minecraft:mul",
+          "left": 25.0,
+          "right": {
+            "type": "minecraft:min",
+            "left": {
+              "type": "minecraft:min",
+              "left": {
+                "type": "minecraft:abs",
+                "input": {
+                  "type": "minecraft:add",
+                  "left": "omnitech:europa/province",
+                  "right": 0.08
+                }
+              },
+              "right": {
+                "type": "minecraft:abs",
+                "input": {
+                  "type": "minecraft:add",
+                  "left": "omnitech:europa/province",
+                  "right": -0.08
+                }
+              }
+            },
+            "right": {
+              "type": "minecraft:range_choice",
+              "input": "omnitech:europa/province",
+              "min_inclusive": -0.08,
+              "max_exclusive": 0.08,
+              "when_in_range": 1.0,
+              "when_out_of_range": {
+                "type": "minecraft:abs",
+                "input": {
+                  "type": "minecraft:add",
+                  "left": "omnitech:europa/variant",
+                  "right": -0.0
+                }
+              }
+            }
+          }
+        },
+        "min": 0.0,
+        "max": 1.0
+      },
+      "right": {
+        "type": "minecraft:interval_select",
+        "input": "omnitech:europa/province",
+        "thresholds": [
+          -0.08,
+          0.08
+        ],
+        "functions": [
+          {
+            "type": "minecraft:interval_select",
+            "input": "omnitech:europa/variant",
+            "thresholds": [
+              0.0
+            ],
+            "functions": [
+              0.0,
+              0.0
+            ]
+          },
+          0.0,
+          {
+            "type": "minecraft:interval_select",
+            "input": "omnitech:europa/variant",
+            "thresholds": [
+              0.0
+            ],
+            "functions": [
+              0.0,
+              {
+                "type": "minecraft:mul",
+                "left": 2.2,
+                "right": {
+                  "type": "minecraft:mul",
+                  "left": {
+                    "type": "minecraft:clamp",
+                    "input": {
+                      "type": "minecraft:add",
+                      "left": 1.0,
+                      "right": {
+                        "type": "minecraft:mul",
+                        "left": -24.999999999999996,
+                        "right": {
+                          "type": "minecraft:abs",
+                          "input": {
+                            "type": "minecraft:noise",
+                            "noise": "omnitech:europa_lineae",
+                            "xz_scale": 1.0,
+                            "y_scale": 0.0
+                          }
+                        }
+                      }
+                    },
+                    "min": 0.0,
+                    "max": 1.0
+                  },
+                  "right": {
+                    "type": "minecraft:clamp",
+                    "input": {
+                      "type": "minecraft:add",
+                      "left": 1.0,
+                      "right": {
+                        "type": "minecraft:mul",
+                        "left": -20.833333333333332,
+                        "right": {
+                          "type": "minecraft:abs",
+                          "input": {
+                            "type": "minecraft:noise",
+                            "noise": "omnitech:europa_hairline",
+                            "xz_scale": 1.0,
+                            "y_scale": 0.0
+                          }
+                        }
+                      }
+                    },
+                    "min": 0.0,
+                    "max": 1.0
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "min": 0.0,
+    "max": 2.2
+  }
+}

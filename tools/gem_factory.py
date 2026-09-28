@@ -49,6 +49,7 @@ GEMS = {
     "hyacinth":   ("ZrSiO\u2084",                  "#B5462A", "Hyacinth",   "Гиацинт"),
     "garnet":     ("Fe\u2083Al\u2082(SiO\u2084)\u2083", "#7A1426", "Garnet", "Гранат"),
     "tourmaline": ("Na(Li,Al)\u2083Al\u2086(BO\u2083)\u2083Si\u2086O\u2081\u2088(OH)\u2084", "#E0609A", "Tourmaline", "Турмалин"),
+    "kunzite":    ("LiAlSi\u2082O\u2086:Mn",       "#E7A1D0", "Kunzite",    "Кунцит"),
 }
 
 # Minerals that had no dust item yet: name: (formula, dark, light, en_us, ru_ru)
@@ -61,14 +62,40 @@ NEW_DUSTS = {
     "stibnite":    ("Sb\u2082S\u2083",                 "#3A3D44", "#9AA0AA", "Stibnite Dust",    "Антимонитовая пыль"),
     "apatite":     ("Ca\u2085(PO\u2084)\u2083F",      "#2E6A5E", "#8FD3C3", "Apatite Dust",     "Апатитовая пыль"),
     "sperrylite":  ("PtAs\u2082",                       "#4D5156", "#C9CED3", "Sperrylite Dust",  "Сперрилитовая пыль"),
+    "cassiterite":   ("SnO\u2082",                          "#3B2A20", "#B08A6A", "Cassiterite Dust",   "Касситеритовая пыль"),
+    "magnetite":     ("Fe\u2083O\u2084",                  "#141416", "#6A6A72", "Magnetite Dust",     "Магнетитовая пыль"),
+    "malachite":     ("Cu\u2082CO\u2083(OH)\u2082",      "#1E5A3A", "#5FD08E", "Malachite Dust",     "Малахитовая пыль"),
+    "rutile":        ("TiO\u2082",                          "#5A1E10", "#D4703C", "Rutile Dust",        "Рутиловая пыль"),
+    "scheelite":     ("CaWO\u2084",                         "#6A5E3C", "#F4ECC8", "Scheelite Dust",     "Шеелитовая пыль"),
+    "spodumene":     ("LiAlSi\u2082O\u2086",              "#6E6468", "#E8D8E0", "Spodumene Dust",     "Сподуменовая пыль"),
+    "pollucite":     ("(Cs,Na)\u2082Al\u2082Si\u2084O\u2081\u2082\u00b72H\u2082O", "#707A80", "#E8F0F2", "Pollucite Dust", "Поллуцитовая пыль"),
+    "rhodochrosite": ("MnCO\u2083",                         "#6A2438", "#F4B0C4", "Rhodochrosite Dust", "Родохрозитовая пыль"),
+    "realgar":       ("As\u2084S\u2084",                  "#6A1A08", "#F07A30", "Realgar Dust",       "Реальгаровая пыль"),
+    "smithsonite":   ("ZnCO\u2083",                         "#4A6A6A", "#C8ECE6", "Smithsonite Dust",   "Смитсонитовая пыль"),
+    "sylvite":       ("KCl",                                 "#8A5A4A", "#F4E0D8", "Sylvite Dust",       "Сильвиновая пыль"),
+    "calaverite":    ("AuTe\u2082",                         "#4A4430", "#ECE0A8", "Calaverite Dust",    "Калаверитовая пыль"),
+    "clausthalite":  ("PbSe",                                "#3A3E48", "#C4CCDC", "Clausthalite Dust",  "Клаусталитовая пыль"),
+    "germanite":     ("Cu\u2081\u2083Fe\u2082Ge\u2082S\u2081\u2086", "#4A3A40", "#C8A8AC", "Germanite Dust", "Германитовая пыль"),
+    "lautarite":     ("Ca(IO\u2083)\u2082",               "#8A7A5A", "#F8F0D0", "Lautarite Dust",     "Лаутаритовая пыль"),
 }
 
-# Mineral blocks registered by this script (assets come from mineral_assets_creator.py): name → en_us
+# Mineral blocks registered by this script (assets come from mineral_assets_creator.py): name → (en_us, ru_ru)
 NEW_MINERAL_BLOCKS = {
-    "wolframite": "Wolframite", "cobaltite": "Cobaltite", "tantalite": "Tantalite",
-    "chalcopyrite": "Chalcopyrite", "stannite": "Stannite", "native_silver": "Native Silver",
-    "magnesite": "Magnesite", "zircon": "Zircon", "pyrite": "Pyrite", "cryolite": "Cryolite",
-    "stibnite": "Stibnite", "apatite": "Apatite", "graphite": "Graphite", "sperrylite": "Sperrylite",
+    "wolframite": ("Wolframite", "Вольфрамит"), "cobaltite": ("Cobaltite", "Кобальтин"),
+    "tantalite": ("Tantalite", "Танталит"), "chalcopyrite": ("Chalcopyrite", "Халькопирит"),
+    "stannite": ("Stannite", "Станнин"), "native_silver": ("Native Silver", "Самородное серебро"),
+    "magnesite": ("Magnesite", "Магнезит"), "zircon": ("Zircon", "Циркон"),
+    "pyrite": ("Pyrite", "Пирит"), "cryolite": ("Cryolite", "Криолит"),
+    "stibnite": ("Stibnite", "Антимонит"), "apatite": ("Apatite", "Апатит"),
+    "graphite": ("Graphite", "Графит"), "sperrylite": ("Sperrylite", "Сперрилит"),
+    "cassiterite": ("Cassiterite", "Касситерит"), "magnetite": ("Magnetite", "Магнетит"),
+    "malachite": ("Malachite", "Малахит"), "rutile": ("Rutile", "Рутил"),
+    "scheelite": ("Scheelite", "Шеелит"), "spodumene": ("Spodumene", "Сподумен"),
+    "pollucite": ("Pollucite", "Поллуцит"), "rhodochrosite": ("Rhodochrosite", "Родохрозит"),
+    "realgar": ("Realgar", "Реальгар"), "smithsonite": ("Smithsonite", "Смитсонит"),
+    "sylvite": ("Sylvite", "Сильвин"), "calaverite": ("Calaverite", "Калаверит"),
+    "clausthalite": ("Clausthalite", "Клаусталит"), "germanite": ("Germanite", "Германит"),
+    "lautarite": ("Lautarite", "Лаутарит"),
 }
 
 # mineral block → (gems it can yield, pickaxe tier needed)
@@ -114,6 +141,21 @@ MINERALS = {
     "wolframite":      ([],                                  "iron"),
     "xenotime":        (["hyacinth"],                        "diamond"),
     "zircon":          (["hyacinth"],                        "iron"),
+    "cassiterite":     ([],                                  "stone"),
+    "magnetite":       ([],                                  "stone"),
+    "malachite":       ([],                                  "stone"),
+    "rutile":          (["sapphire"],                        "iron"),
+    "scheelite":       ([],                                  "iron"),
+    "spodumene":       (["kunzite"],                         "iron"),
+    "pollucite":       ([],                                  "iron"),
+    "rhodochrosite":   ([],                                  "stone"),
+    "realgar":         ([],                                  "stone"),
+    "smithsonite":     ([],                                  "stone"),
+    "sylvite":         ([],                                  "stone"),
+    "calaverite":      ([],                                  "diamond"),
+    "clausthalite":    ([],                                  "iron"),
+    "germanite":       ([],                                  "diamond"),
+    "lautarite":       ([],                                  "stone"),
 }
 
 GEM_CHANCES         = [0.02, 0.03, 0.04, 0.05]   # fortune 0, I, II, III+
@@ -159,6 +201,23 @@ SPAWNS = {
     "stibnite":        ((OVERWORLD, -16, 48, 5, 0, 1), [(MOUNTAIN, 0, 120, 6, 0, 2)]),
     "apatite":         ((OVERWORLD, 0, 64, 7, 0, 2), []),
     "graphite":        ((OVERWORLD, -32, 48, 8, 0, 2), []),
+    "cassiterite":     ((OVERWORLD, 0, 64, 6, 0, 2), [(MOUNTAIN, 0, 120, 8, 1, 2)]),
+    "magnetite":       ((OVERWORLD, -32, 48, 10, 1, 3), []),
+    "malachite":       ((OVERWORLD, 16, 80, 6, 0, 2), [("#minecraft:is_jungle", 32, 100, 8, 1, 2)]),
+    "rhodochrosite":   ((OVERWORLD, -16, 64, 5, 0, 1), []),
+    "realgar":         ((OVERWORLD, 0, 64, 4, 0, 1), [("#minecraft:is_badlands", 32, 120, 6, 0, 2)]),
+    "smithsonite":     ((OVERWORLD, 0, 64, 6, 0, 2), []),
+    "sylvite":         ((OVERWORLD, -16, 48, 6, 0, 1), [("minecraft:desert", 20, 80, 10, 1, 3)]),
+    "clausthalite":    ((OVERWORLD, -32, 32, 4, 0, 1), []),
+    "lautarite":       ((OVERWORLD, 0, 48, 3, 0, 1), [("minecraft:desert", 40, 90, 8, 0, 2),
+                                                     ("#minecraft:is_badlands", 40, 110, 6, 0, 2)]),
+    # rare — mountains only
+    "rutile":          ((MOUNTAIN, -16, 120, 4, 0, 2), []),
+    "scheelite":       ((MOUNTAIN, -16, 96, 5, 0, 2), []),
+    "spodumene":       ((MOUNTAIN, 0, 140, 5, 0, 2), []),
+    "pollucite":       ((MOUNTAIN, -16, 96, 3, 0, 1), []),
+    "calaverite":      ((MOUNTAIN, -32, 64, 3, 0, 1), []),
+    "germanite":       ((MOUNTAIN, -32, 64, 3, 0, 1), []),
 }
 
 MACERATOR_FORCE, CENTRIFUGE_FORCE = 20, 100
@@ -168,6 +227,10 @@ MACERATE = {
     "pyrite": "pyrite_dust", "cryolite": "cryolite_dust", "stibnite": "stibnite_dust",
     "apatite": "apatite_dust", "sperrylite": "sperrylite_dust", "graphite": "graphite_dust",
 }
+NEW_DUST_MINERALS = ["cassiterite", "magnetite", "malachite", "rutile", "scheelite", "spodumene",
+                     "pollucite", "rhodochrosite", "realgar", "smithsonite", "sylvite",
+                     "calaverite", "clausthalite", "germanite", "lautarite"]
+MACERATE.update({m: f"{m}_dust" for m in NEW_DUST_MINERALS})
 REGOLITH = ["surface_regolith", "stratified_regolith", "paleoregolith", "megaregolith"]
 # dust → [(item, count, chance)] centrifuge recipes written when missing
 CENTRIFUGE = {
@@ -182,6 +245,22 @@ CENTRIFUGE = {
     "sperrylite_dust":  [("stone_dust", 1, 1.0), ("platinum_dust", 1, 1.0), ("arsenic_dust", 1, 0.5),
                          ("palladium_mote", 1, 0.2), ("rhodium_mote", 1, 0.1), ("ruthenium_mote", 1, 0.08),
                          ("iridium_mote", 1, 0.06), ("osmium_mote", 1, 0.06)],
+    "cassiterite_dust":   [("stone_dust", 1, 1.0), ("tin_dust", 1, 1.0), ("tantalum_mote", 1, 0.05), ("indium_mote", 1, 0.03)],
+    "magnetite_dust":     [("stone_dust", 1, 1.0), ("iron_dust", 1, 1.0), ("titanium_mote", 1, 0.08), ("vanadium_mote", 1, 0.06)],
+    "malachite_dust":     [("stone_dust", 1, 1.0), ("copper_dust", 1, 1.0)],
+    "rutile_dust":        [("stone_dust", 1, 1.0), ("titanium_dust", 1, 1.0), ("niobium_mote", 1, 0.05), ("tantalum_mote", 1, 0.03)],
+    "scheelite_dust":     [("stone_dust", 1, 1.0), ("calcium_dust", 1, 1.0), ("tungsten_dust", 1, 1.0), ("molybdenum_mote", 1, 0.08)],
+    "spodumene_dust":     [("stone_dust", 1, 1.0), ("lithium_dust", 1, 1.0), ("aluminium_dust", 1, 0.5)],
+    "pollucite_dust":     [("stone_dust", 1, 1.0), ("cesium_dust", 1, 1.0), ("aluminium_dust", 1, 0.5), ("rubidium_mote", 1, 0.1)],
+    "rhodochrosite_dust": [("stone_dust", 1, 1.0), ("manganese_dust", 1, 1.0), ("iron_mote", 1, 0.1)],
+    "realgar_dust":       [("stone_dust", 1, 1.0), ("arsenic_dust", 1, 1.0), ("sulfur_dust", 1, 1.0)],
+    "smithsonite_dust":   [("stone_dust", 1, 1.0), ("zinc_dust", 1, 1.0), ("cadmium_mote", 1, 0.08)],
+    "sylvite_dust":       [("potassium_dust", 1, 1.0), ("rubidium_mote", 1, 0.05)],
+    "calaverite_dust":    [("stone_dust", 1, 1.0), ("gold_dust", 1, 1.0), ("tellurium_dust", 1, 1.0), ("silver_mote", 1, 0.1)],
+    "clausthalite_dust":  [("stone_dust", 1, 1.0), ("lead_dust", 1, 1.0), ("selenium_dust", 1, 1.0)],
+    "germanite_dust":     [("stone_dust", 1, 1.0), ("copper_dust", 1, 1.0), ("germanium_dust", 1, 1.0),
+                           ("sulfur_dust", 1, 0.5), ("iron_mote", 1, 0.3), ("gallium_mote", 1, 0.05)],
+    "lautarite_dust":     [("stone_dust", 1, 1.0), ("calcium_dust", 1, 1.0), ("iodine_dust", 1, 1.0)],
 }
 # extra trace outputs appended to existing centrifuge recipes
 CENTRIFUGE_EXTRA = {
@@ -389,10 +468,11 @@ def main():
         en[f"item.omnitech.{dust}"] = en_name
         ru[f"item.omnitech.{dust}"] = ru_name
 
-    for name, en_name in NEW_MINERAL_BLOCKS.items():
+    for name, (en_name, ru_name) in NEW_MINERAL_BLOCKS.items():
         write_json(DATA / f"block/{name}.json", {"ore": True})
         write_json(ASSETS / f"blockstates/{name}.json", {"variants": {"": {"model": f"omnitech:block/{name}"}}})
         en[f"block.omnitech.{name}"] = en_name
+        ru[f"block.omnitech.{name}"] = ru_name
 
     for name, (default, overrides) in SPAWNS.items():
         write_json(DATA / f"worldgen/ore/{name}.json", spawn_json(default, overrides))

@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 3.0,
+  "inputItem": {
+    "item": "omnitech:cracked_ice",
+    "amount": 1
+  },
+  "outputFluid": {
+    "fluid": "minecraft:water",
+    "amount": 750
+  }
+}

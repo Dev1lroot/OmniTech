@@ -60,8 +60,21 @@ public class RadiationSavedData extends SavedData {
 
     record PendingZoneEvent(long fireTick, int zone, BlockPos center) {}
 
+    /**
+     * This dimension's explosions: radiation centers, scheduled zones and the
+     * destruction queue live in each level's own storage, so a bomb only ever
+     * affects (and irradiates) the dimension it went off in.
+     */
     public static RadiationSavedData get(ServerLevel level) {
-        return level.getServer().overworld().getDataStorage().computeIfAbsent(TYPE);
+        return level.getDataStorage().computeIfAbsent(TYPE);
+    }
+
+    /**
+     * Server-wide store for per-player health reduction (the Overworld's instance),
+     * so the cumulative damage follows the player across dimensions.
+     */
+    public static RadiationSavedData global(net.minecraft.server.MinecraftServer server) {
+        return server.overworld().getDataStorage().computeIfAbsent(TYPE);
     }
 
     public List<BlockPos> getCenters() {

@@ -29,14 +29,17 @@ public class RadioLocatorItem extends Item {
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         if (level.isClientSide()) {
-            openScreen(player.getItemInHand(hand), hand);
+            ClientAccess.openScreen(player.getItemInHand(hand), hand);
         }
         return InteractionResult.SUCCESS;
     }
 
-    private static void openScreen(ItemStack stack, InteractionHand hand) {
-        int globalKey = stack.getOrDefault(OmniTechDataComponents.RADIO_LOCATOR_FREQ.get(),
-                FrequencyBand.VHF.globalKey(0));
-        Minecraft.getInstance().gui.setScreen(new RadioLocatorScreen(globalKey, hand));
+    /** Client-only; kept in its own class so dedicated servers never load {@code Screen}. */
+    private static final class ClientAccess {
+        static void openScreen(ItemStack stack, InteractionHand hand) {
+            int globalKey = stack.getOrDefault(OmniTechDataComponents.RADIO_LOCATOR_FREQ.get(),
+                    FrequencyBand.VHF.globalKey(0));
+            Minecraft.getInstance().gui.setScreen(new RadioLocatorScreen(globalKey, hand));
+        }
     }
 }

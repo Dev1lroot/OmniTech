@@ -5,9 +5,13 @@
       "type": "minecraft:condition",
       "if_true": {
         "type": "minecraft:vertical_gradient",
-        "false_at_and_above": { "above_bottom": 3 },
         "random_name": "omnitech:europa_bedrock_floor",
-        "true_at_and_below": { "above_bottom": 0 }
+        "true_at_and_below": {
+          "above_bottom": 0
+        },
+        "false_at_and_above": {
+          "above_bottom": 3
+        }
       },
       "then_run": {
         "type": "minecraft:block",
@@ -20,7 +24,9 @@
         "type": "minecraft:not",
         "invert": {
           "type": "minecraft:y_above",
-          "anchor": { "absolute": 23 },
+          "anchor": {
+            "absolute": 60
+          },
           "surface_depth_multiplier": 0,
           "add_stone_depth": false
         }
@@ -40,8 +46,239 @@
         "surface_type": "floor"
       },
       "then_run": {
-        "type": "minecraft:block",
-        "result_state": "omnitech:cracked_ice"
+        "type": "minecraft:sequence",
+        "sequence": [
+          {
+            "type": "minecraft:condition",
+            "if_true": {
+              "type": "minecraft:biome",
+              "biome_is": [
+                "omnitech:europa"
+              ]
+            },
+            "then_run": {
+              "type": "minecraft:sequence",
+              "sequence": [
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:noise_threshold",
+                    "noise": "omnitech:europa_lineae",
+                    "min_threshold": -0.024,
+                    "max_threshold": 0.024
+                  },
+                  "then_run": {
+                    "type": "minecraft:block",
+                    "result_state": "omnitech:lineae_ice"
+                  }
+                },
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:noise_threshold",
+                    "noise": "omnitech:europa_lineae_cross",
+                    "min_threshold": -0.020999999999999998,
+                    "max_threshold": 0.020999999999999998
+                  },
+                  "then_run": {
+                    "type": "minecraft:block",
+                    "result_state": "omnitech:lineae_ice"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "minecraft:condition",
+            "if_true": {
+              "type": "minecraft:biome",
+              "biome_is": [
+                "omnitech:europa_hills"
+              ]
+            },
+            "then_run": {
+              "type": "minecraft:sequence",
+              "sequence": [
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:noise_threshold",
+                    "noise": "omnitech:europa_lineae",
+                    "min_threshold": -0.010499999999999999,
+                    "max_threshold": 0.010499999999999999
+                  },
+                  "then_run": {
+                    "type": "minecraft:block",
+                    "result_state": "omnitech:europa_ice"
+                  }
+                },
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:noise_threshold",
+                    "noise": "omnitech:europa_lineae",
+                    "min_threshold": -0.047,
+                    "max_threshold": 0.047
+                  },
+                  "then_run": {
+                    "type": "minecraft:block",
+                    "result_state": "omnitech:lineae_ice"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "minecraft:condition",
+            "if_true": {
+              "type": "minecraft:biome",
+              "biome_is": [
+                "omnitech:europa_plains"
+              ]
+            },
+            "then_run": {
+              "type": "minecraft:sequence",
+              "sequence": [
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:noise_threshold",
+                    "noise": "omnitech:europa_hairline",
+                    "min_threshold": -0.018,
+                    "max_threshold": 0.018
+                  },
+                  "then_run": {
+                    "type": "minecraft:block",
+                    "result_state": "minecraft:blue_ice"
+                  }
+                },
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:noise_threshold",
+                    "noise": "omnitech:europa_lineae_cross",
+                    "min_threshold": -0.012,
+                    "max_threshold": 0.012
+                  },
+                  "then_run": {
+                    "type": "minecraft:block",
+                    "result_state": "minecraft:blue_ice"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "minecraft:condition",
+            "if_true": {
+              "type": "minecraft:biome",
+              "biome_is": [
+                "omnitech:europa_coral_reef"
+              ]
+            },
+            "then_run": {
+              "type": "minecraft:sequence",
+              "sequence": [
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:noise_threshold",
+                    "noise": "omnitech:europa_chaos_a",
+                    "min_threshold": -0.0245,
+                    "max_threshold": 0.0245
+                  },
+                  "then_run": {
+                    "type": "minecraft:block",
+                    "result_state": "minecraft:packed_ice"
+                  }
+                },
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:noise_threshold",
+                    "noise": "omnitech:europa_chaos_b",
+                    "min_threshold": -0.0245,
+                    "max_threshold": 0.0245
+                  },
+                  "then_run": {
+                    "type": "minecraft:block",
+                    "result_state": "minecraft:packed_ice"
+                  }
+                },
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:noise_threshold",
+                    "noise": "omnitech:europa_chaos_plates",
+                    "min_threshold": 0.5,
+                    "max_threshold": 9
+                  },
+                  "then_run": {
+                    "type": "minecraft:block",
+                    "result_state": "omnitech:lineae_ice"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "minecraft:condition",
+            "if_true": {
+              "type": "minecraft:biome",
+              "biome_is": [
+                "omnitech:europa_sulfur_vents"
+              ]
+            },
+            "then_run": {
+              "type": "minecraft:sequence",
+              "sequence": [
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:noise_threshold",
+                    "noise": "omnitech:europa_lineae",
+                    "min_threshold": -0.020000000000000004,
+                    "max_threshold": 0.020000000000000004
+                  },
+                  "then_run": {
+                    "type": "minecraft:block",
+                    "result_state": "omnitech:sulfur_ice"
+                  }
+                },
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:noise_threshold",
+                    "noise": "omnitech:europa_lineae",
+                    "min_threshold": -0.0625,
+                    "max_threshold": 0.0625
+                  },
+                  "then_run": {
+                    "type": "minecraft:block",
+                    "result_state": "omnitech:lineae_ice"
+                  }
+                },
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:noise_threshold",
+                    "noise": "omnitech:europa_hairline",
+                    "min_threshold": -0.018,
+                    "max_threshold": 0.018
+                  },
+                  "then_run": {
+                    "type": "minecraft:block",
+                    "result_state": "omnitech:sulfur_ice"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "minecraft:block",
+            "result_state": "omnitech:cracked_ice"
+          }
+        ]
       }
     },
     {

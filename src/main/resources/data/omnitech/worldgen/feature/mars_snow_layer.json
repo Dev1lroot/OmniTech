@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:simple_block",
+  "to_place": {
+    "type": "minecraft:randomized_int",
+    "property": "layers",
+    "source": {
+      "id": "minecraft:snow",
+      "properties": {
+        "layers": "1"
+      }
+    },
+    "values": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 1,
+      "max_inclusive": 3
+    }
+  }
+}

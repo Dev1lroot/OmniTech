@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:mars_basalt",
+  "output": [
+    {
+      "item": "omnitech:mars_basalt_dust",
+      "count": 3,
+      "chance": 1.0
+    }
+  ]
+}

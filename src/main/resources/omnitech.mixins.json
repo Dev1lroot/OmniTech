@@ -15,7 +15,8 @@
     "EntityGravityRenderMixin",
     "LivingEntityMovementClientMixin",
     "CameraRotationMixin",
-    "EntityViewVectorGravityMixin"
+    "EntityViewVectorGravityMixin",
+    "GameRendererHelmetVisionMixin"
   ],
   "injectors": {
     "defaultRequire": 1

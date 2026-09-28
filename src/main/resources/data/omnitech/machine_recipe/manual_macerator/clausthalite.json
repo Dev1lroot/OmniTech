@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:clausthalite",
+  "output": [
+    {
+      "item": "omnitech:clausthalite_dust",
+      "count": 4,
+      "chance": 1.0
+    }
+  ]
+}

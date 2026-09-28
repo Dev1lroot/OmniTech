@@ -1,0 +1,36 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:mars_basalt_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:iron_dust",
+      "count": 1,
+      "chance": 0.4
+    },
+    {
+      "item": "omnitech:magnesium_dust",
+      "count": 1,
+      "chance": 0.35
+    },
+    {
+      "item": "omnitech:titanium_mote",
+      "count": 1,
+      "chance": 0.1
+    },
+    {
+      "item": "omnitech:chromium_mote",
+      "count": 1,
+      "chance": 0.06
+    },
+    {
+      "item": "omnitech:nickel_mote",
+      "count": 1,
+      "chance": 0.05
+    }
+  ]
+}

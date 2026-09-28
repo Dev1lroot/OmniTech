@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:cassiterite",
+  "output": [
+    {
+      "item": "omnitech:cassiterite_dust",
+      "count": 4,
+      "chance": 1.0
+    }
+  ]
+}

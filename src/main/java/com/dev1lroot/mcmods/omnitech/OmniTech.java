@@ -172,7 +172,9 @@ public class OmniTech {
         NeoForge.EVENT_BUS.addListener(OmniTech::registerCommands);
         NeoForge.EVENT_BUS.addListener(OmniTech::onServerTick);
         NeoForge.EVENT_BUS.addListener(OmniTech::onServerStopping);
+        NeoForge.EVENT_BUS.addListener(com.dev1lroot.mcmods.omnitech.worldgen.DimensionMapDebug::onServerStarted);
         NeoForge.EVENT_BUS.addListener(OmniTech::onPlayerLoggedIn);
+        NeoForge.EVENT_BUS.addListener(OmniTech::onPlayerChangedDimension);
         NeoForge.EVENT_BUS.addListener(OmniTech::onPlayerLoggedOut);
         NeoForge.EVENT_BUS.addListener(OmniTech::onStartTracking);
         modEventBus.addListener(OmniTech::registerAttributes);
@@ -526,6 +528,10 @@ public class OmniTech {
                 OpenRocketGuiPacket.CODEC,
                 OpenRocketGuiPacket::handle);
         event.registrar("1").playToServer(
+                com.dev1lroot.mcmods.omnitech.network.HelmetVisionPacket.TYPE,
+                com.dev1lroot.mcmods.omnitech.network.HelmetVisionPacket.CODEC,
+                com.dev1lroot.mcmods.omnitech.network.HelmetVisionPacket::handle);
+        event.registrar("1").playToServer(
                 SpaceTravelPacket.TYPE,
                 SpaceTravelPacket.CODEC,
                 SpaceTravelPacket::handle);
@@ -724,6 +730,8 @@ public class OmniTech {
     public static void onServerTick(ServerTickEvent.Post event) {
         long tick = event.getServer().getTickCount();
 
+        if (tick % 20 == 0) com.dev1lroot.mcmods.omnitech.items.HelmetVision.serverTick(event.getServer());
+
         // Send gravity field data to clients once per second
         if (tick % 20 == 0) {
             for (ServerPlayer sp : event.getServer().getPlayerList().getPlayers()) {
@@ -783,6 +791,7 @@ public class OmniTech {
         if (event.getEntity() instanceof ServerPlayer sp) {
             KeyboardBlock.clearSession(sp.getUUID());
             com.dev1lroot.mcmods.omnitech.util.PlayerFrames.setServer(sp.getUUID(), null);
+            com.dev1lroot.mcmods.omnitech.items.HelmetVision.clear(sp.getUUID());
         }
     }
 
@@ -801,10 +810,17 @@ public class OmniTech {
             sp.getInventory().add(new ItemStack(OmniTechItems.GUIDEBOOK.get()));
             sp.setData(OmniTechAttachments.GUIDEBOOK_GIVEN, true);
         }
+        syncRadiationCenters(sp);
+    }
+
+    /** Radiation centers are per dimension: resync the client's Geiger cache on every dimension change. */
+    public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (event.getEntity() instanceof ServerPlayer sp) syncRadiationCenters(sp);
+    }
+
+    private static void syncRadiationCenters(ServerPlayer sp) {
         RadiationSavedData radData = RadiationSavedData.get((ServerLevel) sp.level());
-        if (!radData.getCenters().isEmpty()) {
-            PacketDistributor.sendToPlayer(sp, new RadiationSyncPacket(new ArrayList<>(radData.getCenters())));
-        }
+        PacketDistributor.sendToPlayer(sp, new RadiationSyncPacket(new ArrayList<>(radData.getCenters())));
     }
 
     public static void onServerStopping(ServerStoppingEvent event) {

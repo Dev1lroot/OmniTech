@@ -1,0 +1,295 @@
+{
+  "type": "minecraft:add",
+  "left": {
+    "type": "minecraft:mul",
+    "left": 0.8,
+    "right": {
+      "type": "minecraft:add",
+      "left": {
+        "type": "minecraft:spline",
+        "spline": {
+          "coordinate": "omnitech:europa/province",
+          "points": [
+            {
+              "location": -1.5,
+              "value": {
+                "coordinate": "omnitech:europa/variant",
+                "points": [
+                  {
+                    "location": -1.5,
+                    "value": 26,
+                    "derivative": 0.0
+                  },
+                  {
+                    "location": -0.04,
+                    "value": 26,
+                    "derivative": 0.0
+                  },
+                  {
+                    "location": 0.04,
+                    "value": 34,
+                    "derivative": 0.0
+                  },
+                  {
+                    "location": 1.5,
+                    "value": 34,
+                    "derivative": 0.0
+                  }
+                ]
+              },
+              "derivative": 0.0
+            },
+            {
+              "location": -0.12,
+              "value": {
+                "coordinate": "omnitech:europa/variant",
+                "points": [
+                  {
+                    "location": -1.5,
+                    "value": 26,
+                    "derivative": 0.0
+                  },
+                  {
+                    "location": -0.04,
+                    "value": 26,
+                    "derivative": 0.0
+                  },
+                  {
+                    "location": 0.04,
+                    "value": 34,
+                    "derivative": 0.0
+                  },
+                  {
+                    "location": 1.5,
+                    "value": 34,
+                    "derivative": 0.0
+                  }
+                ]
+              },
+              "derivative": 0.0
+            },
+            {
+              "location": -0.04,
+              "value": 27,
+              "derivative": 0.0
+            },
+            {
+              "location": 0.04,
+              "value": 27,
+              "derivative": 0.0
+            },
+            {
+              "location": 0.12,
+              "value": {
+                "coordinate": "omnitech:europa/variant",
+                "points": [
+                  {
+                    "location": -1.5,
+                    "value": 38,
+                    "derivative": 0.0
+                  },
+                  {
+                    "location": -0.04,
+                    "value": 38,
+                    "derivative": 0.0
+                  },
+                  {
+                    "location": 0.04,
+                    "value": 22,
+                    "derivative": 0.0
+                  },
+                  {
+                    "location": 1.5,
+                    "value": 22,
+                    "derivative": 0.0
+                  }
+                ]
+              },
+              "derivative": 0.0
+            },
+            {
+              "location": 1.5,
+              "value": {
+                "coordinate": "omnitech:europa/variant",
+                "points": [
+                  {
+                    "location": -1.5,
+                    "value": 38,
+                    "derivative": 0.0
+                  },
+                  {
+                    "location": -0.04,
+                    "value": 38,
+                    "derivative": 0.0
+                  },
+                  {
+                    "location": 0.04,
+                    "value": 22,
+                    "derivative": 0.0
+                  },
+                  {
+                    "location": 1.5,
+                    "value": 22,
+                    "derivative": 0.0
+                  }
+                ]
+              },
+              "derivative": 0.0
+            }
+          ]
+        }
+      },
+      "right": {
+        "type": "minecraft:mul",
+        "left": {
+          "type": "minecraft:spline",
+          "spline": {
+            "coordinate": "omnitech:europa/province",
+            "points": [
+              {
+                "location": -1.5,
+                "value": {
+                  "coordinate": "omnitech:europa/variant",
+                  "points": [
+                    {
+                      "location": -1.5,
+                      "value": 3,
+                      "derivative": 0.0
+                    },
+                    {
+                      "location": -0.04,
+                      "value": 3,
+                      "derivative": 0.0
+                    },
+                    {
+                      "location": 0.04,
+                      "value": 14,
+                      "derivative": 0.0
+                    },
+                    {
+                      "location": 1.5,
+                      "value": 14,
+                      "derivative": 0.0
+                    }
+                  ]
+                },
+                "derivative": 0.0
+              },
+              {
+                "location": -0.12,
+                "value": {
+                  "coordinate": "omnitech:europa/variant",
+                  "points": [
+                    {
+                      "location": -1.5,
+                      "value": 3,
+                      "derivative": 0.0
+                    },
+                    {
+                      "location": -0.04,
+                      "value": 3,
+                      "derivative": 0.0
+                    },
+                    {
+                      "location": 0.04,
+                      "value": 14,
+                      "derivative": 0.0
+                    },
+                    {
+                      "location": 1.5,
+                      "value": 14,
+                      "derivative": 0.0
+                    }
+                  ]
+                },
+                "derivative": 0.0
+              },
+              {
+                "location": -0.04,
+                "value": 1.5,
+                "derivative": 0.0
+              },
+              {
+                "location": 0.04,
+                "value": 1.5,
+                "derivative": 0.0
+              },
+              {
+                "location": 0.12,
+                "value": {
+                  "coordinate": "omnitech:europa/variant",
+                  "points": [
+                    {
+                      "location": -1.5,
+                      "value": 5,
+                      "derivative": 0.0
+                    },
+                    {
+                      "location": -0.04,
+                      "value": 5,
+                      "derivative": 0.0
+                    },
+                    {
+                      "location": 0.04,
+                      "value": 7,
+                      "derivative": 0.0
+                    },
+                    {
+                      "location": 1.5,
+                      "value": 7,
+                      "derivative": 0.0
+                    }
+                  ]
+                },
+                "derivative": 0.0
+              },
+              {
+                "location": 1.5,
+                "value": {
+                  "coordinate": "omnitech:europa/variant",
+                  "points": [
+                    {
+                      "location": -1.5,
+                      "value": 5,
+                      "derivative": 0.0
+                    },
+                    {
+                      "location": -0.04,
+                      "value": 5,
+                      "derivative": 0.0
+                    },
+                    {
+                      "location": 0.04,
+                      "value": 7,
+                      "derivative": 0.0
+                    },
+                    {
+                      "location": 1.5,
+                      "value": 7,
+                      "derivative": 0.0
+                    }
+                  ]
+                },
+                "derivative": 0.0
+              }
+            ]
+          }
+        },
+        "right": {
+          "type": "minecraft:noise",
+          "noise": "omnitech:europa_seafloor",
+          "xz_scale": 1.0,
+          "y_scale": 0.0
+        }
+      }
+    }
+  },
+  "right": {
+    "type": "minecraft:gradient",
+    "axis": "y",
+    "from_coordinate": 0,
+    "to_coordinate": 256,
+    "from_value": 0.0,
+    "to_value": -204.8
+  }
+}

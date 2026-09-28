@@ -32,9 +32,16 @@ public class StructureTableBlock extends Block {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
             Player player, BlockHitResult hit) {
         if (level.isClientSide()) {
+            ClientAccess.open();
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    /** Client-only; kept in its own class so dedicated servers never load {@code Screen}. */
+    private static final class ClientAccess {
+        static void open() {
             net.minecraft.client.Minecraft.getInstance().gui.setScreen(
                     new com.dev1lroot.mcmods.omnitech.gui.StructureTableScreen());
         }
-        return InteractionResult.SUCCESS;
     }
 }

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "omnitech:item/europa_stone_dust"
+  }
+}

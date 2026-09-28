@@ -630,3 +630,320 @@ minerals:
         emissive: false
         reflectivity: 0.9
         metalness: 1.0
+
+  - name: "cassiterite" # Касситерит (олово)
+    visuals:
+      base_layer:
+        color: "#2E2420"
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#6B4A38"
+          size: { min: 0.15, max: 0.3 }
+          density: 0.4
+          shading: "glossy"
+        - color: "#B08A6A"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.15
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.5
+
+  - name: "magnetite" # Магнетит (железо)
+    visuals:
+      base_layer:
+        color: "#2A2A2C"
+        texture_type: "stony"
+      inclusions:
+        - color: "#141416"
+          size: { min: 0.15, max: 0.3 }
+          density: 0.5
+          shading: "metallic"
+          shape: "cubic"
+        - color: "#6A6A72"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.15
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.6
+
+  - name: "malachite" # Малахит (медь)
+    visuals:
+      base_layer:
+        color: "#3C4A40"
+        texture_type: "stony"
+      inclusions:
+        - color: "#1F7A4A"
+          size: { min: 0.15, max: 0.35 }
+          density: 0.5
+          shading: "matte"
+          shape: "banded"
+        - color: "#5FD08E"
+          size: { min: 0.05, max: 0.15 }
+          density: 0.25
+          shading: "glossy"
+      effects:
+        emissive: false
+        reflectivity: 0.2
+
+  - name: "rutile" # Рутил (титан)
+    visuals:
+      base_layer:
+        color: "#4A3A34"
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#8A2E14"
+          size: { min: 0.1, max: 0.25 }
+          density: 0.35
+          shading: "metallic"
+          shape: "needles"
+        - color: "#D4703C"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.15
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.6
+
+  - name: "scheelite" # Шеелит (вольфрам)
+    visuals:
+      base_layer:
+        color: "#5A5650"
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#D8C890"
+          size: { min: 0.15, max: 0.3 }
+          density: 0.4
+          shading: "translucent"
+        - color: "#F4ECC8"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.15
+          shading: "glowing"
+      effects:
+        emissive: false
+        reflectivity: 0.4
+
+  - name: "spodumene" # Сподумен (литий)
+    visuals:
+      base_layer:
+        color: "#6A6468"
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#D8C8D0"
+          size: { min: 0.15, max: 0.35 }
+          density: 0.45
+          shading: "glossy"
+          shape: "prismatic"
+        - color: "#E7A1D0"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.1
+          shading: "translucent"
+      effects:
+        emissive: false
+        reflectivity: 0.4
+
+  - name: "pollucite" # Поллуцит (цезий)
+    visuals:
+      base_layer:
+        color: "#7A8288"
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#E0E8EC"
+          size: { min: 0.15, max: 0.3 }
+          density: 0.4
+          shading: "translucent"
+        - color: "#B8C4CC"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.2
+          shading: "glossy"
+      effects:
+        emissive: false
+        reflectivity: 0.4
+
+  - name: "rhodochrosite" # Родохрозит (марганец)
+    visuals:
+      base_layer:
+        color: "#4A3A3E"
+        texture_type: "stony"
+      inclusions:
+        - color: "#E0708E"
+          size: { min: 0.15, max: 0.35 }
+          density: 0.45
+          shading: "glossy"
+          shape: "banded"
+        - color: "#F4B0C4"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.2
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.3
+
+  - name: "realgar" # Реальгар (мышьяк)
+    visuals:
+      base_layer:
+        color: "#4A3A34"
+        texture_type: "stony"
+      inclusions:
+        - color: "#C8321A"
+          size: { min: 0.15, max: 0.3 }
+          density: 0.45
+          shading: "glossy"
+        - color: "#F07A30"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.2
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.3
+
+  - name: "smithsonite" # Смитсонит (цинк)
+    visuals:
+      base_layer:
+        color: "#5A6260"
+        texture_type: "stony"
+      inclusions:
+        - color: "#88C8C0"
+          size: { min: 0.15, max: 0.3 }
+          density: 0.4
+          shading: "glossy"
+          shape: "botryoidal"
+        - color: "#C8ECE6"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.2
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.3
+
+  - name: "sylvite" # Сильвин (калий)
+    visuals:
+      base_layer:
+        color: "#6A6260"
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#E08A6A"
+          size: { min: 0.15, max: 0.35 }
+          density: 0.45
+          shading: "translucent"
+          shape: "cubic"
+        - color: "#F4E0D8"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.2
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.3
+
+  - name: "calaverite" # Калаверит (золото, теллур)
+    visuals:
+      base_layer:
+        color: "#3A3630"
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#C8B878"
+          size: { min: 0.1, max: 0.25 }
+          density: 0.35
+          shading: "metallic"
+        - color: "#ECE0A8"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.12
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.8
+
+  - name: "clausthalite" # Клаусталит (свинец, селен)
+    visuals:
+      base_layer:
+        color: "#34363C"
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#8A92A6"
+          size: { min: 0.15, max: 0.3 }
+          density: 0.4
+          shading: "metallic"
+          shape: "cubic"
+        - color: "#C4CCDC"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.12
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.8
+
+  - name: "germanite" # Германит (германий)
+    visuals:
+      base_layer:
+        color: "#3A3034"
+        texture_type: "stony"
+      inclusions:
+        - color: "#8A6A70"
+          size: { min: 0.15, max: 0.3 }
+          density: 0.4
+          shading: "metallic"
+        - color: "#C8A8AC"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.12
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.7
+
+  - name: "lautarite" # Лаутарит (йод)
+    visuals:
+      base_layer:
+        color: "#7A6E58"
+        texture_type: "stony"
+      inclusions:
+        - color: "#E8D8A0"
+          size: { min: 0.15, max: 0.3 }
+          density: 0.4
+          shading: "translucent"
+          shape: "prismatic"
+        - color: "#F8F0D0"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.2
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.3
+
+  - name: "lunar_kreep" # KREEP-базальт
+    visuals:
+      base_layer:
+        color: "#3A3A40"
+        texture_type: "stony"
+      inclusions:
+        - color: "#C88A3A"
+          size: { min: 0.1, max: 0.25 }
+          density: 0.35
+          shading: "glossy"
+          shape: "cubic"
+        - color: "#E8D8B0"
+          size: { min: 0.1, max: 0.25 }
+          density: 0.12
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.5
+
+  - name: "mars_hematite_concretion" # Гематитовые конкреции
+    visuals:
+      base_layer:
+        color: "#84523C"
+        texture_type: "stony"
+      inclusions:
+        - color: "#2A2A30"
+          size: { min: 0.1, max: 0.25 }
+          density: 0.35
+          shading: "metallic"
+          shape: "cubic"
+        - color: "#6A6A74"
+          size: { min: 0.1, max: 0.25 }
+          density: 0.12
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.5

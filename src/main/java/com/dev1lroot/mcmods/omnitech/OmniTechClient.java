@@ -75,6 +75,7 @@ public class OmniTechClient
     /** Held to roll the view left / right around the look axis while floating free in zero-g. */
     public static KeyMapping ROLL_LEFT;
     public static KeyMapping ROLL_RIGHT;
+    public static KeyMapping HELMET_VISION;
 
     /** Zero-g roll speed while a roll key is held. */
     private static final float ROLL_DEGREES_PER_SECOND = 90f;
@@ -92,6 +93,10 @@ public class OmniTechClient
         modEventBus.addListener(this::registerCustomEnvironmentRenderers);
         modEventBus.addListener(this::registerRenderPipelines);
         modEventBus.addListener(this::registerKeys);
+        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut e) ->
+                com.dev1lroot.mcmods.omnitech.client.HelmetVisionClient.reset());
+        NeoForge.EVENT_BUS.addListener(com.dev1lroot.mcmods.omnitech.client.HelmetVisionClient::onRenderFog);
+        NeoForge.EVENT_BUS.addListener(com.dev1lroot.mcmods.omnitech.client.HelmetVisionClient::onComputeFogColor);
         modEventBus.addListener(this::registerRenderStateModifiers);
         modEventBus.addListener(this::onAddClientReloadListeners);
         modEventBus.addListener(this::registerItemColors);
@@ -257,6 +262,11 @@ public class OmniTechClient
                 InputConstants.KEY_C,
                 category);
         event.register(ROLL_RIGHT);
+        HELMET_VISION = new KeyMapping(
+                "key.omnitech.helmet_vision",
+                InputConstants.KEY_N,
+                category);
+        event.register(HELMET_VISION);
     }
 
     public static void onSoundOptionsOpening(ScreenEvent.Opening event) {
@@ -365,6 +375,8 @@ public class OmniTechClient
             MicrophoneCapture.stop();
             return;
         }
+
+        com.dev1lroot.mcmods.omnitech.client.HelmetVisionClient.tick(mc, HELMET_VISION);
 
         // Rocket inventory key — only send while the player is mounted in the rocket
         // and below orbit altitude (in ORBIT the space map is used instead).

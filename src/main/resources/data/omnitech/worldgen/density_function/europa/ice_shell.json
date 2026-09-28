@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:add",
+  "left": {
+    "type": "minecraft:add",
+    "left": {
+      "type": "minecraft:gradient",
+      "axis": "y",
+      "from_coordinate": 100,
+      "to_coordinate": 106,
+      "from_value": -2.0,
+      "to_value": 2.0
+    },
+    "right": {
+      "type": "minecraft:gradient",
+      "axis": "y",
+      "from_coordinate": 120,
+      "to_coordinate": 126,
+      "from_value": 0.0,
+      "to_value": -4.0
+    }
+  },
+  "right": {
+    "type": "minecraft:mul",
+    "left": 1.5,
+    "right": {
+      "type": "minecraft:noise",
+      "noise": "omnitech:europa_surface",
+      "xz_scale": 0.8,
+      "y_scale": 0.0
+    }
+  }
+}

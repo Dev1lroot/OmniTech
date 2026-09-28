@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:europa_stone",
+  "output": [
+    {
+      "item": "omnitech:europa_stone_dust",
+      "count": 2,
+      "chance": 1.0
+    }
+  ]
+}

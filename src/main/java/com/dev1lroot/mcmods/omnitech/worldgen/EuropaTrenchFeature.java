@@ -23,6 +23,9 @@ import net.minecraft.world.level.levelgen.feature.Feature;
  * <p>Placement should target Y ≈ 27 (the stone–water boundary in Europa's noise
  * settings) so the feature carves downward into solid rock.  The feature is rare
  * by design — use {@code minecraft:rarity_filter} in the placed-feature JSON.
+ *
+ * <p>A feature may only touch the 3×3 chunks around the chunk being decorated, so
+ * the rift is sized to fit that area and every write is clipped to it.
  */
 public record EuropaTrenchFeature() implements Feature {
 
@@ -50,14 +53,16 @@ public record EuropaTrenchFeature() implements Feature {
         if (floorY < 10) return false;   // too close to bedrock — abort
 
         // ── Trench parameters ──────────────────────────────────────────────────
-        int length    = 75 + random.nextInt(75);  // 75–149 blocks long
-        int halfWidth = 9  + random.nextInt(9);   // 9–17 — gives total width 19–35 at centre
+        int length    = 30 + random.nextInt(16);  // 30–45 blocks long
+        int halfWidth = 4  + random.nextInt(5);   // 4–8 — gives total width 9–17 at centre
         int depth     = 14 + random.nextInt(8);   // 14–21 blocks deep (unchanged)
 
         // Random rift axis: true = rift runs N↔S (varies along Z), false = E↔W (varies along X)
         boolean alongZ = random.nextBoolean();
 
         int bottomY = Math.max(4, floorY - depth);
+        int minX = ((origin.getX() >> 4) - 1) << 4, maxX = minX + 47;
+        int minZ = ((origin.getZ() >> 4) - 1) << 4, maxZ = minZ + 47;
         BlockState waterState = Blocks.WATER.defaultBlockState();
         boolean carved = false;
 
@@ -70,6 +75,7 @@ public record EuropaTrenchFeature() implements Feature {
             for (int side = -w; side <= w; side++) {
                 int dx = alongZ ? side : l;
                 int dz = alongZ ? l    : side;
+                if (!inBounds(origin.getX() + dx, origin.getZ() + dz, minX, maxX, minZ, maxZ)) continue;
 
                 for (int y = floorY; y >= bottomY; y--) {
                     mutable.set(origin.getX() + dx, y, origin.getZ() + dz);
@@ -97,6 +103,7 @@ public record EuropaTrenchFeature() implements Feature {
             for (int side = -w; side <= w; side++) {
                 int dx = alongZ ? side : l;
                 int dz = alongZ ? l    : side;
+                if (!inBounds(origin.getX() + dx, origin.getZ() + dz, minX, maxX, minZ, maxZ)) continue;
 
                 for (int dy = 1; dy <= 20; dy++) {
                     mutable.set(origin.getX() + dx, floorY + dy, origin.getZ() + dz);
@@ -121,6 +128,7 @@ public record EuropaTrenchFeature() implements Feature {
             int side = halfWidth > 0 ? random.nextInt(halfWidth * 2 + 1) - halfWidth : 0;
             int dx   = alongZ ? side : l;
             int dz   = alongZ ? l    : side;
+            if (!inBounds(origin.getX() + dx, origin.getZ() + dz, minX, maxX, minZ, maxZ)) continue;
 
             // Walk down the column to find the first water-block that sits on solid ground.
             for (int y = floorY; y >= bottomY; y--) {
@@ -137,6 +145,10 @@ public record EuropaTrenchFeature() implements Feature {
         }
 
         return true;
+    }
+
+    private static boolean inBounds(int x, int z, int minX, int maxX, int minZ, int maxZ) {
+        return x >= minX && x <= maxX && z >= minZ && z <= maxZ;
     }
 
     /** Returns {@code true} if the block is neither air nor a fluid — i.e. it can be carved out. */

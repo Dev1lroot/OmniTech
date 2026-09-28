@@ -71,15 +71,18 @@ public class ChemicalFormulaItem extends Item {
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         if (level.isClientSide()) {
-            openViewer(player.getItemInHand(hand));
+            ClientAccess.openViewer(player.getItemInHand(hand));
         }
         return InteractionResult.SUCCESS;
     }
 
-    private static void openViewer(ItemStack stack) {
-        Molecule molecule = getMolecule(stack);
-        String name = resolveName(stack);
-        net.minecraft.client.Minecraft.getInstance().gui.setScreen(
-                new com.dev1lroot.mcmods.omnitech.gui.FormulaViewerScreen(molecule, name));
+    /** Client-only; kept in its own class so dedicated servers never load {@code Screen}. */
+    private static final class ClientAccess {
+        static void openViewer(ItemStack stack) {
+            Molecule molecule = getMolecule(stack);
+            String name = resolveName(stack);
+            net.minecraft.client.Minecraft.getInstance().gui.setScreen(
+                    new com.dev1lroot.mcmods.omnitech.gui.FormulaViewerScreen(molecule, name));
+        }
     }
 }

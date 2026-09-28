@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:scheelite",
+  "output": [
+    {
+      "item": "omnitech:scheelite_dust",
+      "count": 4,
+      "chance": 1.0
+    }
+  ]
+}

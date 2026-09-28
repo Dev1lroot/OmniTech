@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:lunar_kreep",
+  "output": [
+    {
+      "item": "omnitech:kreep_dust",
+      "count": 3,
+      "chance": 1.0
+    }
+  ]
+}

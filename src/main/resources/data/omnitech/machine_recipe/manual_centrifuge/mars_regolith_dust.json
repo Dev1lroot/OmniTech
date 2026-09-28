@@ -1,0 +1,36 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:mars_regolith_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:iron_dust",
+      "count": 1,
+      "chance": 0.5
+    },
+    {
+      "item": "omnitech:magnesium_mote",
+      "count": 1,
+      "chance": 0.3
+    },
+    {
+      "item": "omnitech:sulfur_mote",
+      "count": 1,
+      "chance": 0.25
+    },
+    {
+      "item": "omnitech:sodium_chlorine_dust",
+      "count": 1,
+      "chance": 0.1
+    },
+    {
+      "item": "omnitech:titanium_mote",
+      "count": 1,
+      "chance": 0.05
+    }
+  ]
+}

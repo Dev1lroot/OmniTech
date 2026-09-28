@@ -1,0 +1,26 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:scheelite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:calcium_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:tungsten_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:molybdenum_mote",
+      "count": 1,
+      "chance": 0.08
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "map_color": "sand",
+  "strength": [
+    1.2,
+    1.2
+  ],
+  "sound": "glass",
+  "requires_tool": false
+}

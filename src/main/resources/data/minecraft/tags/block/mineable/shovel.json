@@ -3,6 +3,8 @@
     "omnitech:surface_regolith",
     "omnitech:stratified_regolith",
     "omnitech:paleoregolith",
-    "omnitech:megaregolith"
+    "omnitech:megaregolith",
+    "omnitech:mars_regolith",
+    "omnitech:mars_frost"
   ]
 }

@@ -1,0 +1,41 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:asteroid_dust",
+  "output": [
+    {
+      "item": "omnitech:iron_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:nickel_dust",
+      "count": 1,
+      "chance": 0.5
+    },
+    {
+      "item": "omnitech:cobalt_mote",
+      "count": 1,
+      "chance": 0.25
+    },
+    {
+      "item": "omnitech:graphite_mote",
+      "count": 1,
+      "chance": 0.2
+    },
+    {
+      "item": "omnitech:platinum_mote",
+      "count": 1,
+      "chance": 0.06
+    },
+    {
+      "item": "omnitech:iridium_mote",
+      "count": 1,
+      "chance": 0.04
+    },
+    {
+      "item": "omnitech:palladium_mote",
+      "count": 1,
+      "chance": 0.04
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:europa_stone_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:magnesium_dust",
+      "count": 1,
+      "chance": 0.4
+    },
+    {
+      "item": "omnitech:iron_mote",
+      "count": 1,
+      "chance": 0.4
+    },
+    {
+      "item": "omnitech:nickel_mote",
+      "count": 1,
+      "chance": 0.1
+    }
+  ]
+}

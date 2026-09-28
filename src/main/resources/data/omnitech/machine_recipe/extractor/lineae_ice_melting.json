@@ -1,0 +1,15 @@
+{
+  "requiredKineticForce": 3.0,
+  "inputItem": {
+    "item": "omnitech:lineae_ice",
+    "amount": 1
+  },
+  "outputFluid": {
+    "fluid": "minecraft:water",
+    "amount": 750
+  },
+  "residueItem": {
+    "item": "omnitech:sodium_chlorine_dust",
+    "amount": 1
+  }
+}

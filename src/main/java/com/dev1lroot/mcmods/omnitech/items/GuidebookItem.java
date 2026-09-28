@@ -24,10 +24,17 @@ public class GuidebookItem extends Item {
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         if (level.isClientSide()) {
-            Minecraft.getInstance().gui.setScreen(new GuidebookScreen(GuidebookLoader.getPages()));
+            ClientAccess.open();
         } else if (player instanceof ServerPlayer serverPlayer) {
             AdvancementUtil.award(serverPlayer, "progression/getting_started", "read_guide");
         }
         return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
+    }
+
+    /** Client-only; kept in its own class so dedicated servers never load {@code Screen}. */
+    private static final class ClientAccess {
+        static void open() {
+            Minecraft.getInstance().gui.setScreen(new GuidebookScreen(GuidebookLoader.getPages()));
+        }
     }
 }

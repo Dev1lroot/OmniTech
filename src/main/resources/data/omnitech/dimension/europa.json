@@ -3,8 +3,99 @@
   "generator": {
     "type": "minecraft:noise",
     "biome_source": {
-      "type": "minecraft:fixed",
-      "biome": "omnitech:europa"
+      "type": "minecraft:multi_noise",
+      "biomes": [
+        {
+          "biome": "omnitech:europa",
+          "parameters": {
+            "continentalness": 0.0,
+            "depth": 0.0,
+            "erosion": 0.0,
+            "humidity": [
+              -2.0,
+              0.0
+            ],
+            "offset": 0.0,
+            "temperature": [
+              -2.0,
+              -0.08
+            ],
+            "weirdness": 0.0
+          }
+        },
+        {
+          "biome": "omnitech:europa_hills",
+          "parameters": {
+            "continentalness": 0.0,
+            "depth": 0.0,
+            "erosion": 0.0,
+            "humidity": [
+              0.0,
+              2.0
+            ],
+            "offset": 0.0,
+            "temperature": [
+              -2.0,
+              -0.08
+            ],
+            "weirdness": 0.0
+          }
+        },
+        {
+          "biome": "omnitech:europa_plains",
+          "parameters": {
+            "continentalness": 0.0,
+            "depth": 0.0,
+            "erosion": 0.0,
+            "humidity": [
+              -2.0,
+              2.0
+            ],
+            "offset": 0.0,
+            "temperature": [
+              -0.08,
+              0.08
+            ],
+            "weirdness": 0.0
+          }
+        },
+        {
+          "biome": "omnitech:europa_coral_reef",
+          "parameters": {
+            "continentalness": 0.0,
+            "depth": 0.0,
+            "erosion": 0.0,
+            "humidity": [
+              -2.0,
+              0.0
+            ],
+            "offset": 0.0,
+            "temperature": [
+              0.08,
+              2.0
+            ],
+            "weirdness": 0.0
+          }
+        },
+        {
+          "biome": "omnitech:europa_sulfur_vents",
+          "parameters": {
+            "continentalness": 0.0,
+            "depth": 0.0,
+            "erosion": 0.0,
+            "humidity": [
+              0.0,
+              2.0
+            ],
+            "offset": 0.0,
+            "temperature": [
+              0.08,
+              2.0
+            ],
+            "weirdness": 0.0
+          }
+        }
+      ]
     },
     "settings": "omnitech:europa"
   }

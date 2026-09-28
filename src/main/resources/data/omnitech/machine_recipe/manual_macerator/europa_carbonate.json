@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:europa_carbonate",
+  "output": [
+    {
+      "item": "omnitech:dolomite_dust",
+      "count": 3,
+      "chance": 1.0
+    }
+  ]
+}

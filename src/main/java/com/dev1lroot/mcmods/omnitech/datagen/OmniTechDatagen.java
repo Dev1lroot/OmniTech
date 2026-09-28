@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.datagen;
 
+import com.dev1lroot.mcmods.omnitech.OmniTech;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks.OreEntry;
 import com.dev1lroot.mcmods.omnitech.worldgen.OmniTechWorldGen;
@@ -21,6 +22,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.feature.BlockReplacement;
@@ -57,6 +59,37 @@ public class OmniTechDatagen {
             .add(Registries.FEATURE, OmniTechDatagen::bootstrapCF)
             .add(Registries.PLACED_FEATURE,      OmniTechDatagen::bootstrapPF)
             .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, OmniTechDatagen::bootstrapBiomeModifiers));
+        event.createProvider(SolidBlockTags::new);
+    }
+
+    /**
+     * Since 26.x "blocks motion" is the tag {@code #minecraft:blocks_motion_no_leaves}
+     * instead of a block property. Vanilla hangs suffocation, fluid flow, entity
+     * teleport targets and the OCEAN_FLOOR / MOTION_BLOCKING heightmaps on it, so a
+     * block missing from it acts as if it weren't there for all of those (e.g. ore
+     * features skip anything above a wrong OCEAN_FLOOR_WG heightmap). Adds every
+     * OmniTech block that is solid by vanilla's own rule (legacy solid, not a fluid).
+     */
+    static class SolidBlockTags extends net.neoforged.neoforge.common.data.BlockTagsProvider {
+        SolidBlockTags(net.minecraft.data.PackOutput output,
+                       java.util.concurrent.CompletableFuture<net.minecraft.core.HolderLookup.Provider> lookup) {
+            super(output, lookup, OmniTech.MODID);
+        }
+
+        @Override
+        protected void addTags(net.minecraft.core.HolderLookup.Provider registries) {
+            var tag = this.tag(net.minecraft.tags.BlockTags.BLOCKS_MOTION_NO_LEAVES);
+            net.minecraft.core.registries.BuiltInRegistries.BLOCK.listElements()
+                .filter(h -> h.key().identifier().getNamespace().equals(OmniTech.MODID))
+                .sorted(java.util.Comparator.comparing(h -> h.key().identifier().getPath()))
+                .forEach(h -> {
+                    Block block = h.value();
+                    if (block instanceof net.minecraft.world.level.block.LiquidBlock) return;
+                    BlockState state = block.defaultBlockState();
+                    state.initCache();
+                    if (state.isSolid()) tag.add(h.key());
+                });
+        }
     }
 
     // ── ConfiguredFeature ──────────────────────────────────────────────────

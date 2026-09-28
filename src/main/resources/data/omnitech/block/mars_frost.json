@@ -1,0 +1,9 @@
+{
+  "map_color": "terracotta_brown",
+  "strength": [
+    0.7,
+    0.7
+  ],
+  "sound": "sand",
+  "requires_tool": false
+}

@@ -41,7 +41,8 @@ import java.util.Comparator;
  *   Zone 1 (0–32 blocks):   100% destruction + entity kills, fires when phase 1 ends (5s / 100 ticks).
  *   Zone 2 (32–64 blocks):  75% destruction, queued when phase 2 ends (6s / 120 ticks).
  *   Zone 3 (64–192 blocks): 96 primed TNT, spawned when phase 3 ends (11s / 220 ticks).
- *   Zone 4:                 320-block biome conversion to nuclear_wastelands, at the same moment as zone 3.
+ *   Zone 4:                 320-block biome conversion to nuclear_wastelands, at the same moment as zone 3
+ *                           (Overworld only — other planets keep their biomes, the terrain is still destroyed).
  */
 public class NuclearExplosion {
 
@@ -78,10 +79,10 @@ public class NuclearExplosion {
 
         RadiationSyncPacket syncPkt = new RadiationSyncPacket(new ArrayList<>(data.getCenters()));
         double witnessRadiusSq = (KILL_RADIUS * 2.0) * (KILL_RADIUS * 2.0);
-        for (ServerPlayer sp : level.getServer().getPlayerList().getPlayers()) {
+        for (ServerPlayer sp : level.players()) {
             PacketDistributor.sendToPlayer(sp, syncPkt);
             // "Now I Am Become Death" — anyone close enough to see the explosion FX below.
-            if (sp.level() == level && sp.distanceToSqr(center.getX() + 0.5, center.getY() + 0.5, center.getZ() + 0.5) <= witnessRadiusSq) {
+            if (sp.distanceToSqr(center.getX() + 0.5, center.getY() + 0.5, center.getZ() + 0.5) <= witnessRadiusSq) {
                 AdvancementUtil.award(sp, "progression/nuclear_explosion_witnessed", "witnessed_explosion");
             }
         }
@@ -98,7 +99,9 @@ public class NuclearExplosion {
         data.scheduleZone(1, center.immutable(), now + ZONE1_DELAY_TICKS);
         data.scheduleZone(2, center.immutable(), now + ZONE2_DELAY_TICKS);
         data.scheduleZone(3, center.immutable(), now + ZONE3_DELAY_TICKS);
-        data.scheduleZone(4, center.immutable(), now + ZONE3_DELAY_TICKS);
+        if (level.dimension() == ServerLevel.OVERWORLD) {
+            data.scheduleZone(4, center.immutable(), now + ZONE3_DELAY_TICKS);
+        }
         data.scheduleZone(5, center.immutable(), now + ZONE2_DELAY_TICKS);
     }
 

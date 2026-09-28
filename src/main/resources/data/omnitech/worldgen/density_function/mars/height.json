@@ -1,0 +1,177 @@
+{
+  "type": "minecraft:cache",
+  "input": {
+    "type": "minecraft:lerp",
+    "alpha": {
+      "type": "minecraft:spline",
+      "spline": {
+        "coordinate": "omnitech:mars/province",
+        "points": [
+          {
+            "location": -0.05,
+            "value": 0.0,
+            "derivative": 0.0
+          },
+          {
+            "location": 0.05,
+            "value": 1.0,
+            "derivative": 0.0
+          }
+        ]
+      }
+    },
+    "first": {
+      "type": "minecraft:add",
+      "left": 70,
+      "right": {
+        "type": "minecraft:mul",
+        "left": 2.5,
+        "right": {
+          "type": "minecraft:noise",
+          "noise": "omnitech:mars_plains",
+          "xz_scale": 1.0,
+          "y_scale": 0.0
+        }
+      }
+    },
+    "second": {
+      "type": "minecraft:lerp",
+      "alpha": {
+        "type": "minecraft:spline",
+        "spline": {
+          "coordinate": "omnitech:mars/style",
+          "points": [
+            {
+              "location": -0.2,
+              "value": 0.0,
+              "derivative": 0.0
+            },
+            {
+              "location": -0.09999999999999999,
+              "value": 1.0,
+              "derivative": 0.0
+            }
+          ]
+        }
+      },
+      "first": {
+        "type": "minecraft:add",
+        "left": 76,
+        "right": {
+          "type": "minecraft:mul",
+          "left": 14,
+          "right": {
+            "type": "minecraft:noise",
+            "noise": "omnitech:mars_hills",
+            "xz_scale": 1.0,
+            "y_scale": 0.0
+          }
+        }
+      },
+      "second": {
+        "type": "minecraft:lerp",
+        "alpha": {
+          "type": "minecraft:spline",
+          "spline": {
+            "coordinate": "omnitech:mars/style",
+            "points": [
+              {
+                "location": 0.15000000000000002,
+                "value": 0.0,
+                "derivative": 0.0
+              },
+              {
+                "location": 0.25,
+                "value": 1.0,
+                "derivative": 0.0
+              }
+            ]
+          }
+        },
+        "first": {
+          "type": "minecraft:add",
+          "left": {
+            "type": "minecraft:add",
+            "left": 78,
+            "right": {
+              "type": "minecraft:mul",
+              "left": 95,
+              "right": {
+                "type": "minecraft:clamp",
+                "input": {
+                  "type": "minecraft:add",
+                  "left": 0.55,
+                  "right": {
+                    "type": "minecraft:mul",
+                    "left": -1.0,
+                    "right": {
+                      "type": "minecraft:abs",
+                      "input": {
+                        "type": "minecraft:noise",
+                        "noise": "omnitech:mars_mountains",
+                        "xz_scale": 1.0,
+                        "y_scale": 0.0
+                      }
+                    }
+                  }
+                },
+                "min": 0.0,
+                "max": 0.55
+              }
+            }
+          },
+          "right": {
+            "type": "minecraft:mul",
+            "left": 6.0,
+            "right": {
+              "type": "minecraft:noise",
+              "noise": "omnitech:mars_hills",
+              "xz_scale": 1.0,
+              "y_scale": 0.0
+            }
+          }
+        },
+        "second": {
+          "type": "minecraft:add",
+          "left": {
+            "type": "minecraft:add",
+            "left": 74,
+            "right": {
+              "type": "minecraft:mul",
+              "left": 44,
+              "right": {
+                "type": "minecraft:clamp",
+                "input": {
+                  "type": "minecraft:mul",
+                  "left": 6.0,
+                  "right": {
+                    "type": "minecraft:add",
+                    "left": {
+                      "type": "minecraft:noise",
+                      "noise": "omnitech:mars_mesa",
+                      "xz_scale": 1.0,
+                      "y_scale": 0.0
+                    },
+                    "right": -0.05
+                  }
+                },
+                "min": 0.0,
+                "max": 1.0
+              }
+            }
+          },
+          "right": {
+            "type": "minecraft:mul",
+            "left": 1.5,
+            "right": {
+              "type": "minecraft:noise",
+              "noise": "omnitech:mars_plains",
+              "xz_scale": 1.0,
+              "y_scale": 0.0
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "aquifers_enabled": false,
+  "default_block": "omnitech:mars_stone",
+  "default_fluid": "minecraft:air",
+  "disable_mob_generation": true,
+  "legacy_random_source": false,
+  "material_rule": "omnitech:mars",
+  "noise": {
+    "height": 256,
+    "min_y": 0,
+    "size_horizontal": 1,
+    "size_vertical": 2
+  },
+  "noise_router": {
+    "chunk_surface_level": 70.0,
+    "continents": 0.0,
+    "depth": 0.0,
+    "erosion": 0.0,
+    "final_density": "omnitech:mars/final_density",
+    "ridges": 0.0,
+    "temperature": "omnitech:mars/province",
+    "vegetation": 0.0
+  },
+  "ore_veins_enabled": false,
+  "sea_level": 0,
+  "spawn_target": []
+}

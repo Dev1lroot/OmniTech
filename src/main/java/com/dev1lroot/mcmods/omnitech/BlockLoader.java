@@ -43,7 +43,9 @@ import java.util.*;
  * <pre>{@code
  * {
  *   "ore":          false,     // true = OmniTechOreBlock (XP drops); auto-true if name ends in "_ore"
- *   "map_color":    null,      // "stone" | "metal" | "raw_iron" | "sand" | "ice" | "dirt" | "wood" | "clay"
+ *   "map_color":    null,      // "stone" | "metal" | "raw_iron" | "sand" | "ice" | "dirt" | "wood" | "clay" | "snow"
+ *                              //  | "orange" | "red" | "brown" | "black" | "gray" | "light_gray" | "quartz" | "deepslate"
+ *                              //  | "terracotta_red" | "terracotta_orange" | "terracotta_brown" | "terracotta_white" | "terracotta_yellow"
  *   "strength":     null,      // [hardness, resistance], e.g. [3.0, 3.0]
  *   "sound":        null,      // "stone" | "metal" | "gravel" | "sand" | "grass" | "glass" | "wood"
  *   "requires_tool": true      // false = can be mined by hand
@@ -201,6 +203,20 @@ public class BlockLoader {
             case "dirt"     -> MapColor.DIRT;
             case "wood"     -> MapColor.WOOD;
             case "clay"     -> MapColor.CLAY;
+            case "snow"     -> MapColor.SNOW;
+            case "orange"   -> MapColor.COLOR_ORANGE;
+            case "red"      -> MapColor.COLOR_RED;
+            case "terracotta_red"    -> MapColor.TERRACOTTA_RED;
+            case "terracotta_orange" -> MapColor.TERRACOTTA_ORANGE;
+            case "terracotta_brown"  -> MapColor.TERRACOTTA_BROWN;
+            case "terracotta_white"  -> MapColor.TERRACOTTA_WHITE;
+            case "terracotta_yellow" -> MapColor.TERRACOTTA_YELLOW;
+            case "brown"      -> MapColor.COLOR_BROWN;
+            case "black"      -> MapColor.COLOR_BLACK;
+            case "gray"       -> MapColor.COLOR_GRAY;
+            case "light_gray" -> MapColor.COLOR_LIGHT_GRAY;
+            case "quartz"     -> MapColor.QUARTZ;
+            case "deepslate"  -> MapColor.DEEPSLATE;
             default         -> MapColor.STONE;
         };
     }

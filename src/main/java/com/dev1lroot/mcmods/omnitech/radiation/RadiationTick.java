@@ -40,34 +40,32 @@ public class RadiationTick {
     private static final long REDUCE_COOLDOWN_II  = 3_600L; // 3 minutes in ticks
     private static final long REDUCE_COOLDOWN_III =   400L; // 20 seconds in ticks
 
-    private static int tickCounter = 0;
-
     @SubscribeEvent
     public static void onLevelTick(LevelTickEvent.Post event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
-        if (level.dimension() != ServerLevel.OVERWORLD) return;
 
+        // Each dimension processes its own explosions (see RadiationSavedData#get)
         RadiationSavedData data = RadiationSavedData.get(level);
 
         // Process pending explosion blocks every tick
         data.tick(level);
 
         // Apply radiation effects and health reduction every APPLY_INTERVAL ticks
-        if (++tickCounter % APPLY_INTERVAL != 0) return;
+        long gameTime = level.getGameTime();
+        if (gameTime % APPLY_INTERVAL != 0) return;
 
         List<BlockPos> centers = data.centers;
         if (centers.isEmpty()) return;
 
-        long gameTime = level.getGameTime();
-
-        for (ServerPlayer player : level.getServer().getPlayerList().getPlayers()) {
+        RadiationSavedData playerStore = RadiationSavedData.global(level.getServer());
+        for (ServerPlayer player : level.players()) {
             if (player.isCreative()) continue;
             int amplifier = computeAmplifier(player, centers);
 
             if (amplifier < 0) continue; // player out of all zones
 
             applyRadiationEffect(player, amplifier);
-            applyHealthReduction(level, player, amplifier, gameTime, data);
+            applyHealthReduction(level, player, amplifier, gameTime, playerStore);
         }
     }
 
@@ -171,8 +169,7 @@ public class RadiationTick {
 
         UUID uuid = player.getUUID();
         ServerLevel level = (ServerLevel) player.level();
-        RadiationSavedData data = RadiationSavedData.get(level);
-        data.removePlayer(uuid);
+        RadiationSavedData.global(level.getServer()).removePlayer(uuid);
 
         // Remove max-health modifier directly (bypasses the Remove event cancellation)
         var healthAttr = player.getAttribute(Attributes.MAX_HEALTH);

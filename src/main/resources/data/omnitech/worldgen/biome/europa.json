@@ -1,43 +1,52 @@
 {
   "attributes": {
-    "minecraft:visual/sky_color": "#1a3a8f"
+    "minecraft:visual/sky_color": "#1a3a8f",
+    "minecraft:visual/water_fog_color": "#334daa",
+    "minecraft:gameplay/natural_mob_spawns": {
+      "modifier": "overlay",
+      "argument": {
+        "spawn_costs": {},
+        "spawns_by_category": {
+          "water_creature": [
+            {
+              "type": "omnitech:abyssal_eel",
+              "count": {
+                "type": "minecraft:uniform",
+                "min_inclusive": 1,
+                "max_inclusive": 3
+              },
+              "weight": 10
+            }
+          ]
+        }
+      }
+    }
   },
   "carvers": [],
   "downfall": 0.0,
   "effects": {
-    "water_color": "#99c2ff",
-    "water_fog_color": "#334daa"
+    "water_color": "#99c2ff"
   },
   "features": [
+    [
+      "omnitech:europa_seafloor"
+    ],
     [],
     [],
     [],
+    [
+      "omnitech:ice_spike",
+      "omnitech:europa_stone_spire"
+    ],
     [],
-    ["omnitech:ice_spike", "omnitech:europa_stone_spire"],
     [],
+    [
+      "omnitech:europa_trench"
+    ],
     [],
-    ["omnitech:europa_trench"],
     [],
     []
   ],
   "has_precipitation": false,
-  "spawn_costs": {},
-  "spawners": {
-    "ambient": [],
-    "axolotls": [],
-    "creature": [],
-    "misc": [],
-    "monster": [],
-    "underground_water_creature": [],
-    "water_ambient": [],
-    "water_creature": [
-      {
-        "type": "omnitech:abyssal_eel",
-        "weight": 10,
-        "minCount": 1,
-        "maxCount": 3
-      }
-    ]
-  },
   "temperature": -1.0
 }

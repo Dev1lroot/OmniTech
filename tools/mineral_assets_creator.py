@@ -5,6 +5,8 @@ import random
 from pathlib import Path
 from PIL import Image, ImageDraw
 
+from mineral_texture_factory import render_version
+
 _SCRIPT_DIR  = Path(__file__).parent
 BASE_PATH    = _SCRIPT_DIR.parent / "src/main/resources/assets/omnitech"
 TEXTURE_PATH = str(BASE_PATH / "textures/block")
@@ -76,7 +78,7 @@ def main():
 
         # 1. Текстура
         if not os.path.exists(tex_file):
-            img = generate_ore_texture(mineral)
+            img = render_version(mineral, 0)  # template-based, see mineral_texture_factory.py
             img.save(tex_file)
             print(f"[added] texture: {name}")
         else:

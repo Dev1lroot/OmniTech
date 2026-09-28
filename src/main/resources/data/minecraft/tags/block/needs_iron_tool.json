@@ -18,6 +18,11 @@
     "omnitech:vanadinite",
     "omnitech:wolframite",
     "omnitech:zircon",
-    "omnitech:chromium_ore"
+    "omnitech:chromium_ore",
+    "omnitech:rutile",
+    "omnitech:scheelite",
+    "omnitech:spodumene",
+    "omnitech:pollucite",
+    "omnitech:clausthalite"
   ]
 }

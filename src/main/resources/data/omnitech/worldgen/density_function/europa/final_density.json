@@ -1,0 +1,76 @@
+{
+  "type": "minecraft:squeeze",
+  "input": {
+    "type": "minecraft:mul",
+    "left": 0.64,
+    "right": {
+      "type": "minecraft:add",
+      "left": {
+        "type": "minecraft:interpolated",
+        "cell_size_xz": 4,
+        "cell_size_y": 8,
+        "input": {
+          "type": "minecraft:blend_density",
+          "input": {
+            "type": "minecraft:max",
+            "left": "omnitech:europa/seafloor",
+            "right": "omnitech:europa/ice_shell"
+          }
+        }
+      },
+      "right": {
+        "type": "minecraft:add",
+        "left": {
+          "type": "minecraft:add",
+          "left": {
+            "type": "minecraft:mul",
+            "left": "omnitech:europa/crack_carve",
+            "right": {
+              "type": "minecraft:gradient",
+              "axis": "y",
+              "from_coordinate": 110,
+              "to_coordinate": 126,
+              "from_value": 0.0,
+              "to_value": -8.0
+            }
+          },
+          "right": {
+            "type": "minecraft:mul",
+            "left": "omnitech:europa/crack_ridge",
+            "right": {
+              "type": "minecraft:min",
+              "left": {
+                "type": "minecraft:gradient",
+                "axis": "y",
+                "from_coordinate": 108,
+                "to_coordinate": 116,
+                "from_value": 0.0,
+                "to_value": 6.0
+              },
+              "right": {
+                "type": "minecraft:gradient",
+                "axis": "y",
+                "from_coordinate": 116,
+                "to_coordinate": 130,
+                "from_value": 6.0,
+                "to_value": 0.0
+              }
+            }
+          }
+        },
+        "right": {
+          "type": "minecraft:mul",
+          "left": "omnitech:europa/vent_holes",
+          "right": {
+            "type": "minecraft:gradient",
+            "axis": "y",
+            "from_coordinate": 100,
+            "to_coordinate": 126,
+            "from_value": 0.0,
+            "to_value": -8.0
+          }
+        }
+      }
+    }
+  }
+}

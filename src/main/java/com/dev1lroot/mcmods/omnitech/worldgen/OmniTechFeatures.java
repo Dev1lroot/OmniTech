@@ -35,6 +35,20 @@ public class OmniTechFeatures {
             REGISTRY.register("europa_stone_spire", () -> EuropaStoneSpireFeature.CODEC);
 
     /**
+     * Hydrothermal basalt/blackstone chimney with a magma vent and native-sulfur
+     * crust, placed on the floor of Europa's sulfur-vent biome.
+     */
+    public static final java.util.function.Supplier<MapCodec<EuropaSulfurChimneyFeature>> EUROPA_SULFUR_CHIMNEY =
+            REGISTRY.register("europa_sulfur_chimney", () -> EuropaSulfurChimneyFeature.CODEC);
+
+    /**
+     * Europa's seafloor surface blocks and sediment layers, laid per column below
+     * the ocean (material rules can't see depth below water, see the class doc).
+     */
+    public static final java.util.function.Supplier<MapCodec<EuropaSeafloorFeature>> EUROPA_SEAFLOOR =
+            REGISTRY.register("europa_seafloor", () -> EuropaSeafloorFeature.CODEC);
+
+    /**
      * Distorted asteroid sphere (radius 6–24 blocks) filled with asteroid_block,
      * with a calibrated GravitationSource at the centre.  Scattered sparsely
      * through the void of the Kuiper Belt dimension.

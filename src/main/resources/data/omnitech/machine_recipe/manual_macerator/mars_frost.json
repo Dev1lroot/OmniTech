@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:mars_frost",
+  "output": [
+    {
+      "item": "omnitech:mars_regolith_dust",
+      "count": 2,
+      "chance": 1.0
+    }
+  ]
+}

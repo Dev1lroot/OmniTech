@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:europa_evaporite",
+  "output": [
+    {
+      "item": "omnitech:epsomite_dust",
+      "count": 3,
+      "chance": 1.0
+    }
+  ]
+}

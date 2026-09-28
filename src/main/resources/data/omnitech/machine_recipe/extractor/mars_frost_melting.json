@@ -1,0 +1,15 @@
+{
+  "requiredKineticForce": 3.0,
+  "inputItem": {
+    "item": "omnitech:mars_frost",
+    "amount": 1
+  },
+  "outputFluid": {
+    "fluid": "minecraft:water",
+    "amount": 250
+  },
+  "residueItem": {
+    "item": "omnitech:mars_regolith_dust",
+    "amount": 1
+  }
+}

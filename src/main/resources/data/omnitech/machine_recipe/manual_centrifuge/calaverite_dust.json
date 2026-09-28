@@ -1,0 +1,26 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:calaverite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:gold_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:tellurium_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:silver_mote",
+      "count": 1,
+      "chance": 0.1
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:sylvite_dust",
+  "output": [
+    {
+      "item": "omnitech:potassium_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:rubidium_mote",
+      "count": 1,
+      "chance": 0.05
+    }
+  ]
+}

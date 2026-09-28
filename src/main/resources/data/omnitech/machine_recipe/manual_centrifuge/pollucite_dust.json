@@ -1,0 +1,26 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:pollucite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:cesium_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:aluminium_dust",
+      "count": 1,
+      "chance": 0.5
+    },
+    {
+      "item": "omnitech:rubidium_mote",
+      "count": 1,
+      "chance": 0.1
+    }
+  ]
+}

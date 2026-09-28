@@ -24,8 +24,15 @@ public class TruthTableItem extends Item {
         if (level.isClientSide()) {
             int bits = player.getItemInHand(hand)
                     .getOrDefault(OmniTechDataComponents.TRUTH_TABLE_BITS.get(), 0);
-            Minecraft.getInstance().gui.setScreen(new TruthTableScreen(hand, bits));
+            ClientAccess.open(hand, bits);
         }
         return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
+    }
+
+    /** Client-only; kept in its own class so dedicated servers never load {@code Screen}. */
+    private static final class ClientAccess {
+        static void open(InteractionHand hand, int bits) {
+            Minecraft.getInstance().gui.setScreen(new TruthTableScreen(hand, bits));
+        }
     }
 }

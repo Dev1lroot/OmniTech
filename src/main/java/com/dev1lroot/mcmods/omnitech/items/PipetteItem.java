@@ -173,15 +173,18 @@ public class PipetteItem extends Item {
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         if (!player.isShiftKeyDown()) return InteractionResult.PASS;
         if (level.isClientSide()) {
-            openAmountScreen(player.getItemInHand(hand), hand);
+            ClientAccess.openAmountScreen(player.getItemInHand(hand), hand);
         }
         return InteractionResult.SUCCESS;
     }
 
-    private static void openAmountScreen(ItemStack stack, InteractionHand hand) {
-        int current = getTargetAmount(stack);
-        net.minecraft.client.Minecraft.getInstance().gui.setScreen(
-                new com.dev1lroot.mcmods.omnitech.gui.PipetteAmountScreen(current, hand));
+    /** Client-only; kept in its own class so dedicated servers never load {@code Screen}. */
+    private static final class ClientAccess {
+        static void openAmountScreen(ItemStack stack, InteractionHand hand) {
+            int current = getTargetAmount(stack);
+            net.minecraft.client.Minecraft.getInstance().gui.setScreen(
+                    new com.dev1lroot.mcmods.omnitech.gui.PipetteAmountScreen(current, hand));
+        }
     }
 
     // ── Tooltip ───────────────────────────────────────────────────────────────

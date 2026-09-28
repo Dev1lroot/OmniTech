@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:mars_mudstone",
+  "output": [
+    {
+      "item": "omnitech:mars_mudstone_dust",
+      "count": 3,
+      "chance": 1.0
+    }
+  ]
+}

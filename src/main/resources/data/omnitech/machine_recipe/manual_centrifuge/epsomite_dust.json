@@ -1,0 +1,21 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:epsomite_dust",
+  "output": [
+    {
+      "item": "omnitech:magnesium_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:sulfur_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:sodium_chlorine_dust",
+      "count": 1,
+      "chance": 0.3
+    }
+  ]
+}

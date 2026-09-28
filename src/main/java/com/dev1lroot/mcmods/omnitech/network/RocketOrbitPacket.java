@@ -38,11 +38,16 @@ public record RocketOrbitPacket() implements CustomPacketPayload {
      * Runs on the main client thread via {@code enqueueWork}.
      */
     public static void handle(RocketOrbitPacket pkt, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
+        ctx.enqueueWork(ClientAccess::openNavigation);
+    }
+
+    /** Client-only; kept in its own class so dedicated servers never load {@code Screen}. */
+    private static final class ClientAccess {
+        static void openNavigation() {
             Minecraft mc = Minecraft.getInstance();
             if (mc.gui.screen() == null) {
                 mc.gui.setScreen(new SpaceNavigationScreen());
             }
-        });
+        }
     }
 }

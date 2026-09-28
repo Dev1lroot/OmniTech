@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:smithsonite",
+  "output": [
+    {
+      "item": "omnitech:smithsonite_dust",
+      "count": 4,
+      "chance": 1.0
+    }
+  ]
+}

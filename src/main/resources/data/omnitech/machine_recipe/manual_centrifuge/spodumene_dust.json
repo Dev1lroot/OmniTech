@@ -1,0 +1,21 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:spodumene_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:lithium_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:aluminium_dust",
+      "count": 1,
+      "chance": 0.5
+    }
+  ]
+}

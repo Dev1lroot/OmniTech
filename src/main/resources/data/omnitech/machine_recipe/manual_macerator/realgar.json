@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:realgar",
+  "output": [
+    {
+      "item": "omnitech:realgar_dust",
+      "count": 4,
+      "chance": 1.0
+    }
+  ]
+}

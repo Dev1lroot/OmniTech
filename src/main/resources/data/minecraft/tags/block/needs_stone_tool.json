@@ -111,6 +111,16 @@
     "omnitech:ytterbium_block",
     "omnitech:yttrium_block",
     "omnitech:zinc_block",
-    "omnitech:zirconium_block"
+    "omnitech:zirconium_block",
+    "omnitech:cassiterite",
+    "omnitech:magnetite",
+    "omnitech:malachite",
+    "omnitech:rhodochrosite",
+    "omnitech:realgar",
+    "omnitech:smithsonite",
+    "omnitech:sylvite",
+    "omnitech:lautarite",
+    "omnitech:lunar_kreep",
+    "omnitech:mars_hematite_concretion"
   ]
 }

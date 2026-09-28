@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:rhodochrosite",
+  "output": [
+    {
+      "item": "omnitech:rhodochrosite_dust",
+      "count": 4,
+      "chance": 1.0
+    }
+  ]
+}

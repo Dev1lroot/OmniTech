@@ -1,0 +1,36 @@
+{
+  "attributes": {
+    "minecraft:visual/sky_color": "#c89a6e"
+  },
+  "carvers": [
+    "omnitech:mars_cave"
+  ],
+  "downfall": 0.0,
+  "effects": {
+    "water_color": "#8a6a5a"
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "omnitech:mars_cave_magnetite",
+      "omnitech:mars_cave_ilmenite",
+      "omnitech:mars_cave_pyrite",
+      "omnitech:mars_cave_chromite",
+      "omnitech:mars_cave_pentlandite",
+      "omnitech:mars_cave_apatite"
+    ],
+    [],
+    [],
+    [],
+    [
+      "omnitech:mars_snow_layer"
+    ]
+  ],
+  "has_precipitation": false,
+  "temperature": -0.6
+}

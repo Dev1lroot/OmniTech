@@ -1,0 +1,41 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:kreep_dust",
+  "output": [
+    {
+      "item": "omnitech:potassium_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:phosphorus_dust",
+      "count": 1,
+      "chance": 0.6
+    },
+    {
+      "item": "omnitech:cerium_mote",
+      "count": 1,
+      "chance": 0.3
+    },
+    {
+      "item": "omnitech:lanthanum_mote",
+      "count": 1,
+      "chance": 0.25
+    },
+    {
+      "item": "omnitech:neodymium_mote",
+      "count": 1,
+      "chance": 0.15
+    },
+    {
+      "item": "omnitech:thorium_mote",
+      "count": 1,
+      "chance": 0.1
+    },
+    {
+      "item": "omnitech:uranium_mote",
+      "count": 1,
+      "chance": 0.05
+    }
+  ]
+}
