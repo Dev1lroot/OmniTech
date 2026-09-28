@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 3890,
+  "input": {
+    "fluid": "omnitech:molten_hafnium_carbide",
+    "amount": 2000
+  },
+  "template": "omnitech:sword_template",
+  "output": "omnitech:hafnium_carbide_sword"
+}

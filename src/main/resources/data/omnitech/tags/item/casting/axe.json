@@ -1,0 +1,77 @@
+{
+  "values": [
+    "#minecraft:axes",
+    {
+      "id": "omnitech:aluminium_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:brass_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:cadmium_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:chromium_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:cobalt_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_carbide_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_tantalum_carbide_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:lead_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:nickel_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:steel_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:tantalum_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:tin_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:titanium_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_carbide_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:uranium_axe",
+      "required": false
+    },
+    {
+      "id": "omnitech:zinc_axe",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1000,
+  "input": {
+    "fluid": "omnitech:molten_brass",
+    "amount": 7000
+  },
+  "template": "omnitech:leggings_template",
+  "output": "omnitech:brass_leggings"
+}

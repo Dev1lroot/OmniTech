@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1500,
+  "input": {
+    "fluid": "omnitech:molten_steel",
+    "amount": 5000
+  },
+  "template": "omnitech:helmet_template",
+  "output": "omnitech:steel_helmet"
+}

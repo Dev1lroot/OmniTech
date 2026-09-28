@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:hafnium_carbide_plate",
+    "R": "omnitech:hafnium_carbide_rod"
+  },
+  "pattern": [
+    " P ",
+    "PRP",
+    " P "
+  ],
+  "result": {
+    "count": 2,
+    "id": "omnitech:hafnium_carbide_cog"
+  }
+}

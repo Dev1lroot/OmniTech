@@ -1,0 +1,77 @@
+{
+  "values": [
+    "#minecraft:shovels",
+    {
+      "id": "omnitech:aluminium_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:brass_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:cadmium_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:chromium_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:cobalt_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_carbide_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_tantalum_carbide_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:lead_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:nickel_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:steel_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:tantalum_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:tin_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:titanium_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_carbide_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:uranium_shovel",
+      "required": false
+    },
+    {
+      "id": "omnitech:zinc_shovel",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 700,
+  "input": {
+    "fluid": "omnitech:molten_radium",
+    "amount": 500
+  },
+  "template": "omnitech:plate_template",
+  "output": "omnitech:radium_plate"
+}

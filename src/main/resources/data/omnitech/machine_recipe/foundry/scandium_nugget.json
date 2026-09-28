@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1541,
+  "input": {
+    "fluid": "omnitech:molten_scandium",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:scandium_nugget"
+}

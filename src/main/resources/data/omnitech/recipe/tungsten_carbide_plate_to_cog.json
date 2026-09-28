@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:tungsten_carbide_plate",
+    "R": "omnitech:tungsten_carbide_rod"
+  },
+  "pattern": [
+    " P ",
+    "PRP",
+    " P "
+  ],
+  "result": {
+    "count": 2,
+    "id": "omnitech:tungsten_carbide_cog"
+  }
+}

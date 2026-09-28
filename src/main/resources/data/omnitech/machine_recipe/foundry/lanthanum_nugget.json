@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 920,
+  "input": {
+    "fluid": "omnitech:molten_lanthanum",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:lanthanum_nugget"
+}

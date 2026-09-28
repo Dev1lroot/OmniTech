@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 3017,
+  "input": {
+    "fluid": "omnitech:molten_tantalum",
+    "amount": 5000
+  },
+  "template": "omnitech:helmet_template",
+  "output": "omnitech:tantalum_helmet"
+}

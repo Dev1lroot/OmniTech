@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 700,
+  "input": {
+    "fluid": "omnitech:molten_aluminium",
+    "amount": 500
+  },
+  "template": "omnitech:reductor_template",
+  "output": "omnitech:aluminium_reductor"
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "omnitech:cobalt_ingot"
+  },
+  "pattern": [
+    "II"
+  ],
+  "result": {
+    "count": 2,
+    "id": "omnitech:cobalt_plate"
+  }
+}

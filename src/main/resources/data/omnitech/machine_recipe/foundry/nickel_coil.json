@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1500,
+  "input": {
+    "fluid": "omnitech:molten_nickel",
+    "amount": 1500
+  },
+  "template": "omnitech:coil_template",
+  "output": "omnitech:nickel_coil"
+}

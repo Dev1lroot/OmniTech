@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 500,
+  "input": {
+    "fluid": "omnitech:molten_zinc",
+    "amount": 4000
+  },
+  "template": "omnitech:boots_template",
+  "output": "omnitech:zinc_boots"
+}

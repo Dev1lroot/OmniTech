@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "omnitech:tungsten_carbide_ingot"
+  },
+  "pattern": [
+    "II"
+  ],
+  "result": {
+    "count": 2,
+    "id": "omnitech:tungsten_carbide_plate"
+  }
+}

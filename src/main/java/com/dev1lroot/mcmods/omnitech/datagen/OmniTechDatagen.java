@@ -16,18 +16,18 @@ import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.feature.BlockReplacement;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.OreFeature;
 import net.minecraft.world.level.levelgen.placement.*;
-import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -81,10 +81,11 @@ public class OmniTechDatagen {
 
     private static Feature makeCF(Block block, int veinSize) {
         return new OreFeature(
-            List.of(BlockReplacement.replace(
-                new BlockMatchTest(Blocks.STONE),
-                block.defaultBlockState()
-            )),
+            // No deepslate variants: the same block replaces stone-like and deepslate-like rock.
+            List.of(
+                BlockReplacement.replace(new TagMatchTest(BlockTags.STONE_ORE_REPLACEABLES), block.defaultBlockState()),
+                BlockReplacement.replace(new TagMatchTest(BlockTags.DEEPSLATE_ORE_REPLACEABLES), block.defaultBlockState())
+            ),
             veinSize
         );
     }

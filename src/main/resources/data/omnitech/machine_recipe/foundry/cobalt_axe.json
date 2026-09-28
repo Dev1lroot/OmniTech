@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1500,
+  "input": {
+    "fluid": "omnitech:molten_cobalt",
+    "amount": 3000
+  },
+  "template": "omnitech:axe_template",
+  "output": "omnitech:cobalt_axe"
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1964,
+  "input": {
+    "fluid": "omnitech:molten_rhodium",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:rhodium_nugget"
+}

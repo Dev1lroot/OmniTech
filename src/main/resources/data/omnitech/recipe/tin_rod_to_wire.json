@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "R": "omnitech:tin_rod"
+  },
+  "pattern": [
+    "RRR"
+  ],
+  "result": {
+    "count": 3,
+    "id": "omnitech:tin_wire"
+  }
+}

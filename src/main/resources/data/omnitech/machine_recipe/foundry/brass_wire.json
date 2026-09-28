@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1000,
+  "input": {
+    "fluid": "omnitech:molten_brass",
+    "amount": 500
+  },
+  "template": "omnitech:wire_template",
+  "output": "omnitech:brass_wire"
+}

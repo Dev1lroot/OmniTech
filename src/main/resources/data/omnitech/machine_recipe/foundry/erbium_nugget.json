@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1529,
+  "input": {
+    "fluid": "omnitech:molten_erbium",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:erbium_nugget"
+}

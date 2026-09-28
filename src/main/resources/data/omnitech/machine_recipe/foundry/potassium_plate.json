@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 63,
+  "input": {
+    "fluid": "omnitech:molten_potassium",
+    "amount": 500
+  },
+  "template": "omnitech:plate_template",
+  "output": "omnitech:potassium_plate"
+}

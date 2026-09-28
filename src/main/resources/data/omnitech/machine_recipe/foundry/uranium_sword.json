@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1200,
+  "input": {
+    "fluid": "omnitech:molten_uranium",
+    "amount": 2000
+  },
+  "template": "omnitech:sword_template",
+  "output": "omnitech:uranium_sword"
+}

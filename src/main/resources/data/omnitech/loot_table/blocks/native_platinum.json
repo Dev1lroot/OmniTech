@@ -5,15 +5,31 @@
       "rolls": 1,
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "omnitech:native_platinum"
-        }
-      ],
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "condition": "minecraft:tool/can_silk_touch",
+              "name": "omnitech:native_platinum"
+            },
+            {
+              "type": "minecraft:item",
+              "modifier": [
+                {
+                  "type": "minecraft:apply_bonus",
+                  "enchantment": "minecraft:fortune",
+                  "formula": "minecraft:ore_drops"
+                },
+                {
+                  "type": "minecraft:explosion_decay"
+                }
+              ],
+              "name": "omnitech:raw_platinum"
+            }
+          ]
         }
       ]
     }
-  ]
+  ],
+  "random_sequence": "omnitech:blocks/native_platinum"
 }

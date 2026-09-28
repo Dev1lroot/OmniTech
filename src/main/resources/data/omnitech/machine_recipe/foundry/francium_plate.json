@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 27,
+  "input": {
+    "fluid": "omnitech:molten_francium",
+    "amount": 500
+  },
+  "template": "omnitech:plate_template",
+  "output": "omnitech:francium_plate"
+}

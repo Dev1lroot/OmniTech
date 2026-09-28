@@ -1,0 +1,77 @@
+{
+  "values": [
+    "#minecraft:leg_armor",
+    {
+      "id": "omnitech:aluminium_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:brass_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:cadmium_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:chromium_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:cobalt_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_carbide_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_tantalum_carbide_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:lead_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:nickel_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:steel_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:tantalum_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:tin_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:titanium_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_carbide_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:uranium_leggings",
+      "required": false
+    },
+    {
+      "id": "omnitech:zinc_leggings",
+      "required": false
+    }
+  ]
+}

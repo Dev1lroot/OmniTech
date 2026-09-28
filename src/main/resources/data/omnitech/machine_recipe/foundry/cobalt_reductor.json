@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1500,
+  "input": {
+    "fluid": "omnitech:molten_cobalt",
+    "amount": 500
+  },
+  "template": "omnitech:reductor_template",
+  "output": "omnitech:cobalt_reductor"
+}

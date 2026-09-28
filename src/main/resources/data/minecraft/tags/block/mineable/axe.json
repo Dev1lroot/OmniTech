@@ -1,3 +1,10 @@
 {
-  "values": ["omnitech:cinnamon_log", "omnitech:stripped_cinnamon_log", "omnitech:press"]
+  "values": [
+    "omnitech:cinnamon_log",
+    "omnitech:stripped_cinnamon_log",
+    "omnitech:press",
+    "omnitech:crank",
+    "omnitech:structure_table",
+    "omnitech:research_table"
+  ]
 }

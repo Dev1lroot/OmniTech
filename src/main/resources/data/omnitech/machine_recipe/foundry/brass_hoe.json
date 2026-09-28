@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1000,
+  "input": {
+    "fluid": "omnitech:molten_brass",
+    "amount": 2000
+  },
+  "template": "omnitech:hoe_template",
+  "output": "omnitech:brass_hoe"
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1050,
+  "input": {
+    "fluid": "omnitech:molten_actinium",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:actinium_nugget"
+}

@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:halite_dust",
+  "output": [
+    {
+      "item": "omnitech:sodium_chlorine_dust",
+      "count": 1,
+      "chance": 1.0
+    }
+  ]
+}

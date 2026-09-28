@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 180,
+  "input": {
+    "fluid": "omnitech:molten_lithium",
+    "amount": 500
+  },
+  "template": "omnitech:reductor_template",
+  "output": "omnitech:lithium_reductor"
+}

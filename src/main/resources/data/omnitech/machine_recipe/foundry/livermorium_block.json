@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 700,
+  "input": {
+    "fluid": "omnitech:molten_livermorium",
+    "amount": 9000
+  },
+  "template": "omnitech:block_template",
+  "output": "omnitech:livermorium_block"
+}

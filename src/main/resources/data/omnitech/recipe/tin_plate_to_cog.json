@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:tin_plate",
+    "R": "omnitech:tin_rod"
+  },
+  "pattern": [
+    " P ",
+    "PRP",
+    " P "
+  ],
+  "result": {
+    "count": 2,
+    "id": "omnitech:tin_cog"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1964,
+  "input": {
+    "fluid": "omnitech:molten_rhodium",
+    "amount": 500
+  },
+  "template": "omnitech:plate_template",
+  "output": "omnitech:rhodium_plate"
+}

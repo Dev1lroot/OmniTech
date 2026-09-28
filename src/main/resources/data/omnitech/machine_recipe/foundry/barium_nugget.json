@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 727,
+  "input": {
+    "fluid": "omnitech:molten_barium",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:barium_nugget"
+}

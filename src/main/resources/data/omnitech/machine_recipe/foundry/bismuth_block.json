@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 271,
+  "input": {
+    "fluid": "omnitech:molten_bismuth",
+    "amount": 9000
+  },
+  "template": "omnitech:block_template",
+  "output": "omnitech:bismuth_block"
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:uranium_plate",
+    "R": "omnitech:uranium_rod"
+  },
+  "pattern": [
+    " P ",
+    "PRP",
+    " P "
+  ],
+  "result": {
+    "count": 2,
+    "id": "omnitech:uranium_cog"
+  }
+}

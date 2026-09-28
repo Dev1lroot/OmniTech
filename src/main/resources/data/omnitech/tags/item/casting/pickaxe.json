@@ -1,0 +1,77 @@
+{
+  "values": [
+    "#minecraft:pickaxes",
+    {
+      "id": "omnitech:aluminium_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:brass_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:cadmium_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:chromium_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:cobalt_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_carbide_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_tantalum_carbide_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:lead_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:nickel_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:steel_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:tantalum_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:tin_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:titanium_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_carbide_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:uranium_pickaxe",
+      "required": false
+    },
+    {
+      "id": "omnitech:zinc_pickaxe",
+      "required": false
+    }
+  ]
+}

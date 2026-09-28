@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:lead_ingot"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:lead_nugget"
+  }
+}

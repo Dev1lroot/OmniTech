@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 824,
+  "input": {
+    "fluid": "omnitech:molten_ytterbium",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:ytterbium_nugget"
+}

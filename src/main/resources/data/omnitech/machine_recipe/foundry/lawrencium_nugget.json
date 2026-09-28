@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1627,
+  "input": {
+    "fluid": "omnitech:molten_lawrencium",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:lawrencium_nugget"
+}

@@ -26,6 +26,16 @@
       "item": "omnitech:praseodymium_mote",
       "count": 1,
       "chance": 0.1
+    },
+    {
+      "item": "omnitech:europium_mote",
+      "count": 1,
+      "chance": 0.04
+    },
+    {
+      "item": "omnitech:gadolinium_mote",
+      "count": 1,
+      "chance": 0.02
     }
   ]
 }

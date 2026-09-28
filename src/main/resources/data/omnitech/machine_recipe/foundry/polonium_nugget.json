@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 254,
+  "input": {
+    "fluid": "omnitech:molten_polonium",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:polonium_nugget"
+}

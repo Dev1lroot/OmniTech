@@ -1,0 +1,77 @@
+{
+  "values": [
+    "#minecraft:foot_armor",
+    {
+      "id": "omnitech:aluminium_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:brass_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:cadmium_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:chromium_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:cobalt_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_carbide_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_tantalum_carbide_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:lead_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:nickel_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:steel_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:tantalum_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:tin_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:titanium_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_carbide_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:uranium_boots",
+      "required": false
+    },
+    {
+      "id": "omnitech:zinc_boots",
+      "required": false
+    }
+  ]
+}

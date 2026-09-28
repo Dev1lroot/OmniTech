@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1176,
+  "input": {
+    "fluid": "omnitech:molten_americium",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:americium_nugget"
+}

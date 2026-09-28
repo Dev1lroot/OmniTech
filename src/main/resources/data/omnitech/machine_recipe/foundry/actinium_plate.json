@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1050,
+  "input": {
+    "fluid": "omnitech:molten_actinium",
+    "amount": 500
+  },
+  "template": "omnitech:plate_template",
+  "output": "omnitech:actinium_plate"
+}

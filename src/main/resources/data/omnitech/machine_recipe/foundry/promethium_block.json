@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1042,
+  "input": {
+    "fluid": "omnitech:molten_promethium",
+    "amount": 9000
+  },
+  "template": "omnitech:block_template",
+  "output": "omnitech:promethium_block"
+}

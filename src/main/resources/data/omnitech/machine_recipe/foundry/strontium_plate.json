@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 777,
+  "input": {
+    "fluid": "omnitech:molten_strontium",
+    "amount": 500
+  },
+  "template": "omnitech:plate_template",
+  "output": "omnitech:strontium_plate"
+}

@@ -1,0 +1,380 @@
+{
+  "values": [
+    {
+      "id": "omnitech:actinium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:aluminium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:americium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:barium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:berkelium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:beryllium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:bismuth_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:bohrium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:brass_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:cadmium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:calcium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:californium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:cerium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:cesium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:chromium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:cobalt_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:copper_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:curium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:darmstadtium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:dubnium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:dysprosium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:einsteinium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:erbium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:europium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:fermium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:francium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:gadolinium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:gallium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:gold_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:graphite_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_carbide_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_tantalum_carbide_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:hassium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:holmium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:indium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:iridium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:iron_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:lanthanum_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:lawrencium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:lead_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:lithium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:livermorium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:lutetium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:magnesium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:manganese_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:meitnerium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:mendelevium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:molybdenum_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:moscovium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:neodymium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:neptunium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:nickel_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:nihonium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:niobium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:nobelium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:osmium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:palladium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:platinum_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:plutonium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:polonium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:potassium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:praseodymium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:promethium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:protactinium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:radium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:rhenium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:rhodium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:roentgenium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:rubidium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:ruthenium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:rutherfordium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:samarium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:scandium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:seaborgium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:silver_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:steel_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:strontium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:tantalum_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:technetium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:terbium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:thallium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:thorium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:thulium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:tin_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:titanium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_carbide_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:uranium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:vanadium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:ytterbium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:yttrium_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:zinc_rod",
+      "required": false
+    },
+    {
+      "id": "omnitech:zirconium_rod",
+      "required": false
+    }
+  ]
+}

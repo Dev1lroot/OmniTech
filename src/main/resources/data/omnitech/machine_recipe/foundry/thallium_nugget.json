@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 304,
+  "input": {
+    "fluid": "omnitech:molten_thallium",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:thallium_nugget"
+}

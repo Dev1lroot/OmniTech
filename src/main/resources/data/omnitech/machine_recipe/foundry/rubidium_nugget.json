@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 39,
+  "input": {
+    "fluid": "omnitech:molten_rubidium",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:rubidium_nugget"
+}

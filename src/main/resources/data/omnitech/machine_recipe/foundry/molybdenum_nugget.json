@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 2623,
+  "input": {
+    "fluid": "omnitech:molten_molybdenum",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:molybdenum_nugget"
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1000,
+  "input": {
+    "fluid": "omnitech:molten_brass",
+    "amount": 1500
+  },
+  "template": "omnitech:coil_template",
+  "output": "omnitech:brass_coil"
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 3890,
+  "input": {
+    "fluid": "omnitech:molten_hafnium_carbide",
+    "amount": 4000
+  },
+  "template": "omnitech:boots_template",
+  "output": "omnitech:hafnium_carbide_boots"
+}

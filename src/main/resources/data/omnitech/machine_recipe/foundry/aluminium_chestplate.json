@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 700,
+  "input": {
+    "fluid": "omnitech:molten_aluminium",
+    "amount": 8000
+  },
+  "template": "omnitech:chestplate_template",
+  "output": "omnitech:aluminium_chestplate"
+}

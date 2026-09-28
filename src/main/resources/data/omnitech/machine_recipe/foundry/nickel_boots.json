@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1500,
+  "input": {
+    "fluid": "omnitech:molten_nickel",
+    "amount": 4000
+  },
+  "template": "omnitech:boots_template",
+  "output": "omnitech:nickel_boots"
+}

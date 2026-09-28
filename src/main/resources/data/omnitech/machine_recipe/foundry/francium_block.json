@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 27,
+  "input": {
+    "fluid": "omnitech:molten_francium",
+    "amount": 9000
+  },
+  "template": "omnitech:block_template",
+  "output": "omnitech:francium_block"
+}

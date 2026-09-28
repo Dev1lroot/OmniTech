@@ -1,0 +1,8 @@
+{
+  "values": [
+    "omnitech:surface_regolith",
+    "omnitech:stratified_regolith",
+    "omnitech:paleoregolith",
+    "omnitech:megaregolith"
+  ]
+}

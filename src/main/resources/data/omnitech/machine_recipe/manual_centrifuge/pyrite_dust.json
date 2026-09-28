@@ -1,0 +1,26 @@
+{
+  "requiredKineticForce": 100,
+  "input": "omnitech:pyrite_dust",
+  "output": [
+    {
+      "item": "omnitech:stone_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:iron_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:sulfur_dust",
+      "count": 1,
+      "chance": 1.0
+    },
+    {
+      "item": "omnitech:gold_mote",
+      "count": 1,
+      "chance": 0.05
+    }
+  ]
+}

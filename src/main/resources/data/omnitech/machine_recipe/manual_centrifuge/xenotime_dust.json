@@ -26,6 +26,26 @@
       "item": "omnitech:ytterbium_mote",
       "count": 1,
       "chance": 0.08
+    },
+    {
+      "item": "omnitech:terbium_mote",
+      "count": 1,
+      "chance": 0.04
+    },
+    {
+      "item": "omnitech:holmium_mote",
+      "count": 1,
+      "chance": 0.03
+    },
+    {
+      "item": "omnitech:thulium_mote",
+      "count": 1,
+      "chance": 0.02
+    },
+    {
+      "item": "omnitech:lutetium_mote",
+      "count": 1,
+      "chance": 0.02
     }
   ]
 }

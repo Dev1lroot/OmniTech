@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 400,
+  "input": {
+    "fluid": "omnitech:molten_lead",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:lead_nugget"
+}

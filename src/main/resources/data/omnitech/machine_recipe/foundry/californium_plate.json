@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 900,
+  "input": {
+    "fluid": "omnitech:molten_californium",
+    "amount": 500
+  },
+  "template": "omnitech:plate_template",
+  "output": "omnitech:californium_plate"
+}

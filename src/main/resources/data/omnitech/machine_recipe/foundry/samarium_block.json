@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1072,
+  "input": {
+    "fluid": "omnitech:molten_samarium",
+    "amount": 9000
+  },
+  "template": "omnitech:block_template",
+  "output": "omnitech:samarium_block"
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 3890,
+  "input": {
+    "fluid": "omnitech:molten_hafnium_carbide",
+    "amount": 5000
+  },
+  "template": "omnitech:helmet_template",
+  "output": "omnitech:hafnium_carbide_helmet"
+}

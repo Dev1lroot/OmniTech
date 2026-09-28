@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1407,
+  "input": {
+    "fluid": "omnitech:molten_dysprosium",
+    "amount": 500
+  },
+  "template": "omnitech:plate_template",
+  "output": "omnitech:dysprosium_plate"
+}

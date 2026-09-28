@@ -1,0 +1,92 @@
+{
+  "values": [
+    {
+      "id": "omnitech:aluminium_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:brass_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:cadmium_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:chromium_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:cobalt_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:copper_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:gold_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_carbide_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_tantalum_carbide_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:iron_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:lead_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:lithium_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:nickel_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:steel_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:tantalum_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:tin_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:titanium_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_carbide_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:uranium_reductor",
+      "required": false
+    },
+    {
+      "id": "omnitech:zinc_reductor",
+      "required": false
+    }
+  ]
+}

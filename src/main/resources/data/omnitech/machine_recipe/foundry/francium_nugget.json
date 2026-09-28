@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 27,
+  "input": {
+    "fluid": "omnitech:molten_francium",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:francium_nugget"
+}

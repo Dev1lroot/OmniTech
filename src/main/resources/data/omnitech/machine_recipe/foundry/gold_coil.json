@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1064,
+  "input": {
+    "fluid": "omnitech:molten_gold",
+    "amount": 1500
+  },
+  "template": "omnitech:coil_template",
+  "output": "omnitech:gold_coil"
+}

@@ -1,0 +1,77 @@
+{
+  "values": [
+    "#minecraft:swords",
+    {
+      "id": "omnitech:aluminium_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:brass_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:cadmium_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:chromium_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:cobalt_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_carbide_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_tantalum_carbide_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:lead_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:nickel_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:steel_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:tantalum_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:tin_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:titanium_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_carbide_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:uranium_sword",
+      "required": false
+    },
+    {
+      "id": "omnitech:zinc_sword",
+      "required": false
+    }
+  ]
+}

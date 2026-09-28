@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1700,
+  "input": {
+    "fluid": "omnitech:molten_titanium",
+    "amount": 9000
+  },
+  "template": "omnitech:block_template",
+  "output": "omnitech:titanium_block"
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 3890,
+  "input": {
+    "fluid": "omnitech:molten_hafnium_carbide",
+    "amount": 8000
+  },
+  "template": "omnitech:chestplate_template",
+  "output": "omnitech:hafnium_carbide_chestplate"
+}

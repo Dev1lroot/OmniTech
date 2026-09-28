@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 232,
+  "input": {
+    "fluid": "omnitech:molten_tin",
+    "amount": 500
+  },
+  "template": "omnitech:reductor_template",
+  "output": "omnitech:tin_reductor"
+}

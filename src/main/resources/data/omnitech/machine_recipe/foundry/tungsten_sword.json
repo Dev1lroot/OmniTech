@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 3500,
+  "input": {
+    "fluid": "omnitech:molten_tungsten",
+    "amount": 2000
+  },
+  "template": "omnitech:sword_template",
+  "output": "omnitech:tungsten_sword"
+}

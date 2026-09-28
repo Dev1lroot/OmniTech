@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1356,
+  "input": {
+    "fluid": "omnitech:molten_terbium",
+    "amount": 500
+  },
+  "template": "omnitech:plate_template",
+  "output": "omnitech:terbium_plate"
+}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:hafnium_ingot"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:hafnium_nugget"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "omnitech:lead_cog",
+    "R": "omnitech:lead_rod"
+  },
+  "pattern": [
+    "CRC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:lead_reductor"
+  }
+}

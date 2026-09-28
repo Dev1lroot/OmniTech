@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 2870,
+  "input": {
+    "fluid": "omnitech:molten_tungsten_carbide",
+    "amount": 5000
+  },
+  "template": "omnitech:helmet_template",
+  "output": "omnitech:tungsten_carbide_helmet"
+}

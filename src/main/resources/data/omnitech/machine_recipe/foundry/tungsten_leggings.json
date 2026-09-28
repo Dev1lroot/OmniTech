@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 3500,
+  "input": {
+    "fluid": "omnitech:molten_tungsten",
+    "amount": 7000
+  },
+  "template": "omnitech:leggings_template",
+  "output": "omnitech:tungsten_leggings"
+}

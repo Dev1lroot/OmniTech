@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1907,
+  "input": {
+    "fluid": "omnitech:molten_chromium",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:chromium_nugget"
+}

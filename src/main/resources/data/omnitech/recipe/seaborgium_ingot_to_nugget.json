@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:seaborgium_ingot"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:seaborgium_nugget"
+  }
+}

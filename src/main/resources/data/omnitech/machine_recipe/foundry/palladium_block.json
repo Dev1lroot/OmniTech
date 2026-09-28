@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1555,
+  "input": {
+    "fluid": "omnitech:molten_palladium",
+    "amount": 9000
+  },
+  "template": "omnitech:block_template",
+  "output": "omnitech:palladium_block"
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1907,
+  "input": {
+    "fluid": "omnitech:molten_chromium",
+    "amount": 7000
+  },
+  "template": "omnitech:leggings_template",
+  "output": "omnitech:chromium_leggings"
+}

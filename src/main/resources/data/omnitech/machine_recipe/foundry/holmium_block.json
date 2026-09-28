@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1461,
+  "input": {
+    "fluid": "omnitech:molten_holmium",
+    "amount": 9000
+  },
+  "template": "omnitech:block_template",
+  "output": "omnitech:holmium_block"
+}

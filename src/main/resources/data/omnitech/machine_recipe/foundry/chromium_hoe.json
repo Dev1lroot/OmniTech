@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1907,
+  "input": {
+    "fluid": "omnitech:molten_chromium",
+    "amount": 2000
+  },
+  "template": "omnitech:hoe_template",
+  "output": "omnitech:chromium_hoe"
+}

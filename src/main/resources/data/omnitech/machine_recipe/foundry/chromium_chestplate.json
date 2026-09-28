@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1907,
+  "input": {
+    "fluid": "omnitech:molten_chromium",
+    "amount": 8000
+  },
+  "template": "omnitech:chestplate_template",
+  "output": "omnitech:chromium_chestplate"
+}

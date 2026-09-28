@@ -1,0 +1,11 @@
+{
+  "requiredKineticForce": 20,
+  "input": "omnitech:pyrite",
+  "output": [
+    {
+      "item": "omnitech:pyrite_dust",
+      "count": 4,
+      "chance": 1.0
+    }
+  ]
+}

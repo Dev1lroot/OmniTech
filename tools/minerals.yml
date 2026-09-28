@@ -555,3 +555,78 @@ minerals:
         emissive: false
         reflectivity: 0.5
 
+
+  - name: "stibnite" # Антимонит (сурьма)
+    visuals:
+      base_layer:
+        color: "#4A4A4A"
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#8E949C"
+          size: { min: 0.1, max: 0.3 }
+          density: 0.4
+          shading: "metallic"
+          shape: "needles"
+        - color: "#C4CAD2"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.15
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.6
+
+  - name: "apatite" # Апатит (фосфор, кальций)
+    visuals:
+      base_layer:
+        color: "#5A5A5A"
+        texture_type: "grainy"
+      inclusions:
+        - color: "#3FA08C"
+          size: { min: 0.15, max: 0.3 }
+          density: 0.35
+          shading: "glossy"
+        - color: "#8FD3C3"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.15
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.3
+
+  - name: "graphite" # Природный графит
+    visuals:
+      base_layer:
+        color: "#3C3C3C"
+        texture_type: "flaky"
+      inclusions:
+        - color: "#1C1C1E"
+          size: { min: 0.15, max: 0.35 }
+          density: 0.45
+          shading: "metallic"
+        - color: "#6E7078"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.2
+          shading: "glossy"
+      effects:
+        emissive: false
+        reflectivity: 0.4
+
+  - name: "sperrylite" # Сперрилит (платиноиды)
+    visuals:
+      base_layer:
+        color: "#2A2A2A"
+        texture_type: "crystalline"
+      inclusions:
+        - color: "#B8BEC4"
+          size: { min: 0.1, max: 0.25 }
+          density: 0.3
+          shading: "metallic"
+          shape: "cubic"
+        - color: "#F0F2F4"
+          size: { min: 0.05, max: 0.1 }
+          density: 0.1
+          shading: "bright"
+      effects:
+        emissive: false
+        reflectivity: 0.9
+        metalness: 1.0

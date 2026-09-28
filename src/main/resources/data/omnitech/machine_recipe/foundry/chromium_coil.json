@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1907,
+  "input": {
+    "fluid": "omnitech:molten_chromium",
+    "amount": 1500
+  },
+  "template": "omnitech:coil_template",
+  "output": "omnitech:chromium_coil"
+}

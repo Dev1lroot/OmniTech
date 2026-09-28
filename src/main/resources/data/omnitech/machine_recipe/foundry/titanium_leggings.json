@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1700,
+  "input": {
+    "fluid": "omnitech:molten_titanium",
+    "amount": 7000
+  },
+  "template": "omnitech:leggings_template",
+  "output": "omnitech:titanium_leggings"
+}

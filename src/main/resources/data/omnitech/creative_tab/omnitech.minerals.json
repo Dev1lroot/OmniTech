@@ -19,6 +19,22 @@
     "omnitech:diorite_dust",
     "omnitech:stone_dust",
     "omnitech:hematite_dust",
-    "omnitech:deepslate_dust"
+    "omnitech:deepslate_dust",
+    "omnitech:baddeleyite_dust",
+    "omnitech:borax_dust",
+    "omnitech:cinnabar_dust",
+    "omnitech:ruby",
+    "omnitech:sapphire",
+    "omnitech:chrysolite",
+    "omnitech:topaz",
+    "omnitech:aquamarine",
+    "omnitech:hyacinth",
+    "omnitech:garnet",
+    "omnitech:tourmaline",
+    "omnitech:pyrite_dust",
+    "omnitech:cryolite_dust",
+    "omnitech:stibnite_dust",
+    "omnitech:apatite_dust",
+    "omnitech:sperrylite_dust"
   ]
 }

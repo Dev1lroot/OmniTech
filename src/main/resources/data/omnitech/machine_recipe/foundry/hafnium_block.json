@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 2233,
+  "input": {
+    "fluid": "omnitech:molten_hafnium",
+    "amount": 9000
+  },
+  "template": "omnitech:block_template",
+  "output": "omnitech:hafnium_block"
+}

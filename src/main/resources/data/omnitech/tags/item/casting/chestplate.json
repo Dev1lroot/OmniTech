@@ -1,0 +1,77 @@
+{
+  "values": [
+    "#minecraft:chest_armor",
+    {
+      "id": "omnitech:aluminium_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:brass_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:cadmium_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:chromium_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:cobalt_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_carbide_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_tantalum_carbide_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:lead_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:nickel_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:steel_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:tantalum_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:tin_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:titanium_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_carbide_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:uranium_chestplate",
+      "required": false
+    },
+    {
+      "id": "omnitech:zinc_chestplate",
+      "required": false
+    }
+  ]
+}

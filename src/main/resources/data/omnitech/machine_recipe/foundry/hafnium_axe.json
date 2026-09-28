@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 2233,
+  "input": {
+    "fluid": "omnitech:molten_hafnium",
+    "amount": 3000
+  },
+  "template": "omnitech:axe_template",
+  "output": "omnitech:hafnium_axe"
+}

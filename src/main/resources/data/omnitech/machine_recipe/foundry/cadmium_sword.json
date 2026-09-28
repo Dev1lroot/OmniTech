@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 321,
+  "input": {
+    "fluid": "omnitech:molten_cadmium",
+    "amount": 2000
+  },
+  "template": "omnitech:sword_template",
+  "output": "omnitech:cadmium_sword"
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 157,
+  "input": {
+    "fluid": "omnitech:molten_indium",
+    "amount": 500
+  },
+  "template": "omnitech:plate_template",
+  "output": "omnitech:indium_plate"
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 640,
+  "input": {
+    "fluid": "omnitech:molten_plutonium",
+    "amount": 9000
+  },
+  "template": "omnitech:block_template",
+  "output": "omnitech:plutonium_block"
+}

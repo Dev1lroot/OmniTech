@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1100,
+  "input": {
+    "fluid": "omnitech:molten_copper",
+    "amount": 500
+  },
+  "template": "omnitech:reductor_template",
+  "output": "omnitech:copper_reductor"
+}

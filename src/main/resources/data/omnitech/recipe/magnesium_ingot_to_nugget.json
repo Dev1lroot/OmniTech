@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:magnesium_ingot"
+  ],
+  "result": {
+    "count": 9,
+    "id": "omnitech:magnesium_nugget"
+  }
+}

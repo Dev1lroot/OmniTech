@@ -1,0 +1,77 @@
+{
+  "values": [
+    "#minecraft:head_armor",
+    {
+      "id": "omnitech:aluminium_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:brass_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:cadmium_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:chromium_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:cobalt_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_carbide_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_tantalum_carbide_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:lead_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:nickel_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:steel_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:tantalum_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:tin_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:titanium_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_carbide_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:uranium_helmet",
+      "required": false
+    },
+    {
+      "id": "omnitech:zinc_helmet",
+      "required": false
+    }
+  ]
+}

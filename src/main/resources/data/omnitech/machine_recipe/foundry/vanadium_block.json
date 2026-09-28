@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1910,
+  "input": {
+    "fluid": "omnitech:molten_vanadium",
+    "amount": 9000
+  },
+  "template": "omnitech:block_template",
+  "output": "omnitech:vanadium_block"
+}

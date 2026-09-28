@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:brick",
+    "C": "minecraft:clay_ball",
+    "X": "#omnitech:casting/helmet"
+  },
+  "pattern": [
+    "BCB",
+    "CXC",
+    "BCB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:helmet_template"
+  }
+}

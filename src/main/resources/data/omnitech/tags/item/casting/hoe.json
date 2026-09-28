@@ -1,0 +1,77 @@
+{
+  "values": [
+    "#minecraft:hoes",
+    {
+      "id": "omnitech:aluminium_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:brass_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:cadmium_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:chromium_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:cobalt_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_carbide_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_tantalum_carbide_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:lead_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:nickel_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:steel_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:tantalum_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:tin_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:titanium_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_carbide_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:uranium_hoe",
+      "required": false
+    },
+    {
+      "id": "omnitech:zinc_hoe",
+      "required": false
+    }
+  ]
+}

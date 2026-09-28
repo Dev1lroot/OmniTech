@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 400,
+  "input": {
+    "fluid": "omnitech:molten_lead",
+    "amount": 1500
+  },
+  "template": "omnitech:coil_template",
+  "output": "omnitech:lead_coil"
+}

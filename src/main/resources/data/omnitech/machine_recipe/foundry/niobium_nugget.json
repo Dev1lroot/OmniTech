@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 2477,
+  "input": {
+    "fluid": "omnitech:molten_niobium",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:niobium_nugget"
+}

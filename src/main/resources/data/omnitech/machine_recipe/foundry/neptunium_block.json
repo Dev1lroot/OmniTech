@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 644,
+  "input": {
+    "fluid": "omnitech:molten_neptunium",
+    "amount": 9000
+  },
+  "template": "omnitech:block_template",
+  "output": "omnitech:neptunium_block"
+}

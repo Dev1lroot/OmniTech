@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1246,
+  "input": {
+    "fluid": "omnitech:molten_manganese",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:manganese_nugget"
+}

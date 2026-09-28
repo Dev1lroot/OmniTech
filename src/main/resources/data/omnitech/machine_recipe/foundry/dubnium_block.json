@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 2100,
+  "input": {
+    "fluid": "omnitech:molten_dubnium",
+    "amount": 9000
+  },
+  "template": "omnitech:block_template",
+  "output": "omnitech:dubnium_block"
+}

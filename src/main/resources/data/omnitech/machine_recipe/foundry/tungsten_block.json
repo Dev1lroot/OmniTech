@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 3500,
+  "input": {
+    "fluid": "omnitech:molten_tungsten",
+    "amount": 9000
+  },
+  "template": "omnitech:block_template",
+  "output": "omnitech:tungsten_block"
+}

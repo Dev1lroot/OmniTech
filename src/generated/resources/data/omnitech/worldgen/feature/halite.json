@@ -6,8 +6,15 @@
     {
       "state": "omnitech:halite",
       "target": {
-        "block": "minecraft:stone",
-        "predicate_type": "minecraft:block_match"
+        "predicate_type": "minecraft:tag_match",
+        "tag": "minecraft:stone_ore_replaceables"
+      }
+    },
+    {
+      "state": "omnitech:halite",
+      "target": {
+        "predicate_type": "minecraft:tag_match",
+        "tag": "minecraft:deepslate_ore_replaceables"
       }
     }
   ]

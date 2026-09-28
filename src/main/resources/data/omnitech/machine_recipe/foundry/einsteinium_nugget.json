@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 860,
+  "input": {
+    "fluid": "omnitech:molten_einsteinium",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:einsteinium_nugget"
+}

@@ -41,6 +41,16 @@
       "item": "omnitech:scandium_mote",
       "count": 1,
       "chance": 0.03
+    },
+    {
+      "item": "omnitech:europium_mote",
+      "count": 1,
+      "chance": 0.03
+    },
+    {
+      "item": "omnitech:gadolinium_mote",
+      "count": 1,
+      "chance": 0.04
     }
   ]
 }

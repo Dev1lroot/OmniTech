@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "omnitech:tin_cog",
+    "R": "omnitech:tin_rod"
+  },
+  "pattern": [
+    "CRC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:tin_reductor"
+  }
+}

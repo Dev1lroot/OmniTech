@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1855,
+  "input": {
+    "fluid": "omnitech:molten_zirconium",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:zirconium_nugget"
+}

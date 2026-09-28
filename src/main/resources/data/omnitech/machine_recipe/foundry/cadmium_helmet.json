@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 321,
+  "input": {
+    "fluid": "omnitech:molten_cadmium",
+    "amount": 5000
+  },
+  "template": "omnitech:helmet_template",
+  "output": "omnitech:cadmium_helmet"
+}

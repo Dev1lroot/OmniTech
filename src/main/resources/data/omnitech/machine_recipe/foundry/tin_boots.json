@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 232,
+  "input": {
+    "fluid": "omnitech:molten_tin",
+    "amount": 4000
+  },
+  "template": "omnitech:boots_template",
+  "output": "omnitech:tin_boots"
+}

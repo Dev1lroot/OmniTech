@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 1768,
+  "input": {
+    "fluid": "omnitech:molten_platinum",
+    "amount": 112
+  },
+  "template": "omnitech:nugget_template",
+  "output": "omnitech:platinum_nugget"
+}

@@ -1,0 +1,9 @@
+{
+  "requiredMinimalTemperature": 920,
+  "input": {
+    "fluid": "omnitech:molten_lanthanum",
+    "amount": 500
+  },
+  "template": "omnitech:plate_template",
+  "output": "omnitech:lanthanum_plate"
+}
