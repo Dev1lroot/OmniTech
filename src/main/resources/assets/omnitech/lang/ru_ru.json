@@ -345,5 +345,7 @@
   "omnitech.space.system.tau_ceti": "Тау Кита",
   "omnitech.space.body.jupiter": "Юпитер",
   "omnitech.space.galaxy.pegasus": "Пегас",
-  "omnitech.space.body.neptune": "Нептун"
+  "omnitech.space.body.neptune": "Нептун",
+  "omnitech.space.body.tau_ceti_g": "Тау Кита g",
+  "omnitech.space.body.tau_ceti_h": "Тау Кита h"
 }

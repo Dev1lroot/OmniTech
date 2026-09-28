@@ -2,7 +2,7 @@
   "uuid": "pegasus",
   "parent": "root",
   "type": "galaxy",
-  "texture": "omnitech:textures/space/galaxy/milky_way.png",
+  "texture": "omnitech:textures/space/galaxy/pegasus.png",
   "background": "omnitech:textures/space/background/milky_way.png",
   "orbital_radius": 120,
   "orbital_speed": 0

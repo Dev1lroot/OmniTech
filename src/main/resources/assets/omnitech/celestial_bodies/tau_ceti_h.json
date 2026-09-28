@@ -1,0 +1,17 @@
+{
+  "uuid": "tau_ceti_h",
+  "parent": "tau_ceti",
+  "type": "planet",
+  "texture": "omnitech:textures/space/planet/tau_ceti_h.png",
+  "orbital_radius": 100,
+  "orbital_speed": 0.000550322,
+  "size": 1.2,
+  "orbital_distance_km": 36353000,
+  "orbital_inclination": 2.5,
+  "ascending_node": 300.0,
+  "day_length_ticks": 1185840,
+  "base_temperature": 180.0,
+  "temperature_amplitude": 60.0,
+  "surface_pressure": 0.0,
+  "pressure_gradient": 0.0
+}

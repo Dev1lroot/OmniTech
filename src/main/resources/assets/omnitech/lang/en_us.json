@@ -1961,5 +1961,7 @@
   "omnitech.space.body.saturn_rings": "Rings of Saturn",
   "omnitech.space.galaxy.andromeda": "Andromeda",
   "omnitech.space.body.kuiper_belt": "Kuiper Belt",
-  "omnitech.space.galaxy.pegasus": "Pegasus"
+  "omnitech.space.galaxy.pegasus": "Pegasus",
+  "omnitech.space.body.tau_ceti_g": "Tau Ceti g",
+  "omnitech.space.body.tau_ceti_h": "Tau Ceti h"
 }
