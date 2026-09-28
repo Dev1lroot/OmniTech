@@ -1,0 +1,12 @@
+{
+  "uuid": "saturn_rings",
+  "parent": "saturn",
+  "type": "belt",
+  "orbital_radius": 55,
+  "orbital_speed": 0.02,
+  "parent_distance_km": 107000,
+  "orbital_inclination": 0.0,
+  "ascending_node": 0.0,
+  "belt_width": 0.3,
+  "belt_particles": 700
+}

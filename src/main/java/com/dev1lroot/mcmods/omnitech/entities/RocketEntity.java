@@ -36,7 +36,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 public class RocketEntity extends Entity implements MenuProvider {
 
@@ -130,7 +135,7 @@ public class RocketEntity extends Entity implements MenuProvider {
             return;
         }
 
-        processBucketSlot();
+        processFuelSlot();
 
         switch (getState()) {
             case IDLE       -> tickIdle();
@@ -279,25 +284,85 @@ public class RocketEntity extends Entity implements MenuProvider {
     }
 
     // -------------------------------------------------------------------------
-    // Fuel bucket slot
+    // Fuel slot — hydrazine only, from any fluid container
     // -------------------------------------------------------------------------
 
-    private void processBucketSlot() {
-        ItemStack input = inventory.getItem(0);
-        int fuel = getFuelAmount();
+    /** Rocket fuel: anhydrous hydrazine. Hydrazine hydrate / crude solution are not accepted. */
+    public static final net.minecraft.resources.Identifier FUEL_FLUID =
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("omnitech", "hydrazine");
 
-        if (input.is(Items.WATER_BUCKET) && fuel + 1000 <= MAX_FUEL) {
-            ItemStack output = inventory.getItem(1);
-            if (output.isEmpty()) {
-                inventory.setItem(1, new ItemStack(Items.BUCKET));
-                inventory.setItem(0, ItemStack.EMPTY);
-                setFuelAmount(fuel + 1000);
-            } else if (output.is(Items.BUCKET) && output.getCount() < output.getMaxStackSize()) {
-                output.grow(1);
-                inventory.setItem(0, ItemStack.EMPTY);
-                setFuelAmount(fuel + 1000);
-            }
+    private static boolean isFuel(FluidResource resource) {
+        return !resource.isEmpty() && FUEL_FLUID.equals(
+                net.minecraft.core.registries.BuiltInRegistries.FLUID.getKey(resource.getFluid()));
+    }
+
+    /**
+     * True if the stack is a fluid container (bucket, fluid canister, flask, …) currently
+     * holding hydrazine — i.e. exposes {@code Capabilities.Fluid.ITEM} with a hydrazine resource.
+     */
+    public static boolean containsFuel(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        SimpleContainer scratch = new SimpleContainer(1);
+        scratch.setItem(0, stack.copyWithCount(1));
+        var handler = ItemAccess.forHandlerIndex(VanillaContainerWrapper.of(scratch), 0).getCapability(Capabilities.Fluid.ITEM);
+        if (handler == null) return false;
+        for (int i = 0; i < handler.size(); i++) {
+            if (isFuel(handler.getResource(i)) && handler.getAmountAsInt(i) > 0) return true;
         }
+        return false;
+    }
+
+    /**
+     * Drains hydrazine from the container in the fuel slot, as much as the tank has room for.
+     * The container is drained on a scratch copy inside one transaction: a partially drained
+     * canister/flask stays in the input slot, an emptied one moves to the output slot (and the
+     * transfer is abandoned if the output can't take it). Buckets are all-or-nothing, so a full
+     * bucket waits until 1000 mB fit.
+     */
+    private void processFuelSlot() {
+        ItemStack input = inventory.getItem(0);
+        int room = MAX_FUEL - getFuelAmount();
+        if (input.isEmpty() || room <= 0) return;
+
+        SimpleContainer scratch = new SimpleContainer(1);
+        scratch.setItem(0, input.copyWithCount(1));
+        var handler = ItemAccess.forHandlerIndex(VanillaContainerWrapper.of(scratch), 0).getCapability(Capabilities.Fluid.ITEM);
+        if (handler == null) return;
+
+        try (var tx = Transaction.openRoot()) {
+            int drained = 0;
+            for (int i = 0; i < handler.size() && drained < room; i++) {
+                FluidResource res = handler.getResource(i);
+                if (!isFuel(res)) continue;
+                drained += handler.extract(i, res, Math.min(handler.getAmountAsInt(i), room - drained), tx);
+            }
+            if (drained <= 0) return;
+
+            ItemStack result = scratch.getItem(0);
+            if (!containsFuel(result) || result.isEmpty()) {
+                if (!canOutput(result)) return;
+                tx.commit();
+                input.shrink(1);
+                if (!result.isEmpty()) {
+                    ItemStack out = inventory.getItem(1);
+                    if (out.isEmpty()) inventory.setItem(1, result);
+                    else out.grow(result.getCount());
+                }
+            } else {
+                // still holds hydrazine: only a single container can be swapped in place
+                if (input.getCount() != 1) return;
+                tx.commit();
+                inventory.setItem(0, result);
+            }
+            setFuelAmount(getFuelAmount() + drained);
+        }
+    }
+
+    private boolean canOutput(ItemStack result) {
+        if (result.isEmpty()) return true;
+        ItemStack out = inventory.getItem(1);
+        return out.isEmpty() || (ItemStack.isSameItemSameComponents(out, result)
+                && out.getCount() + result.getCount() <= out.getMaxStackSize());
     }
 
     // -------------------------------------------------------------------------

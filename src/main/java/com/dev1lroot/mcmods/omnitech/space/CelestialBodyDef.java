@@ -35,4 +35,8 @@ public class CelestialBodyDef {
      * Negative = retrograde. 0 = no rotation rendered.
      */
     public float day_length_ticks = 0f;
+    /** Belts only: radial half-width as a fraction of the orbit radius. */
+    public float belt_width = 0.12f;
+    /** Belts only: particle count used to draw the belt on the space map. */
+    public int belt_particles = 600;
 }

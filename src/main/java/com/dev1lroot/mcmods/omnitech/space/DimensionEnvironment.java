@@ -79,7 +79,7 @@ public final class DimensionEnvironment {
     private static void indexBodies(java.util.List<CelestialBody> list) {
         for (CelestialBody b : list) {
             if (b.dimension != null) bodyCache.put(b.dimension, b);
-            if (b.moons != null)     indexBodies(b.moons);
+            if (b.moons != null)     indexBodies(b.satellites());
         }
     }
 

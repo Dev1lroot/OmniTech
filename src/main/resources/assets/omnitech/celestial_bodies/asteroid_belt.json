@@ -1,0 +1,12 @@
+{
+  "uuid": "asteroid_belt",
+  "parent": "sol",
+  "type": "belt",
+  "orbital_radius": 245,
+  "orbital_speed": 1.47e-05,
+  "orbital_distance_km": 414000000,
+  "orbital_inclination": 10.6,
+  "ascending_node": 80.0,
+  "belt_width": 0.1,
+  "belt_particles": 900
+}

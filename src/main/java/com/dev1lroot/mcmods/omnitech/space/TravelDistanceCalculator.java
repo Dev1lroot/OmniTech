@@ -141,7 +141,7 @@ public final class TravelDistanceCalculator {
                 for (CelestialBody planet : sys.bodies) {
                     if (dimId.equals(planet.dimension)) return new BodyEntry(planet, null);
                     if (planet.moons != null) {
-                        for (CelestialBody moon : planet.moons) {
+                        for (CelestialBody moon : planet.satellites()) {
                             if (dimId.equals(moon.dimension)) return new BodyEntry(moon, planet);
                         }
                     }
@@ -161,7 +161,7 @@ public final class TravelDistanceCalculator {
                 for (CelestialBody planet : sys.bodies) {
                     if (bodyId.equals(planet.id)) return new BodyEntry(planet, null);
                     if (planet.moons != null) {
-                        for (CelestialBody moon : planet.moons) {
+                        for (CelestialBody moon : planet.satellites()) {
                             if (bodyId.equals(moon.id)) return new BodyEntry(moon, planet);
                         }
                     }

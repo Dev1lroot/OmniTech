@@ -31,7 +31,7 @@ public class SpaceMap {
         for (CelestialBody body : system.bodies) {
             if (dimensionId.equals(body.dimension)) return body;
             if (body.moons != null) {
-                for (CelestialBody moon : body.moons) {
+                for (CelestialBody moon : body.satellites()) {
                     if (dimensionId.equals(moon.dimension)) return moon;
                 }
             }

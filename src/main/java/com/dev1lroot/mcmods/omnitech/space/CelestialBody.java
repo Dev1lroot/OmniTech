@@ -105,9 +105,34 @@ public class CelestialBody {
 
     /** Child moons (empty list for moons themselves). */
     public List<CelestialBody> moons = List.of();
+    /** Belts orbiting this planet (e.g. Saturn's rings); star-level belts live in the system's bodies. */
+    public List<CelestialBody> belts = List.of();
+
+    /**
+     * Belt shape (type "belt" only): radial half-width as a fraction of the orbit radius,
+     * and how many particles draw it on the space map.
+     */
+    public float belt_width = 0.12f;
+    public int belt_particles = 600;
 
     public boolean hasMoons() {
         return moons != null && !moons.isEmpty();
+    }
+
+    public boolean isBelt() {
+        return "belt".equals(type);
+    }
+
+    /** Moons followed by belts — everything orbiting this planet. */
+    public List<CelestialBody> satellites() {
+        if (belts == null || belts.isEmpty()) return moons != null ? moons : List.of();
+        java.util.List<CelestialBody> all = new java.util.ArrayList<>(moons != null ? moons : List.of());
+        all.addAll(belts);
+        return all;
+    }
+
+    public boolean hasSatellites() {
+        return hasMoons() || (belts != null && !belts.isEmpty());
     }
 
     public boolean isAvailable() {

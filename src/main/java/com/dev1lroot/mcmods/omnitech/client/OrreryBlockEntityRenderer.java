@@ -128,6 +128,7 @@ public class OrreryBlockEntityRenderer
 
         // Planets + moons
         for (CelestialBody planet : system.bodies) {
+            if (planet.isBelt()) continue;   // belts are particle clouds, not bodies
             Vector3f pPos = SolarSystemScene.bodyPosition(planet, snapTime);
 
             int planetColor = bodyColor(planet.id);

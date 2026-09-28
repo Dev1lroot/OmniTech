@@ -10,5 +10,7 @@
   "orbital_inclination": 1.86,
   "ascending_node": 144.0,
   "day_length_ticks": 0,
-  "dimension": "omnitech:kuiper_belt"
+  "dimension": "omnitech:kuiper_belt",
+  "belt_width": 0.16,
+  "belt_particles": 1200
 }

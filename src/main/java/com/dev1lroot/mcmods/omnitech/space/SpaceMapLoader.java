@@ -76,12 +76,16 @@ public class SpaceMapLoader {
                     CelestialBody planet = toCelestialBody(planetDef);
 
                     List<CelestialBody> moons = new ArrayList<>();
+                    List<CelestialBody> belts = new ArrayList<>();
                     for (CelestialBodyDef moonDef : byUuid.values()) {
-                        if (!"moon".equals(moonDef.type) || !planetDef.uuid.equals(moonDef.parent)) continue;
-                        moons.add(toCelestialBody(moonDef));
+                        if (!planetDef.uuid.equals(moonDef.parent)) continue;
+                        if ("moon".equals(moonDef.type)) moons.add(toCelestialBody(moonDef));
+                        else if ("belt".equals(moonDef.type)) belts.add(toCelestialBody(moonDef));
                     }
                     moons.sort(Comparator.comparingLong(m -> m.parent_distance_km));
+                    belts.sort(Comparator.comparingLong(m -> m.parent_distance_km));
                     planet.moons = moons;
+                    planet.belts = belts;
                     planets.add(planet);
                 }
                 planets.sort(Comparator.comparingLong(p -> p.orbital_distance_km));
@@ -145,6 +149,8 @@ public class SpaceMapLoader {
         b.surface_y = def.surface_y;
         b.surface_gravity = def.surface_gravity;
         b.day_length_ticks = def.day_length_ticks;
+        b.belt_width = def.belt_width;
+        b.belt_particles = def.belt_particles;
         b.moons = new ArrayList<>();
         return b;
     }

@@ -54,7 +54,7 @@ public class RocketMenu extends AbstractContainerMenu {
             if (fuelIn != null) {
                 addSlot(new Slot(rocket.getInventory(), 0, fuelIn.x, fuelIn.y) {
                     @Override
-                    public boolean mayPlace(ItemStack stack) { return stack.is(Items.WATER_BUCKET); }
+                    public boolean mayPlace(ItemStack stack) { return RocketEntity.containsFuel(stack); }
                 });
                 slotCount++;
             }

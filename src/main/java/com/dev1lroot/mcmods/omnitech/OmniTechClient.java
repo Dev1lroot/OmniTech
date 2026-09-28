@@ -93,6 +93,9 @@ public class OmniTechClient
         modEventBus.addListener(this::registerCustomEnvironmentRenderers);
         modEventBus.addListener(this::registerRenderPipelines);
         modEventBus.addListener(this::registerKeys);
+        modEventBus.addListener((net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent e) ->
+                e.register(com.dev1lroot.mcmods.omnitech.client.spacemap.SpaceMapRenderState.class,
+                        com.dev1lroot.mcmods.omnitech.client.spacemap.SpaceMapPipRenderer::new));
         NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut e) ->
                 com.dev1lroot.mcmods.omnitech.client.HelmetVisionClient.reset());
         NeoForge.EVENT_BUS.addListener(com.dev1lroot.mcmods.omnitech.client.HelmetVisionClient::onRenderFog);

@@ -160,7 +160,7 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
                     if (dimId.equals(planet.dimension))
                         return new BodyLocation(planet, null, system);
                     if (planet.moons != null) {
-                        for (CelestialBody moon : planet.moons) {
+                        for (CelestialBody moon : planet.satellites()) {
                             if (dimId.equals(moon.dimension))
                                 return new BodyLocation(moon, planet, system);
                         }
@@ -433,7 +433,8 @@ public class SpaceMapSkyboxRenderer implements CustomSkyboxRenderer {
                     ? loc.parentPlanet().id : loc.body().id;
 
             for (CelestialBody planet : loc.starSystem().bodies) {
-                if (planet.texture == null || planet.id.equals(homePlanetId)) continue;
+                // belts are particle clouds, not discs in the sky
+                if (planet.texture == null || planet.isBelt() || planet.id.equals(homePlanetId)) continue;
 
                 Vector3f planetPos = SolarSystemScene.bodyPosition(planet, gameTime);
                 Vector3f toPlanet  = new Vector3f(planetPos).sub(viewerPos);
