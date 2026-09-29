@@ -10,20 +10,40 @@
                 {
                     "sampler_name": "In",
                     "target": "minecraft:main"
+                },
+                {
+                    "sampler_name": "Depth",
+                    "target": "minecraft:main",
+                    "use_depth_buffer": true
                 }
             ],
             "output": "swap",
             "uniforms": {
-                "NightVisionConfig": [
+                "InfraredConfig": [
                     {
                         "name": "Gain",
                         "type": "float",
-                        "value": 6.0
+                        "value": 2.4
+                    },
+                    {
+                        "name": "IlluminatorRange",
+                        "type": "float",
+                        "value": 14.0
                     },
                     {
                         "name": "Grain",
                         "type": "float",
-                        "value": 0.16
+                        "value": 0.12
+                    },
+                    {
+                        "name": "Near",
+                        "type": "float",
+                        "value": 0.05
+                    },
+                    {
+                        "name": "Far",
+                        "type": "float",
+                        "value": 2048.0
                     }
                 ]
             }

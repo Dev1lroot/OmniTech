@@ -25,7 +25,7 @@ import java.util.UUID;
 public final class HelmetVision {
 
     public enum Mode {
-        DEFAULT, NIGHT_VISION, SONAR, LIDAR;
+        DEFAULT, NIGHT_VISION, SONAR, LIDAR, X_RAY, THERMAL, GAMMA;
 
         public Mode next() {
             return values()[(ordinal() + 1) % values().length];

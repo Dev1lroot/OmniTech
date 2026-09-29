@@ -317,7 +317,7 @@
   "key.omnitech.helmet_vision": "Режим визора шлема",
   "message.omnitech.helmet_vision": "Визор шлема: %s",
   "message.omnitech.helmet_vision.default": "Обычный",
-  "message.omnitech.helmet_vision.night_vision": "Ночное видение",
+  "message.omnitech.helmet_vision.night_vision": "Инфракрасный",
   "message.omnitech.helmet_vision.lidar": "Лидар",
   "message.omnitech.helmet_vision.no_helmet": "Наденьте шлем скафандра, чтобы переключать режимы визора",
   "message.omnitech.helmet_vision.sonar": "Сонар",
@@ -347,5 +347,8 @@
   "omnitech.space.galaxy.pegasus": "Пегас",
   "omnitech.space.body.neptune": "Нептун",
   "omnitech.space.body.tau_ceti_g": "Тау Кита g",
-  "omnitech.space.body.tau_ceti_h": "Тау Кита h"
+  "omnitech.space.body.tau_ceti_h": "Тау Кита h",
+  "message.omnitech.helmet_vision.x_ray": "Рентген",
+  "message.omnitech.helmet_vision.thermal": "Тепловизор",
+  "message.omnitech.helmet_vision.gamma": "Гамма-камера"
 }

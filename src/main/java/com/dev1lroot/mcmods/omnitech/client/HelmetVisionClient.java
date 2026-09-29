@@ -23,9 +23,13 @@ import java.util.List;
  * mode's post effect to the frame. Taking the helmet off drops back to DEFAULT.
  *
  * <ul>
- *   <li>NIGHT_VISION – black-and-white image post effect (+ real Night Vision from the server)</li>
+ *   <li>NIGHT_VISION – infrared camera: B/W near-IR image with an IR illuminator, VHS tape noise
+ *       (+ real Night Vision from the server)</li>
  *   <li>SONAR – every surface coloured by depth-buffer distance</li>
  *   <li>LIDAR – world fogged to black, {@link LidarScanner} paints glowing world-anchored points</li>
+ *   <li>X_RAY – {@link XrayVision} ray-marches block density through walls into a B/W film</li>
+ *   <li>THERMAL – {@link ThermalVision}: first-hit temperature from light level, living entities red hot</li>
+ *   <li>GAMMA – {@link GammaVision}: radioactive sources glow through walls, attenuated by shielding; Geiger clicks</li>
  * </ul>
  */
 public final class HelmetVisionClient {
@@ -79,6 +83,16 @@ public final class HelmetVisionClient {
     /** Forget the mode on disconnect / world change. */
     public static void reset() {
         mode = HelmetVision.Mode.DEFAULT;
+        XrayVision.reset();
+        ThermalVision.reset();
+        GammaVision.reset();
+    }
+
+    /** X-ray, heat and gamma cover the view with their CPU-rendered image, under the rest of the HUD. */
+    public static void onRenderGuiPre(net.neoforged.neoforge.client.event.RenderGuiEvent.Pre event) {
+        if (mode == HelmetVision.Mode.X_RAY) XrayVision.render(event.getGuiGraphics());
+        else if (mode == HelmetVision.Mode.THERMAL) ThermalVision.render(event.getGuiGraphics());
+        else if (mode == HelmetVision.Mode.GAMMA) GammaVision.render(event.getGuiGraphics());
     }
 
     private static void setMode(Minecraft mc, HelmetVision.Mode next) {

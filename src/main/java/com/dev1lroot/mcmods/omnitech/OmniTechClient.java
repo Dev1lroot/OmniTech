@@ -100,6 +100,7 @@ public class OmniTechClient
                 com.dev1lroot.mcmods.omnitech.client.HelmetVisionClient.reset());
         NeoForge.EVENT_BUS.addListener(com.dev1lroot.mcmods.omnitech.client.HelmetVisionClient::onRenderFog);
         NeoForge.EVENT_BUS.addListener(com.dev1lroot.mcmods.omnitech.client.HelmetVisionClient::onComputeFogColor);
+        NeoForge.EVENT_BUS.addListener(com.dev1lroot.mcmods.omnitech.client.HelmetVisionClient::onRenderGuiPre);
         modEventBus.addListener(this::registerRenderStateModifiers);
         modEventBus.addListener(this::onAddClientReloadListeners);
         modEventBus.addListener(this::registerItemColors);

@@ -1953,7 +1953,7 @@
   "key.omnitech.helmet_vision": "Cycle Helmet Vision",
   "message.omnitech.helmet_vision": "Helmet vision: %s",
   "message.omnitech.helmet_vision.default": "Standard",
-  "message.omnitech.helmet_vision.night_vision": "Night Vision",
+  "message.omnitech.helmet_vision.night_vision": "Infrared",
   "message.omnitech.helmet_vision.lidar": "Lidar",
   "message.omnitech.helmet_vision.no_helmet": "Wear a space suit helmet to switch vision modes",
   "message.omnitech.helmet_vision.sonar": "Sonar",
@@ -1963,5 +1963,8 @@
   "omnitech.space.body.kuiper_belt": "Kuiper Belt",
   "omnitech.space.galaxy.pegasus": "Pegasus",
   "omnitech.space.body.tau_ceti_g": "Tau Ceti g",
-  "omnitech.space.body.tau_ceti_h": "Tau Ceti h"
+  "omnitech.space.body.tau_ceti_h": "Tau Ceti h",
+  "message.omnitech.helmet_vision.x_ray": "X-Ray",
+  "message.omnitech.helmet_vision.thermal": "Heat Vision",
+  "message.omnitech.helmet_vision.gamma": "Gamma Camera"
 }
