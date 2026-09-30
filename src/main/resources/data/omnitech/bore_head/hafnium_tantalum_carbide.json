@@ -1,0 +1,11 @@
+{
+  "tier": "netherite",
+  "hardness": 25000,
+  "speed": 19.5,
+  "durability": 11450,
+  "energy_per_block": 1,
+  "enchantability": 5,
+  "formula": "(Hf,Ta)C",
+  "repair_ingredient": "omnitech:hafnium_tantalum_carbide_ingot",
+  "fire_resistant": true
+}

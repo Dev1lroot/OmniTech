@@ -1,0 +1,6 @@
+{
+  "parent": "omnitech:item/bore_head_3d_middle",
+  "textures": {
+    "bit": "omnitech:item/bore_head_3d/bismuth"
+  }
+}

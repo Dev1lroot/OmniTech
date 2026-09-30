@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 570,
+  "speed": 7.5,
+  "durability": 810,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "Gd",
+  "repair_ingredient": "omnitech:gadolinium_ingot",
+  "fire_resistant": false
+}

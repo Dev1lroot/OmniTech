@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 203,
+  "speed": 4.2,
+  "durability": 390,
+  "energy_per_block": 5,
+  "enchantability": 10,
+  "formula": "Cd",
+  "repair_ingredient": "omnitech:cadmium_ingot",
+  "fire_resistant": false
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "omnitech:item/bore_head_3d",
+  "textures": {
+    "bit": "omnitech:item/bore_head_3d/mendelevium"
+  }
+}

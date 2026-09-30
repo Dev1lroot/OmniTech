@@ -1,0 +1,7 @@
+{
+  "name": "Nickel-Cadmium",
+  "anode": "Cd",
+  "cathode": "NiOOH",
+  "cell_voltage": 1.2,
+  "capacity_kj": 5000
+}

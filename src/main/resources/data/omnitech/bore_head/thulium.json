@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 520,
+  "speed": 7.2,
+  "durability": 760,
+  "energy_per_block": 5,
+  "enchantability": 10,
+  "formula": "Tm",
+  "repair_ingredient": "omnitech:thulium_ingot",
+  "fire_resistant": false
+}

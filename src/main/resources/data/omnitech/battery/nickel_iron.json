@@ -1,0 +1,7 @@
+{
+  "name": "Nickel-Iron",
+  "anode": "Fe",
+  "cathode": "NiOOH",
+  "cell_voltage": 1.2,
+  "capacity_kj": 3000
+}

@@ -1,0 +1,384 @@
+{
+  "model": {
+    "type": "omnitech:bore",
+    "corpus": "omnitech:item/bore",
+    "heads": {
+      "omnitech:rubidium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/rubidium",
+        "middle": "omnitech:item/bore_head_3d/rubidium_middle"
+      },
+      "omnitech:cesium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/cesium",
+        "middle": "omnitech:item/bore_head_3d/cesium_middle"
+      },
+      "omnitech:potassium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/potassium",
+        "middle": "omnitech:item/bore_head_3d/potassium_middle"
+      },
+      "omnitech:francium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/francium",
+        "middle": "omnitech:item/bore_head_3d/francium_middle"
+      },
+      "omnitech:lithium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/lithium",
+        "middle": "omnitech:item/bore_head_3d/lithium_middle"
+      },
+      "omnitech:indium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/indium",
+        "middle": "omnitech:item/bore_head_3d/indium_middle"
+      },
+      "omnitech:thallium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/thallium",
+        "middle": "omnitech:item/bore_head_3d/thallium_middle"
+      },
+      "omnitech:lead_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/lead",
+        "middle": "omnitech:item/bore_head_3d/lead_middle"
+      },
+      "omnitech:magnesium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/magnesium",
+        "middle": "omnitech:item/bore_head_3d/magnesium_middle"
+      },
+      "omnitech:tin_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/tin",
+        "middle": "omnitech:item/bore_head_3d/tin_middle"
+      },
+      "omnitech:nihonium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/nihonium",
+        "middle": "omnitech:item/bore_head_3d/nihonium_middle"
+      },
+      "omnitech:gallium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/gallium",
+        "middle": "omnitech:item/bore_head_3d/gallium_middle"
+      },
+      "omnitech:bismuth_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/bismuth",
+        "middle": "omnitech:item/bore_head_3d/bismuth_middle"
+      },
+      "omnitech:strontium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/strontium",
+        "middle": "omnitech:item/bore_head_3d/strontium_middle"
+      },
+      "omnitech:barium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/barium",
+        "middle": "omnitech:item/bore_head_3d/barium_middle"
+      },
+      "omnitech:polonium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/polonium",
+        "middle": "omnitech:item/bore_head_3d/polonium_middle"
+      },
+      "omnitech:radium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/radium",
+        "middle": "omnitech:item/bore_head_3d/radium_middle"
+      },
+      "omnitech:moscovium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/moscovium",
+        "middle": "omnitech:item/bore_head_3d/moscovium_middle"
+      },
+      "omnitech:livermorium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/livermorium",
+        "middle": "omnitech:item/bore_head_3d/livermorium_middle"
+      },
+      "omnitech:aluminium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/aluminium",
+        "middle": "omnitech:item/bore_head_3d/aluminium_middle"
+      },
+      "omnitech:europium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/europium",
+        "middle": "omnitech:item/bore_head_3d/europium_middle"
+      },
+      "omnitech:calcium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/calcium",
+        "middle": "omnitech:item/bore_head_3d/calcium_middle"
+      },
+      "omnitech:cadmium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/cadmium",
+        "middle": "omnitech:item/bore_head_3d/cadmium_middle"
+      },
+      "omnitech:ytterbium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/ytterbium",
+        "middle": "omnitech:item/bore_head_3d/ytterbium_middle"
+      },
+      "omnitech:gold_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/gold",
+        "middle": "omnitech:item/bore_head_3d/gold_middle"
+      },
+      "omnitech:silver_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/silver",
+        "middle": "omnitech:item/bore_head_3d/silver_middle"
+      },
+      "omnitech:cerium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/cerium",
+        "middle": "omnitech:item/bore_head_3d/cerium_middle"
+      },
+      "omnitech:einsteinium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/einsteinium",
+        "middle": "omnitech:item/bore_head_3d/einsteinium_middle"
+      },
+      "omnitech:fermium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/fermium",
+        "middle": "omnitech:item/bore_head_3d/fermium_middle"
+      },
+      "omnitech:mendelevium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/mendelevium",
+        "middle": "omnitech:item/bore_head_3d/mendelevium_middle"
+      },
+      "omnitech:nobelium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/nobelium",
+        "middle": "omnitech:item/bore_head_3d/nobelium_middle"
+      },
+      "omnitech:lawrencium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/lawrencium",
+        "middle": "omnitech:item/bore_head_3d/lawrencium_middle"
+      },
+      "omnitech:roentgenium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/roentgenium",
+        "middle": "omnitech:item/bore_head_3d/roentgenium_middle"
+      },
+      "omnitech:zinc_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/zinc",
+        "middle": "omnitech:item/bore_head_3d/zinc_middle"
+      },
+      "omnitech:neodymium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/neodymium",
+        "middle": "omnitech:item/bore_head_3d/neodymium_middle"
+      },
+      "omnitech:thorium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/thorium",
+        "middle": "omnitech:item/bore_head_3d/thorium_middle"
+      },
+      "omnitech:copper_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/copper",
+        "middle": "omnitech:item/bore_head_3d/copper_middle"
+      },
+      "omnitech:praseodymium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/praseodymium",
+        "middle": "omnitech:item/bore_head_3d/praseodymium_middle"
+      },
+      "omnitech:promethium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/promethium",
+        "middle": "omnitech:item/bore_head_3d/promethium_middle"
+      },
+      "omnitech:actinium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/actinium",
+        "middle": "omnitech:item/bore_head_3d/actinium_middle"
+      },
+      "omnitech:americium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/americium",
+        "middle": "omnitech:item/bore_head_3d/americium_middle"
+      },
+      "omnitech:curium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/curium",
+        "middle": "omnitech:item/bore_head_3d/curium_middle"
+      },
+      "omnitech:berkelium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/berkelium",
+        "middle": "omnitech:item/bore_head_3d/berkelium_middle"
+      },
+      "omnitech:californium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/californium",
+        "middle": "omnitech:item/bore_head_3d/californium_middle"
+      },
+      "omnitech:samarium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/samarium",
+        "middle": "omnitech:item/bore_head_3d/samarium_middle"
+      },
+      "omnitech:palladium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/palladium",
+        "middle": "omnitech:item/bore_head_3d/palladium_middle"
+      },
+      "omnitech:holmium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/holmium",
+        "middle": "omnitech:item/bore_head_3d/holmium_middle"
+      },
+      "omnitech:lanthanum_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/lanthanum",
+        "middle": "omnitech:item/bore_head_3d/lanthanum_middle"
+      },
+      "omnitech:thulium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/thulium",
+        "middle": "omnitech:item/bore_head_3d/thulium_middle"
+      },
+      "omnitech:dysprosium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/dysprosium",
+        "middle": "omnitech:item/bore_head_3d/dysprosium_middle"
+      },
+      "omnitech:platinum_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/platinum",
+        "middle": "omnitech:item/bore_head_3d/platinum_middle"
+      },
+      "omnitech:gadolinium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/gadolinium",
+        "middle": "omnitech:item/bore_head_3d/gadolinium_middle"
+      },
+      "omnitech:yttrium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/yttrium",
+        "middle": "omnitech:item/bore_head_3d/yttrium_middle"
+      },
+      "omnitech:erbium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/erbium",
+        "middle": "omnitech:item/bore_head_3d/erbium_middle"
+      },
+      "omnitech:protactinium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/protactinium",
+        "middle": "omnitech:item/bore_head_3d/protactinium_middle"
+      },
+      "omnitech:iron_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/iron",
+        "middle": "omnitech:item/bore_head_3d/iron_middle"
+      },
+      "omnitech:vanadium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/vanadium",
+        "middle": "omnitech:item/bore_head_3d/vanadium_middle"
+      },
+      "omnitech:nickel_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/nickel",
+        "middle": "omnitech:item/bore_head_3d/nickel_middle"
+      },
+      "omnitech:scandium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/scandium",
+        "middle": "omnitech:item/bore_head_3d/scandium_middle"
+      },
+      "omnitech:terbium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/terbium",
+        "middle": "omnitech:item/bore_head_3d/terbium_middle"
+      },
+      "omnitech:tantalum_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/tantalum",
+        "middle": "omnitech:item/bore_head_3d/tantalum_middle"
+      },
+      "omnitech:zirconium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/zirconium",
+        "middle": "omnitech:item/bore_head_3d/zirconium_middle"
+      },
+      "omnitech:titanium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/titanium",
+        "middle": "omnitech:item/bore_head_3d/titanium_middle"
+      },
+      "omnitech:brass_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/brass",
+        "middle": "omnitech:item/bore_head_3d/brass_middle"
+      },
+      "omnitech:manganese_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/manganese",
+        "middle": "omnitech:item/bore_head_3d/manganese_middle"
+      },
+      "omnitech:neptunium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/neptunium",
+        "middle": "omnitech:item/bore_head_3d/neptunium_middle"
+      },
+      "omnitech:dubnium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/dubnium",
+        "middle": "omnitech:item/bore_head_3d/dubnium_middle"
+      },
+      "omnitech:darmstadtium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/darmstadtium",
+        "middle": "omnitech:item/bore_head_3d/darmstadtium_middle"
+      },
+      "omnitech:cobalt_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/cobalt",
+        "middle": "omnitech:item/bore_head_3d/cobalt_middle"
+      },
+      "omnitech:chromium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/chromium",
+        "middle": "omnitech:item/bore_head_3d/chromium_middle"
+      },
+      "omnitech:lutetium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/lutetium",
+        "middle": "omnitech:item/bore_head_3d/lutetium_middle"
+      },
+      "omnitech:rhodium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/rhodium",
+        "middle": "omnitech:item/bore_head_3d/rhodium_middle"
+      },
+      "omnitech:niobium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/niobium",
+        "middle": "omnitech:item/bore_head_3d/niobium_middle"
+      },
+      "omnitech:steel_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/steel",
+        "middle": "omnitech:item/bore_head_3d/steel_middle"
+      },
+      "omnitech:technetium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/technetium",
+        "middle": "omnitech:item/bore_head_3d/technetium_middle"
+      },
+      "omnitech:plutonium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/plutonium",
+        "middle": "omnitech:item/bore_head_3d/plutonium_middle"
+      },
+      "omnitech:rutherfordium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/rutherfordium",
+        "middle": "omnitech:item/bore_head_3d/rutherfordium_middle"
+      },
+      "omnitech:molybdenum_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/molybdenum",
+        "middle": "omnitech:item/bore_head_3d/molybdenum_middle"
+      },
+      "omnitech:beryllium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/beryllium",
+        "middle": "omnitech:item/bore_head_3d/beryllium_middle"
+      },
+      "omnitech:hafnium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/hafnium",
+        "middle": "omnitech:item/bore_head_3d/hafnium_middle"
+      },
+      "omnitech:iridium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/iridium",
+        "middle": "omnitech:item/bore_head_3d/iridium_middle"
+      },
+      "omnitech:uranium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/uranium",
+        "middle": "omnitech:item/bore_head_3d/uranium_middle"
+      },
+      "omnitech:meitnerium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/meitnerium",
+        "middle": "omnitech:item/bore_head_3d/meitnerium_middle"
+      },
+      "omnitech:ruthenium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/ruthenium",
+        "middle": "omnitech:item/bore_head_3d/ruthenium_middle"
+      },
+      "omnitech:rhenium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/rhenium",
+        "middle": "omnitech:item/bore_head_3d/rhenium_middle"
+      },
+      "omnitech:bohrium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/bohrium",
+        "middle": "omnitech:item/bore_head_3d/bohrium_middle"
+      },
+      "omnitech:seaborgium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/seaborgium",
+        "middle": "omnitech:item/bore_head_3d/seaborgium_middle"
+      },
+      "omnitech:tungsten_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/tungsten",
+        "middle": "omnitech:item/bore_head_3d/tungsten_middle"
+      },
+      "omnitech:hassium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/hassium",
+        "middle": "omnitech:item/bore_head_3d/hassium_middle"
+      },
+      "omnitech:osmium_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/osmium",
+        "middle": "omnitech:item/bore_head_3d/osmium_middle"
+      },
+      "omnitech:netherite_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/netherite",
+        "middle": "omnitech:item/bore_head_3d/netherite_middle"
+      },
+      "omnitech:hafnium_carbide_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/hafnium_carbide",
+        "middle": "omnitech:item/bore_head_3d/hafnium_carbide_middle"
+      },
+      "omnitech:tungsten_carbide_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/tungsten_carbide",
+        "middle": "omnitech:item/bore_head_3d/tungsten_carbide_middle"
+      },
+      "omnitech:hafnium_tantalum_carbide_bore_head": {
+        "outer": "omnitech:item/bore_head_3d/hafnium_tantalum_carbide",
+        "middle": "omnitech:item/bore_head_3d/hafnium_tantalum_carbide_middle"
+      }
+    }
+  }
+}

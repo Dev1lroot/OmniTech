@@ -188,6 +188,10 @@ public class OmniTechMenuTypes {
             REGISTRY.register("rocket",
                     () -> IMenuTypeExtension.create(RocketMenu::new));
 
+    public static final Supplier<MenuType<com.dev1lroot.mcmods.omnitech.gui.BoreMenu>> BORE =
+            REGISTRY.register("bore",
+                    () -> IMenuTypeExtension.create(com.dev1lroot.mcmods.omnitech.gui.BoreMenu::new));
+
     public static final Supplier<MenuType<ElectricChargerMenu>> ELECTRIC_CHARGER =
             REGISTRY.register("electric_charger",
                     () -> IMenuTypeExtension.create(ElectricChargerMenu::new));

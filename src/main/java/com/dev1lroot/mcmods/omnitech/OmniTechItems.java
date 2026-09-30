@@ -501,37 +501,11 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> REDSTONE_INTERSECTION_BLOCK_ITEM =
             REGISTRY.registerSimpleBlockItem("redstone_intersection_block", OmniTechBlocks.REDSTONE_INTERSECTION);
 
-    // ── Bore Tools ────────────────────────────────────────────────────────────
+    // ── Bore ──────────────────────────────────────────────────────────────────
+    // Heads and batteries are registered from JSON by BoreLoader.
 
-    private static final TagKey<Block> INCORRECT_FOR_INDUSTRIAL_BORE =
-            BlockTags.create(Identifier.fromNamespaceAndPath(OmniTech.MODID, "incorrect_for_industrial_bore"));
-
-    private static final ToolMaterial BASIC_BORE_MATERIAL = new ToolMaterial(
-            BlockTags.INCORRECT_FOR_IRON_TOOL, 10000, 8.0f, 1.0f, 14,
-            ItemTags.create(Identifier.fromNamespaceAndPath(OmniTech.MODID, "repairs_bore")));
-
-    private static final ToolMaterial ADVANCED_BORE_MATERIAL = new ToolMaterial(
-            BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 10000, 12.0f, 1.0f, 14,
-            ItemTags.create(Identifier.fromNamespaceAndPath(OmniTech.MODID, "repairs_bore")));
-
-    private static final ToolMaterial INDUSTRIAL_BORE_MATERIAL = new ToolMaterial(
-            INCORRECT_FOR_INDUSTRIAL_BORE, 10000, 18.0f, 1.0f, 14,
-            ItemTags.create(Identifier.fromNamespaceAndPath(OmniTech.MODID, "repairs_bore")));
-
-    /** Iron-tier bore: 2 MJ battery, 5 kJ/block, 8× speed. */
-    public static final DeferredItem<BoreItem> BASIC_BORE =
-            REGISTRY.registerItem("basic_bore",
-                    props -> new BoreItem(BASIC_BORE_MATERIAL, 2000, 5, props));
-
-    /** Diamond-tier bore: 10 MJ battery, 3 kJ/block, 12× speed. */
-    public static final DeferredItem<BoreItem> ADVANCED_BORE =
-            REGISTRY.registerItem("advanced_bore",
-                    props -> new BoreItem(ADVANCED_BORE_MATERIAL, 10000, 3, props));
-
-    /** Ultimate-tier bore: 50 MJ battery, 2 kJ/block, 18× speed. */
-    public static final DeferredItem<BoreItem> INDUSTRIAL_BORE =
-            REGISTRY.registerItem("industrial_bore",
-                    props -> new BoreItem(INDUSTRIAL_BORE_MATERIAL, 50000, 2, props));
+    public static final DeferredItem<BoreItem> BORE =
+            REGISTRY.registerItem("bore", BoreItem::new);
 
     // Vanilla Material Additions and templates are registered via ItemLoader
     // from data/omnitech/item/*.json — see ItemLoader.loadAll()

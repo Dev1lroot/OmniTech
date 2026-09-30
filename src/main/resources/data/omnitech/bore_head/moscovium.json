@@ -1,0 +1,11 @@
+{
+  "tier": "wood",
+  "hardness": 100,
+  "speed": 2.0,
+  "durability": 240,
+  "energy_per_block": 6,
+  "enchantability": 10,
+  "formula": "Mc",
+  "repair_ingredient": "omnitech:moscovium_ingot",
+  "fire_resistant": false
+}

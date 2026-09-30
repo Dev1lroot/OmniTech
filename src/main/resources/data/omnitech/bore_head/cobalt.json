@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 1043,
+  "speed": 9.4,
+  "durability": 1240,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "Co",
+  "repair_ingredient": "omnitech:cobalt_ingot",
+  "fire_resistant": false
+}

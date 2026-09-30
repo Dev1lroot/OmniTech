@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "X": "omnitech:ytterbium_ingot"
+  },
+  "pattern": [
+    "XX ",
+    "XXX",
+    " XX"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:ytterbium_bore_head"
+  }
+}

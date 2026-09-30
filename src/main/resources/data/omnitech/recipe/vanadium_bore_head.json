@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "X": "omnitech:vanadium_ingot"
+  },
+  "pattern": [
+    "XX ",
+    "XXX",
+    " XX"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:vanadium_bore_head"
+  }
+}

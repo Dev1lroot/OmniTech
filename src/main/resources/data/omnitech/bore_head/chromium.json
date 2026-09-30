@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 1060,
+  "speed": 9.5,
+  "durability": 1250,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "Cr",
+  "repair_ingredient": "omnitech:chromium_ingot",
+  "fire_resistant": false
+}

@@ -1,0 +1,11 @@
+{
+  "tier": "wood",
+  "hardness": 50,
+  "speed": 1.5,
+  "durability": 150,
+  "energy_per_block": 7,
+  "enchantability": 10,
+  "formula": "Nh",
+  "repair_ingredient": "omnitech:nihonium_ingot",
+  "fire_resistant": false
+}

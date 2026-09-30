@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 589,
+  "speed": 7.6,
+  "durability": 830,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "Er",
+  "repair_ingredient": "omnitech:erbium_ingot",
+  "fire_resistant": false
+}

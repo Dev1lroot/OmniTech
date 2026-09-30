@@ -98,7 +98,16 @@ public class OmniTechDataComponents {
                             .networkSynchronized(ByteBufCodecs.INT)
                             .build());
 
-    /** EU stored in a bore tool (whole EU units, 0 = empty). */
+    /** The bore's plugged-in parts: slot 0 = bore head, slot 1 = battery. */
+    public static final Supplier<DataComponentType<net.minecraft.world.item.component.ItemContainerContents>> BORE_CONTENTS =
+            REGISTRY.register("bore_contents", () ->
+                    DataComponentType.<net.minecraft.world.item.component.ItemContainerContents>builder()
+                            .persistent(net.minecraft.world.item.component.ItemContainerContents.CODEC)
+                            .networkSynchronized(net.minecraft.world.item.component.ItemContainerContents.STREAM_CODEC)
+                            .cacheEncoding()
+                            .build());
+
+    /** Energy (kJ) stored in a battery pack (0 = empty). */
     public static final Supplier<DataComponentType<Integer>> EU_STORED =
             REGISTRY.register("eu_stored", () ->
                     DataComponentType.<Integer>builder()

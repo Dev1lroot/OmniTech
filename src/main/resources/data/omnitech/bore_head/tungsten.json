@@ -1,0 +1,11 @@
+{
+  "tier": "diamond",
+  "hardness": 3430,
+  "speed": 13.2,
+  "durability": 2850,
+  "energy_per_block": 3,
+  "enchantability": 10,
+  "formula": "W",
+  "repair_ingredient": "omnitech:tungsten_ingot",
+  "fire_resistant": true
+}

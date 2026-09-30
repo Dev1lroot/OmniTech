@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 1000,
+  "speed": 9.3,
+  "durability": 1200,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "Ds",
+  "repair_ingredient": "omnitech:darmstadtium_ingot",
+  "fire_resistant": true
+}

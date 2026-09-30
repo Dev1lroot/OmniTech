@@ -1,0 +1,7 @@
+{
+  "name": "Lithium Cobalt Oxide",
+  "anode": "C",
+  "cathode": "LiCoO₂",
+  "cell_voltage": 3.7,
+  "capacity_kj": 20000
+}

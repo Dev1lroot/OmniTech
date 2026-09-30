@@ -1,0 +1,11 @@
+{
+  "tier": "diamond",
+  "hardness": 1670,
+  "speed": 10.9,
+  "durability": 1720,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "Be",
+  "repair_ingredient": "omnitech:beryllium_ingot",
+  "fire_resistant": true
+}

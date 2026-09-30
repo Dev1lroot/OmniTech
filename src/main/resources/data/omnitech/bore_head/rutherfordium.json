@@ -1,0 +1,11 @@
+{
+  "tier": "diamond",
+  "hardness": 1500,
+  "speed": 10.6,
+  "durability": 1600,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "Rf",
+  "repair_ingredient": "omnitech:rutherfordium_ingot",
+  "fire_resistant": true
+}

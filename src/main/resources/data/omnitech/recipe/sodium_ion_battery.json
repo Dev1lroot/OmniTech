@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:aluminium_plate",
+    "W": "omnitech:copper_wire",
+    "S": "minecraft:paper",
+    "A": "omnitech:coal_dust",
+    "C": "omnitech:manganese_dust",
+    "E": "omnitech:halite_dust"
+  },
+  "pattern": [
+    "PWP",
+    "ASC",
+    "PEP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:sodium_ion_battery"
+  }
+}

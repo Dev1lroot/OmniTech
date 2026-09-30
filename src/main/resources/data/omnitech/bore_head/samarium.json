@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 412,
+  "speed": 6.5,
+  "durability": 650,
+  "energy_per_block": 5,
+  "enchantability": 10,
+  "formula": "Sm",
+  "repair_ingredient": "omnitech:samarium_ingot",
+  "fire_resistant": false
+}

@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 350,
+  "speed": 6.0,
+  "durability": 580,
+  "energy_per_block": 5,
+  "enchantability": 10,
+  "formula": "Th",
+  "repair_ingredient": "omnitech:thorium_ingot",
+  "fire_resistant": false
+}

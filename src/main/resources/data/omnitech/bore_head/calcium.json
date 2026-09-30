@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 170,
+  "speed": 3.7,
+  "durability": 350,
+  "energy_per_block": 6,
+  "enchantability": 10,
+  "formula": "Ca",
+  "repair_ingredient": "omnitech:calcium_ingot",
+  "fire_resistant": false
+}

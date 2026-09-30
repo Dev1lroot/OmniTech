@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 750,
+  "speed": 8.4,
+  "durability": 980,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "Sc",
+  "repair_ingredient": "omnitech:scandium_ingot",
+  "fire_resistant": false
+}

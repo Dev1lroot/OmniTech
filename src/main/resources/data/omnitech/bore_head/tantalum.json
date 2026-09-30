@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 873,
+  "speed": 8.9,
+  "durability": 1090,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "Ta",
+  "repair_ingredient": "omnitech:tantalum_ingot",
+  "fire_resistant": true
+}

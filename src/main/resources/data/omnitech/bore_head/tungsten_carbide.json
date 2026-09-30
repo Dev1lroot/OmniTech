@@ -1,0 +1,11 @@
+{
+  "tier": "netherite",
+  "hardness": 22000,
+  "speed": 19.1,
+  "durability": 10470,
+  "energy_per_block": 1,
+  "enchantability": 5,
+  "formula": "WC",
+  "repair_ingredient": "omnitech:tungsten_carbide_ingot",
+  "fire_resistant": true
+}

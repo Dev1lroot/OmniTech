@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 970,
+  "speed": 9.2,
+  "durability": 1180,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "Ti",
+  "repair_ingredient": "omnitech:titanium_ingot",
+  "fire_resistant": false
+}

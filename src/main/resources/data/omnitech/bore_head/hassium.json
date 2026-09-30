@@ -1,0 +1,11 @@
+{
+  "tier": "diamond",
+  "hardness": 3500,
+  "speed": 13.3,
+  "durability": 2890,
+  "energy_per_block": 3,
+  "enchantability": 10,
+  "formula": "Hs",
+  "repair_ingredient": "omnitech:hassium_ingot",
+  "fire_resistant": true
+}

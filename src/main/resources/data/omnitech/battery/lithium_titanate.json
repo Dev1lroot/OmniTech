@@ -1,0 +1,7 @@
+{
+  "name": "Lithium Titanate",
+  "anode": "Li₄Ti₅O₁₂",
+  "cathode": "LiNiMnCoO₂",
+  "cell_voltage": 2.4,
+  "capacity_kj": 8000
+}

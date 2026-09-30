@@ -1,0 +1,7 @@
+{
+  "name": "Nickel-Zinc",
+  "anode": "Zn",
+  "cathode": "NiOOH",
+  "cell_voltage": 1.65,
+  "capacity_kj": 7000
+}

@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 330,
+  "speed": 5.8,
+  "durability": 550,
+  "energy_per_block": 5,
+  "enchantability": 10,
+  "formula": "Zn",
+  "repair_ingredient": "omnitech:zinc_ingot",
+  "fire_resistant": false
+}

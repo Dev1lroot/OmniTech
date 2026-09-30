@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 461,
+  "speed": 6.9,
+  "durability": 700,
+  "energy_per_block": 5,
+  "enchantability": 16,
+  "formula": "Pd",
+  "repair_ingredient": "omnitech:palladium_ingot",
+  "fire_resistant": false
+}

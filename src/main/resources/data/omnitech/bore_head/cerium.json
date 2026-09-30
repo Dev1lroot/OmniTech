@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 270,
+  "speed": 5.2,
+  "durability": 480,
+  "energy_per_block": 5,
+  "enchantability": 10,
+  "formula": "Ce",
+  "repair_ingredient": "omnitech:cerium_ingot",
+  "fire_resistant": false
+}

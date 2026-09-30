@@ -1,0 +1,7 @@
+{
+  "name": "Nickel-Metal Hydride",
+  "anode": "LaNi₅H₆",
+  "cathode": "NiOOH",
+  "cell_voltage": 1.2,
+  "capacity_kj": 8000
+}

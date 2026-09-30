@@ -1,0 +1,7 @@
+{
+  "name": "Sodium-Sulfur",
+  "anode": "Na",
+  "cathode": "S",
+  "cell_voltage": 2.0,
+  "capacity_kj": 15000
+}

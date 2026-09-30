@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 1000,
+  "speed": 9.3,
+  "durability": 1200,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "Np",
+  "repair_ingredient": "omnitech:neptunium_ingot",
+  "fire_resistant": false
+}

@@ -156,6 +156,7 @@ public class OmniTech {
         OmniTechBlocks.REGISTRY.register(modEventBus);
         OmniTechBlockEntities.REGISTRY.register(modEventBus);
         ItemLoader.loadAll();             // reads data/omnitech/item/*.json
+        BoreLoader.loadAll();             // reads data/omnitech/bore_head/*.json + battery/*.json
         OmniTechItems.REGISTRY.register(modEventBus);
         OmniTechMenuTypes.REGISTRY.register(modEventBus);
         CreativeTabLoader.loadAll();     // reads data/omnitech/creative_tab/*.json

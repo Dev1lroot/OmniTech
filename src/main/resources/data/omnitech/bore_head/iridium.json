@@ -1,0 +1,11 @@
+{
+  "tier": "diamond",
+  "hardness": 1760,
+  "speed": 11.1,
+  "durability": 1790,
+  "energy_per_block": 4,
+  "enchantability": 14,
+  "formula": "Ir",
+  "repair_ingredient": "omnitech:iridium_ingot",
+  "fire_resistant": true
+}

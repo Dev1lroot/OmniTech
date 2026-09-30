@@ -1,0 +1,7 @@
+{
+  "name": "Sodium-Ion",
+  "anode": "C",
+  "cathode": "NaMnO₂",
+  "cell_voltage": 3.1,
+  "capacity_kj": 14000
+}

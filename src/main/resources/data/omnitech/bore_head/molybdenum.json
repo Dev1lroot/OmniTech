@@ -1,0 +1,11 @@
+{
+  "tier": "diamond",
+  "hardness": 1530,
+  "speed": 10.7,
+  "durability": 1620,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "Mo",
+  "repair_ingredient": "omnitech:molybdenum_ingot",
+  "fire_resistant": true
+}

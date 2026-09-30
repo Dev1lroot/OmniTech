@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 491,
+  "speed": 7.1,
+  "durability": 730,
+  "energy_per_block": 5,
+  "enchantability": 10,
+  "formula": "La",
+  "repair_ingredient": "omnitech:lanthanum_ingot",
+  "fire_resistant": false
+}

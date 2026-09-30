@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "P": "omnitech:steel_plate",
+    "W": "omnitech:copper_wire",
+    "G": "omnitech:steel_cog",
+    "R": "omnitech:steel_rod"
+  },
+  "pattern": [
+    " PP",
+    "WGP",
+    "RW "
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:bore"
+  }
+}

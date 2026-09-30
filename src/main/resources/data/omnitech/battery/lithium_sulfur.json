@@ -1,0 +1,7 @@
+{
+  "name": "Lithium-Sulfur",
+  "anode": "Li",
+  "cathode": "S",
+  "cell_voltage": 2.1,
+  "capacity_kj": 40000
+}

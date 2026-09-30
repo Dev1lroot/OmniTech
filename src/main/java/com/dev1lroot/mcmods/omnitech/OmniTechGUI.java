@@ -104,6 +104,7 @@ public class OmniTechGUI {
         event.register(OmniTechMenuTypes.FLUID_FILLER.get(), FluidFillerScreen::new);
         event.register(OmniTechMenuTypes.ROCKET.get(), RocketScreen::new);
         event.register(OmniTechMenuTypes.ELECTRIC_CHARGER.get(), ElectricChargerScreen::new);
+        event.register(OmniTechMenuTypes.BORE.get(), com.dev1lroot.mcmods.omnitech.gui.BoreScreen::new);
         event.register(OmniTechMenuTypes.COKE_OVEN.get(), CokeOvenScreen::new);
         event.register(OmniTechMenuTypes.CHEMICAL_INFUSER.get(), ChemicalInfuserScreen::new);
         event.register(OmniTechMenuTypes.EXTRACTOR.get(), ExtractorScreen::new);
@@ -190,9 +191,13 @@ public class OmniTechGUI {
                 event.accept(set.tool("%_axe"));
                 event.accept(set.tool("%_hoe"));
             }
-            event.accept(OmniTechItems.BASIC_BORE);
-            event.accept(OmniTechItems.ADVANCED_BORE);
-            event.accept(OmniTechItems.INDUSTRIAL_BORE);
+            event.accept(OmniTechItems.BORE);
+            event.accept(BoreLoader.assembledBore());
+            BoreLoader.HEADS.forEach(event::accept);
+            for (var battery : BoreLoader.BATTERIES) {
+                event.accept(battery);
+                event.accept(BoreLoader.charged(battery.get()));
+            }
         }
     }
 }

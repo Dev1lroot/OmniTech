@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 540,
+  "speed": 7.4,
+  "durability": 780,
+  "energy_per_block": 5,
+  "enchantability": 10,
+  "formula": "Dy",
+  "repair_ingredient": "omnitech:dysprosium_ingot",
+  "fire_resistant": false
+}

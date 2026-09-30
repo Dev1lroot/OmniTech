@@ -1,0 +1,11 @@
+{
+  "tier": "wood",
+  "hardness": 1,
+  "speed": 1.5,
+  "durability": 16,
+  "energy_per_block": 8,
+  "enchantability": 10,
+  "formula": "Fr",
+  "repair_ingredient": "omnitech:francium_ingot",
+  "fire_resistant": false
+}

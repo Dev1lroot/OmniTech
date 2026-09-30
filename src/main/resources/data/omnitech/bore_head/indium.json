@@ -1,0 +1,11 @@
+{
+  "tier": "wood",
+  "hardness": 9,
+  "speed": 1.5,
+  "durability": 40,
+  "energy_per_block": 8,
+  "enchantability": 10,
+  "formula": "In",
+  "repair_ingredient": "omnitech:indium_ingot",
+  "fire_resistant": false
+}

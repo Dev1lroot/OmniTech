@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 903,
+  "speed": 9.0,
+  "durability": 1120,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "Zr",
+  "repair_ingredient": "omnitech:zirconium_ingot",
+  "fire_resistant": false
+}

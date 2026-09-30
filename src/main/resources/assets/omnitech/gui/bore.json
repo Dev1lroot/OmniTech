@@ -1,0 +1,53 @@
+{
+  "background": "textures/gui/empty.png",
+  "draw_inventory": true,
+  "width": 176,
+  "height": 166,
+  "inventory": {
+    "x": 8,
+    "y": 84,
+    "label_y": 72,
+    "hotbar_y": 142
+  },
+  "elements": [
+    {
+      "id": "head_slot",
+      "type": "slot",
+      "x": 44,
+      "y": 26,
+      "slot_index": 0
+    },
+    {
+      "id": "head_durability",
+      "type": "progressbar",
+      "x": 32,
+      "y": 46,
+      "w": 40,
+      "source": "head_durability"
+    },
+    {
+      "id": "battery_slot",
+      "type": "slot",
+      "x": 116,
+      "y": 26,
+      "slot_index": 1
+    },
+    {
+      "id": "battery_charge",
+      "type": "progressbar",
+      "x": 104,
+      "y": 46,
+      "w": 40,
+      "source": "battery_charge"
+    },
+    {
+      "id": "energy_readout",
+      "type": "energy_label",
+      "x": 0,
+      "y": 60,
+      "centered": true,
+      "color_active": "FF44AAFF",
+      "color_inactive": "FF888888"
+    }
+  ]
+}

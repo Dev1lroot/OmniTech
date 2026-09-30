@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 1246,
+  "speed": 10.0,
+  "durability": 1400,
+  "energy_per_block": 4,
+  "enchantability": 16,
+  "formula": "Rh",
+  "repair_ingredient": "omnitech:rhodium_ingot",
+  "fire_resistant": false
+}

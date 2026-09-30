@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 638,
+  "speed": 7.9,
+  "durability": 880,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "Ni",
+  "repair_ingredient": "omnitech:nickel_ingot",
+  "fire_resistant": false
+}

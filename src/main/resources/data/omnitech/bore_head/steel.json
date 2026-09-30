@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 1400,
+  "speed": 10.4,
+  "durability": 1520,
+  "energy_per_block": 4,
+  "enchantability": 14,
+  "formula": "Fe",
+  "repair_ingredient": "omnitech:steel_ingot",
+  "fire_resistant": false
+}

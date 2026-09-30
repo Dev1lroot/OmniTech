@@ -1,0 +1,11 @@
+{
+  "tier": "netherite",
+  "hardness": 6000,
+  "speed": 15.0,
+  "durability": 4220,
+  "energy_per_block": 2,
+  "enchantability": 15,
+  "formula": "",
+  "repair_ingredient": "minecraft:netherite_ingot",
+  "fire_resistant": true
+}

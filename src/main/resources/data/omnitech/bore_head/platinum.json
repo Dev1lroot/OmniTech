@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 549,
+  "speed": 7.4,
+  "durability": 790,
+  "energy_per_block": 5,
+  "enchantability": 18,
+  "formula": "Pt",
+  "repair_ingredient": "omnitech:platinum_ingot",
+  "fire_resistant": true
+}

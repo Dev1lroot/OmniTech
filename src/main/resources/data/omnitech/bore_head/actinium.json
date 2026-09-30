@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 400,
+  "speed": 6.4,
+  "durability": 630,
+  "energy_per_block": 5,
+  "enchantability": 10,
+  "formula": "Ac",
+  "repair_ingredient": "omnitech:actinium_ingot",
+  "fire_resistant": false
+}

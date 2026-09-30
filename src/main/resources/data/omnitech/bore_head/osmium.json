@@ -1,0 +1,11 @@
+{
+  "tier": "diamond",
+  "hardness": 3920,
+  "speed": 13.6,
+  "durability": 3130,
+  "energy_per_block": 3,
+  "enchantability": 10,
+  "formula": "Os",
+  "repair_ingredient": "omnitech:osmium_ingot",
+  "fire_resistant": true
+}

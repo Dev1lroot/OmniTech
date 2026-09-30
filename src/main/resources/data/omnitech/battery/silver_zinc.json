@@ -1,0 +1,7 @@
+{
+  "name": "Silver-Zinc",
+  "anode": "Zn",
+  "cathode": "Ag₂O",
+  "cell_voltage": 1.55,
+  "capacity_kj": 13000
+}

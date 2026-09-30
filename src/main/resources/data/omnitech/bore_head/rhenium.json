@@ -1,0 +1,11 @@
+{
+  "tier": "diamond",
+  "hardness": 2450,
+  "speed": 12.2,
+  "durability": 2250,
+  "energy_per_block": 3,
+  "enchantability": 10,
+  "formula": "Re",
+  "repair_ingredient": "omnitech:rhenium_ingot",
+  "fire_resistant": true
+}

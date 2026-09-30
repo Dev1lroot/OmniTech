@@ -223,6 +223,9 @@ public class OmniTechClient
         event.register(
                 Identifier.fromNamespaceAndPath(OmniTech.MODID, "pipette"),
                 com.dev1lroot.mcmods.omnitech.client.PipetteItemModel.Unbaked.MAP_CODEC);
+        event.register(
+                Identifier.fromNamespaceAndPath(OmniTech.MODID, "bore"),
+                com.dev1lroot.mcmods.omnitech.client.BoreItemModel.Unbaked.MAP_CODEC);
     }
 
     void registerRenderPipelines(RegisterRenderPipelinesEvent event) {

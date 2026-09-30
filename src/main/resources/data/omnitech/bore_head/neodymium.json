@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 343,
+  "speed": 5.9,
+  "durability": 570,
+  "energy_per_block": 5,
+  "enchantability": 10,
+  "formula": "Nd",
+  "repair_ingredient": "omnitech:neodymium_ingot",
+  "fire_resistant": false
+}

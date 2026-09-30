@@ -1,0 +1,7 @@
+{
+  "name": "Solid-State Lithium",
+  "anode": "Li",
+  "cathode": "LiNiMnCoO₂",
+  "cell_voltage": 3.8,
+  "capacity_kj": 50000
+}

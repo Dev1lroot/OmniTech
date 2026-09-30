@@ -1,0 +1,11 @@
+{
+  "tier": "wood",
+  "hardness": 45,
+  "speed": 1.5,
+  "durability": 140,
+  "energy_per_block": 7,
+  "enchantability": 10,
+  "formula": "Mg",
+  "repair_ingredient": "omnitech:magnesium_ingot",
+  "fire_resistant": false
+}

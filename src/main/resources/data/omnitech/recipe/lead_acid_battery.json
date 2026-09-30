@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:aluminium_plate",
+    "W": "omnitech:copper_wire",
+    "S": "minecraft:paper",
+    "A": "omnitech:lead_plate",
+    "C": "omnitech:lead_dust",
+    "E": "omnitech:sulfur_dust"
+  },
+  "pattern": [
+    "PWP",
+    "ASC",
+    "PEP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:lead_acid_battery"
+  }
+}

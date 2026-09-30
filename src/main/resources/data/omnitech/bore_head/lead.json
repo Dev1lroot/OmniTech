@@ -1,0 +1,11 @@
+{
+  "tier": "wood",
+  "hardness": 38,
+  "speed": 1.5,
+  "durability": 120,
+  "energy_per_block": 7,
+  "enchantability": 10,
+  "formula": "Pb",
+  "repair_ingredient": "omnitech:lead_ingot",
+  "fire_resistant": false
+}

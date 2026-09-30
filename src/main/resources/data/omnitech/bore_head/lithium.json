@@ -1,0 +1,11 @@
+{
+  "tier": "wood",
+  "hardness": 5,
+  "speed": 1.5,
+  "durability": 30,
+  "energy_per_block": 8,
+  "enchantability": 10,
+  "formula": "Li",
+  "repair_ingredient": "omnitech:lithium_ingot",
+  "fire_resistant": false
+}

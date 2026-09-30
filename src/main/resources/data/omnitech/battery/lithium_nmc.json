@@ -1,0 +1,7 @@
+{
+  "name": "Lithium NMC",
+  "anode": "C",
+  "cathode": "LiNiMnCoO₂",
+  "cell_voltage": 3.6,
+  "capacity_kj": 25000
+}

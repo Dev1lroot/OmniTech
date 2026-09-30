@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 608,
+  "speed": 7.7,
+  "durability": 850,
+  "energy_per_block": 4,
+  "enchantability": 14,
+  "formula": "Fe",
+  "repair_ingredient": "minecraft:iron_ingot",
+  "fire_resistant": false
+}

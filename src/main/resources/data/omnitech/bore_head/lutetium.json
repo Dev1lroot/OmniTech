@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 1160,
+  "speed": 9.8,
+  "durability": 1330,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "Lu",
+  "repair_ingredient": "omnitech:lutetium_ingot",
+  "fire_resistant": false
+}

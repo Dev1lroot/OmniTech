@@ -1,0 +1,7 @@
+{
+  "name": "Lead-Acid",
+  "anode": "Pb",
+  "cathode": "PbO₂",
+  "cell_voltage": 2.0,
+  "capacity_kj": 3500
+}

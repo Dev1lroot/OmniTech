@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 481,
+  "speed": 7.0,
+  "durability": 720,
+  "energy_per_block": 5,
+  "enchantability": 10,
+  "formula": "Ho",
+  "repair_ingredient": "omnitech:holmium_ingot",
+  "fire_resistant": false
+}

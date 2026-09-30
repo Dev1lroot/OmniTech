@@ -1,0 +1,19 @@
+{
+  "values": [
+    "omnitech:lead_acid_battery",
+    "omnitech:nickel_iron_battery",
+    "omnitech:nickel_cadmium_battery",
+    "omnitech:nickel_zinc_battery",
+    "omnitech:nickel_metal_hydride_battery",
+    "omnitech:alkaline_battery",
+    "omnitech:silver_zinc_battery",
+    "omnitech:sodium_sulfur_battery",
+    "omnitech:sodium_ion_battery",
+    "omnitech:lithium_titanate_battery",
+    "omnitech:lithium_iron_phosphate_battery",
+    "omnitech:lithium_cobalt_oxide_battery",
+    "omnitech:lithium_nmc_battery",
+    "omnitech:lithium_sulfur_battery",
+    "omnitech:solid_state_battery"
+  ]
+}

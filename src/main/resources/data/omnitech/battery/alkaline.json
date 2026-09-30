@@ -1,0 +1,7 @@
+{
+  "name": "Rechargeable Alkaline",
+  "anode": "Zn",
+  "cathode": "MnO₂",
+  "cell_voltage": 1.5,
+  "capacity_kj": 6000
+}

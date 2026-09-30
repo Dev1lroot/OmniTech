@@ -8,7 +8,8 @@
     "EntityGravityPhysicsMixin",
     "FallingBlockEntityGravityMixin",
     "ItemGravityAimMixin",
-    "ProjectileGravityAimMixin"
+    "ProjectileGravityAimMixin",
+    "ExperienceOrbBoreMendingMixin"
   ],
   "client": [
     "KeyboardHandlerMixin",
@@ -16,7 +17,8 @@
     "LivingEntityMovementClientMixin",
     "CameraRotationMixin",
     "EntityViewVectorGravityMixin",
-    "GameRendererHelmetVisionMixin"
+    "GameRendererHelmetVisionMixin",
+    "ClientLevelBoreSpinMixin"
   ],
   "injectors": {
     "defaultRequire": 1

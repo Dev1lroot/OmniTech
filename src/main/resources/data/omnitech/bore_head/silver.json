@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 251,
+  "speed": 4.9,
+  "durability": 460,
+  "energy_per_block": 5,
+  "enchantability": 20,
+  "formula": "Ag",
+  "repair_ingredient": "omnitech:silver_ingot",
+  "fire_resistant": false
+}

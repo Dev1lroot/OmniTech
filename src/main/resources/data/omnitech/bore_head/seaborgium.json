@@ -1,0 +1,11 @@
+{
+  "tier": "diamond",
+  "hardness": 3000,
+  "speed": 12.8,
+  "durability": 2600,
+  "energy_per_block": 3,
+  "enchantability": 10,
+  "formula": "Sg",
+  "repair_ingredient": "omnitech:seaborgium_ingot",
+  "fire_resistant": true
+}

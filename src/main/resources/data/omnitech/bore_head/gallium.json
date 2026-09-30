@@ -1,0 +1,11 @@
+{
+  "tier": "wood",
+  "hardness": 56,
+  "speed": 1.5,
+  "durability": 160,
+  "energy_per_block": 7,
+  "enchantability": 10,
+  "formula": "Ga",
+  "repair_ingredient": "omnitech:gallium_ingot",
+  "fire_resistant": false
+}

@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 300,
+  "speed": 5.5,
+  "durability": 520,
+  "energy_per_block": 5,
+  "enchantability": 10,
+  "formula": "Fm",
+  "repair_ingredient": "omnitech:fermium_ingot",
+  "fire_resistant": false
+}

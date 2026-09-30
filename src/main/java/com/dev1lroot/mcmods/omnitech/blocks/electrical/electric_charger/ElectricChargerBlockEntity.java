@@ -8,7 +8,7 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
 import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricChargerMenu;
-import com.dev1lroot.mcmods.omnitech.items.BoreItem;
+import com.dev1lroot.mcmods.omnitech.items.ChargeableItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -27,14 +27,15 @@ import net.minecraft.world.level.storage.ValueOutput;
  * Block entity for the Electric Charger.
  *
  * <p>Receives EU from the electric network (implements {@link IElectricReceiver}) and
- * transfers it to any {@link BoreItem} placed in its single charge slot.
+ * transfers it to any {@link ChargeableItem} (a battery, or a bore with a battery plugged in)
+ * placed in its single charge slot.
  *
  * <h3>ContainerData layout</h3>
  * <ul>
  *   <li>0 – energyStored × 10</li>
  *   <li>1 – MAX_EU × 10</li>
- *   <li>2 – item EU stored (0 if slot empty or not a bore)</li>
- *   <li>3 – item max EU (0 if slot empty or not a bore)</li>
+ *   <li>2 – item EU stored (0 if slot empty or not chargeable)</li>
+ *   <li>3 – item max EU (0 if slot empty or not chargeable)</li>
  * </ul>
  */
 public class ElectricChargerBlockEntity extends BaseContainerBlockEntity
@@ -61,11 +62,11 @@ public class ElectricChargerBlockEntity extends BaseContainerBlockEntity
                 case 1 -> (int)(MAX_EU * 10f);
                 case 2 -> {
                     ItemStack s = items.get(SLOT_ITEM);
-                    yield s.getItem() instanceof BoreItem ? BoreItem.getEu(s) : 0;
+                    yield s.getItem() instanceof ChargeableItem c ? c.getEnergy(s) : 0;
                 }
                 case 3 -> {
                     ItemStack s = items.get(SLOT_ITEM);
-                    yield s.getItem() instanceof BoreItem b ? b.maxEu : 0;
+                    yield s.getItem() instanceof ChargeableItem c ? c.getCapacity(s) : 0;
                 }
                 case 4 -> inputMeter.syncWatts();
                 case 5 -> inputMeter.syncDeciVolts();
@@ -121,14 +122,15 @@ public class ElectricChargerBlockEntity extends BaseContainerBlockEntity
         ItemStack item = be.items.get(SLOT_ITEM);
         boolean charging = false;
 
-        if (!item.isEmpty() && item.getItem() instanceof BoreItem bore) {
-            int itemEu = BoreItem.getEu(item);
-            if (itemEu < bore.maxEu && be.energyStored >= 1f) {
-                int space = bore.maxEu - itemEu;
+        if (!item.isEmpty() && item.getItem() instanceof ChargeableItem chargeable) {
+            int itemEu = chargeable.getEnergy(item);
+            int maxEu = chargeable.getCapacity(item);
+            if (itemEu < maxEu && be.energyStored >= 1f) {
+                int space = maxEu - itemEu;
                 int toTransfer = Math.min(CHARGE_RATE, space);
                 toTransfer = Math.min(toTransfer, (int) be.energyStored);
                 if (toTransfer > 0) {
-                    BoreItem.setEu(item, itemEu + toTransfer);
+                    chargeable.setEnergy(item, itemEu + toTransfer);
                     be.energyStored -= toTransfer;
                     be.loadMeter.add(toTransfer);
                     changed = true;

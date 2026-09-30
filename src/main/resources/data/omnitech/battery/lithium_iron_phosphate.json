@@ -1,0 +1,7 @@
+{
+  "name": "Lithium Iron Phosphate",
+  "anode": "C",
+  "cathode": "LiFePO₄",
+  "cell_voltage": 3.2,
+  "capacity_kj": 16000
+}

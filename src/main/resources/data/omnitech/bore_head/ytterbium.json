@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 206,
+  "speed": 4.3,
+  "durability": 400,
+  "energy_per_block": 5,
+  "enchantability": 10,
+  "formula": "Yb",
+  "repair_ingredient": "omnitech:ytterbium_ingot",
+  "fire_resistant": false
+}

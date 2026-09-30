@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 369,
+  "speed": 6.1,
+  "durability": 600,
+  "energy_per_block": 5,
+  "enchantability": 13,
+  "formula": "Cu",
+  "repair_ingredient": "minecraft:copper_ingot",
+  "fire_resistant": false
+}

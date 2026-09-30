@@ -1,0 +1,11 @@
+{
+  "tier": "stone",
+  "hardness": 216,
+  "speed": 4.4,
+  "durability": 410,
+  "energy_per_block": 5,
+  "enchantability": 22,
+  "formula": "Au",
+  "repair_ingredient": "minecraft:gold_ingot",
+  "fire_resistant": false
+}

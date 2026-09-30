@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 628,
+  "speed": 7.8,
+  "durability": 870,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "V",
+  "repair_ingredient": "omnitech:vanadium_ingot",
+  "fire_resistant": false
+}

@@ -1,0 +1,11 @@
+{
+  "tier": "iron",
+  "hardness": 600,
+  "speed": 7.7,
+  "durability": 840,
+  "energy_per_block": 4,
+  "enchantability": 10,
+  "formula": "Pa",
+  "repair_ingredient": "omnitech:protactinium_ingot",
+  "fire_resistant": false
+}
