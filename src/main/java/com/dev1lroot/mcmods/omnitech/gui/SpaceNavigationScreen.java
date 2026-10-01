@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.client.spacemap.SpaceMapRenderState;
 import com.dev1lroot.mcmods.omnitech.client.spacemap.SpaceScene;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntity;
@@ -405,7 +406,7 @@ public class SpaceNavigationScreen extends Screen {
 
         g.text(font, "Destination:  " + displayName(destination) + (destination.isBelt() ? "  (belt)" : ""), 12, y, C_TITLE);
         boolean enough = cachedRequiredFuel >= 0 && cachedPlayerFuel >= cachedRequiredFuel;
-        g.text(font, String.format("Fuel: %,d / %,d mB hydrazine required", cachedPlayerFuel, cachedRequiredFuel), 12, y + 12, enough ? C_OK : C_BAD);
+        g.text(font, "Fuel: " + DisplayUnits.volumeOf(cachedPlayerFuel, cachedRequiredFuel) + " hydrazine required", 12, y + 12, enough ? C_OK : C_BAD);
         long km = TravelDistanceCalculator.travelDistanceKm(currentDimensionId, destination, spaceMap);
         g.text(font, "Distance: " + (km > 0 ? formatKm(km) : "Unknown"), 12, y + 24, C_SUB);
         if (destination.dimension == null) g.text(font, "No dimension exists for this body yet.", 12, y + 36, 0xFFDD7733);

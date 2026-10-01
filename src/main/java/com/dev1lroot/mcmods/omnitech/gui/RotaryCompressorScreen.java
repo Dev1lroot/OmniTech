@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.blocks.pressure.RotaryCompressorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
@@ -114,7 +115,7 @@ public class RotaryCompressorScreen extends AbstractContainerScreen<RotaryCompre
 
         @Override
         protected void updateMessage() {
-            setMessage(Component.literal(toKPa() + " kPa"));
+            setMessage(Component.literal(DisplayUnits.pressure(toKPa())));
         }
 
         @Override

@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
@@ -47,7 +48,7 @@ public class BoilerScreen extends AbstractContainerScreen<BoilerMenu> {
 
         int temp = menu.getTemperature();
         HudWriter writer = new HudWriter(graphics, this.font, 28, 8, 10, false);
-        writer.setColor(getTempColor(temp)).write(temp + "°C");
+        writer.setColor(getTempColor(temp)).write(DisplayUnits.temperature(temp));
     }
 
     @Override

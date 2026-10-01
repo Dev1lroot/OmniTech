@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.jei;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.OmniTech;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
@@ -302,7 +303,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
         public void draw(AlloyFurnaceRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
             Font font = Minecraft.getInstance().font;
             arrow.draw(graphics, 60, 20);
-            graphics.text(font, recipe.getMinTemperature() + "°C min", 0, 50, 0x555555, false);
+            graphics.text(font, DisplayUnits.temperature(recipe.getMinTemperature()) + " min", 0, 50, 0x555555, false);
         }
     }
 
@@ -425,7 +426,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
         public void draw(SmelterRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
             Font font = Minecraft.getInstance().font;
             arrow.draw(graphics, 56, 14);
-            graphics.text(font, recipe.getRequiredMinimalTemperature() + "°C min", 0, 52, 0x555555, false);
+            graphics.text(font, DisplayUnits.temperature(recipe.getRequiredMinimalTemperature()) + " min", 0, 52, 0x555555, false);
         }
     }
 
@@ -467,7 +468,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
         public void draw(FoundryRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
             Font font = Minecraft.getInstance().font;
             arrow.draw(graphics, 56, 14);
-            graphics.text(font, recipe.getRequiredMinimalTemperature() + "°C min", 0, 52, 0x555555, false);
+            graphics.text(font, DisplayUnits.temperature(recipe.getRequiredMinimalTemperature()) + " min", 0, 52, 0x555555, false);
         }
     }
 
@@ -512,7 +513,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
         public void draw(ChemicalReactorRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
             Font font = Minecraft.getInstance().font;
             arrow.draw(graphics, 70, 12);
-            graphics.text(font, recipe.getRequiredTemperature() + "°C", 0, 46, 0x555555, false);
+            graphics.text(font, DisplayUnits.temperature(recipe.getRequiredTemperature()), 0, 46, 0x555555, false);
             graphics.text(font, recipe.getProductionTime() + "t", 0, 56, 0x555555, false);
         }
     }
@@ -609,7 +610,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
         public void draw(FractionalDistillationRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
             Font font = Minecraft.getInstance().font;
             arrow.draw(graphics, 56, 12);
-            graphics.text(font, recipe.getRequiredTemperature() + "°C", 0, 46, 0x555555, false);
+            graphics.text(font, DisplayUnits.temperature(recipe.getRequiredTemperature()), 0, 46, 0x555555, false);
             graphics.text(font, recipe.getProductionTime() + "t", 0, 56, 0x555555, false);
         }
     }
@@ -851,7 +852,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
         public void draw(GlassBlowingRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
             Font font = Minecraft.getInstance().font;
             arrow.draw(graphics, 44, 12);
-            graphics.text(font, recipe.getRequiredMinimalTemperature() + "°C", 0, 36, 0x555555, false);
+            graphics.text(font, DisplayUnits.temperature(recipe.getRequiredMinimalTemperature()), 0, 36, 0x555555, false);
         }
     }
 

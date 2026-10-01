@@ -70,19 +70,23 @@ public final class ElectricUnits {
 
     // ── Formatting ────────────────────────────────────────────────────────────
 
-    /** Formats internal energy units (kJ) as joules with an SI prefix, e.g. {@code "450 kJ"}. */
+    /**
+     * Formats internal energy units (kJ) as joules with an SI prefix, e.g. {@code "450 kJ"},
+     * or in the energy unit matching the player's chosen power unit ({@link DisplayUnits}).
+     */
     public static String formatEnergy(double units) {
-        return formatSi(toJoules(units), "J");
+        return DisplayUnits.energy(toJoules(units));
     }
 
     /** Formats internal energy units (kJ) as kilowatt-hours, e.g. {@code "13.9 kWh"}. */
     public static String formatKwh(double units) {
+        if (DisplayUnits.powerUnit() != DisplayUnits.Power.WATTS) return formatEnergy(units);
         return formatSi(toJoules(units) / JOULES_PER_KWH * 1000.0, "Wh");
     }
 
-    /** Formats watts with an SI prefix, e.g. {@code "20.0 kW"}. */
+    /** Formats watts with an SI prefix in the player's chosen power unit, e.g. {@code "20.0 kW"}. */
     public static String formatPower(double watts) {
-        return formatSi(watts, "W");
+        return DisplayUnits.power(watts);
     }
 
     /** Formats a kJ/tick rate as power, e.g. {@code 1.0 → "20.0 kW"}. */

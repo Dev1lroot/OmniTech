@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.OmniTech;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
@@ -72,7 +73,7 @@ public class HeaterScreen extends AbstractContainerScreen<HeaterMenu> {
         super.extractLabels(graphics, mouseX, mouseY);
         int heat  = menu.getStoredHeat();
         int color = heatColor(heat);
-        graphics.text(this.font, heat + " °C", 110, 20, color, false);
+        graphics.text(this.font, DisplayUnits.temperature(heat), 110, 20, color, false);
     }
 
     private static int heatColor(int heat) {

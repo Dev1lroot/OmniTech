@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.blocks.thermal.radiator;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -85,7 +86,7 @@ public class RadiatorBlock extends BaseEntityBlock {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof RadiatorBlockEntity rbe) {
                 sp.sendSystemMessage(
-                    Component.literal(String.format("%.1f °C", rbe.getTemperature())), true);
+                    Component.literal(DisplayUnits.temperature(rbe.getTemperature(), 1)), true);
             }
         }
         return InteractionResult.SUCCESS;

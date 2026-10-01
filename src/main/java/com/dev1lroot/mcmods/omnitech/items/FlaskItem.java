@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.items;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.FluidHazardUtil;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.FermenterBlockEntity;
 import com.dev1lroot.mcmods.omnitech.FluidPhase;
@@ -183,10 +184,10 @@ public class FlaskItem extends Item {
         }
 
         int total = solution.totalAmount();
-        tooltip.accept(Component.literal("Solution: " + total + " / " + CAPACITY + " mB")
+        tooltip.accept(Component.literal("Solution: " + DisplayUnits.volumeOf(total, CAPACITY))
                 .withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.literal(SolutionFluids.temperatureOf(stack) + " °C, "
-                + SolutionFluids.pressureOf(stack) + " kPa").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.literal(DisplayUnits.temperature(SolutionFluids.temperatureOf(stack)) + ", "
+                + DisplayUnits.pressure(SolutionFluids.pressureOf(stack))).withStyle(ChatFormatting.GRAY));
 
         // Per component: name, share, dissolved / undissolved, boiling point and "BOILING" if it is.
         List<Component> lines = new ArrayList<>();

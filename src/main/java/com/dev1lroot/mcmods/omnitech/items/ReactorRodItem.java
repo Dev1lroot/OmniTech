@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.items;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorCellType;
 import net.minecraft.network.chat.Component;
@@ -30,7 +31,7 @@ public abstract class ReactorRodItem extends Item {
                                 Consumer<Component> tooltip, TooltipFlag flag) {
         Integer temp = stack.get(OmniTechDataComponents.ROD_TEMPERATURE.get());
         if (temp != null) {
-            tooltip.accept(Component.literal("Temperature: " + temp + " °C")
+            tooltip.accept(Component.literal("Temperature: " + DisplayUnits.temperature(temp))
                     .withStyle(s -> s.withColor(0xFFCC5533)));
         }
     }

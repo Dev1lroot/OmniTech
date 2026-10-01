@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
@@ -53,12 +54,12 @@ public class SmelterScreen extends AbstractContainerScreen<SmelterMenu> {
         HudWriter writer = new HudWriter(graphics, this.font, 66, 20, 10, false);
 
         int curColor = getTempColor(currentTemp, requiredTemp);
-        writer.setColor(curColor).write(currentTemp + "°C");
+        writer.setColor(curColor).write(DisplayUnits.temperature(currentTemp));
 
         if (requiredTemp > 0) {
             int reqColor = currentTemp >= requiredTemp ? 0xFF00AA00 : 0xFFAA0000;
             writer.setColor(0xFF404040).write("/")
-                    .setColor(reqColor).write(requiredTemp + "°C");
+                    .setColor(reqColor).write(DisplayUnits.temperature(requiredTemp));
         }
 
     }

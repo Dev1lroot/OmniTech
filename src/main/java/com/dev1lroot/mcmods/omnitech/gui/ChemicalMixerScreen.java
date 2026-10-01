@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.ChemicalMixerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
@@ -111,7 +112,7 @@ public class ChemicalMixerScreen extends AbstractContainerScreen<ChemicalMixerMe
         graphics.text(this.font, "Input B (right)", BTN_X, ROW_B_Y - 10, 0xFFAAAAAA, false);
 
         int total = menu.getRatioA() + menu.getRatioB();
-        graphics.text(this.font, menu.getRatioA() + " : " + menu.getRatioB() + "  =  +" + total + " mB/tick",
+        graphics.text(this.font, menu.getRatioA() + " : " + menu.getRatioB() + "  =  +" + DisplayUnits.volume(total) + "/tick",
                 BTN_X, ROW_B_Y + 16, 0xFF44FFDD, false);
     }
 

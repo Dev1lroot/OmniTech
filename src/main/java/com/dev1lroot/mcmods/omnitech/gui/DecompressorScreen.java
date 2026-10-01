@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.blocks.pressure.decompressor.DecompressorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
@@ -112,7 +113,7 @@ public class DecompressorScreen extends AbstractContainerScreen<DecompressorMenu
 
         @Override
         protected void updateMessage() {
-            setMessage(Component.literal(toKPa() + " kPa"));
+            setMessage(Component.literal(DisplayUnits.pressure(toKPa())));
         }
 
         @Override

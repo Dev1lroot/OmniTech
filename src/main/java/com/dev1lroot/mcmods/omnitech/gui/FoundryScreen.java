@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
@@ -49,10 +50,10 @@ public class FoundryScreen extends AbstractContainerScreen<FoundryMenu> {
         int currentTemp  = menu.getTemperature();
         int requiredTemp = menu.getRequiredTemperature();
 
-        graphics.text(this.font, currentTemp + " °C", 128, 0, getTempColor(currentTemp, requiredTemp), false);
+        graphics.text(this.font, DisplayUnits.temperature(currentTemp), 128, 0, getTempColor(currentTemp, requiredTemp), false);
 
         if (requiredTemp > 0) {
-            String reqStr = "Min: " + requiredTemp + " °C";
+            String reqStr = "Min: " + DisplayUnits.temperature(requiredTemp);
             int reqColor  = currentTemp >= requiredTemp ? 0xFF00AA00 : 0xFFAA0000;
             graphics.text(this.font, reqStr, 0, 0, reqColor, false);
         }

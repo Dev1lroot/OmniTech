@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.recipes.GlassBlowingRecipe;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.ChatFormatting;
@@ -91,13 +92,13 @@ public class GlassBlowingStationScreen extends AbstractContainerScreen<GlassBlow
         int maxTemp = menu.getMaxTemperature();
         GlassBlowingRecipe selected = selectedRecipe();
 
-        String tempLine = temp + "°C" + (maxTemp > 0 ? " / " + maxTemp + "°C max" : "");
+        String tempLine = DisplayUnits.temperature(temp) + (maxTemp > 0 ? " / " + DisplayUnits.temperature(maxTemp) + " max" : "");
         graphics.text(this.font, tempLine, 8, 58, 0xFF888888, false);
 
         if (selected != null) {
             int required = selected.getRequiredMinimalTemperature();
             boolean hot = temp >= required;
-            String status = hot ? "Ready (" + required + "°C)" : "Needs " + required + "°C";
+            String status = hot ? "Ready (" + DisplayUnits.temperature(required) + ")" : "Needs " + DisplayUnits.temperature(required);
             graphics.text(this.font, status, 8, 68, hot ? 0xFF55FF55 : 0xFFFF5555, false);
         }
     }
@@ -120,7 +121,7 @@ public class GlassBlowingStationScreen extends AbstractContainerScreen<GlassBlow
                 GlassBlowingRecipe recipe = visible.get(index);
                 List<Component> lines = List.of(
                         recipe.getResult().getHoverName(),
-                        Component.literal(recipe.getRequiredMinimalTemperature() + "°C required")
+                        Component.literal(DisplayUnits.temperature(recipe.getRequiredMinimalTemperature()) + " required")
                                 .withStyle(ChatFormatting.GRAY));
                 graphics.setTooltipForNextFrame(this.font, lines, java.util.Optional.empty(), mouseX, mouseY);
             }

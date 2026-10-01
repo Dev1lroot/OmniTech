@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.radiation;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
@@ -47,16 +48,14 @@ public final class ClientRadiationData {
     }
 
     /**
-     * Converts a 0–1 radiation level to a dose-rate string in μSv/h, mSv/h, or Sv/h.
+     * Converts a 0–1 radiation level to a dose-rate string in the player's chosen unit
+     * (μSv/h, mSv/h or Sv/h by default; rem/h or bananas/h via {@link DisplayUnits}).
      * Uses a logarithmic scale: 10^(level×9) μSv/h, so level 0 ≈ 1 μSv/h and
      * level 1.0 ≈ 1 000 Sv/h (instantly lethal, consistent with nuclear epicenter).
      */
     public static String getDoseRate(float level) {
-        if (level < 0.001f) return "0.00 μSv/h";
-        double usvh = Math.pow(10.0, level * 9.0);
-        if (usvh < 1_000.0)       return String.format("%.2f μSv/h", usvh);
-        if (usvh < 1_000_000.0)   return String.format("%.2f mSv/h",      usvh / 1_000.0);
-        return                            String.format("%.2f Sv/h",       usvh / 1_000_000.0);
+        if (level < 0.001f) return DisplayUnits.doseRate(0.0);
+        return DisplayUnits.doseRate(Math.pow(10.0, level * 9.0));
     }
 
     public static int getLabelColor(float level) {

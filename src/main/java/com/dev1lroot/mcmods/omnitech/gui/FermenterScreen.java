@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.FluidHazardUtil;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
@@ -86,7 +87,7 @@ public class FermenterScreen extends AbstractContainerScreen<FermenterMenu> {
             status.setColor(0xFF888888).write("Empty");
         } else if (menu.getLiveMicrobes() > 0) {
             int running = menu.getActiveReactions();
-            status.setColor(0xFF44AA44).write(menu.getLiveMicrobes() + " mB alive")
+            status.setColor(0xFF44AA44).write(DisplayUnits.volume(menu.getLiveMicrobes()) + " alive")
                     .setColor(0xFF404040).write("  ")
                     .setColor(running > 0 ? 0xFF226622 : 0xFF888888)
                     .write(running + (running == 1 ? " reaction" : " reactions"));
@@ -113,11 +114,11 @@ public class FermenterScreen extends AbstractContainerScreen<FermenterMenu> {
         List<Component> lines = new ArrayList<>();
         if (solution.isEmpty()) {
             lines.add(Component.literal("Empty").withStyle(ChatFormatting.DARK_GRAY));
-            lines.add(Component.literal("0 / " + menu.getCapacity() + " mB").withStyle(ChatFormatting.DARK_GRAY));
+            lines.add(Component.literal(DisplayUnits.volumeOf(0, menu.getCapacity())).withStyle(ChatFormatting.DARK_GRAY));
         } else {
-            lines.add(Component.literal("Mixture: " + total + " / " + menu.getCapacity() + " mB")
+            lines.add(Component.literal("Mixture: " + DisplayUnits.volumeOf(total, menu.getCapacity()))
                     .withStyle(ChatFormatting.GRAY));
-            lines.add(Component.literal(menu.getTemperature() + " °C, " + menu.getPressure() + " kPa")
+            lines.add(Component.literal(DisplayUnits.temperature(menu.getTemperature()) + ", " + DisplayUnits.pressure(menu.getPressure()))
                     .withStyle(ChatFormatting.GRAY));
             // Per component: share, dissolved / undissolved, boiling point, and BOILING when it is.
             GuiUtil.appendMixtureLines(lines,

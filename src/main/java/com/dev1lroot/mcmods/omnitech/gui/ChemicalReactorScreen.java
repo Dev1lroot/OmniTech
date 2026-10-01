@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
@@ -54,8 +55,8 @@ public class ChemicalReactorScreen extends AbstractContainerScreen<ChemicalReact
         // Temperature display (centred)
         int heat    = menu.getStoredHeat();
         int reqTemp = menu.getRequiredTemperature();
-        String tempText = heat + "°C";
-        if (reqTemp > 0) tempText += " / " + reqTemp + "°C";
+        String tempText = DisplayUnits.temperature(heat);
+        if (reqTemp > 0) tempText += " / " + DisplayUnits.temperature(reqTemp);
         int tempColor = (reqTemp == 0 || heat >= reqTemp) ? 0xFFFF8844 : 0xFFFF4444;
         graphics.text(this.font, tempText,
                 (LAYOUT.width - this.font.width(tempText)) / 2, 26, tempColor, false);

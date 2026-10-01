@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntity;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
@@ -60,7 +61,7 @@ public class RocketScreen extends AbstractContainerScreen<RocketMenu> {
         int fuel    = menu.getFuelAmount();
         int maxFuel = RocketEntity.MAX_FUEL;
         new HudWriter(graphics, this.font, 8, 46, 10, false)
-                .setColor(0xFF4488FF).write(fuel + "")
-                .setColor(0xFF404040).write(" / " + maxFuel + " mB");
+                .setColor(0xFF4488FF).write(DisplayUnits.volumeNumber(fuel))
+                .setColor(0xFF404040).write(" / " + DisplayUnits.volume(maxFuel));
     }
 }

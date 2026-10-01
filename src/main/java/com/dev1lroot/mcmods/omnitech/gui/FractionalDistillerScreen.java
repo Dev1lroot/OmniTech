@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.OmniTech;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.FractionalDistillerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.util.GuiUtil;
@@ -100,14 +101,14 @@ public class FractionalDistillerScreen extends AbstractContainerScreen<Fractiona
         float temp    = menu.getTemperature();
         int   reqTemp = menu.getRequiredTemp();
 
-        String tempStr = String.format("%.1f °C", temp);
+        String tempStr = DisplayUnits.temperature(temp, 1);
         int textW = font.width(tempStr);
         new HudWriter(graphics, font, (imageWidth - textW) / 2, 22, 10, false)
                 .setColor(tempColor(temp)).write(tempStr);
 
         if (reqTemp != 0) {
             boolean met = reqTemp >= 0 ? temp >= reqTemp : temp <= reqTemp;
-            String reqStr = (reqTemp >= 0 ? "need ≥ " : "need ≤ ") + reqTemp + " °C";
+            String reqStr = (reqTemp >= 0 ? "need ≥ " : "need ≤ ") + DisplayUnits.temperature(reqTemp);
             int reqW = font.width(reqStr);
             new HudWriter(graphics, font, (imageWidth - reqW) / 2, 32, 10, false)
                     .setColor(met ? 0xFF44AA44 : 0xFFFF2200).write(reqStr);

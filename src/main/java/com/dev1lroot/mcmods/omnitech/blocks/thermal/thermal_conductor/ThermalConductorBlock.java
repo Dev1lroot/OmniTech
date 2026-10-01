@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IColdReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
@@ -152,7 +153,7 @@ public class ThermalConductorBlock extends BaseEntityBlock {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof ThermalConductorBlockEntity tce) {
                 sp.sendSystemMessage(
-                    Component.literal(String.format("%.1f °C", tce.getTemperature())), true);
+                    Component.literal(DisplayUnits.temperature(tce.getTemperature(), 1)), true);
             }
         }
         return InteractionResult.SUCCESS;

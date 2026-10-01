@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
@@ -56,7 +57,7 @@ public class HeatExchangerScreen extends AbstractContainerScreen<HeatExchangerMe
         else if (machineTemp > AMBIENT)  tempColor = machineTemp > 500 ? 0xFFFF2200 : 0xFFFF8800;
         else                             tempColor = machineTemp < -200 ? 0xFF00CCFF : 0xFF44AAFF;
 
-        String tempStr = machineTemp + " °C";
+        String tempStr = DisplayUnits.temperature(machineTemp);
         int textW = this.font.width(tempStr);
         new HudWriter(graphics, this.font, (LAYOUT.width - textW) / 2, 22, 10, false)
                 .setColor(tempColor).write(tempStr);

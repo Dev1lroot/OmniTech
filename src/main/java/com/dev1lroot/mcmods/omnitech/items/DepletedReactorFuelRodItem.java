@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.items;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorCellType;
 import net.minecraft.network.chat.Component;
@@ -38,7 +39,7 @@ public class DepletedReactorFuelRodItem extends ReactorRodItem {
         Integer temp = stack.get(OmniTechDataComponents.ROD_TEMPERATURE.get());
         if (temp != null) {
             String status = temp >= 50 ? " — too hot to remove" : temp > 0 ? " — cooling…" : " — safe";
-            tooltip.accept(Component.literal("Temperature: " + temp + "°C" + status)
+            tooltip.accept(Component.literal("Temperature: " + DisplayUnits.temperature(temp) + status)
                     .withStyle(s -> s.withColor(temp >= 50 ? 0xFFCC5533 : temp > 0 ? 0xFFCCAA00 : 0xFF66BB66)));
         }
     }

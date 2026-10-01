@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.network;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.OmniTech;
 import com.dev1lroot.mcmods.omnitech.entities.RocketEntity;
 import net.minecraft.core.registries.Registries;
@@ -98,8 +99,8 @@ public record SpaceTravelPacket(String dimensionId, int requiredFuel) implements
             int currentFuel = rocket.getFuelAmount();
             if (currentFuel < pkt.requiredFuel) {
                 sp.sendSystemMessage(Component.literal(
-                        "[OmniTech] Insufficient fuel: need " + pkt.requiredFuel
-                        + " mB, have " + currentFuel + " mB."));
+                        "[OmniTech] Insufficient fuel: need " + DisplayUnits.volume(pkt.requiredFuel)
+                        + ", have " + DisplayUnits.volume(currentFuel) + "."));
                 return;
             }
 

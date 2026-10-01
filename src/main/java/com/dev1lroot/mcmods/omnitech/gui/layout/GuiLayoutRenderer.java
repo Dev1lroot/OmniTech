@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui.layout;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.OmniTech;
 import com.dev1lroot.mcmods.omnitech.util.ElectricUnits;
 import com.dev1lroot.mcmods.omnitech.util.GuiUtil;
@@ -297,9 +298,9 @@ public final class GuiLayoutRenderer {
             writer.setColor(el.getColorFilled()).write(fs.getHoverName().getString());
             if (el.show_amount) {
                 writer.newLine()
-                      .setColor(el.getColorFilled()).write(String.valueOf(amount))
+                      .setColor(el.getColorFilled()).write(DisplayUnits.volumeNumber(amount))
                       .setColor(el.getColorEmpty())
-                      .write("/" + ctx.getFluidCapacity(el.source) + " mB");
+                      .write("/" + DisplayUnits.volume(ctx.getFluidCapacity(el.source)));
             }
         } else if (!el.empty_text.isEmpty()) {
             writer.setColor(el.getColorEmpty()).write(el.empty_text);

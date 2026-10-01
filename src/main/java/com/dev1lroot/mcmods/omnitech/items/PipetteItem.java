@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.items;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.FluidHazardUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.FermenterBlockEntity;
@@ -192,7 +193,7 @@ public class PipetteItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context,
             TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
-        tooltip.accept(Component.literal("Draw amount: " + getTargetAmount(stack) + " mB")
+        tooltip.accept(Component.literal("Draw amount: " + DisplayUnits.volume(getTargetAmount(stack)))
                 .withStyle(ChatFormatting.DARK_AQUA));
 
         Solution solution = getSolution(stack);
@@ -202,10 +203,10 @@ public class PipetteItem extends Item {
         }
 
         int total = solution.totalAmount();
-        tooltip.accept(Component.literal("Solution: " + total + " / " + MAX_AMOUNT + " mB")
+        tooltip.accept(Component.literal("Solution: " + DisplayUnits.volumeOf(total, MAX_AMOUNT))
                 .withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.literal(SolutionFluids.temperatureOf(stack) + " °C, "
-                + SolutionFluids.pressureOf(stack) + " kPa").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.literal(DisplayUnits.temperature(SolutionFluids.temperatureOf(stack)) + ", "
+                + DisplayUnits.pressure(SolutionFluids.pressureOf(stack))).withStyle(ChatFormatting.GRAY));
 
         List<Component> lines = new ArrayList<>();
         GuiUtil.appendMixtureLines(lines, toFluidStack(stack));

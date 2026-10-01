@@ -170,7 +170,7 @@ public class GuiUtil
             int pct = total > 0 ? Math.round(100f * part.amount() / total) : 0;
             var line = Component.literal(" ")
                     .append(new FluidStack(part.fluid(), part.amount()).getHoverName().copy())
-                    .append(Component.literal(": " + part.amount() + " mB (" + pct + "%)"))
+                    .append(Component.literal(": " + DisplayUnits.volume(part.amount()) + " (" + pct + "%)"))
                     .withStyle(ChatFormatting.WHITE);
             line.append(Component.literal(part.dissolved() ? "  dissolved" : "  undissolved")
                     .withStyle(part.dissolved() ? ChatFormatting.AQUA : ChatFormatting.GOLD));
@@ -183,7 +183,7 @@ public class GuiUtil
             var diagram = FluidPhysicsRegistry.get(part.fluid()).phaseDiagram();
             if (part.dissolved() && diagram != null) {
                 int boils = FluidPhaseUtil.boilingPointAtPressure(pressure, diagram);
-                line.append(Component.literal("  BP " + boils + " °C").withStyle(ChatFormatting.GRAY));
+                line.append(Component.literal("  BP " + DisplayUnits.temperature(boils)).withStyle(ChatFormatting.GRAY));
                 if (temp >= boils)
                     line.append(Component.literal("  BOILING").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
             }
@@ -266,7 +266,7 @@ public class GuiUtil
         if (fluid.isEmpty() || amount <= 0) {
             lines.add(Component.literal("Empty").withStyle(ChatFormatting.DARK_GRAY));
             if (capacity > 0)
-                lines.add(Component.literal("0 / " + capacity + " mB")
+                lines.add(Component.literal(DisplayUnits.volumeOf(0, capacity))
                         .withStyle(ChatFormatting.DARK_GRAY));
         } else {
             Component phaseSuffix = FluidPhaseUtil.getPhaseLabelComponent(fluid);
@@ -278,7 +278,7 @@ public class GuiUtil
                         .append(Component.literal(")").withStyle(ChatFormatting.DARK_GRAY));
             }
             lines.add(nameLine);
-            lines.add(Component.literal(amount + " / " + capacity + " mB")
+            lines.add(Component.literal(DisplayUnits.volumeOf(amount, capacity))
                     .withStyle(ChatFormatting.GRAY));
             Integer tempBox = fluid.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
             int temp = tempBox != null ? tempBox : 20;
@@ -286,14 +286,14 @@ public class GuiUtil
                                    : temp >= 100 ? ChatFormatting.GOLD
                                    : temp >   20 ? ChatFormatting.YELLOW
                                    :               ChatFormatting.GRAY;
-            lines.add(Component.literal(temp + " °C").withStyle(tempFmt));
+            lines.add(Component.literal(DisplayUnits.temperature(temp)).withStyle(tempFmt));
             Integer pressureBox = fluid.get(OmniTechDataComponents.FLUID_PRESSURE.get());
             int pressure = pressureBox != null ? pressureBox : 101;
             ChatFormatting pressFmt = pressure >= 2000 ? ChatFormatting.RED
                                     : pressure >= 500  ? ChatFormatting.GOLD
                                     : pressure >  101  ? ChatFormatting.YELLOW
                                     :                    ChatFormatting.GRAY;
-            lines.add(Component.literal(pressure + " kPa").withStyle(pressFmt));
+            lines.add(Component.literal(DisplayUnits.pressure(pressure)).withStyle(pressFmt));
             if (SolutionFluids.isMixture(fluid)) appendMixtureLines(lines, fluid);
 
             // Molecular formula / SMILES / shift-structure hint, for a chemical_compound stack

@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.electric_heater.ElectricHeaterBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
@@ -176,9 +177,7 @@ public class ElectricHeaterScreen extends AbstractContainerScreen<ElectricHeater
     }
 
     private static String formatTemp(int temp) {
-        if (temp < 1_000)       return temp + " °C";
-        if (temp < 1_000_000)   return String.format("%.1fk °C", temp / 1_000f);
-        return String.format("%.2fM °C", temp / 1_000_000f);
+        return DisplayUnits.temperatureCompact(temp);
     }
 
     private static int heatColor(float heat) {

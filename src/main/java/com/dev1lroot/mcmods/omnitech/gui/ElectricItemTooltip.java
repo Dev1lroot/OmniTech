@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.AssemblerLoader;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.assembler.AssemblerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_capacitor.ElectricCapacitorBlockEntity;
@@ -137,11 +138,11 @@ public final class ElectricItemTooltip {
                 double at500  = ElectricUnits.toWatts(ElectricHeaterBlockEntity.computeEuPerTick(500));
                 double at1000 = ElectricUnits.toWatts(ElectricHeaterBlockEntity.computeEuPerTick(1000));
                 consumption(out, ElectricUnits.formatPower(base) + " "
-                        + tr("tooltip.omnitech.electric.at_temp", "20 °C"));
+                        + tr("tooltip.omnitech.electric.at_temp", DisplayUnits.temperature(20)));
                 detail(out, "  " + ElectricUnits.formatPower(at500) + " "
-                        + tr("tooltip.omnitech.electric.at_temp", "500 °C") + " · "
+                        + tr("tooltip.omnitech.electric.at_temp", DisplayUnits.temperature(500)) + " · "
                         + ElectricUnits.formatPower(at1000) + " "
-                        + tr("tooltip.omnitech.electric.at_temp", "1000 °C"));
+                        + tr("tooltip.omnitech.electric.at_temp", DisplayUnits.temperature(1000)));
                 current(out, base);
                 buffer(out, ElectricHeaterBlockEntity.MAX_EU);
             }

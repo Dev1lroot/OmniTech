@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiDataContext;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayout;
 import com.dev1lroot.mcmods.omnitech.gui.layout.GuiLayoutLoader;
@@ -67,10 +68,10 @@ public class ChemicalInfuserScreen extends AbstractContainerScreen<ChemicalInfus
         HudWriter tempWriter = new HudWriter(graphics, this.font, 52, 82, 10, false);
         boolean hotEnough = temp >= reqTemp;
         tempWriter.setColor(hotEnough ? 0xFFDD4444 : 0xFF6688CC)
-                .write(temp + "°C");
+                .write(DisplayUnits.temperature(temp));
         if (reqTemp != 0) {
             tempWriter.setColor(0xFF404040).write(" / ")
-                    .setColor(0xFFAA2222).write(reqTemp + "°C req");
+                    .setColor(0xFFAA2222).write(DisplayUnits.temperature(reqTemp) + " req");
         }
     }
 

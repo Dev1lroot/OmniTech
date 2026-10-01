@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.client;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.items.SpaceSuitItem;
 import com.dev1lroot.mcmods.omnitech.radiation.ClientRadiationData;
 import com.dev1lroot.mcmods.omnitech.space.DimensionEnvironment;
@@ -28,7 +29,7 @@ import net.neoforged.neoforge.client.event.RenderGuiEvent;
  *       yellow = dangerous, red = lethal)</li>
  *   <li>Ambient temperature in °C (colour-coded: cyan = cold, white = normal,
  *       orange = hot)</li>
- *   <li>Radiation dose rate in μSv/h / mSv/h / Sv/h on a logarithmic scale
+ *   <li>Radiation dose rate in in the chosen unit (Sv, rem or bananas) on a logarithmic scale
  *       (colour-coded: green = background, yellow = low, orange = moderate,
  *       red = high, purple = lethal)</li>
  * </ol>
@@ -127,13 +128,11 @@ public final class SpaceSuitHudOverlay {
 
     private static String formatPressure(double pa) {
         if (pa == 0) return "VACUUM";
-        if (pa < 10_000)  return String.format("%.0f Pa", pa);
-        if (pa < 1_000_000) return String.format("%.1f kPa", pa / 1_000.0);
-        return String.format("%.2f MPa", pa / 1_000_000.0);
+        return DisplayUnits.pressurePascals(pa);
     }
 
     private static String formatTemp(double celsius) {
-        return String.format("%+.1f \u00B0C", celsius);  // e.g. "+15.0 °C"
+        return DisplayUnits.temperatureSigned(celsius, 1);  // e.g. "+15.0 °C"
     }
 
     private static String formatGravity(double mps2) {

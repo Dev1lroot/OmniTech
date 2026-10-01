@@ -183,6 +183,7 @@ public class OmniTech {
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
         modContainer.registerConfig(ModConfig.Type.CLIENT, com.dev1lroot.mcmods.omnitech.client.MicrophoneConfig.SPEC, "omnitech-microphone-client.toml");
+        modContainer.registerConfig(ModConfig.Type.CLIENT, com.dev1lroot.mcmods.omnitech.util.DisplayUnits.SPEC, "omnitech-units-client.toml");
     }
 
     private void registerCapabilities(RegisterCapabilitiesEvent event) {

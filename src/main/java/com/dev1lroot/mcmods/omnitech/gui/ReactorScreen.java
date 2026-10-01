@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.gui;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorBlockEntity;
@@ -262,7 +263,7 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
                 net.minecraft.ChatFormatting pFmt = pressure >= 700 ? net.minecraft.ChatFormatting.RED
                                                   : pressure >= 300 ? net.minecraft.ChatFormatting.YELLOW
                                                   :                   net.minecraft.ChatFormatting.GRAY;
-                lines.add(Component.literal(pressure + " / " + ReactorBlockEntity.MAX_PRESSURE + " kPa")
+                lines.add(Component.literal(DisplayUnits.pressureOf(pressure, ReactorBlockEntity.MAX_PRESSURE))
                         .withStyle(pFmt));
             }
             if (amount == 0) {
@@ -290,7 +291,7 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
             List<Component> lines = new ArrayList<>();
             lines.add(Component.literal("Core Temperature")
                     .withStyle(s -> s.withColor(0xFFFF8800)));
-            lines.add(Component.literal(temp + " / " + maxTemp + " °C")
+            lines.add(Component.literal(DisplayUnits.temperatureOf(temp, maxTemp))
                     .withStyle(s -> s.withColor(0xFFAAAAAA)));
             if (temp >= 1200) {
                 lines.add(Component.literal("MELTDOWN RISK!")
@@ -313,7 +314,7 @@ public class ReactorScreen extends AbstractContainerScreen<ReactorMenu> {
                     .withStyle(s -> s.withColor(0xFFFF8800)));
             lines.add(Component.literal("Dark blue = cold   Orange/red = hot")
                     .withStyle(s -> s.withColor(0xFFAAAAAA)));
-            lines.add(Component.literal("Coolant: " + menu.getCoolantTemperature() + " °C")
+            lines.add(Component.literal("Coolant: " + DisplayUnits.temperature(menu.getCoolantTemperature()))
                     .withStyle(s -> s.withColor(0xFF88CCFF)));
             g.setTooltipForNextFrame(this.font, lines, Optional.empty(), mouseX, mouseY);
             return;

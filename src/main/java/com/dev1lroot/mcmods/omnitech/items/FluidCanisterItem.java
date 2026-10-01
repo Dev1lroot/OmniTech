@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.items;
 
+import com.dev1lroot.mcmods.omnitech.util.DisplayUnits;
 import com.dev1lroot.mcmods.omnitech.FluidHazardUtil;
 import com.dev1lroot.mcmods.omnitech.FluidPhaseUtil;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
@@ -115,7 +116,7 @@ public class FluidCanisterItem extends Item {
         if (fluid.isEmpty()) {
             tooltip.accept(Component.literal("Empty").withStyle(ChatFormatting.DARK_GRAY));
         } else {
-            tooltip.accept(Component.literal(fluid.getAmount() + " / " + CAPACITY + " mB")
+            tooltip.accept(Component.literal(DisplayUnits.volumeOf(fluid.getAmount(), CAPACITY))
                     .withStyle(ChatFormatting.GRAY));
             Integer tempBox = fluid.get(OmniTechDataComponents.FLUID_TEMPERATURE.get());
             int fluidTemp = tempBox != null ? tempBox : 20;
@@ -123,7 +124,7 @@ public class FluidCanisterItem extends Item {
                                    : fluidTemp >= 100 ? ChatFormatting.GOLD
                                    : fluidTemp >   20 ? ChatFormatting.YELLOW
                                    :                    ChatFormatting.GRAY;
-            tooltip.accept(Component.literal(fluidTemp + " °C").withStyle(tempFmt));
+            tooltip.accept(Component.literal(DisplayUnits.temperature(fluidTemp)).withStyle(tempFmt));
             FluidHazardUtil.appendHazardTooltip(fluid, tooltip);
         }
     }
