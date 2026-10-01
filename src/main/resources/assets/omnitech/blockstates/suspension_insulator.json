@@ -1,0 +1,11 @@
+{
+  "variants": {
+    "hanging=true": {
+      "model": "omnitech:block/suspension_insulator"
+    },
+    "hanging=false": {
+      "model": "omnitech:block/suspension_insulator",
+      "x": 180
+    }
+  }
+}

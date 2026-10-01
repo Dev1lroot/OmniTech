@@ -69,6 +69,9 @@ import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_engine.ElectricE
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.assembler.AssemblerBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_furnace.ElectricFurnaceBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_wire.ElectricWireBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_converter.PowerConverterBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.suspension_insulator.SuspensionInsulatorBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.structure.SteelScaffoldingBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.plumbing.*;
 import com.dev1lroot.mcmods.omnitech.blocks.pressure.RotaryCompressorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.solar_panel.SolarPanelBlock;
@@ -163,6 +166,10 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> ELECTRIC_CAPACITOR;
     public static final DeferredBlock<Block> POWER_TRANSFORMER;
     public static final DeferredBlock<Block> ELECTRIC_WIRE;
+    public static final DeferredBlock<Block> RECTIFIER;
+    public static final DeferredBlock<Block> INVERTER;
+    public static final DeferredBlock<Block> SUSPENSION_INSULATOR;
+    public static final DeferredBlock<Block> STEEL_SCAFFOLDING;
     public static final DeferredBlock<Block> ELECTRIC_FURNACE;
     public static final DeferredBlock<Block> SOLAR_PANEL;
     public static final DeferredBlock<Block> SOLVATION_MACHINE;
@@ -364,6 +371,22 @@ public class OmniTechBlocks {
                 p -> new ElectricWireBlock(p.mapColor(MapColor.METAL).strength(1.5F)
                         .sound(SoundType.METAL).noOcclusion()
                         .pushReaction(net.minecraft.world.level.material.PushReaction.PUSH_PULL)));
+        RECTIFIER = register("rectifier",
+                p -> new PowerConverterBlock(p.mapColor(MapColor.METAL).strength(3.5F)
+                        .sound(SoundType.METAL).requiresCorrectToolForDrops(),
+                        PowerConverterBlock.Mode.RECTIFIER));
+        INVERTER = register("inverter",
+                p -> new PowerConverterBlock(p.mapColor(MapColor.METAL).strength(3.5F)
+                        .sound(SoundType.METAL).requiresCorrectToolForDrops(),
+                        PowerConverterBlock.Mode.INVERTER));
+        SUSPENSION_INSULATOR = register("suspension_insulator",
+                p -> new SuspensionInsulatorBlock(p.mapColor(MapColor.TERRACOTTA_WHITE).strength(1.5F)
+                        .sound(SoundType.STONE).noOcclusion()
+                        .pushReaction(net.minecraft.world.level.material.PushReaction.POPPED)));
+        STEEL_SCAFFOLDING = register("steel_scaffolding",
+                p -> new SteelScaffoldingBlock(p.mapColor(MapColor.METAL).strength(3.0F, 6.0F)
+                        .sound(SoundType.METAL).requiresCorrectToolForDrops().noOcclusion()
+                        .isSuffocating((s, l, ps) -> false)));
         ELECTRIC_FURNACE = register("electric_furnace",
                 p -> new ElectricFurnaceBlock(p.mapColor(MapColor.METAL).strength(3.5F)
                         .sound(SoundType.METAL)));

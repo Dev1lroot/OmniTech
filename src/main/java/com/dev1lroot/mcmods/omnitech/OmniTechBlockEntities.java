@@ -26,6 +26,8 @@ import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorCellBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_capacitor.ElectricCapacitorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_transformer.PowerTransformerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_converter.PowerConverterBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.suspension_insulator.SuspensionInsulatorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_charger.ElectricChargerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.chemical_infuser.ChemicalInfuserBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.extractor.ExtractorBlockEntity;
@@ -182,6 +184,16 @@ public class OmniTechBlockEntities {
             REGISTRY.register("power_transformer",
                     () -> new BlockEntityType<>(PowerTransformerBlockEntity::new,
                             OmniTechBlocks.POWER_TRANSFORMER.get()));
+
+    public static final Supplier<BlockEntityType<PowerConverterBlockEntity>> POWER_CONVERTER =
+            REGISTRY.register("power_converter",
+                    () -> new BlockEntityType<>(PowerConverterBlockEntity::new,
+                            OmniTechBlocks.RECTIFIER.get(), OmniTechBlocks.INVERTER.get()));
+
+    public static final Supplier<BlockEntityType<SuspensionInsulatorBlockEntity>> SUSPENSION_INSULATOR =
+            REGISTRY.register("suspension_insulator",
+                    () -> new BlockEntityType<>(SuspensionInsulatorBlockEntity::new,
+                            OmniTechBlocks.SUSPENSION_INSULATOR.get()));
 
     public static final Supplier<BlockEntityType<ElectricFurnaceBlockEntity>> ELECTRIC_FURNACE =
             REGISTRY.register("electric_furnace",

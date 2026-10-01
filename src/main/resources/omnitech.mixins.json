@@ -9,7 +9,8 @@
     "FallingBlockEntityGravityMixin",
     "ItemGravityAimMixin",
     "ProjectileGravityAimMixin",
-    "ExperienceOrbBoreMendingMixin"
+    "ExperienceOrbBoreMendingMixin",
+    "LivingEntityScaffoldClimbMixin"
   ],
   "client": [
     "KeyboardHandlerMixin",

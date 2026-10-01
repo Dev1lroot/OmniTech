@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:steel_plate",
+    "W": "omnitech:electric_wire",
+    "R": "minecraft:comparator",
+    "C": "omnitech:copper_coil"
+  },
+  "pattern": [
+    "PWP",
+    "RCR",
+    "PWP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:inverter"
+  }
+}

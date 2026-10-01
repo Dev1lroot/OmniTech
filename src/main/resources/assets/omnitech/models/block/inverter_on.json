@@ -1,0 +1,7 @@
+{
+  "parent": "omnitech:block/power_transformer",
+  "textures": {
+    "particle": "omnitech:block/inverter_side_on",
+    "side": "omnitech:block/inverter_side_on"
+  }
+}

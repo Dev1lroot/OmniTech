@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech;
 
 import com.dev1lroot.mcmods.omnitech.items.BlueprintItem;
 import com.dev1lroot.mcmods.omnitech.items.BoreItem;
+import com.dev1lroot.mcmods.omnitech.items.MultimeterItem;
 import com.dev1lroot.mcmods.omnitech.items.ReactorControlRodItem;
 import com.dev1lroot.mcmods.omnitech.items.ReactorFuelRodItem;
 import com.dev1lroot.mcmods.omnitech.items.DepletedReactorFuelRodItem;
@@ -139,6 +140,16 @@ public class OmniTechItems
             "power_transformer", OmniTechBlocks.POWER_TRANSFORMER);
     public static final DeferredItem<BlockItem> ELECTRIC_WIRE_ITEM = REGISTRY.registerSimpleBlockItem(
             "electric_wire", OmniTechBlocks.ELECTRIC_WIRE);
+    public static final DeferredItem<BlockItem> RECTIFIER_ITEM = REGISTRY.registerSimpleBlockItem(
+            "rectifier", OmniTechBlocks.RECTIFIER);
+    public static final DeferredItem<BlockItem> INVERTER_ITEM = REGISTRY.registerSimpleBlockItem(
+            "inverter", OmniTechBlocks.INVERTER);
+    public static final DeferredItem<BlockItem> SUSPENSION_INSULATOR_ITEM = REGISTRY.registerSimpleBlockItem(
+            "suspension_insulator", OmniTechBlocks.SUSPENSION_INSULATOR);
+    public static final DeferredItem<BlockItem> STEEL_SCAFFOLDING_ITEM = REGISTRY.registerSimpleBlockItem(
+            "steel_scaffolding", OmniTechBlocks.STEEL_SCAFFOLDING);
+    public static final DeferredItem<MultimeterItem> MULTIMETER =
+            REGISTRY.registerItem("multimeter", MultimeterItem::new, p -> p.stacksTo(1));
     public static final DeferredItem<BlockItem> ASSEMBLER_ITEM = REGISTRY.registerSimpleBlockItem(
             "assembler", OmniTechBlocks.ASSEMBLER);
 

@@ -1,0 +1,7 @@
+{
+  "parent": "omnitech:block/power_transformer",
+  "textures": {
+    "particle": "omnitech:block/rectifier_side",
+    "side": "omnitech:block/rectifier_side"
+  }
+}

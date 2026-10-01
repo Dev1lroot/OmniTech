@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_capacitor;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
+import com.dev1lroot.mcmods.omnitech.io.CurrentType;
 import com.dev1lroot.mcmods.omnitech.io.IElectricSupplier;
 import com.dev1lroot.mcmods.omnitech.gui.ElectricCapacitorMenu;
 import com.dev1lroot.mcmods.omnitech.util.ElectricNetworkUtil;
@@ -152,6 +153,12 @@ public class ElectricCapacitorBlockEntity extends BaseContainerBlockEntity
         return terminalVoltage(storedEu, MAX_EU);
     }
 
+    /** A charged capacitor discharges direct current. */
+    @Override
+    public CurrentType getCurrentType() {
+        return CurrentType.DC;
+    }
+
     /** Terminal voltage of an ideal capacitor holding {@code stored} of {@code max} kJ. */
     public static float terminalVoltage(float stored, float max) {
         if (stored <= 0f || max <= 0f) return 0f;
@@ -186,7 +193,7 @@ public class ElectricCapacitorBlockEntity extends BaseContainerBlockEntity
             float burstAmount = Math.min(DISCHARGE_RATE * CLOCK_INTERVAL, be.storedEu);
             float volts = be.getSupplyVoltage();
             float actualDelivered = ElectricNetworkUtil.propagateElectricity(
-                    level, pos, burstAmount, volts, new Direction[]{ front });
+                    level, pos, burstAmount, volts, CurrentType.DC, new Direction[]{ front });
             be.outputMeter.add(actualDelivered, volts);
             if (actualDelivered > 0f) {
                 be.storedEu -= actualDelivered;

@@ -6,6 +6,7 @@ package com.dev1lroot.mcmods.omnitech.blocks.electrical.solar_panel;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.gui.SolarPanelMenu;
+import com.dev1lroot.mcmods.omnitech.io.CurrentType;
 import com.dev1lroot.mcmods.omnitech.io.IElectricSupplier;
 import com.dev1lroot.mcmods.omnitech.util.ElectricNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
@@ -119,6 +120,10 @@ public class SolarPanelBlockEntity extends BaseContainerBlockEntity implements I
     @Override
     public float getSupplyVoltage() { return pvVoltage(currentOutput / EU_PER_TICK); }
 
+    /** Photovoltaic cells produce direct current. */
+    @Override
+    public CurrentType getCurrentType() { return CurrentType.DC; }
+
     /** PV terminal voltage at relative irradiance {@code g} (0..1). */
     public static float pvVoltage(float g) {
         if (g <= 0f) return 0f;
@@ -160,7 +165,7 @@ public class SolarPanelBlockEntity extends BaseContainerBlockEntity implements I
         float burst = output * CLOCK_INTERVAL;
         float volts = be.getSupplyVoltage();
         float delivered = ElectricNetworkUtil.propagateElectricity(
-                level, pos, burst, volts, Direction.values());
+                level, pos, burst, volts, CurrentType.DC, Direction.values());
         be.outputMeter.add(delivered, volts);
     }
 

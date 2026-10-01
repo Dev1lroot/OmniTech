@@ -6,13 +6,16 @@ package com.dev1lroot.mcmods.omnitech.blocks.electrical.power_transformer;
 
 import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.gui.PowerTransformerMenu;
+import com.dev1lroot.mcmods.omnitech.io.CurrentType;
 import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IElectricSupplier;
+import com.dev1lroot.mcmods.omnitech.io.IMultimeterReadable;
 import com.dev1lroot.mcmods.omnitech.util.ElectricNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.util.ElectricUnits;
 import com.dev1lroot.mcmods.omnitech.util.PowerMeter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -24,6 +27,8 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+
+import java.util.function.Consumer;
 
 /**
  * Block entity for the {@link PowerTransformerBlock}.
@@ -56,7 +61,7 @@ import net.minecraft.world.level.storage.ValueOutput;
  * </ul>
  */
 public class PowerTransformerBlockEntity extends BaseContainerBlockEntity
-        implements IElectricReceiver, IElectricSupplier {
+        implements IElectricReceiver, IElectricSupplier, IMultimeterReadable {
 
     // ── Ratings ──────────────────────────────────────────────────────────────
 
@@ -161,6 +166,12 @@ public class PowerTransformerBlockEntity extends BaseContainerBlockEntity
         return side == outputFace();
     }
 
+    /** A transformer core only couples alternating current; DC needs an inverter first. */
+    @Override
+    public boolean acceptsCurrent(CurrentType type) {
+        return type == CurrentType.AC;
+    }
+
     // ── IElectricReceiver (primary) ──────────────────────────────────────────
 
     @Override
@@ -201,7 +212,7 @@ public class PowerTransformerBlockEntity extends BaseContainerBlockEntity
         float eta    = efficiency(drawn / CLOCK_INTERVAL);
         float volts  = be.outputVoltage;
         float delivered = ElectricNetworkUtil.propagateElectricity(
-                level, pos, drawn * eta, volts, new Direction[]{ be.outputFace() });
+                level, pos, drawn * eta, volts, CurrentType.AC, new Direction[]{ be.outputFace() });
         if (delivered <= 0f) {
             be.outputMeter.add(0f, volts);
             return;
@@ -257,6 +268,30 @@ public class PowerTransformerBlockEntity extends BaseContainerBlockEntity
     }
 
     public ContainerData getContainerData() { return dataAccess; }
+
+    // ── Multimeter ───────────────────────────────────────────────────────────
+
+    @Override
+    public void appendMultimeterReadout(Consumer<Component> out) {
+        out.accept(Component.translatable("multimeter.omnitech.converter_in",
+                CurrentType.AC.label(),
+                ElectricUnits.formatPower(inputMeter.getWatts()),
+                ElectricUnits.formatVoltage(inputMeter.getVolts())));
+        out.accept(Component.translatable("multimeter.omnitech.converter_out",
+                CurrentType.AC.label(),
+                ElectricUnits.formatPower(outputMeter.getWatts()),
+                ElectricUnits.formatVoltage(outputMeter.getVolts())));
+        double sent = outputMeter.getWatts();
+        double loss = lossMeter.getWatts();
+        out.accept(Component.translatable("multimeter.omnitech.converter_loss",
+                ElectricUnits.formatPower(loss),
+                String.format("%.1f%%", sent + loss > 0 ? 100.0 * sent / (sent + loss) : 0.0))
+                .withStyle(ChatFormatting.GRAY));
+        if (!enabled) {
+            out.accept(Component.translatable("gui.omnitech.power_transformer.disabled")
+                    .withStyle(ChatFormatting.RED));
+        }
+    }
 
     // ── Persistence ──────────────────────────────────────────────────────────
 

@@ -5,6 +5,7 @@
 package com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_wire;
 
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_relay.PowerRelayBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.suspension_insulator.SuspensionInsulatorBlock;
 import com.dev1lroot.mcmods.omnitech.io.IElectricReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IElectricSupplier;
 import net.minecraft.core.BlockPos;
@@ -109,6 +110,7 @@ public class ElectricWireBlock extends Block {
     private static boolean canConnectTo(LevelReader level, BlockPos neighborPos,
             Direction fromWireToNeighbor, BlockState neighborState) {
         if (neighborState.getBlock() instanceof ElectricWireBlock) return true;
+        if (neighborState.getBlock() instanceof SuspensionInsulatorBlock) return true;
         if (neighborState.getBlock() instanceof PowerRelayBlock)
             return PowerRelayBlock.allowsConnection(neighborState, fromWireToNeighbor);
         BlockEntity be = level.getBlockEntity(neighborPos);

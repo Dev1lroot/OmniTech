@@ -1,0 +1,88 @@
+{
+  "values": [
+    {
+      "id": "omnitech:aluminium_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:brass_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:cadmium_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:chromium_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:cobalt_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:copper_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:gold_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_carbide_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:hafnium_tantalum_carbide_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:iron_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:lead_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:nickel_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:steel_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:tantalum_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:tin_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:titanium_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_carbide_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:tungsten_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:uranium_coil",
+      "required": false
+    },
+    {
+      "id": "omnitech:zinc_coil",
+      "required": false
+    }
+  ]
+}

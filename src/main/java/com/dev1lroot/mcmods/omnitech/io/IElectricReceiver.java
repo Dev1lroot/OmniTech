@@ -34,4 +34,12 @@ public interface IElectricReceiver {
     default boolean acceptsElectricityFrom(Direction side) {
         return true;
     }
+
+    /**
+     * Whether this machine can run on {@code type}. The network skips receivers
+     * that refuse it (e.g. a transformer on DC). Defaults to both.
+     */
+    default boolean acceptsCurrent(CurrentType type) {
+        return true;
+    }
 }

@@ -27,4 +27,9 @@ public interface IElectricSupplier {
     default boolean outputsElectricityTo(Direction side) {
         return true;
     }
+
+    /** Kind of current this source produces. Defaults to AC (alternators). */
+    default CurrentType getCurrentType() {
+        return CurrentType.AC;
+    }
 }

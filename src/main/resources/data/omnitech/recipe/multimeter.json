@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:steel_plate",
+    "G": "minecraft:glass_pane",
+    "R": "minecraft:redstone",
+    "C": "omnitech:copper_wire"
+  },
+  "pattern": [
+    "PGP",
+    "RCR",
+    "PPP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:multimeter"
+  }
+}

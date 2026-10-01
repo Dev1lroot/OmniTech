@@ -12,6 +12,11 @@ import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_charger.Electric
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_engine.ElectricEngineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_furnace.ElectricFurnaceBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_transformer.PowerTransformerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_converter.PowerConverterBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_converter.PowerConverterBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.suspension_insulator.SuspensionInsulatorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.util.ConductorMetals;
+import com.dev1lroot.mcmods.omnitech.util.ElectricNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.solar_panel.SolarPanelBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.ElectrolysisMachineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.electric_heater.ElectricHeaterBlockEntity;
@@ -51,6 +56,7 @@ public final class ElectricItemTooltip {
                         + " " + tr("tooltip.omnitech.electric.at_noon"));
                 voltage(out, SolarPanelBlockEntity.MPP_VOLTAGE, peak);
                 detail(out, tr("tooltip.omnitech.electric.solar_note"));
+                detail(out, tr("tooltip.omnitech.electric.outputs_dc"));
             }
             case "electric_engine" -> {
                 double gen   = ElectricUnits.toWatts(ElectricEngineBlockEntity.EU_OUTPUT);
@@ -75,6 +81,7 @@ public final class ElectricItemTooltip {
                         + " · " + ElectricUnits.formatCapacitance(ElectricCapacitorBlockEntity.CAPACITANCE));
                 detail(out, tr("tooltip.omnitech.electric.runtime_1kw",
                         ElectricUnits.formatDuration(ElectricUnits.toJoules(max) / 1000.0)));
+                detail(out, tr("tooltip.omnitech.electric.outputs_dc"));
             }
             case "electric_furnace" -> {
                 float perTick = ElectricFurnaceBlockEntity.EU_PER_RECIPE / ElectricFurnaceBlockEntity.COOK_TIME;
@@ -158,8 +165,34 @@ public final class ElectricItemTooltip {
                         pct(PowerTransformerBlockEntity.efficiency(
                                 (float) ElectricUnits.fromWatts(rated * 1000.0)))));
                 detail(out, tr("tooltip.omnitech.electric.transformer_faces"));
+                detail(out, tr("tooltip.omnitech.electric.ac_only"));
             }
-            case "electric_wire" -> detail(out, tr("tooltip.omnitech.electric.wire_note"));
+            case "rectifier", "inverter" -> {
+                PowerConverterBlock.Mode mode = path.equals("rectifier")
+                        ? PowerConverterBlock.Mode.RECTIFIER : PowerConverterBlock.Mode.INVERTER;
+                int rated = PowerConverterBlockEntity.RATED_POWER_KW;
+                out.accept(label("tooltip.omnitech.electric.rating",
+                        ElectricUnits.formatPower(rated * 1000.0), CAPACITY));
+                detail(out, tr("tooltip.omnitech.electric.converts",
+                        mode.input.label().getString(), mode.output.label().getString()));
+                detail(out, tr("tooltip.omnitech.electric.efficiency_range",
+                        pct(PowerConverterBlockEntity.efficiency(mode, 0f)),
+                        pct(PowerConverterBlockEntity.efficiency(mode,
+                                (float) ElectricUnits.fromWatts(rated * 1000.0)))));
+                detail(out, tr("tooltip.omnitech.electric.converter_faces"));
+            }
+            case "suspension_insulator" -> {
+                detail(out, tr("tooltip.omnitech.electric.insulator_note",
+                        SuspensionInsulatorBlockEntity.MAX_SPAN,
+                        SuspensionInsulatorBlockEntity.BLOCKS_PER_COIL));
+                detail(out, tr("tooltip.omnitech.electric.insulator_note2"));
+                detail(out, tr("tooltip.omnitech.electric.copper_span",
+                        ElectricUnits.formatResistance(ConductorMetals.spanResistance("copper", 1))));
+            }
+            case "multimeter" -> detail(out, tr("tooltip.omnitech.multimeter"));
+            case "steel_scaffolding" -> detail(out, tr("tooltip.omnitech.steel_scaffolding"));
+            case "electric_wire" -> detail(out, tr("tooltip.omnitech.electric.wire_note",
+                    ElectricUnits.formatResistance(ElectricNetworkUtil.WIRE_OHMS)));
             default -> {}
         }
     }
