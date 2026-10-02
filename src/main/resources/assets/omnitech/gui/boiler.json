@@ -16,9 +16,10 @@
       "x": 80,
       "y": 17,
       "w": 16,
-      "h": 52,
+      "h": 43,
       "source": "fluid"
     },
+    {"id": "fluid_tank_flush", "type": "fluid_flush", "x": 80, "y": 62, "w": 16, "h": 7, "source": "fluid"},
     {
       "id": "output_slot",
       "type": "slot",

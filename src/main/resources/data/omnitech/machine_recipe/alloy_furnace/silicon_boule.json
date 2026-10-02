@@ -1,0 +1,10 @@
+{
+  "minTemperature": 1450,
+  "ingredients": [
+    "omnitech:metallurgical_silicon",
+    "minecraft:quartz"
+  ],
+  "output": [
+    "omnitech:silicon_boule"
+  ]
+}

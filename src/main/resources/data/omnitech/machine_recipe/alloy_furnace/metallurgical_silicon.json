@@ -1,0 +1,10 @@
+{
+  "minTemperature": 1900,
+  "ingredients": [
+    "minecraft:quartz",
+    "omnitech:coke_coal"
+  ],
+  "output": [
+    "omnitech:metallurgical_silicon"
+  ]
+}

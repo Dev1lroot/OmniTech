@@ -45,8 +45,9 @@
       "x": 148,
       "y": 13,
       "w": 16,
-      "h": 54,
+      "h": 45,
       "source": "creosote"
-    }
+    },
+    {"id": "creosote_tank_flush", "type": "fluid_flush", "x": 148, "y": 60, "w": 16, "h": 7, "source": "creosote"}
   ]
 }

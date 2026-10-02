@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "#minecraft:planks",
+    "C": "omnitech:wooden_cog",
+    "R": "omnitech:wooden_reductor",
+    "B": "minecraft:bucket",
+    "S": "minecraft:cobblestone"
+  },
+  "pattern": [
+    "PCP",
+    "RBR",
+    "SSS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:manual_centrifuge"
+  }
+}

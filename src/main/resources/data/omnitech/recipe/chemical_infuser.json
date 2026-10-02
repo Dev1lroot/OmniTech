@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "omnitech:iron_plate",
+    "G": "minecraft:glass",
+    "F": "omnitech:fluid_pipe",
+    "C": "minecraft:cauldron",
+    "R": "omnitech:wooden_reductor"
+  },
+  "pattern": [
+    "IGI",
+    "FCF",
+    "IRI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:chemical_infuser"
+  }
+}

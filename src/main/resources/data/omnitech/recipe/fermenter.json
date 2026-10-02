@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "omnitech:iron_plate",
+    "G": "minecraft:glass",
+    "B": "minecraft:barrel",
+    "F": "omnitech:fluid_pipe"
+  },
+  "pattern": [
+    "IGI",
+    "IBI",
+    "IFI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:fermenter"
+  }
+}

@@ -16,9 +16,10 @@
       "x": 8,
       "y": 17,
       "w": 16,
-      "h": 52,
+      "h": 43,
       "source": "input_fluid"
     },
+    {"id": "input_fluid_flush", "type": "fluid_flush", "x": 8, "y": 62, "w": 16, "h": 7, "source": "input_fluid"},
     {
       "id": "template_slot",
       "type": "slot",

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:bricks",
+    "I": "omnitech:iron_plate",
+    "F": "minecraft:furnace"
+  },
+  "pattern": [
+    "BIB",
+    "BFB",
+    "BBB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:alloy_furnace"
+  }
+}

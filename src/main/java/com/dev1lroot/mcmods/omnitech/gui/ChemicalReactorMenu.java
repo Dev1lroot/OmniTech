@@ -22,7 +22,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import java.util.Comparator;
 import java.util.List;
 
-public class ChemicalReactorMenu extends AbstractContainerMenu {
+public class ChemicalReactorMenu extends AbstractContainerMenu implements FlushableMenu {
 
     private final Container  container;
     private final ContainerData data;
@@ -140,5 +140,10 @@ public class ChemicalReactorMenu extends AbstractContainerMenu {
                         container instanceof BlockEntity be ? be.getLevel() : null,
                         container instanceof BlockEntity be ? be.getBlockPos() : null),
                 player, OmniTechBlocks.CHEMICAL_REACTOR.get());
+    }
+
+    @Override
+    public com.dev1lroot.mcmods.omnitech.io.@org.jspecify.annotations.Nullable FluidFlushable flushTarget(net.minecraft.world.entity.player.Player player) {
+        return container instanceof com.dev1lroot.mcmods.omnitech.io.FluidFlushable f ? f : null;
     }
 }

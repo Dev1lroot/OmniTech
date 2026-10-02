@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "omnitech:iron_plate",
+    "F": "omnitech:fluid_pipe",
+    "G": "minecraft:glass",
+    "C": "minecraft:cauldron"
+  },
+  "pattern": [
+    "IFI",
+    "GCG",
+    "IFI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:chemical_mixer"
+  }
+}

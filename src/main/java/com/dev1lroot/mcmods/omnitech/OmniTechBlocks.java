@@ -46,6 +46,10 @@ import com.dev1lroot.mcmods.omnitech.blocks.logic.expansion_slot.ExpansionSlotBl
 import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station.ProgrammingStationBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.research_table.ResearchTableBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbStationBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbWorkbenchBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbFabricatorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.SolderingStationBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.keyboard.KeyboardBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.NuclearBombBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.reactor.ReactorBlock;
@@ -207,6 +211,9 @@ public class OmniTechBlocks {
     // ── Logic / GPIO / Display ────────────────────────────────────────────────
     public static final DeferredBlock<Block> PROGRAMMING_STATION;
     public static final DeferredBlock<Block> RESEARCH_TABLE;
+    public static final DeferredBlock<Block> PCB_WORKBENCH;
+    public static final DeferredBlock<Block> PCB_FABRICATOR;
+    public static final DeferredBlock<Block> SOLDERING_STATION;
     public static final DeferredBlock<Block> LOGIC_MACHINE;
     public static final DeferredBlock<Block> LOGIC_CABLE;
     public static final DeferredBlock<Block> LOGIC_GATE_BLOCK;
@@ -488,6 +495,15 @@ public class OmniTechBlocks {
         RESEARCH_TABLE = register("research_table",
                 p -> new ResearchTableBlock(p.mapColor(MapColor.WOOD).strength(2.5F)
                         .sound(SoundType.WOOD)));
+        PCB_WORKBENCH = register("pcb_workbench",
+                p -> new PcbStationBlock(p.mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD),
+                        PcbWorkbenchBlockEntity::new, false));
+        PCB_FABRICATOR = register("pcb_fabricator",
+                p -> new PcbStationBlock(p.mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.METAL),
+                        PcbFabricatorBlockEntity::new, true));
+        SOLDERING_STATION = register("soldering_station",
+                p -> new PcbStationBlock(p.mapColor(MapColor.METAL).strength(3.0F).sound(SoundType.METAL),
+                        SolderingStationBlockEntity::new, false));
         LOGIC_MACHINE = register("logic_machine",
                 p -> new LogicMachineBlock(p.mapColor(MapColor.METAL).strength(3.0F)
                         .sound(SoundType.METAL)));

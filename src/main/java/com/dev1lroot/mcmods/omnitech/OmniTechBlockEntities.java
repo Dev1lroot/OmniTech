@@ -45,6 +45,9 @@ import com.dev1lroot.mcmods.omnitech.blocks.logic.display.DisplayBlockEntityMk3;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station.ProgrammingStationBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.research_table.ResearchTableBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbWorkbenchBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbFabricatorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.SolderingStationBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_gate.LogicGateBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.LogicMachineBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlockEntity;
@@ -334,6 +337,16 @@ public class OmniTechBlockEntities {
             REGISTRY.register("research_table",
                     () -> new BlockEntityType<>(ResearchTableBlockEntity::new,
                             OmniTechBlocks.RESEARCH_TABLE.get()));
+
+    public static final Supplier<BlockEntityType<PcbWorkbenchBlockEntity>> PCB_WORKBENCH =
+            REGISTRY.register("pcb_workbench",
+                    () -> new BlockEntityType<>(PcbWorkbenchBlockEntity::new, OmniTechBlocks.PCB_WORKBENCH.get()));
+    public static final Supplier<BlockEntityType<PcbFabricatorBlockEntity>> PCB_FABRICATOR =
+            REGISTRY.register("pcb_fabricator",
+                    () -> new BlockEntityType<>(PcbFabricatorBlockEntity::new, OmniTechBlocks.PCB_FABRICATOR.get()));
+    public static final Supplier<BlockEntityType<SolderingStationBlockEntity>> SOLDERING_STATION =
+            REGISTRY.register("soldering_station",
+                    () -> new BlockEntityType<>(SolderingStationBlockEntity::new, OmniTechBlocks.SOLDERING_STATION.get()));
 
     public static final Supplier<BlockEntityType<LogicMachineBlockEntity>> LOGIC_MACHINE =
             REGISTRY.register("logic_machine",

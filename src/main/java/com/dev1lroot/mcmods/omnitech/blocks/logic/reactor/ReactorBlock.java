@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.MenuProvider;
 
 import java.util.Optional;
 
@@ -90,6 +91,16 @@ public class ReactorBlock extends BaseEntityBlock {
         // Notify any formed structure whose master relied on this block (non-master case).
         // The master itself handles cleanup via ReactorBlockEntity.setRemoved().
         ReactorStructure.invalidateNearbyMaster(level, pos);
+    }
+
+    /**
+     * No direct menu provider: vanilla opens one straight from the block entity for
+     * spectators, skipping {@link #openGui} — which is what checks the structure is
+     * formed and writes the layout the client menu reads.
+     */
+    @Override
+    protected @Nullable MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
+        return null;
     }
 
     static void openGui(ReactorBlockEntity master, ServerPlayer player) {

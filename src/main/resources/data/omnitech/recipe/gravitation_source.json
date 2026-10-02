@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "N": "omnitech:neodymium_plate",
+    "K": "omnitech:control_circuit",
+    "S": "minecraft:nether_star",
+    "M": "omnitech:machine_casing"
+  },
+  "pattern": [
+    "NKN",
+    "KSK",
+    "NMN"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:gravitation_source"
+  }
+}

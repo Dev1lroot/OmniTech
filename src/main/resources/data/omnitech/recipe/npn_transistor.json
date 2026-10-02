@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "N": "omnitech:n_type_wafer",
+    "P": "omnitech:p_type_wafer",
+    "W": "omnitech:copper_wire"
+  },
+  "pattern": [
+    "NPN",
+    "WWW"
+  ],
+  "result": {
+    "count": 8,
+    "id": "omnitech:npn_transistor"
+  }
+}

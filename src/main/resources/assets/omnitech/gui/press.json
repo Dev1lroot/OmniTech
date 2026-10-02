@@ -30,9 +30,10 @@
       "x": 152,
       "y": 17,
       "w": 16,
-      "h": 52,
+      "h": 43,
       "source": "output"
     },
+    {"id": "output_fluid_flush", "type": "fluid_flush", "x": 152, "y": 62, "w": 16, "h": 7, "source": "output"},
     {
       "id": "kf_progress",
       "type": "progressbar",

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "W": "omnitech:copper_wire",
+    "D": "minecraft:yellow_dye"
+  },
+  "pattern": [
+    "WDW"
+  ],
+  "result": {
+    "count": 3,
+    "id": "omnitech:analog_cable"
+  }
+}

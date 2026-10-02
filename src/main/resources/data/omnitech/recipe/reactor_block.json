@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "omnitech:lead_plate",
+    "S": "omnitech:steel_plate"
+  },
+  "pattern": [
+    "LSL",
+    "S S",
+    "LSL"
+  ],
+  "result": {
+    "count": 4,
+    "id": "omnitech:reactor_block"
+  }
+}

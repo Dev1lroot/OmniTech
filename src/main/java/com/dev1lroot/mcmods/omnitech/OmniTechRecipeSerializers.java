@@ -24,6 +24,9 @@ public class OmniTechRecipeSerializers {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<PipetteInjectRecipe>> PIPETTE_INJECT =
             REGISTRY.register("pipette_inject", () -> PipetteInjectRecipe.SERIALIZER);
 
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<com.dev1lroot.mcmods.omnitech.recipe.ResistorCodingRecipe>> RESISTOR_CODING =
+            REGISTRY.register("resistor_coding", () -> com.dev1lroot.mcmods.omnitech.recipe.ResistorCodingRecipe.SERIALIZER);
+
     public static void register(IEventBus bus) {
         REGISTRY.register(bus);
     }

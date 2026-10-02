@@ -55,7 +55,7 @@ import java.util.Optional;
  * </ul>
  */
 public class ExtractorBlockEntity extends BaseContainerBlockEntity
-        implements IKineticReceiver, WorldlyContainer {
+        implements IKineticReceiver, WorldlyContainer, com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
 
     public static final int SLOT_INPUT  = 0;
     public static final int SLOT_RESIDUE = 1;
@@ -329,5 +329,20 @@ public class ExtractorBlockEntity extends BaseContainerBlockEntity
             if (outputFluid.getAmount() <= 0) outputFluid = FluidStack.EMPTY;
             return toExt;
         }
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "output" -> { boolean h = !outputFluid.isEmpty(); outputFluid = FluidStack.EMPTY; yield h; }
+            default -> false;
+        };
+        if (had) {
+            setChanged();
+            if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return had;
     }
 }

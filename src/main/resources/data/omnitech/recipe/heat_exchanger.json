@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:iron_plate",
+    "F": "omnitech:fluid_pipe",
+    "C": "omnitech:copper_coil"
+  },
+  "pattern": [
+    "PFP",
+    "FCF",
+    "PFP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:heat_exchanger"
+  }
+}

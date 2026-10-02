@@ -41,7 +41,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.Optional;
 
 public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
-        implements IKineticReceiver, WorldlyContainer {
+        implements IKineticReceiver, WorldlyContainer, com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
 
     public static final int SLOT_INPUT = 0;
     public static final int SLOT_COUNT = 1;
@@ -321,5 +321,21 @@ public class SolvationMachineBlockEntity extends BaseContainerBlockEntity
         output.store("OutputFluid", FluidStack.OPTIONAL_CODEC, outputFluid);
         output.putFloat("KineticForce", kineticForce);
         output.putFloat("RequiredKineticForce", requiredKineticForce);
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "input" -> { boolean h = !inputFluid.isEmpty(); inputFluid = FluidStack.EMPTY; yield h; }
+            case "output" -> { boolean h = !outputFluid.isEmpty(); outputFluid = FluidStack.EMPTY; yield h; }
+            default -> false;
+        };
+        if (had) {
+            setChanged();
+            if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return had;
     }
 }

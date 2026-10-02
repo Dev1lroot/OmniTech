@@ -5,6 +5,7 @@
     "omnitech:press",
     "omnitech:crank",
     "omnitech:structure_table",
-    "omnitech:research_table"
+    "omnitech:research_table",
+    "omnitech:pcb_workbench"
   ]
 }

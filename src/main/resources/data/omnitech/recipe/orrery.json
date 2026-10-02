@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:glass",
+    "C": "omnitech:brass_cog",
+    "K": "omnitech:control_circuit",
+    "B": "omnitech:brass_plate"
+  },
+  "pattern": [
+    "GCG",
+    "CKC",
+    "BBB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:orrery"
+  }
+}

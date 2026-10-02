@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "minecraft:leather",
+    "C": "omnitech:wooden_cog",
+    "R": "omnitech:iron_rod"
+  },
+  "pattern": [
+    "LLL",
+    "CRC"
+  ],
+  "result": {
+    "count": 4,
+    "id": "omnitech:conveyor_belt"
+  }
+}

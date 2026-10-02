@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:iron_plate",
+    "K": "omnitech:stabilizer_circuit",
+    "W": "omnitech:electric_wire",
+    "B": "omnitech:basic_machine_casing",
+    "C": "omnitech:capacitor"
+  },
+  "pattern": [
+    "PKP",
+    "WBW",
+    "PCP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:electric_charger"
+  }
+}

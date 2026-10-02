@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "omnitech:copper_plate",
+    "R": "omnitech:iron_rod"
+  },
+  "pattern": [
+    "CRC",
+    "CRC",
+    "CRC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:radiator"
+  }
+}

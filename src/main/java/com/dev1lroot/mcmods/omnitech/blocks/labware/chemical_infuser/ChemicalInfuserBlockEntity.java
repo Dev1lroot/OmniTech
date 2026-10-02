@@ -58,7 +58,7 @@ import java.util.Optional;
  * </ul>
  */
 public class ChemicalInfuserBlockEntity extends BaseContainerBlockEntity
-        implements IKineticReceiver, IHeatReceiver, IColdReceiver, WorldlyContainer {
+        implements IKineticReceiver, IHeatReceiver, IColdReceiver, WorldlyContainer, com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
 
     public static final int SLOT_INPUT  = 0;
     public static final int SLOT_OUTPUT = 1;
@@ -339,5 +339,20 @@ public class ChemicalInfuserBlockEntity extends BaseContainerBlockEntity
             return toFill;
         }
         @Override public int extract(int i, FluidResource res, int amt, TransactionContext tx) { return 0; }
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "input" -> { boolean h = !inputFluid.isEmpty(); inputFluid = FluidStack.EMPTY; yield h; }
+            default -> false;
+        };
+        if (had) {
+            setChanged();
+            if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return had;
     }
 }

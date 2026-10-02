@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:fluid_pipe",
+    "omnitech:iron_plate",
+    "omnitech:iron_rod"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:valve"
+  }
+}

@@ -44,7 +44,7 @@ import org.slf4j.Logger;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHeatReceiver, IColdReceiver, WorldlyContainer {
+public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHeatReceiver, IColdReceiver, WorldlyContainer, com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -405,5 +405,20 @@ public class FoundryBlockEntity extends BaseContainerBlockEntity implements IHea
         public int extract(int index, FluidResource resource, int amount, TransactionContext tx) {
             return 0; // Input-only; machine drains fluid internally during processing
         }
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "input_fluid" -> { boolean h = !inputFluid.isEmpty(); inputFluid = FluidStack.EMPTY; yield h; }
+            default -> false;
+        };
+        if (had) {
+            setChanged();
+            if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return had;
     }
 }

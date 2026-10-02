@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:iron_plate",
+    "K": "omnitech:control_circuit",
+    "C": "omnitech:copper_coil",
+    "R": "omnitech:iron_rod"
+  },
+  "pattern": [
+    "PKP",
+    "CRC",
+    "PPP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:floppy_drive"
+  }
+}

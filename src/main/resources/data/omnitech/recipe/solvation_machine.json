@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "omnitech:iron_plate",
+    "G": "minecraft:glass",
+    "C": "omnitech:wooden_cog",
+    "B": "minecraft:cauldron",
+    "R": "omnitech:wooden_reductor"
+  },
+  "pattern": [
+    "IGI",
+    "CBC",
+    "IRI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:solvation_machine"
+  }
+}

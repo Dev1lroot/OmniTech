@@ -16,26 +16,29 @@
       "x": 8,
       "y": 17,
       "w": 16,
-      "h": 52,
+      "h": 43,
       "source": "input_a"
     },
+    {"id": "input_a_fluid_flush", "type": "fluid_flush", "x": 8, "y": 62, "w": 16, "h": 7, "source": "input_a"},
     {
       "id": "input_b_fluid",
       "type": "fluid_tank",
       "x": 28,
       "y": 17,
       "w": 16,
-      "h": 52,
+      "h": 43,
       "source": "input_b"
     },
+    {"id": "input_b_fluid_flush", "type": "fluid_flush", "x": 28, "y": 62, "w": 16, "h": 7, "source": "input_b"},
     {
       "id": "output_fluid",
       "type": "fluid_tank",
       "x": 152,
       "y": 17,
       "w": 16,
-      "h": 52,
+      "h": 43,
       "source": "output"
-    }
+    },
+    {"id": "output_fluid_flush", "type": "fluid_flush", "x": 152, "y": 62, "w": 16, "h": 7, "source": "output"}
   ]
 }

@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Heater — burns solid fuel (coal, charcoal, etc.) to accumulate heat energy
- * measured in celsius.  Each tick it radiates heat to all directly adjacent
+ * measured in celsius.  Each tick it pushes heat into directly adjacent
  * blocks that implement {@link IHeatReceiver}.
  *
  * <p>Maximum stored heat depends on the fuel used — see {@link HeaterFuelRegistry} for tiers.

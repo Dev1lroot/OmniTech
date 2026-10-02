@@ -25,9 +25,10 @@
       "x": 153,
       "y": 17,
       "w": 16,
-      "h": 52,
+      "h": 43,
       "source": "output_fluid"
     },
+    {"id": "output_fluid_flush", "type": "fluid_flush", "x": 153, "y": 62, "w": 16, "h": 7, "source": "output_fluid"},
     {
       "id": "cook_progress",
       "type": "progressbar",

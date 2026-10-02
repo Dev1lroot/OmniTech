@@ -19,6 +19,7 @@
       "h": 52,
       "source": "input_fluid"
     },
+    {"id": "input_fluid_flush", "type": "fluid_flush", "x": 8, "y": 62, "w": 16, "h": 7, "source": "input_fluid"},
     {
       "id": "in_canister_slot",
       "type": "slot",
@@ -42,6 +43,7 @@
       "h": 52,
       "source": "output_fluid"
     },
+    {"id": "output_fluid_flush", "type": "fluid_flush", "x": 148, "y": 62, "w": 16, "h": 7, "source": "output_fluid"},
     {
       "id": "cook_progress",
       "type": "progressbar",

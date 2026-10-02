@@ -47,7 +47,7 @@ import java.util.Objects;
  * <p>Slots: {@link #SLOT_INPUT} (hoppers insert from the top and sides), {@link #SLOT_OUTPUT}
  * (hoppers extract from below).
  */
-public class PressBlockEntity extends BaseContainerBlockEntity implements IKineticReceiver, WorldlyContainer {
+public class PressBlockEntity extends BaseContainerBlockEntity implements IKineticReceiver, WorldlyContainer, com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
 
     public static final int SLOT_INPUT = 0;
     public static final int SLOT_OUTPUT = 1;
@@ -257,5 +257,20 @@ public class PressBlockEntity extends BaseContainerBlockEntity implements IKinet
         output.store("OutputFluid", FluidStack.OPTIONAL_CODEC, outputFluid);
         output.putFloat("KineticForce", kineticForce);
         output.putFloat("RequiredKineticForce", requiredKineticForce);
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "output" -> { boolean h = !outputFluid.isEmpty(); outputFluid = FluidStack.EMPTY; yield h; }
+            default -> false;
+        };
+        if (had) {
+            setChanged();
+            if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return had;
     }
 }

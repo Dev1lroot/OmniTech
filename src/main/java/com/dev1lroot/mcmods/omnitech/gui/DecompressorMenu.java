@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-public class DecompressorMenu extends AbstractContainerMenu {
+public class DecompressorMenu extends AbstractContainerMenu implements FlushableMenu {
 
     private final DecompressorBlockEntity blockEntity;
     private final ContainerData data;
@@ -107,5 +107,10 @@ public class DecompressorMenu extends AbstractContainerMenu {
                         blockEntity != null ? blockEntity.getLevel() : null,
                         blockEntity != null ? blockEntity.getBlockPos() : null),
                 player, OmniTechBlocks.DECOMPRESSOR.get());
+    }
+
+    @Override
+    public com.dev1lroot.mcmods.omnitech.io.@org.jspecify.annotations.Nullable FluidFlushable flushTarget(net.minecraft.world.entity.player.Player player) {
+        return blockEntity instanceof com.dev1lroot.mcmods.omnitech.io.FluidFlushable f ? f : null;
     }
 }

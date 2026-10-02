@@ -209,6 +209,9 @@ public class ElectricHeaterBlockEntity extends BaseContainerBlockEntity
         }
 
         be.setChanged();
+
+        // Direct contact with heat-consuming machines (no conductor needed)
+        com.dev1lroot.mcmods.omnitech.util.ThermalTransfer.pushToReceivers(level, pos, be);
     }
 
     // ── EU cost formula ───────────────────────────────────────────────────────

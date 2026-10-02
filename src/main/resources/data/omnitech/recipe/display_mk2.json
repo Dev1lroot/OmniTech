@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "omnitech:gold_wire",
+    "L": "minecraft:glowstone_dust",
+    "D": "omnitech:display",
+    "K": "omnitech:control_circuit"
+  },
+  "pattern": [
+    "GLG",
+    "LDL",
+    "GKG"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:display_mk2"
+  }
+}

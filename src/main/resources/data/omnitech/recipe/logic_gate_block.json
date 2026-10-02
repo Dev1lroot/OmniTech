@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "R": "minecraft:redstone",
+    "Q": "omnitech:npn_transistor",
+    "P": "omnitech:iron_plate"
+  },
+  "pattern": [
+    "RQR",
+    "PPP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:logic_gate_block"
+  }
+}

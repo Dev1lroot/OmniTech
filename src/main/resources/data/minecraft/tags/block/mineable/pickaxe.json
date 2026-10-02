@@ -247,6 +247,10 @@
     "omnitech:mars_gypsum",
     "omnitech:mars_hematite_concretion",
     "omnitech:europa_carbonate",
-    "omnitech:europa_evaporite"
+    "omnitech:europa_evaporite",
+    "omnitech:basic_machine_casing",
+    "omnitech:machine_casing",
+    "omnitech:pcb_fabricator",
+    "omnitech:soldering_station"
   ]
 }

@@ -22,7 +22,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import java.util.Comparator;
 import java.util.List;
 
-public class CokeOvenMenu extends AbstractContainerMenu {
+public class CokeOvenMenu extends AbstractContainerMenu implements FlushableMenu {
 
     private static final GuiLayout LAYOUT = GuiLayoutLoader.load("coke_oven");
 
@@ -178,5 +178,10 @@ public class CokeOvenMenu extends AbstractContainerMenu {
     private static class OutputOnlySlot extends Slot {
         OutputOnlySlot(Container c, int index, int x, int y) { super(c, index, x, y); }
         @Override public boolean mayPlace(ItemStack stack) { return false; }
+    }
+
+    @Override
+    public com.dev1lroot.mcmods.omnitech.io.@org.jspecify.annotations.Nullable FluidFlushable flushTarget(net.minecraft.world.entity.player.Player player) {
+        return entity instanceof com.dev1lroot.mcmods.omnitech.io.FluidFlushable f ? f : null;
     }
 }

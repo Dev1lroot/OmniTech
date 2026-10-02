@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:graphite_dust",
+    "minecraft:clay_ball",
+    "omnitech:copper_wire",
+    "omnitech:copper_wire"
+  ],
+  "result": {
+    "count": 8,
+    "id": "omnitech:resistor"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:bricks",
+    "C": "minecraft:cauldron",
+    "F": "minecraft:furnace"
+  },
+  "pattern": [
+    "B B",
+    "BCB",
+    "BFB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:smelter"
+  }
+}

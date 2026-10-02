@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "up": "omnitech:block/machine_top_inset",
+    "down": "omnitech:block/machine_slab",
+    "north": "omnitech:block/advanced_machine_fluid_socket",
+    "south": "omnitech:block/electric_machine_side",
+    "east": "omnitech:block/electric_machine_side",
+    "west": "omnitech:block/electric_machine_side",
+    "particle": "omnitech:block/electric_machine_side"
+  }
+}

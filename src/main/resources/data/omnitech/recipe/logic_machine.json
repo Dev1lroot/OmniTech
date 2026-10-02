@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:steel_plate",
+    "K": "omnitech:control_circuit",
+    "S": "omnitech:stabilizer_circuit",
+    "M": "omnitech:machine_casing",
+    "W": "omnitech:copper_wire"
+  },
+  "pattern": [
+    "PKP",
+    "SMS",
+    "PWP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:logic_machine"
+  }
+}

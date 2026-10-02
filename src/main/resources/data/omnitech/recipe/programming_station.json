@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:iron_plate",
+    "D": "omnitech:display",
+    "K": "omnitech:control_circuit",
+    "B": "omnitech:basic_machine_casing",
+    "S": "omnitech:stabilizer_circuit"
+  },
+  "pattern": [
+    "PDP",
+    "KBK",
+    "PSP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:programming_station"
+  }
+}

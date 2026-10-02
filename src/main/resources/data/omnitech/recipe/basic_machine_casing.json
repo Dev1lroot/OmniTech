@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:iron_plate",
+    "R": "omnitech:iron_rod"
+  },
+  "pattern": [
+    "PRP",
+    "R R",
+    "PRP"
+  ],
+  "result": {
+    "count": 2,
+    "id": "omnitech:basic_machine_casing"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "minecraft:paper",
+    "B": "minecraft:book",
+    "T": "minecraft:crafting_table",
+    "W": "#minecraft:planks"
+  },
+  "pattern": [
+    "PBP",
+    "WTW",
+    "W W"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:research_table"
+  }
+}

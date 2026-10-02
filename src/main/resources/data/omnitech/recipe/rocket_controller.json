@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "T": "omnitech:titanium_plate",
+    "K": "omnitech:control_circuit",
+    "M": "omnitech:machine_casing",
+    "D": "omnitech:display"
+  },
+  "pattern": [
+    "TKT",
+    "KMK",
+    "TDT"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:rocket_controller"
+  }
+}

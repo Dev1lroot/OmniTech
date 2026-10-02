@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "R": "omnitech:iron_rod",
+    "G": "minecraft:glass",
+    "B": "minecraft:bricks",
+    "F": "minecraft:furnace"
+  },
+  "pattern": [
+    "RGR",
+    "BFB",
+    "BBB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:glass_blowing_station"
+  }
+}

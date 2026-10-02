@@ -1,0 +1,16 @@
+{
+  "result": "omnitech:power_circuit",
+  "terminals": ["V+", "GND", "IN", "OUT"],
+  "duration": 0.1,
+  "step": 0.0002,
+  "sources": [
+    {"plus": "V+", "minus": "GND", "dc": 12},
+    {"plus": "IN", "minus": "GND", "steps": [[0, 0], [0.05, 5]]}
+  ],
+  "loads": [{"a": "V+", "b": "OUT", "ohms": 470}],
+  "probe": {"plus": "OUT", "minus": "GND"},
+  "checks": [
+    {"type": "mean", "from": 0.01, "to": 0.045, "min": 11},
+    {"type": "mean", "from": 0.07, "to": 0.1, "max": 0.5}
+  ]
+}

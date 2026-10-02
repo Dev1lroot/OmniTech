@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "omnitech:iron_plate",
+    "P": "minecraft:piston",
+    "F": "omnitech:fluid_pipe",
+    "C": "omnitech:wooden_cog",
+    "R": "omnitech:wooden_reductor"
+  },
+  "pattern": [
+    "IPI",
+    "FCF",
+    "IRI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:pump"
+  }
+}

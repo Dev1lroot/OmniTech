@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:iron_plate",
+    "W": "omnitech:electric_wire",
+    "C": "omnitech:copper_coil",
+    "K": "omnitech:power_circuit",
+    "B": "omnitech:basic_machine_casing"
+  },
+  "pattern": [
+    "PWP",
+    "CKC",
+    "PBP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:power_relay"
+  }
+}

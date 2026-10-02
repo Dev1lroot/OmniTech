@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-public class BoilerMenu extends AbstractContainerMenu {
+public class BoilerMenu extends AbstractContainerMenu implements FlushableMenu {
 
     private final BoilerBlockEntity blockEntity;
     private final Container container;
@@ -100,5 +100,10 @@ public class BoilerMenu extends AbstractContainerMenu {
         return blockEntity != null && stillValid(
                 ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos()),
                 player, OmniTechBlocks.BOILER.get());
+    }
+
+    @Override
+    public com.dev1lroot.mcmods.omnitech.io.@org.jspecify.annotations.Nullable FluidFlushable flushTarget(net.minecraft.world.entity.player.Player player) {
+        return blockEntity instanceof com.dev1lroot.mcmods.omnitech.io.FluidFlushable f ? f : null;
     }
 }

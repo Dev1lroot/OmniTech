@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": "omnitech:steel_plate",
+    "G": "minecraft:glass",
+    "F": "omnitech:fluid_pipe",
+    "M": "omnitech:machine_casing",
+    "H": "omnitech:heater"
+  },
+  "pattern": [
+    "SGS",
+    "FMF",
+    "SHS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:chemical_reactor"
+  }
+}

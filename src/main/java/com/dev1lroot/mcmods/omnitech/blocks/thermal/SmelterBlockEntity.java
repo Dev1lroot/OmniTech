@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class SmelterBlockEntity extends BaseContainerBlockEntity implements IHeatReceiver, IColdReceiver {
+public class SmelterBlockEntity extends BaseContainerBlockEntity implements IHeatReceiver, IColdReceiver, com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -377,5 +377,20 @@ public class SmelterBlockEntity extends BaseContainerBlockEntity implements IHea
             if (outputFluid.getAmount() <= 0) outputFluid = FluidStack.EMPTY;
             return toExtract;
         }
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "output_fluid" -> { boolean h = !outputFluid.isEmpty(); outputFluid = FluidStack.EMPTY; yield h; }
+            default -> false;
+        };
+        if (had) {
+            setChanged();
+            if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return had;
     }
 }

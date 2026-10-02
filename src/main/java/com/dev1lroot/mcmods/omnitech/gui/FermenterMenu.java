@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import java.util.Comparator;
 import java.util.List;
 
-public class FermenterMenu extends AbstractContainerMenu {
+public class FermenterMenu extends AbstractContainerMenu implements FlushableMenu {
 
     private final Container container;
     private final ContainerData data;
@@ -121,5 +121,10 @@ public class FermenterMenu extends AbstractContainerMenu {
                         container instanceof BlockEntity be ? be.getLevel() : null,
                         container instanceof BlockEntity be ? be.getBlockPos() : null),
                 player, OmniTechBlocks.FERMENTER.get());
+    }
+
+    @Override
+    public com.dev1lroot.mcmods.omnitech.io.@org.jspecify.annotations.Nullable FluidFlushable flushTarget(net.minecraft.world.entity.player.Player player) {
+        return container instanceof com.dev1lroot.mcmods.omnitech.io.FluidFlushable f ? f : null;
     }
 }

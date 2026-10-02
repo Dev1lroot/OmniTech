@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "omnitech:aluminium_plate",
+    "W": "omnitech:copper_wire",
+    "P": "minecraft:paper"
+  },
+  "pattern": [
+    "AWA",
+    "PPP",
+    "AWA"
+  ],
+  "result": {
+    "count": 8,
+    "id": "omnitech:capacitor"
+  }
+}

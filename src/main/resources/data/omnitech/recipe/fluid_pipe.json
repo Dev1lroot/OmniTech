@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "omnitech:copper_plate"
+  },
+  "pattern": [
+    "CCC",
+    "   ",
+    "CCC"
+  ],
+  "result": {
+    "count": 8,
+    "id": "omnitech:fluid_pipe"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "W": "omnitech:copper_wire",
+    "G": "minecraft:glass_pane",
+    "J": "omnitech:pn_junction_wafer"
+  },
+  "pattern": [
+    " W ",
+    "GJG",
+    " W "
+  ],
+  "result": {
+    "count": 8,
+    "id": "omnitech:diode"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:steel_plate",
+    "K": "omnitech:power_circuit",
+    "C": "omnitech:copper_coil",
+    "R": "omnitech:steel_rod",
+    "B": "omnitech:basic_machine_casing"
+  },
+  "pattern": [
+    "PKP",
+    "CRC",
+    "PBP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:electric_engine"
+  }
+}

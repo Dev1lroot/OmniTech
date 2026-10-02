@@ -37,7 +37,8 @@ public class FermenterScreen extends AbstractContainerScreen<FermenterMenu> {
     private static final GuiDataContext NO_DATA = new GuiDataContext();
 
     /** Solution column, in GUI-relative coordinates. */
-    private static final int TANK_X = 62, TANK_Y = 17, TANK_W = 52, TANK_H = 52;
+    // 9 px shorter than the old 52 to leave room for the flush button underneath
+    private static final int TANK_X = 62, TANK_Y = 17, TANK_W = 52, TANK_H = 43;
 
     public FermenterScreen(FermenterMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, LAYOUT.width, LAYOUT.height);
@@ -46,6 +47,7 @@ public class FermenterScreen extends AbstractContainerScreen<FermenterMenu> {
     @Override
     protected void init() {
         super.init();
+        addRenderableWidget(FlushButton.at(leftPos + TANK_X, topPos + TANK_Y + TANK_H + 2, TANK_W, menu.containerId, "solution"));
         this.titleLabelX     = (LAYOUT.width - this.font.width(this.title)) / 2;
         this.inventoryLabelY = LAYOUT.inventory.label_y;
     }

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": "omnitech:steel_plate",
+    "P": "minecraft:piston",
+    "F": "omnitech:fluid_pipe",
+    "T": "omnitech:fluid_tank",
+    "C": "omnitech:steel_cog"
+  },
+  "pattern": [
+    "SPS",
+    "FTF",
+    "SCS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:decompressor"
+  }
+}

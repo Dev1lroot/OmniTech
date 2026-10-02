@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "omnitech:item/resistor/resistor_band_4of6",
+    "layer1": "omnitech:item/resistor/resistor_band_5of6",
+    "layer2": "omnitech:item/resistor/resistor_band_6of6"
+  }
+}

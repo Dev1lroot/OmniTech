@@ -49,7 +49,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  *
  * <p>Faces: front = output, left (seen from the front) = input A, right = input B, back = closed.
  */
-public class ChemicalMixerBlockEntity extends BlockEntity implements MenuProvider {
+public class ChemicalMixerBlockEntity extends BlockEntity implements MenuProvider, com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
 
     public static final int INPUT_CAPACITY  = 4_000;
     public static final int OUTPUT_CAPACITY = 8_000;
@@ -267,5 +267,22 @@ public class ChemicalMixerBlockEntity extends BlockEntity implements MenuProvide
         output.store("Output", FluidStack.OPTIONAL_CODEC, tanks[TANK_OUT]);
         output.putInt("RatioA", ratioA);
         output.putInt("RatioB", ratioB);
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "input_a" -> { boolean h = !tanks[TANK_A].isEmpty(); tanks[TANK_A] = FluidStack.EMPTY; yield h; }
+            case "input_b" -> { boolean h = !tanks[TANK_B].isEmpty(); tanks[TANK_B] = FluidStack.EMPTY; yield h; }
+            case "output" -> { boolean h = !tanks[TANK_OUT].isEmpty(); tanks[TANK_OUT] = FluidStack.EMPTY; yield h; }
+            default -> false;
+        };
+        if (had) {
+            setChanged();
+            if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return had;
     }
 }

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "omnitech:iron_plate",
+    "G": "minecraft:glass_pane",
+    "L": "minecraft:glowstone_dust",
+    "K": "omnitech:control_circuit",
+    "S": "omnitech:stabilizer_circuit"
+  },
+  "pattern": [
+    "PGP",
+    "LKL",
+    "PSP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:display"
+  }
+}

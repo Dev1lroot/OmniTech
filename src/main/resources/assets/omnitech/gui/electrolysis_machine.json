@@ -16,9 +16,10 @@
       "x": 8,
       "y": 17,
       "w": 16,
-      "h": 55,
+      "h": 46,
       "source": "input"
     },
+    {"id": "input_tank_flush", "type": "fluid_flush", "x": 8, "y": 65, "w": 16, "h": 7, "source": "input"},
     {
       "id": "anode_slot",
       "type": "slot",
@@ -47,27 +48,30 @@
       "x": 133,
       "y": 36,
       "w": 16,
-      "h": 36,
+      "h": 27,
       "source": "anode_output"
     },
+    {"id": "anode_output_tank_flush", "type": "fluid_flush", "x": 133, "y": 65, "w": 16, "h": 7, "source": "anode_output"},
     {
       "id": "cathode_output_tank",
       "type": "fluid_tank",
       "x": 61,
       "y": 36,
       "w": 16,
-      "h": 36,
+      "h": 27,
       "source": "cathode_output"
     },
+    {"id": "cathode_output_tank_flush", "type": "fluid_flush", "x": 61, "y": 65, "w": 16, "h": 7, "source": "cathode_output"},
     {
       "id": "solution_output_tank",
       "type": "fluid_tank",
       "x": 97,
       "y": 36,
       "w": 16,
-      "h": 36,
+      "h": 27,
       "source": "solution_output"
     },
+    {"id": "solution_output_tank_flush", "type": "fluid_flush", "x": 97, "y": 65, "w": 16, "h": 7, "source": "solution_output"},
     {
       "id": "energy_readout",
       "type": "energy_label",

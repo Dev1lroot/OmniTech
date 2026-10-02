@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "R": "omnitech:graphite_rod",
+    "K": "omnitech:stabilizer_circuit",
+    "G": "minecraft:glass",
+    "B": "omnitech:basic_machine_casing",
+    "P": "omnitech:iron_plate",
+    "F": "omnitech:fluid_pipe"
+  },
+  "pattern": [
+    "RKR",
+    "GBG",
+    "PFP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:electrolysis_machine"
+  }
+}

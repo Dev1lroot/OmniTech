@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "omnitech:lead_plate",
+    "G": "minecraft:glass",
+    "R": "omnitech:reactor_block"
+  },
+  "pattern": [
+    "LGL",
+    "GRG",
+    "LGL"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:reactor_cell"
+  }
+}

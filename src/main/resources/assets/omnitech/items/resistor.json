@@ -1,0 +1,51 @@
+{
+  "model": {
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "omnitech:item/resistor_body",
+        "tints": [
+          {
+            "type": "minecraft:constant",
+            "value": 16777215
+          },
+          {
+            "type": "omnitech:resistor_tint",
+            "layer": 0
+          },
+          {
+            "type": "omnitech:resistor_tint",
+            "layer": 1
+          },
+          {
+            "type": "omnitech:resistor_tint",
+            "layer": 2
+          },
+          {
+            "type": "omnitech:resistor_tint",
+            "layer": 3
+          }
+        ]
+      },
+      {
+        "type": "minecraft:model",
+        "model": "omnitech:item/resistor_bands",
+        "tints": [
+          {
+            "type": "omnitech:resistor_tint",
+            "layer": 4
+          },
+          {
+            "type": "omnitech:resistor_tint",
+            "layer": 5
+          },
+          {
+            "type": "omnitech:resistor_tint",
+            "layer": 6
+          }
+        ]
+      }
+    ]
+  }
+}

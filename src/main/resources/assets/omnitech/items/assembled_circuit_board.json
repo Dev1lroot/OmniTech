@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "omnitech:item/assembled_circuit_board"
+  }
+}

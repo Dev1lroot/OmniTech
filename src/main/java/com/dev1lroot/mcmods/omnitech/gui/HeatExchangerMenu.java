@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-public class HeatExchangerMenu extends AbstractContainerMenu {
+public class HeatExchangerMenu extends AbstractContainerMenu implements FlushableMenu {
 
     private final HeatExchangerBlockEntity blockEntity;
     private final ContainerData data;
@@ -100,5 +100,10 @@ public class HeatExchangerMenu extends AbstractContainerMenu {
                         blockEntity != null ? blockEntity.getLevel() : null,
                         blockEntity != null ? blockEntity.getBlockPos() : null),
                 player, OmniTechBlocks.HEAT_EXCHANGER.get());
+    }
+
+    @Override
+    public com.dev1lroot.mcmods.omnitech.io.@org.jspecify.annotations.Nullable FluidFlushable flushTarget(net.minecraft.world.entity.player.Player player) {
+        return blockEntity instanceof com.dev1lroot.mcmods.omnitech.io.FluidFlushable f ? f : null;
     }
 }

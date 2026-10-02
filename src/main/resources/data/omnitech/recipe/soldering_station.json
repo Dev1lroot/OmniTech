@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "W": "omnitech:tin_wire",
+    "R": "omnitech:iron_rod",
+    "C": "omnitech:copper_coil",
+    "P": "omnitech:iron_plate"
+  },
+  "pattern": [
+    "WRC",
+    "PPP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:soldering_station"
+  }
+}

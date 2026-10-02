@@ -131,7 +131,9 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory inv, Player player) {
+    public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inv, Player player) {
+        // The GUI is laid out from the formed structure; nothing to show without one
+        if (structure == null) return null;
         return new ReactorMenu(containerId, inv, this);
     }
 
@@ -292,6 +294,8 @@ public class ReactorBlockEntity extends BlockEntity implements MenuProvider {
                 be.heatTick = 0;
                 if (++be.slowCoolTick >= 10) be.slowCoolTick = 0;
                 be.tickTemperature(level);
+                // a meltdown inside tickTemperature invalidates the structure
+                if (be.structure == null) return;
             }
 
             if (++be.radTick >= RAD_INTERVAL) {

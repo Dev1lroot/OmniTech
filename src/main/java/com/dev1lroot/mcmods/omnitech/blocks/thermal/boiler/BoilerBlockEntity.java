@@ -65,7 +65,7 @@ import java.util.Map;
  * into) is data-driven, see {@link BoilingRecipe}; solids land in the single output slot.
  */
 public class BoilerBlockEntity extends BaseContainerBlockEntity
-        implements IHeatReceiver, IColdReceiver, WorldlyContainer {
+        implements IHeatReceiver, IColdReceiver, WorldlyContainer, com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -480,5 +480,20 @@ public class BoilerBlockEntity extends BaseContainerBlockEntity
             if (fluidTank.getAmount() <= 0) fluidTank = FluidStack.EMPTY;
             return toExt;
         }
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "fluid" -> { boolean h = !fluidTank.isEmpty(); fluidTank = FluidStack.EMPTY; yield h; }
+            default -> false;
+        };
+        if (had) {
+            setChanged();
+            if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return had;
     }
 }

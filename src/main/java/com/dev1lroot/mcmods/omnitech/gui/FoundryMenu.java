@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import java.util.Comparator;
 import java.util.List;
 
-public class FoundryMenu extends AbstractContainerMenu {
+public class FoundryMenu extends AbstractContainerMenu implements FlushableMenu {
 
     private final Container container;
     private final ContainerData data;
@@ -145,5 +145,10 @@ public class FoundryMenu extends AbstractContainerMenu {
         /** Allow players to insert any item into the template slot. */
         @Override
         public boolean mayPlace(ItemStack stack) { return true; }
+    }
+
+    @Override
+    public com.dev1lroot.mcmods.omnitech.io.@org.jspecify.annotations.Nullable FluidFlushable flushTarget(net.minecraft.world.entity.player.Player player) {
+        return container instanceof com.dev1lroot.mcmods.omnitech.io.FluidFlushable f ? f : null;
     }
 }

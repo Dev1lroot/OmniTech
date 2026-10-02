@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "omnitech:iron_plate",
+    "H": "minecraft:hopper",
+    "B": "minecraft:bucket",
+    "F": "omnitech:fluid_pipe"
+  },
+  "pattern": [
+    "IHI",
+    "IBI",
+    "IFI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:fluid_collector"
+  }
+}

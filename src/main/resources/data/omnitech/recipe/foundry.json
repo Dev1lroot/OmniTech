@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "omnitech:iron_plate",
+    "C": "minecraft:cauldron",
+    "S": "minecraft:smooth_stone"
+  },
+  "pattern": [
+    "I I",
+    "ICI",
+    "SSS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:foundry"
+  }
+}

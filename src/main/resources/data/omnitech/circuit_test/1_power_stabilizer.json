@@ -1,0 +1,49 @@
+{
+  "result": "omnitech:stabilizer_circuit",
+  "terminals": [
+    "AC1",
+    "AC2",
+    "OUT",
+    "GND"
+  ],
+  "duration": 0.2,
+  "step": 0.0001,
+  "sources": [
+    {
+      "plus": "AC1",
+      "minus": "AC2",
+      "sine": 12,
+      "frequency": 50
+    }
+  ],
+  "loads": [
+    {
+      "a": "OUT",
+      "b": "GND",
+      "ohms": 220
+    }
+  ],
+  "probe": {
+    "plus": "OUT",
+    "minus": "GND"
+  },
+  "checks": [
+    {
+      "type": "mean",
+      "from": 0.1,
+      "min": 4.5,
+      "max": 5.8
+    },
+    {
+      "type": "ripple",
+      "from": 0.1,
+      "max": 0.03
+    },
+    {
+      "type": "balance",
+      "source": 0,
+      "from": 0.1,
+      "max": 0.25
+    }
+  ]
+}

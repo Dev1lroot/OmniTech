@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:glass_pane",
+    "W": "omnitech:copper_wire",
+    "T": "minecraft:crafting_table",
+    "P": "omnitech:iron_plate",
+    "I": "omnitech:iron_rod"
+  },
+  "pattern": [
+    "GGG",
+    "WTW",
+    "PIP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:pcb_workbench"
+  }
+}

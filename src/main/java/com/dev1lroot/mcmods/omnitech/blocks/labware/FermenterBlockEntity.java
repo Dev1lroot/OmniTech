@@ -89,7 +89,7 @@ import java.util.Map;
  * 0 – total mB, 1 – capacity, 2 – number of reactions currently running, 3 – mB of live microbes,
  * 4 – temperature (°C), 5 – pressure (kPa).
  */
-public class FermenterBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
+public class FermenterBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
 
     public static final int SLOT_INPUT  = 0;
     public static final int SLOT_OUTPUT = 1;
@@ -526,5 +526,20 @@ public class FermenterBlockEntity extends BaseContainerBlockEntity implements Wo
         output.store("Solution", Solution.CODEC, solution);
         output.putInt("Temperature", temperature);
         output.putInt("Pressure", pressure);
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "solution" -> { boolean h = !solution.isEmpty(); solution = Solution.EMPTY; yield h; }
+            default -> false;
+        };
+        if (had) {
+            setChanged();
+            if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return had;
     }
 }

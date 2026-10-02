@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:silicon_boule",
+    "omnitech:steel_wire"
+  ],
+  "result": {
+    "count": 8,
+    "id": "omnitech:silicon_wafer"
+  }
+}

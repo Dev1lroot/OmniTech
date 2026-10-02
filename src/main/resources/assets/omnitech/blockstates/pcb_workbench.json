@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "omnitech:block/pcb_workbench"
+    },
+    "facing=south": {
+      "model": "omnitech:block/pcb_workbench",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "omnitech:block/pcb_workbench",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "omnitech:block/pcb_workbench",
+      "y": 90
+    }
+  }
+}

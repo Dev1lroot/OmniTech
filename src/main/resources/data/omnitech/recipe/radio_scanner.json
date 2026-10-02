@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "omnitech:iron_plate",
+    "R": "omnitech:iron_rod",
+    "K": "omnitech:control_circuit",
+    "D": "omnitech:display",
+    "P": "omnitech:iron_plate",
+    "S": "omnitech:stabilizer_circuit"
+  },
+  "pattern": [
+    "IRI",
+    "KDK",
+    "PSP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:radio_scanner"
+  }
+}

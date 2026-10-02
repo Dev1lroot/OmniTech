@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "omnitech:fluid_pipe",
+    "K": "omnitech:control_circuit",
+    "P": "omnitech:lead_plate",
+    "R": "omnitech:reactor_block"
+  },
+  "pattern": [
+    "FKF",
+    "PRP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:reactor_port"
+  }
+}

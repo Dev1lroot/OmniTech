@@ -1,0 +1,10 @@
+{
+  "minTemperature": 1000,
+  "ingredients": [
+    "omnitech:silicon_wafer",
+    "omnitech:phosphorus_mote"
+  ],
+  "output": [
+    "omnitech:n_type_wafer"
+  ]
+}

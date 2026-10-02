@@ -49,7 +49,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * per {@link #DECAY_INTERVAL} ticks.  Processing is gated: the machine can only
  * condition a fluid whose temperature differs from machineTemp by at least 1 °C.
  */
-public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvider, IThermalNode {
+public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvider, IThermalNode, com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
 
     public static final int INPUT_TANK_CAPACITY  = 8_000;
     public static final int OUTPUT_TANK_CAPACITY = 8_000;
@@ -181,6 +181,9 @@ public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvide
         }
 
         if (changed) { be.setChanged(); if (!level.isClientSide()) level.sendBlockUpdated(pos, state, state, 3); }
+
+        // Direct contact with heat-consuming machines (no conductor needed)
+        com.dev1lroot.mcmods.omnitech.util.ThermalTransfer.pushToReceivers(level, pos, be);
     }
 
     // ── Processing ────────────────────────────────────────────────────────────
@@ -303,5 +306,21 @@ public class HeatExchangerBlockEntity extends BlockEntity implements MenuProvide
         output.putInt("MachineTemp",  machineTemp);
         output.putInt("ProcessTimer", processTimer);
         output.putInt("DecayTimer",   decayTimer);
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "input" -> { boolean h = !inputFluid.isEmpty(); inputFluid = FluidStack.EMPTY; yield h; }
+            case "output" -> { boolean h = !outputFluid.isEmpty(); outputFluid = FluidStack.EMPTY; yield h; }
+            default -> false;
+        };
+        if (had) {
+            setChanged();
+            if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return had;
     }
 }

@@ -218,6 +218,31 @@ public class OmniTechDataComponents {
                             .build());
 
     /** Research id stored on a Blueprint item (e.g. "d_flip_flop"). Network-synced for tooltip display. */
+    /** Colour bands painted on a resistor ({@link com.dev1lroot.mcmods.omnitech.pcb.ResistorCode.Band} ordinals). */
+    public static final Supplier<DataComponentType<java.util.List<Integer>>> RESISTOR_BANDS =
+            REGISTRY.register("resistor_bands", () ->
+                    DataComponentType.<java.util.List<Integer>>builder()
+                            .persistent(Codec.INT.listOf(0, com.dev1lroot.mcmods.omnitech.pcb.ResistorCode.MAX_BANDS))
+                            .networkSynchronized(ByteBufCodecs.VAR_INT.apply(
+                                    ByteBufCodecs.list(com.dev1lroot.mcmods.omnitech.pcb.ResistorCode.MAX_BANDS)))
+                            .build());
+
+    /** Board drawing carried by a PCB blueprint, an etched board and a finished circuit. */
+    public static final Supplier<DataComponentType<com.dev1lroot.mcmods.omnitech.pcb.PcbDesign>> PCB_DESIGN =
+            REGISTRY.register("pcb_design", () ->
+                    DataComponentType.<com.dev1lroot.mcmods.omnitech.pcb.PcbDesign>builder()
+                            .persistent(com.dev1lroot.mcmods.omnitech.pcb.mc.PcbCodecs.DESIGN)
+                            .networkSynchronized(com.dev1lroot.mcmods.omnitech.pcb.mc.PcbCodecs.DESIGN_STREAM)
+                            .build());
+
+    /** Components soldered onto a finished circuit board. */
+    public static final Supplier<DataComponentType<java.util.List<com.dev1lroot.mcmods.omnitech.pcb.PlacedPart>>> PCB_PARTS =
+            REGISTRY.register("pcb_parts", () ->
+                    DataComponentType.<java.util.List<com.dev1lroot.mcmods.omnitech.pcb.PlacedPart>>builder()
+                            .persistent(com.dev1lroot.mcmods.omnitech.pcb.mc.PcbCodecs.PARTS)
+                            .networkSynchronized(com.dev1lroot.mcmods.omnitech.pcb.mc.PcbCodecs.PARTS_STREAM)
+                            .build());
+
     public static final Supplier<DataComponentType<String>> RESEARCH_NAME =
             REGISTRY.register("research_name", () ->
                     DataComponentType.<String>builder()

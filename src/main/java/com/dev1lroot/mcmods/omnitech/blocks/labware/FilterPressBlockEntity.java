@@ -58,7 +58,7 @@ import org.jspecify.annotations.Nullable;
  * hopper on any side) to pull out.
  */
 public class FilterPressBlockEntity extends BaseContainerBlockEntity
-        implements IKineticReceiver, WorldlyContainer {
+        implements IKineticReceiver, WorldlyContainer, com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
 
     public static final int SLOT_OUTPUT_ITEM = 0;
     public static final int SLOT_COUNT = 1;
@@ -448,5 +448,21 @@ public class FilterPressBlockEntity extends BaseContainerBlockEntity
         output.putFloat("KineticForce", kineticForce);
         output.putFloat("RequiredKineticForce", requiredKineticForce);
         output.store("DustBuffer", Solution.CODEC, dustBuffer);
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "input" -> { boolean h = !inputFluid.isEmpty(); inputFluid = FluidStack.EMPTY; yield h; }
+            case "output" -> { boolean h = !outputFluid.isEmpty(); outputFluid = FluidStack.EMPTY; yield h; }
+            default -> false;
+        };
+        if (had) {
+            setChanged();
+            if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return had;
     }
 }

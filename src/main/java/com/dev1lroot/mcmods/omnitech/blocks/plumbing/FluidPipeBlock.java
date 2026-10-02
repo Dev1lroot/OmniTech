@@ -8,6 +8,7 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlockEntities;
 import com.dev1lroot.mcmods.omnitech.io.IFluidContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -188,8 +189,54 @@ public class FluidPipeBlock extends BaseEntityBlock implements IFluidContainer, 
         return state;
     }
 
+    /** Pipes visited at most per flush, so a huge network can't stall the tick. */
+    private static final int MAX_FLUSH = 4096;
+
+    /**
+     * Empties every pipe connected to {@code start} (following the pipes' own
+     * connection states, so differently dyed lines stay separate). The fluid is destroyed.
+     *
+     * @return {pipes visited, mB removed}
+     */
+    static int[] flushNetwork(Level level, BlockPos start) {
+        java.util.Set<BlockPos> seen = new java.util.HashSet<>();
+        java.util.ArrayDeque<BlockPos> queue = new java.util.ArrayDeque<>();
+        seen.add(start);
+        queue.add(start);
+        int removed = 0;
+        while (!queue.isEmpty() && seen.size() <= MAX_FLUSH) {
+            BlockPos p = queue.poll();
+            BlockState st = level.getBlockState(p);
+            if (!(st.getBlock() instanceof FluidPipeBlock)) continue;
+            if (level.getBlockEntity(p) instanceof FluidPipeBlockEntity pipe && !pipe.getFluid().isEmpty()) {
+                removed += pipe.getFluid().getAmount();
+                pipe.setFluid(FluidStack.EMPTY);
+                pipe.setChanged();
+                level.sendBlockUpdated(p, st, st, 3);
+            }
+            for (Direction dir : Direction.values()) {
+                if (!st.getValue(propertyFor(dir))) continue;
+                BlockPos n = p.relative(dir);
+                if (level.getBlockState(n).getBlock() instanceof FluidPipeBlock && seen.add(n)) queue.add(n);
+            }
+        }
+        return new int[]{seen.size(), removed};
+    }
+
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        // Shift + empty hand: drain the whole connected pipe line
+        if (player.isShiftKeyDown() && player.getMainHandItem().isEmpty() && player.getOffhandItem().isEmpty()) {
+            if (level.isClientSide()) return InteractionResult.SUCCESS;
+            int[] result = flushNetwork(level, pos);
+            player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable(
+                    "message.omnitech.pipe_flushed", result[1], result[0]));
+            if (result[1] > 0) {
+                level.playSound(null, pos, net.minecraft.sounds.SoundEvents.BUCKET_EMPTY,
+                        net.minecraft.sounds.SoundSource.BLOCKS, 0.6f, 0.8f);
+            }
+            return InteractionResult.CONSUME;
+        }
         for (InteractionHand hand : InteractionHand.values()) {
             ItemStack itemStack = player.getItemInHand(hand);
 

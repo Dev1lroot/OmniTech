@@ -49,7 +49,7 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import java.util.Optional;
 
-public class CokeOvenEntity extends Entity implements MenuProvider {
+public class CokeOvenEntity extends Entity implements MenuProvider, com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
 
     // ── Synced data ───────────────────────────────────────────────────────────
 
@@ -491,5 +491,16 @@ public class CokeOvenEntity extends Entity implements MenuProvider {
         input.read("item_output", ItemStack.CODEC).ifPresent(s -> inventory.setItem(SLOT_OUTPUT, s));
         getEntityData().set(PROGRESS,     processTimer);
         getEntityData().set(PROGRESS_MAX, processTotalTime > 0 ? processTotalTime : 100);
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "creosote" -> { boolean h = !creosoteFluid.isEmpty(); creosoteFluid = FluidStack.EMPTY; yield h; }
+            default -> false;
+        };
+        return had;
     }
 }

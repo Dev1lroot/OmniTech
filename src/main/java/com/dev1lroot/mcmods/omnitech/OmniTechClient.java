@@ -187,6 +187,9 @@ public class OmniTechClient
         event.register(
                 net.minecraft.resources.Identifier.fromNamespaceAndPath(OmniTech.MODID, "mixture_dust_tint"),
                 MixtureDustTintSource.MAP_CODEC);
+        event.register(
+                net.minecraft.resources.Identifier.fromNamespaceAndPath(OmniTech.MODID, "resistor_tint"),
+                com.dev1lroot.mcmods.omnitech.client.ResistorTintSource.MAP_CODEC);
     }
 
     /**
@@ -574,6 +577,28 @@ public class OmniTechClient
                 net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
         boolean shift = Minecraft.getInstance().hasShiftDown();
         boolean shiftGatedContent = false;
+
+        // Circuit boards: the drawing (and soldered parts) the stack carries.
+        var pcb = stack.get(OmniTechDataComponents.PCB_DESIGN.get());
+        if (pcb != null) {
+            if (!pcb.name().isEmpty()) {
+                event.getToolTip().add(Component.literal("\"" + pcb.name() + "\"").withStyle(ChatFormatting.AQUA));
+            }
+            event.getToolTip().add(Component.translatable("tooltip.omnitech.pcb.board",
+                    pcb.width(), pcb.height(), pcb.padCount()).withStyle(ChatFormatting.GRAY));
+            var parts = stack.get(OmniTechDataComponents.PCB_PARTS.get());
+            if (parts != null) {
+                boolean reference = stack.is(OmniTechItems.PCB_BLUEPRINT.get())
+                        || stack.is(OmniTechItems.PRINTED_CIRCUIT_BOARD.get());
+                event.getToolTip().add(Component.translatable(reference
+                        ? "tooltip.omnitech.pcb.reference" : "tooltip.omnitech.pcb.parts", parts.size())
+                        .withStyle(reference ? ChatFormatting.GREEN : ChatFormatting.GRAY));
+            }
+            if (!pcb.labels().isEmpty()) {
+                event.getToolTip().add(Component.translatable("tooltip.omnitech.pcb.terminals",
+                        String.join(", ", new java.util.TreeSet<>(pcb.labels().values()))).withStyle(ChatFormatting.DARK_GRAY));
+            }
+        }
 
         // Electrical specs (production / consumption / capacity) for electric machines.
         if (id != null && id.getNamespace().equals(OmniTech.MODID)) {

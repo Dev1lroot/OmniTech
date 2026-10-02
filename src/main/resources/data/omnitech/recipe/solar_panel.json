@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:glass_pane",
+    "J": "omnitech:pn_junction_wafer",
+    "P": "omnitech:iron_plate",
+    "K": "omnitech:stabilizer_circuit"
+  },
+  "pattern": [
+    "GGG",
+    "JJJ",
+    "PKP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:solar_panel"
+  }
+}

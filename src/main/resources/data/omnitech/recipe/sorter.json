@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "omnitech:iron_plate",
+    "H": "minecraft:hopper",
+    "R": "minecraft:redstone",
+    "O": "minecraft:observer"
+  },
+  "pattern": [
+    "IHI",
+    "ROR",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:sorter"
+  }
+}

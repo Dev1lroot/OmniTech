@@ -1,0 +1,10 @@
+{
+  "minTemperature": 1000,
+  "ingredients": [
+    "omnitech:silicon_wafer",
+    "omnitech:boron_mote"
+  ],
+  "output": [
+    "omnitech:p_type_wafer"
+  ]
+}

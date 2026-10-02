@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "up": "omnitech:block/casing_base_scheme",
+    "down": "minecraft:block/spruce_planks",
+    "north": "minecraft:block/spruce_planks",
+    "south": "minecraft:block/spruce_planks",
+    "east": "minecraft:block/spruce_planks",
+    "west": "minecraft:block/spruce_planks",
+    "particle": "minecraft:block/spruce_planks"
+  }
+}

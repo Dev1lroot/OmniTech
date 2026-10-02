@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": "omnitech:steel_plate",
+    "C": "omnitech:steel_cog",
+    "F": "omnitech:fluid_pipe",
+    "R": "omnitech:steel_reductor"
+  },
+  "pattern": [
+    "SCS",
+    "FRF",
+    "SCS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:rotary_compressor"
+  }
+}

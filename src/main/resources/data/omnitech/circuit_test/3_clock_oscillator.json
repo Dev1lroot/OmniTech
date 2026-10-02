@@ -1,0 +1,13 @@
+{
+  "result": "omnitech:control_circuit",
+  "terminals": ["V+", "GND", "OUT"],
+  "duration": 6.0,
+  "step": 0.002,
+  "sources": [{"plus": "V+", "minus": "GND", "dc": 9}],
+  "loads": [{"a": "OUT", "b": "GND", "ohms": 47000}],
+  "probe": {"plus": "OUT", "minus": "GND"},
+  "checks": [
+    {"type": "swing", "from": 1.0, "min": 5},
+    {"type": "transitions", "from": 1.0, "min": 4}
+  ]
+}

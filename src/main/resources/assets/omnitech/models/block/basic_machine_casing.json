@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "side": "omnitech:block/unplated_basic_casing",
+    "top": "omnitech:block/unplated_basic_casing_top",
+    "bottom": "omnitech:block/unplated_basic_casing_top"
+  }
+}

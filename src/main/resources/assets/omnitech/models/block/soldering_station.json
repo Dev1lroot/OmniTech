@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "up": "omnitech:block/casing_base_scheme_inner",
+    "down": "omnitech:block/machine_slab",
+    "north": "omnitech:block/casing_supply",
+    "south": "omnitech:block/electric_machine_side",
+    "east": "omnitech:block/electric_machine_side",
+    "west": "omnitech:block/electric_machine_side",
+    "particle": "omnitech:block/electric_machine_side"
+  }
+}

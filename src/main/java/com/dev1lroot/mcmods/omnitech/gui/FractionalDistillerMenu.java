@@ -31,7 +31,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
  *   5  structureHeight
  * </pre>
  */
-public class FractionalDistillerMenu extends AbstractContainerMenu {
+public class FractionalDistillerMenu extends AbstractContainerMenu implements FlushableMenu {
 
     private final FractionalDistillerBlockEntity blockEntity;
     private final ContainerData data;
@@ -128,5 +128,10 @@ public class FractionalDistillerMenu extends AbstractContainerMenu {
         if (slotStack.getCount() == result.getCount()) return ItemStack.EMPTY;
         slot.onTake(player, slotStack);
         return result;
+    }
+
+    @Override
+    public com.dev1lroot.mcmods.omnitech.io.@org.jspecify.annotations.Nullable FluidFlushable flushTarget(net.minecraft.world.entity.player.Player player) {
+        return blockEntity instanceof com.dev1lroot.mcmods.omnitech.io.FluidFlushable f ? f : null;
     }
 }

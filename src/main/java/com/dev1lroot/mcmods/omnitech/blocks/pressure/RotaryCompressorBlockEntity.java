@@ -49,7 +49,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * maximum throughput of {@link #BATCH_SIZE} mB per {@link #MIN_CYCLE_TICKS}
  * ticks regardless of how much KF is buffered.
  */
-public class RotaryCompressorBlockEntity extends BlockEntity implements MenuProvider, IKineticReceiver {
+public class RotaryCompressorBlockEntity extends BlockEntity implements MenuProvider, IKineticReceiver, com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
 
     public static final int   INPUT_TANK_CAPACITY  = 8_000;
     public static final int   OUTPUT_TANK_CAPACITY = 8_000;
@@ -315,5 +315,21 @@ public class RotaryCompressorBlockEntity extends BlockEntity implements MenuProv
         output.putInt("ProcessCooldown", processCooldown);
         output.putInt("TargetPressure",  targetPressure);
         output.putFloat("KineticForce",  kineticForce);
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "input" -> { boolean h = !inputFluid.isEmpty(); inputFluid = FluidStack.EMPTY; yield h; }
+            case "output" -> { boolean h = !outputFluid.isEmpty(); outputFluid = FluidStack.EMPTY; yield h; }
+            default -> false;
+        };
+        if (had) {
+            setChanged();
+            if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return had;
     }
 }

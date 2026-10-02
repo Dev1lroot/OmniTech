@@ -30,8 +30,9 @@
       "x": 51,
       "y": 15,
       "w": 16,
-      "h": 56,
+      "h": 47,
       "source": "fluid"
-    }
+    },
+    {"id": "fluid_flush", "type": "fluid_flush", "x": 51, "y": 64, "w": 16, "h": 7, "source": "fluid"}
   ]
 }

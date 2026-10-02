@@ -12,7 +12,6 @@ import com.dev1lroot.mcmods.omnitech.items.Solution;
 import com.dev1lroot.mcmods.omnitech.util.FluidNetworkUtil;
 import com.dev1lroot.mcmods.omnitech.util.SolutionFluids;
 import com.dev1lroot.mcmods.omnitech.blocks.ThermalState;
-import com.dev1lroot.mcmods.omnitech.blocks.thermal.thermal_conductor.ThermalConductorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.FractionalDistillerMenu;
 import com.dev1lroot.mcmods.omnitech.io.IColdReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IHeatReceiver;
@@ -79,7 +78,7 @@ import java.util.Optional;
  * Output {@code i} is deposited into segment {@code i}'s output tank (bottom = 0).
  */
 public class FractionalDistillerBlockEntity extends BlockEntity
-        implements MenuProvider, IHeatReceiver, IColdReceiver {
+        implements MenuProvider, IHeatReceiver, IColdReceiver, com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -258,12 +257,15 @@ public class FractionalDistillerBlockEntity extends BlockEntity
         List<FractionalDistillerBlockEntity> structure = be.getStructure();
         be.structureHeight = structure.size();
 
-        // 3. Sync temperature from the most extreme adjacent conductor (any segment)
+        // 3. Sync temperature from the most extreme adjacent heat source (any segment):
+        //    a thermal conductor, or a heater / electric heater / heat exchanger touching
+        //    the column directly. Radiators only dump heat, they don't heat the column.
         float bestTemp = Float.NaN;
         for (FractionalDistillerBlockEntity seg : structure) {
             for (Direction scanDir : Direction.values()) {
                 BlockEntity nb = level.getBlockEntity(seg.worldPosition.relative(scanDir));
-                if (nb instanceof ThermalConductorBlockEntity tc) {
+                if (nb instanceof IThermalNode tc
+                        && !(nb instanceof com.dev1lroot.mcmods.omnitech.blocks.thermal.radiator.RadiatorBlockEntity)) {
                     float t = tc.getTemperature();
                     if (Float.isNaN(bestTemp)
                             || Math.abs(t - IThermalNode.AMBIENT_TEMP) > Math.abs(bestTemp - IThermalNode.AMBIENT_TEMP)) {
@@ -275,7 +277,7 @@ public class FractionalDistillerBlockEntity extends BlockEntity
         if (!Float.isNaN(bestTemp)) {
             if (be.temperature != bestTemp) { be.temperature = bestTemp; dirty = true; }
         } else {
-            // No conductor — drift back to ambient
+            // No heat source — drift back to ambient
             float diff = be.temperature - IThermalNode.AMBIENT_TEMP;
             if (Math.abs(diff) > AMBIENT_BLEED) {
                 be.temperature -= Math.signum(diff) * AMBIENT_BLEED;
@@ -338,9 +340,15 @@ public class FractionalDistillerBlockEntity extends BlockEntity
             }
         }
 
-        // 7. Push each segment's output to its back face
+        // 7. Condense, then push each segment's output to its back face
         Direction back = facing.getOpposite();
         for (FractionalDistillerBlockEntity seg : structure) {
+            FluidStack condensed = condensed(seg.outputFluid);
+            if (condensed != seg.outputFluid) {
+                seg.outputFluid = condensed;
+                seg.setChanged();
+                dirty = true;
+            }
             if (!seg.outputFluid.isEmpty()) {
                 var neighbor = level.getCapability(Capabilities.Fluid.BLOCK,
                         seg.worldPosition.relative(back), back.getOpposite());
@@ -352,6 +360,39 @@ public class FractionalDistillerBlockEntity extends BlockEntity
             be.setChanged();
             level.sendBlockUpdated(pos, state, state, 3);
         }
+    }
+
+    // ── Condenser ─────────────────────────────────────────────────────────────
+
+    /** Coldest a fraction is cooled to: the condenser runs on ambient cooling. */
+    private static final int CONDENSER_TEMP = 20;
+
+    /**
+     * Each fraction leaves the column as condensate: cooled to just below the lowest
+     * boiling point among its components, but never below ambient — a fraction that is a
+     * gas at room temperature (propane, ammonia) stays a gas, just cooled. Fractions
+     * are only ever cooled, so explicit cryogenic outputs (liquefied air) keep their temperature.
+     *
+     * <p>Without this every fraction left at the column temperature, i.e. as vapour
+     * (water from a 120 °C column), and pipes/tanks holding liquid refused to take it.
+     *
+     * @return {@code fs} itself when nothing changes
+     */
+    static FluidStack condensed(FluidStack fs) {
+        if (fs.isEmpty()) return fs;
+        int pressure = FluidNetworkUtil.fluidPressure(fs);
+        int lowestBp = Integer.MAX_VALUE;
+        for (Solution.Part part : SolutionFluids.toSolution(fs).components()) {
+            var diagram = FluidPhysicsRegistry.get(part.fluid()).phaseDiagram();
+            if (diagram != null) lowestBp = Math.min(lowestBp, FluidPhaseUtil.boilingPointAtPressure(pressure, diagram));
+        }
+        if (lowestBp == Integer.MAX_VALUE) return fs;
+        int target = Math.max(CONDENSER_TEMP, lowestBp - 1);
+        int temp = FluidNetworkUtil.fluidTemp(fs);
+        if (temp <= target) return fs;
+        FluidStack out = fs.copy();
+        FluidNetworkUtil.applyAttributes(out, target, pressure);
+        return out;
     }
 
     // ── Generic boiling of mixtures ───────────────────────────────────────────
@@ -620,5 +661,27 @@ public class FractionalDistillerBlockEntity extends BlockEntity
             if (outputFluid.getAmount() <= 0) outputFluid = FluidStack.EMPTY;
             return toExt;
         }
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "input" -> { boolean h = !inputFluid.isEmpty(); inputFluid = FluidStack.EMPTY; yield h; }
+            case "outputs" -> {
+                boolean h = false;
+                for (FractionalDistillerBlockEntity seg : getStructure()) {
+                    if (!seg.outputFluid.isEmpty()) { seg.outputFluid = FluidStack.EMPTY; seg.setChanged(); h = true; }
+                }
+                yield h;
+            }
+            default -> false;
+        };
+        if (had) {
+            setChanged();
+            if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return had;
     }
 }

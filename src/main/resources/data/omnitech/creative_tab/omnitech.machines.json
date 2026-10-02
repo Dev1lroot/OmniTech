@@ -109,6 +109,12 @@
     "omnitech:display_mk3",
     "omnitech:logic_gate_block",
     "omnitech:redstone_intersection_block",
-    "omnitech:orrery"
+    "omnitech:orrery",
+    "omnitech:pcb_workbench",
+    "omnitech:pcb_fabricator",
+    "omnitech:soldering_station",
+    "omnitech:basic_machine_casing",
+    "omnitech:machine_casing",
+    "omnitech:photoresist_bucket"
   ]
 }

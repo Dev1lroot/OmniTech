@@ -38,13 +38,14 @@ public class FractionalDistillerScreen extends AbstractContainerScreen<Fractiona
             Identifier.fromNamespaceAndPath(OmniTech.MODID, "textures/gui/empty.png");
 
     // Input tank (left side)
-    private static final int IN_X = 8,  IN_Y = 17, IN_W = 16, IN_H = 52;
+    private static final int IN_X = 8,  IN_Y = 17, IN_W = 16, IN_H = 43;
 
     // Output tanks column (right side) — one per structure segment
     private static final int OUT_X   = 152;
     private static final int OUT_Y0  = 10;
     private static final int OUT_W   = 16;
     private static final int OUT_GAP = 2;
+    private static final int OUT_COLUMN_H = 51;
 
     // Process bar (centre bottom)
     private static final int PROC_X = 52, PROC_Y = 50, PROC_W = 72;
@@ -57,6 +58,8 @@ public class FractionalDistillerScreen extends AbstractContainerScreen<Fractiona
     @Override
     protected void init() {
         super.init();
+        addRenderableWidget(FlushButton.at(leftPos + IN_X, topPos + IN_Y + IN_H + 2, IN_W, menu.containerId, "input"));
+        addRenderableWidget(FlushButton.at(leftPos + OUT_X, topPos + OUT_Y0 + OUT_COLUMN_H + 2, OUT_W, menu.containerId, "outputs"));
         this.titleLabelX = (this.imageWidth - this.font.width(this.title)) / 2;
     }
 
@@ -170,7 +173,8 @@ public class FractionalDistillerScreen extends AbstractContainerScreen<Fractiona
 
     private static int computeSlotHeight(int count) {
         int totalGap = (count - 1) * OUT_GAP;
-        return Math.max(8, (60 - totalGap) / count);
+        // 51 px column (9 px left free for the flush button below it)
+        return Math.max(8, (OUT_COLUMN_H - totalGap) / count);
     }
 
     private static int tempColor(float t) {

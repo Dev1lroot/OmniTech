@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "omnitech:iron_plate",
+    "F": "omnitech:fluid_pipe",
+    "G": "minecraft:glass",
+    "B": "minecraft:bucket"
+  },
+  "pattern": [
+    "IFI",
+    "GBG",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:fluid_filler"
+  }
+}

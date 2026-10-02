@@ -74,8 +74,7 @@ import java.util.Optional;
  *   <li>12 – OUTPUT_TANK_CAPACITY</li>
  * </ul>
  */
-public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity implements IElectricReceiver, IHeatReceiver, WorldlyContainer
-{
+public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity implements IElectricReceiver, IHeatReceiver, WorldlyContainer, com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
     public static final int SLOT_ANODE   = 0;
     public static final int SLOT_CATHODE = 1;
     public static final int SLOT_COUNT   = 2;
@@ -547,5 +546,23 @@ public class ElectrolysisMachineBlockEntity extends BaseContainerBlockEntity imp
         output.putInt(  "CookProgress",        cookProgress);
         output.putFloat("CurrentRecipeEnergy", currentRecipeEnergy);
         output.putInt(  "Temperature",         temperature);
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "input" -> { boolean h = !inputFluid.isEmpty(); inputFluid = FluidStack.EMPTY; yield h; }
+            case "anode_output" -> { boolean h = !anodeFluid.isEmpty(); anodeFluid = FluidStack.EMPTY; yield h; }
+            case "cathode_output" -> { boolean h = !cathodeFluid.isEmpty(); cathodeFluid = FluidStack.EMPTY; yield h; }
+            case "solution_output" -> { boolean h = !solutionFluid.isEmpty(); solutionFluid = FluidStack.EMPTY; yield h; }
+            default -> false;
+        };
+        if (had) {
+            setChanged();
+            if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return had;
     }
 }

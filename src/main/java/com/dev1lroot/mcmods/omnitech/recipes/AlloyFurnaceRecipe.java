@@ -4,6 +4,7 @@
  */
 package com.dev1lroot.mcmods.omnitech.recipes;
 
+import com.dev1lroot.mcmods.omnitech.OmniTech;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
@@ -17,6 +18,7 @@ public class AlloyFurnaceRecipe {
     private final int minTemperature;
     private final List<Item> ingredients;
     private final List<Item> outputs;
+    private final boolean valid;
 
     public AlloyFurnaceRecipe(String id, int minTemperature, List<String> ingredientIds, List<String> outputIds) {
         this.id = id;
@@ -26,8 +28,11 @@ public class AlloyFurnaceRecipe {
 
         for (String ingredientId : ingredientIds) {
             BuiltInRegistries.ITEM.getOptional(Identifier.parse(ingredientId))
-                    .ifPresent(ingredients::add);
+                    .ifPresentOrElse(ingredients::add, () -> OmniTech.LOGGER.error(
+                            "Alloy furnace recipe '{}': unknown ingredient '{}' — recipe disabled", id, ingredientId));
         }
+        // A dropped ingredient would otherwise make the recipe match far too much
+        this.valid = ingredients.size() == ingredientIds.size() && !ingredients.isEmpty();
 
         for (String outputId : outputIds) {
             BuiltInRegistries.ITEM.getOptional(Identifier.parse(outputId))
@@ -60,6 +65,7 @@ public class AlloyFurnaceRecipe {
     }
 
     public boolean matches(List<ItemStack> inputStacks) {
+        if (!valid) return false;
         // Count available items in input slots
         List<Item> availableItems = new ArrayList<>();
         for (ItemStack stack : inputStacks) {

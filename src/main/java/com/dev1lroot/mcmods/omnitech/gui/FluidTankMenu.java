@@ -24,7 +24,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import java.util.Comparator;
 import java.util.List;
 
-public class FluidTankMenu extends AbstractContainerMenu {
+public class FluidTankMenu extends AbstractContainerMenu implements FlushableMenu {
     private final Container container;
     private final ContainerData data;
     private final int machineSlotCount;
@@ -144,5 +144,10 @@ public class FluidTankMenu extends AbstractContainerMenu {
         public OutputSlot(Container container, int index, int x, int y) { super(container, index, x, y); }
         @Override
         public boolean mayPlace(ItemStack stack) { return false; }
+    }
+
+    @Override
+    public com.dev1lroot.mcmods.omnitech.io.@org.jspecify.annotations.Nullable FluidFlushable flushTarget(net.minecraft.world.entity.player.Player player) {
+        return container instanceof com.dev1lroot.mcmods.omnitech.io.FluidFlushable f ? f : null;
     }
 }

@@ -17,7 +17,7 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-public class RotaryCompressorMenu extends AbstractContainerMenu {
+public class RotaryCompressorMenu extends AbstractContainerMenu implements FlushableMenu {
 
     private final RotaryCompressorBlockEntity blockEntity;
     private final ContainerData data;
@@ -106,5 +106,10 @@ public class RotaryCompressorMenu extends AbstractContainerMenu {
                         blockEntity != null ? blockEntity.getLevel() : null,
                         blockEntity != null ? blockEntity.getBlockPos() : null),
                 player, OmniTechBlocks.ROTARY_COMPRESSOR.get());
+    }
+
+    @Override
+    public com.dev1lroot.mcmods.omnitech.io.@org.jspecify.annotations.Nullable FluidFlushable flushTarget(net.minecraft.world.entity.player.Player player) {
+        return blockEntity instanceof com.dev1lroot.mcmods.omnitech.io.FluidFlushable f ? f : null;
     }
 }

@@ -717,6 +717,22 @@
     "omnitech:wooden_cog",
     "omnitech:wooden_reductor",
     "omnitech:coal_dust",
-    "omnitech:coal_mote"
+    "omnitech:coal_mote",
+    "omnitech:metallurgical_silicon",
+    "omnitech:silicon_boule",
+    "omnitech:silicon_wafer",
+    "omnitech:n_type_wafer",
+    "omnitech:p_type_wafer",
+    "omnitech:pn_junction_wafer",
+    "omnitech:diode",
+    "omnitech:zener_diode",
+    "omnitech:capacitor",
+    "omnitech:capacitor_1000uf",
+    "omnitech:npn_transistor",
+    "omnitech:pnp_transistor",
+    "omnitech:stabilizer_circuit",
+    "omnitech:power_circuit",
+    "omnitech:control_circuit",
+    "omnitech:resistor"
   ]
 }

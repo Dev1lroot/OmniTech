@@ -37,6 +37,9 @@
     "omnitech:gate_template_nimply",
     "omnitech:microcontroller",
     "omnitech:floppy_disk",
-    "omnitech:ram_card"
+    "omnitech:ram_card",
+    "omnitech:pcb_blueprint",
+    "omnitech:printed_circuit_board",
+    "omnitech:assembled_circuit_board"
   ]
 }

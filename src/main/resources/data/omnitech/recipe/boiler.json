@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "omnitech:copper_plate",
+    "G": "minecraft:glass"
+  },
+  "pattern": [
+    "CGC",
+    "C C",
+    "CCC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:boiler"
+  }
+}

@@ -56,7 +56,7 @@ import org.slf4j.Logger;
  * any filled bucket and drains it into the tank; {@link #SLOT_BUCKET_OUT}
  * receives the resulting empty bucket.
  */
-public class FluidTankBlockEntity extends BaseContainerBlockEntity {
+public class FluidTankBlockEntity extends BaseContainerBlockEntity implements com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -258,5 +258,20 @@ public class FluidTankBlockEntity extends BaseContainerBlockEntity {
         super.saveAdditional(output);
         ContainerHelper.saveAllItems(output, items);
         output.store("Fluid", FluidStack.OPTIONAL_CODEC, fluid);
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "fluid" -> { boolean h = !fluid.isEmpty(); fluid = FluidStack.EMPTY; yield h; }
+            default -> false;
+        };
+        if (had) {
+            setChanged();
+            if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return had;
     }
 }

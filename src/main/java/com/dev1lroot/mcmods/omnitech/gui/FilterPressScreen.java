@@ -26,6 +26,7 @@ public class FilterPressScreen extends AbstractContainerScreen<FilterPressMenu> 
     @Override
     protected void init() {
         super.init();
+        FlushButton.addAll(LAYOUT, leftPos, topPos, menu.containerId, this::addRenderableWidget);
         this.titleLabelX     = (LAYOUT.width - this.font.width(this.title)) / 2;
         this.inventoryLabelY = LAYOUT.inventory.label_y;
 

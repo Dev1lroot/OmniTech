@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "R": "minecraft:redstone",
+    "W": "omnitech:copper_wire",
+    "P": "omnitech:iron_plate",
+    "K": "omnitech:power_circuit"
+  },
+  "pattern": [
+    "RWR",
+    "PKP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:gpio_port"
+  }
+}

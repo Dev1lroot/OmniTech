@@ -384,6 +384,24 @@ public class OmniTechItems
             REGISTRY.registerItem("blueprint", BlueprintItem::new);
     public static final DeferredItem<BlockItem> RESEARCH_TABLE_ITEM =
             REGISTRY.registerSimpleBlockItem("research_table", OmniTechBlocks.RESEARCH_TABLE);
+    public static final DeferredItem<BlockItem> PCB_WORKBENCH_ITEM =
+            REGISTRY.registerSimpleBlockItem("pcb_workbench", OmniTechBlocks.PCB_WORKBENCH);
+    public static final DeferredItem<BlockItem> PCB_FABRICATOR_ITEM =
+            REGISTRY.registerSimpleBlockItem("pcb_fabricator", OmniTechBlocks.PCB_FABRICATOR);
+    public static final DeferredItem<BlockItem> SOLDERING_STATION_ITEM =
+            REGISTRY.registerSimpleBlockItem("soldering_station", OmniTechBlocks.SOLDERING_STATION);
+    /** Resistor: crafted blank, value painted on as colour bands ({@code resistor_bands}). */
+    public static final DeferredItem<Item> RESISTOR =
+            REGISTRY.registerItem("resistor", com.dev1lroot.mcmods.omnitech.items.ResistorItem::new);
+    /** Paper photomask printed at the PCB Workbench; carries {@code pcb_design}. */
+    public static final DeferredItem<Item> PCB_BLUEPRINT =
+            REGISTRY.registerItem("pcb_blueprint", Item::new, p -> p.stacksTo(16));
+    /** Etched bare board from the PCB Fabricator; carries {@code pcb_design}. */
+    public static final DeferredItem<Item> PRINTED_CIRCUIT_BOARD =
+            REGISTRY.registerItem("printed_circuit_board", Item::new);
+    /** A soldered board that passed no test bench; carries design + parts. */
+    public static final DeferredItem<Item> ASSEMBLED_CIRCUIT_BOARD =
+            REGISTRY.registerItem("assembled_circuit_board", Item::new);
 
     // ── Logic / GPIO ──────────────────────────────────────────────────────────
     public static final DeferredItem<BlockItem> PROGRAMMING_STATION_ITEM =

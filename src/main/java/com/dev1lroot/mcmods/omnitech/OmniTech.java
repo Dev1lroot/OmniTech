@@ -90,6 +90,7 @@ import com.dev1lroot.mcmods.omnitech.network.TerminalInputPacket;
 import com.dev1lroot.mcmods.omnitech.network.KeyboardModePacket;
 import com.dev1lroot.mcmods.omnitech.network.KeyboardReleasePacket;
 import com.dev1lroot.mcmods.omnitech.network.MinesweeperResultPacket;
+import com.dev1lroot.mcmods.omnitech.network.PcbStationPacket;
 import com.dev1lroot.mcmods.omnitech.network.SpeakerTonePacket;
 import com.dev1lroot.mcmods.omnitech.network.DepressurizeReactorPacket;
 import com.dev1lroot.mcmods.omnitech.network.ScramReactorPacket;
@@ -146,6 +147,8 @@ public class OmniTech {
         ArmorSetLoader.loadAll();
         ResearchLoader.loadAll();   // reads data/omnitech/research/*.json
         AssemblerLoader.loadAll();  // reads data/omnitech/assembler/*.json
+        com.dev1lroot.mcmods.omnitech.pcb.mc.TestBenchLoader.loadAll(); // reads data/omnitech/circuit_test/*.json
+        com.dev1lroot.mcmods.omnitech.pcb.mc.ReadyBlueprints.loadAll(); // reads data/omnitech/pcb_blueprint/*.json
 
         FluidLoader.loadAll();           // reads data/omnitech/fluid/*.json
         ChemistryCompositionLoader.loadAll(); // reads data/omnitech/chemistry/**/*.json
@@ -300,6 +303,10 @@ public class OmniTech {
                     return null;
                 }
         );
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                OmniTechBlockEntities.PCB_FABRICATOR.get(),
+                (be, side) -> be.fluidHandler);
         event.registerBlockEntity(
                 Capabilities.Fluid.BLOCK,
                 OmniTechBlockEntities.ELECTROLYSIS_MACHINE.get(),
@@ -613,6 +620,14 @@ public class OmniTech {
                 MinesweeperResultPacket.TYPE,
                 MinesweeperResultPacket.CODEC,
                 MinesweeperResultPacket::handle);
+        event.registrar("1").playToServer(
+                com.dev1lroot.mcmods.omnitech.network.FlushTankPacket.TYPE,
+                com.dev1lroot.mcmods.omnitech.network.FlushTankPacket.CODEC,
+                com.dev1lroot.mcmods.omnitech.network.FlushTankPacket::handle);
+        event.registrar("1").playToServer(
+                PcbStationPacket.TYPE,
+                PcbStationPacket.CODEC,
+                PcbStationPacket::handle);
         event.registrar("1").playToClient(
                 SpeakerTonePacket.TYPE,
                 SpeakerTonePacket.CODEC,

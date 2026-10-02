@@ -63,7 +63,7 @@ import org.jspecify.annotations.Nullable;
  * 2 – outputFluid amount | 3 – OUTPUT_TANK_CAPACITY |
  * 4 – processTimer | 5 – PROCESS_TIME
  */
-public class FluidFillerBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
+public class FluidFillerBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, com.dev1lroot.mcmods.omnitech.io.FluidFlushable {
 
     public static final int SLOT_INPUT_CANISTER  = 0;
     public static final int SLOT_OUTPUT_CANISTER = 1;
@@ -378,5 +378,21 @@ public class FluidFillerBlockEntity extends BaseContainerBlockEntity implements 
         output.store("InputFluid",  FluidStack.OPTIONAL_CODEC, inputFluid);
         output.store("OutputFluid", FluidStack.OPTIONAL_CODEC, outputFluid);
         output.putInt("ProcessTimer", processTimer);
+    }
+
+    // ── Flush (GUI button) ────────────────────────────────────────────────────
+
+    @Override
+    public boolean flushTank(String tank) {
+        boolean had = switch (tank) {
+            case "input_fluid" -> { boolean h = !inputFluid.isEmpty(); inputFluid = FluidStack.EMPTY; yield h; }
+            case "output_fluid" -> { boolean h = !outputFluid.isEmpty(); outputFluid = FluidStack.EMPTY; yield h; }
+            default -> false;
+        };
+        if (had) {
+            setChanged();
+            if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return had;
     }
 }

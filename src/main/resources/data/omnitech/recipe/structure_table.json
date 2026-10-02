@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:glass_bottle",
+    "B": "minecraft:book",
+    "P": "#minecraft:planks"
+  },
+  "pattern": [
+    "GBG",
+    "PPP",
+    "P P"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:structure_table"
+  }
+}
