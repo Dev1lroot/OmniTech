@@ -8,7 +8,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import java.util.List;
 
-public record GuidebookPage(String chapterName, List<PageToken> tokens) {
+/**
+ * @param key page id: {@code <chapter folder>/<file name without .md>}, e.g.
+ *            {@code 01_kinetics/00_overview} — what {@code page:} links may name
+ */
+public record GuidebookPage(String key, String chapterName, List<PageToken> tokens) {
 
     public sealed interface PageToken
             permits PageToken.Heading, PageToken.SubHeading, PageToken.Body,
@@ -29,10 +33,12 @@ public record GuidebookPage(String chapterName, List<PageToken> tokens) {
      * <ul>
      *   <li>{@link Url} — opens in the system browser</li>
      *   <li>{@link PageJump} — navigates to the given 0-based page index within the book</li>
+     *   <li>{@link PageRef} — navigates to the page with this key; survives pages being added</li>
      * </ul>
      */
-    public sealed interface LinkTarget permits LinkTarget.Url, LinkTarget.PageJump {
+    public sealed interface LinkTarget permits LinkTarget.Url, LinkTarget.PageJump, LinkTarget.PageRef {
         record Url(String url) implements LinkTarget {}
         record PageJump(int pageIndex) implements LinkTarget {}
+        record PageRef(String key) implements LinkTarget {}
     }
 }

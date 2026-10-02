@@ -23,9 +23,9 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Kinetic Reductor — an omnidirectional kinetic-force junction block.
  *
- * <p>Unlike {@link KineticPipeBlock}, the reductor has no axis or rotation:
+ * <p>Unlike {@link KineticShaftBlock}, the reductor has no axis or rotation:
  * it accepts KF from any face and forwards it to all other faces regardless
- * of placement direction.  This lets pipes of different axes connect through
+ * of placement direction.  This lets shafts of different axes connect through
  * a single reductor without any alignment constraint.
  *
  * <p>While KF is flowing through it the {@code POWERED} blockstate is true,

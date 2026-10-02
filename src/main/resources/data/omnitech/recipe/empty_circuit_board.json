@@ -1,0 +1,16 @@
+{
+  "type": "omnitech:pipette_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:textolite_plate",
+    "omnitech:copper_plate"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:empty_circuit_board"
+  },
+  "fluid": {
+    "fluid": "omnitech:photoresist",
+    "amount": 5
+  }
+}

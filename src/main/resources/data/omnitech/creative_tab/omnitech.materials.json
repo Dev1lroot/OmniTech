@@ -733,6 +733,9 @@
     "omnitech:stabilizer_circuit",
     "omnitech:power_circuit",
     "omnitech:control_circuit",
-    "omnitech:resistor"
+    "omnitech:resistor",
+    "omnitech:silica_wafer",
+    "omnitech:textolite_plate",
+    "omnitech:empty_light_bulb"
   ]
 }

@@ -17,7 +17,7 @@ import com.dev1lroot.mcmods.omnitech.blocks.processing.centrifuge.ManualCentrifu
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.electric_engine.ElectricEngineStatorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.power_relay.PowerRelayBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticGeneratorBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticPipeBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticShaftBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticReductorAxisBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticReductorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.ChemicalMixerBlock;
@@ -48,7 +48,9 @@ import com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station.Programmin
 import com.dev1lroot.mcmods.omnitech.blocks.logic.research_table.ResearchTableBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbStationBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbWorkbenchBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbFabricatorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbBurnerBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbBurnerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbWasherBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.SolderingStationBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.keyboard.KeyboardBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.NuclearBombBlock;
@@ -138,7 +140,13 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> CRANK;
 
     public static final DeferredBlock<Block> KF_GENERATOR;
-    public static final DeferredBlock<Block> KF_PIPE;
+    public static final DeferredBlock<Block> KF_SHAFT;
+
+    // Renamed from kf_pipe ("Kinetic Pipe") — old worlds and items load as the shaft
+    static {
+        REGISTRY.addAlias(net.minecraft.resources.Identifier.fromNamespaceAndPath(OmniTech.MODID, "kf_pipe"),
+                net.minecraft.resources.Identifier.fromNamespaceAndPath(OmniTech.MODID, "kf_shaft"));
+    }
     public static final DeferredBlock<Block> KF_REDUCTOR;
     /** Ghost block — holds the {@code kf_reductor_axis} blockstate for BER spinning axis rendering. */
     public static final DeferredBlock<Block> KF_REDUCTOR_AXIS;
@@ -212,7 +220,8 @@ public class OmniTechBlocks {
     public static final DeferredBlock<Block> PROGRAMMING_STATION;
     public static final DeferredBlock<Block> RESEARCH_TABLE;
     public static final DeferredBlock<Block> PCB_WORKBENCH;
-    public static final DeferredBlock<Block> PCB_FABRICATOR;
+    public static final DeferredBlock<Block> PCB_BURNER;
+    public static final DeferredBlock<Block> PCB_WASHER;
     public static final DeferredBlock<Block> SOLDERING_STATION;
     public static final DeferredBlock<Block> LOGIC_MACHINE;
     public static final DeferredBlock<Block> LOGIC_CABLE;
@@ -275,8 +284,8 @@ public class OmniTechBlocks {
 
         KF_GENERATOR = register("kf_generator",
                 p -> new KineticGeneratorBlock(p.mapColor(MapColor.STONE).strength(3.5F).sound(SoundType.STONE)));
-        KF_PIPE = register("kf_pipe",
-                p -> new KineticPipeBlock(p
+        KF_SHAFT = register("kf_shaft",
+                p -> new KineticShaftBlock(p
                         .mapColor(MapColor.METAL)
                         .strength(3.0F)
                         .sound(SoundType.METAL)
@@ -496,13 +505,17 @@ public class OmniTechBlocks {
                 p -> new ResearchTableBlock(p.mapColor(MapColor.WOOD).strength(2.5F)
                         .sound(SoundType.WOOD)));
         PCB_WORKBENCH = register("pcb_workbench",
-                p -> new PcbStationBlock(p.mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD),
+                p -> new PcbStationBlock(p.mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD).noOcclusion(),
                         PcbWorkbenchBlockEntity::new, false));
-        PCB_FABRICATOR = register("pcb_fabricator",
-                p -> new PcbStationBlock(p.mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.METAL),
-                        PcbFabricatorBlockEntity::new, true));
+        PCB_BURNER = register("pcb_burner",
+                p -> new PcbBurnerBlock(p.mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.METAL).noOcclusion()
+                        .lightLevel(s -> s.getValue(PcbBurnerBlock.LIT) ? 15 : 0),
+                        PcbBurnerBlockEntity::new, true));
+        PCB_WASHER = register("pcb_washer",
+                p -> new PcbStationBlock(p.mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.METAL).noOcclusion(),
+                        PcbWasherBlockEntity::new, true));
         SOLDERING_STATION = register("soldering_station",
-                p -> new PcbStationBlock(p.mapColor(MapColor.METAL).strength(3.0F).sound(SoundType.METAL),
+                p -> new PcbStationBlock(p.mapColor(MapColor.METAL).strength(3.0F).sound(SoundType.METAL).noOcclusion(),
                         SolderingStationBlockEntity::new, false));
         LOGIC_MACHINE = register("logic_machine",
                 p -> new LogicMachineBlock(p.mapColor(MapColor.METAL).strength(3.0F)

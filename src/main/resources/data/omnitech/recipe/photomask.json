@@ -1,0 +1,13 @@
+{
+  "type": "omnitech:pipette_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "omnitech:pcb_blueprint",
+    "omnitech:silica_wafer"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:photomask"
+  },
+  "copy_components_from": "omnitech:pcb_blueprint"
+}

@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,half=lower": {
+      "model": "omnitech:block/pcb_burner"
+    },
+    "facing=north,half=upper": {
+      "model": "omnitech:block/pcb_burner"
+    },
+    "facing=south,half=lower": {
+      "model": "omnitech:block/pcb_burner",
+      "y": 180
+    },
+    "facing=south,half=upper": {
+      "model": "omnitech:block/pcb_burner",
+      "y": 180
+    },
+    "facing=west,half=lower": {
+      "model": "omnitech:block/pcb_burner",
+      "y": 270
+    },
+    "facing=west,half=upper": {
+      "model": "omnitech:block/pcb_burner",
+      "y": 270
+    },
+    "facing=east,half=lower": {
+      "model": "omnitech:block/pcb_burner",
+      "y": 90
+    },
+    "facing=east,half=upper": {
+      "model": "omnitech:block/pcb_burner",
+      "y": 90
+    }
+  }
+}

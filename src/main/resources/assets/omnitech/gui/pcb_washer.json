@@ -1,0 +1,19 @@
+{
+  "background": "textures/gui/empty.png",
+  "draw_inventory": true,
+  "width": 176,
+  "height": 186,
+  "inventory": {
+    "x": 8,
+    "y": 104,
+    "label_y": 93,
+    "hotbar_y": 162
+  },
+  "elements": [
+    {"id": "acid_tank",   "type": "fluid_tank", "x": 8, "y": 18, "w": 16, "h": 45, "source": "acid"},
+    {"id": "acid_tank_flush", "type": "fluid_flush", "x": 8, "y": 65, "w": 16, "h": 7, "source": "acid"},
+    {"id": "input",       "type": "slot", "x": 60, "y": 38, "slot_index": 0},
+    {"id": "progress",    "type": "progressbar", "x": 84, "y": 39, "w": 38, "source": "progress"},
+    {"id": "output",      "type": "slot", "x": 134, "y": 38, "slot_index": 1}
+  ]
+}

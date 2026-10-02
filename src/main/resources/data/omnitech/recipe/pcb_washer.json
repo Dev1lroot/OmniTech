@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:glass",
+    "F": "omnitech:fluid_pipe",
+    "C": "minecraft:cauldron",
+    "I": "omnitech:iron_plate"
+  },
+  "pattern": [
+    "GFG",
+    "GCG",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:pcb_washer"
+  }
+}

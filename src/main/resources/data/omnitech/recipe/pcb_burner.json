@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "omnitech:iron_plate",
+    "L": "minecraft:glowstone",
+    "G": "minecraft:glass_pane",
+    "B": "omnitech:basic_machine_casing"
+  },
+  "pattern": [
+    "ILI",
+    "IGI",
+    "IBI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "omnitech:pcb_burner"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "requiredMinimalTemperature": 1700,
+  "input": "#minecraft:smelts_to_glass",
+  "output": {
+    "item": "omnitech:empty_light_bulb",
+    "count": 2
+  }
+}

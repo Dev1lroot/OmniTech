@@ -38,6 +38,8 @@ public final class ReadyBlueprints {
         }
 
         public ItemStack blueprint() { return stack(OmniTechItems.PCB_BLUEPRINT); }
+        public ItemStack photomask() { return stack(OmniTechItems.PHOTOMASK); }
+        public ItemStack exposed()   { return stack(OmniTechItems.EXPOSED_CIRCUIT_BOARD); }
         public ItemStack board()     { return stack(OmniTechItems.PRINTED_CIRCUIT_BOARD); }
     }
 

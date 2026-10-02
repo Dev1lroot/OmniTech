@@ -12,7 +12,8 @@ import com.dev1lroot.mcmods.omnitech.gui.RadioScannerMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ProgrammingStationMenu;
 import com.dev1lroot.mcmods.omnitech.gui.ResearchTableMenu;
 import com.dev1lroot.mcmods.omnitech.gui.PcbWorkbenchMenu;
-import com.dev1lroot.mcmods.omnitech.gui.PcbFabricatorMenu;
+import com.dev1lroot.mcmods.omnitech.gui.PcbBurnerMenu;
+import com.dev1lroot.mcmods.omnitech.gui.PcbWasherMenu;
 import com.dev1lroot.mcmods.omnitech.gui.SolderingStationMenu;
 import com.dev1lroot.mcmods.omnitech.gui.LogicMachineMenu;
 import com.dev1lroot.mcmods.omnitech.gui.FloppyDriveMenu;
@@ -237,8 +238,10 @@ public class OmniTechMenuTypes {
 
     public static final Supplier<MenuType<PcbWorkbenchMenu>> PCB_WORKBENCH =
             REGISTRY.register("pcb_workbench", () -> IMenuTypeExtension.create(PcbWorkbenchMenu::new));
-    public static final Supplier<MenuType<PcbFabricatorMenu>> PCB_FABRICATOR =
-            REGISTRY.register("pcb_fabricator", () -> IMenuTypeExtension.create(PcbFabricatorMenu::new));
+    public static final Supplier<MenuType<PcbBurnerMenu>> PCB_BURNER =
+            REGISTRY.register("pcb_burner", () -> IMenuTypeExtension.create(PcbBurnerMenu::new));
+    public static final Supplier<MenuType<PcbWasherMenu>> PCB_WASHER =
+            REGISTRY.register("pcb_washer", () -> IMenuTypeExtension.create(PcbWasherMenu::new));
     public static final Supplier<MenuType<SolderingStationMenu>> SOLDERING_STATION =
             REGISTRY.register("soldering_station", () -> IMenuTypeExtension.create(SolderingStationMenu::new));
 

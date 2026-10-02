@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "omnitech:block/pcb_washer"
+    },
+    "facing=south": {
+      "model": "omnitech:block/pcb_washer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "omnitech:block/pcb_washer",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "omnitech:block/pcb_washer",
+      "y": 90
+    }
+  }
+}

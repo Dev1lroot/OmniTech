@@ -12,9 +12,18 @@ printed circuit boards → machine recipes.
     resistor item: crafted blank, then colour-coded in the crafting grid with 3–6 band
     items (dyes; gold/silver nuggets, dust or motes) — the bands decide the value
     (omnitech:resistor_coding, pcb/ResistorCode.java). Model: tinted body + 6 band layers.
-  • PCB pipeline blocks: PCB Workbench (draw → blueprint), PCB Fabricator
-    (copper plates + photoresist → etched boards), Soldering Station (parts →
-    tested circuit). Circuit test benches live in data/omnitech/circuit_test.
+  • PCB pipeline blocks: PCB Workbench (draw → blueprint), PCB Burner (two
+    blocks tall; UV bulb exposes an empty board through a photomask), PCB Washer
+    (acid bath etches the exposed board),
+    Soldering Station (parts → tested circuit). Circuit test benches live in
+    data/omnitech/circuit_test.
+  • Board materials (omnitech:pipette_shapeless crafting, glass blowing station):
+    blueprint + silica wafer → photomask (drawing copied); textolite plate +
+    copper plate + 5 mB photoresist from a pipette → empty circuit board;
+    empty light bulb + tungsten wire + 5 mB mercury → UV bulb. Glass blowing
+    takes #minecraft:smelts_to_glass sand for ordinary glass, textolite and
+    bulbs, and quartz (pure silica) for silica wafers.
+  • Etchants for the washer: fluid tag #omnitech:pcb_etchant.
   • Ready-made blueprints (data/omnitech/pcb_blueprint) for every test bench, each
     with a reference part placement the Soldering Station pre-fills; crafted from
     paper + blue dye + the circuit's key part. Their routing is checked here, their
@@ -25,14 +34,18 @@ printed circuit boards → machine recipes.
     loot table get a self-drop one so a crafted machine survives being mined.
 
 Rules:
-  • Only the photoresist fluid textures are generated (tinted from acetone);
-    every item reuses an existing texture.
+  • Generated textures: the photoresist fluid (tinted from acetone) and the board
+    material items (PCB_TEXTURES, drawn only when missing, so hand-made art wins);
+    every other item reuses an existing texture.
+  • The station block models are hand-made (Blockbench) and never written here;
+    a missing one gets the plain cube fallback.
   • Existing recipes are never overwritten; a machine that already has a
     recipe producing it is skipped.
   • Lang entries are appended (existing keys are left untouched).
 """
 import json
 import os
+import re
 import sys
 
 from PIL import Image
@@ -79,11 +92,18 @@ ITEMS = {
     "stabilizer_circuit":    ("circuit_stab_mark_1",    "Power Stabilizer Circuit", "Плата стабилизатора питания", {}),
     "power_circuit":         ("circuit_power_mark_1",   "Power Switch Circuit",    "Плата силового ключа",     {}),
     "control_circuit":       ("circuit_control_mark_1", "Control Circuit",         "Плата управления",         {}),
+    "silica_wafer":          ("silica_wafer",           "Fused Silica Wafer",      "Пластина кварцевого стекла", {"formula": "SiO2"}),
+    "textolite_plate":       ("textolite_plate",        "Textolite Plate",         "Пластина стеклотекстолита", {}),
+    "empty_light_bulb":      ("empty_light_bulb",       "Empty Light Bulb",        "Пустая колба лампы",       {"formula": "SiO2"}),
 }
 
 # Items registered in Java (they carry data components) — assets + lang only
 JAVA_ITEMS = {
     "pcb_blueprint":           ("circuit_blueprint", "PCB Blueprint",           "Чертёж печатной платы"),
+    "photomask":               ("photomask",         "Photomask",               "Фотошаблон"),
+    "empty_circuit_board":     ("empty_circuit_board", "Empty Circuit Board",   "Заготовка печатной платы"),
+    "uv_bulb":                 ("uv_bulb",           "UV Bulb",                 "Ультрафиолетовая лампа"),
+    "exposed_circuit_board":   ("exposed_circuit_board", "Exposed Circuit Board", "Засвеченная заготовка платы"),
     "printed_circuit_board":   ("marked-circuit",    "Printed Circuit Board",   "Печатная плата"),
     "assembled_circuit_board": ("marked-circuit23",  "Assembled Circuit Board", "Собранная плата"),
 }
@@ -103,15 +123,23 @@ def _faces(up, down, north, side):
     return {"up": up, "down": down, "north": north, "south": side, "east": side, "west": side, "particle": side}
 
 
-# PCB pipeline blocks (registered in Java) — id: (en, ru, model textures, mineable tool)
+# PCB pipeline blocks (registered in Java) — id: (en, ru, fallback model textures, mineable tool)
+# Two-block-tall stations: lower half draws the whole model, only it drops the item
+TALL_STATIONS = {"pcb_burner"}
+# Superseded stations whose assets, loot, recipe, tag and tab entries are removed
+RETIRED_STATIONS = ["pcb_fabricator"]
 STATIONS = {
     "pcb_workbench": ("PCB Workbench", "Верстак печатных плат",
                       _faces("omnitech:block/casing_base_scheme", "minecraft:block/spruce_planks",
                              "minecraft:block/spruce_planks", "minecraft:block/spruce_planks"), "axe"),
-    "pcb_fabricator": ("PCB Fabricator", "Фабрикатор печатных плат",
-                       _faces("omnitech:block/machine_top_inset", "omnitech:block/machine_slab",
-                              "omnitech:block/advanced_machine_fluid_socket", "omnitech:block/electric_machine_side"),
-                       "pickaxe"),
+    "pcb_burner": ("PCB Burner", "Установка засветки плат",
+                   _faces("omnitech:block/machine_top_inset", "omnitech:block/machine_slab",
+                          "omnitech:block/electric_machine_side", "omnitech:block/electric_machine_side"),
+                   "pickaxe"),
+    "pcb_washer": ("PCB Washer", "Ванна травления плат",
+                   _faces("omnitech:block/machine_top_inset", "omnitech:block/machine_slab",
+                          "omnitech:block/advanced_machine_fluid_socket", "omnitech:block/electric_machine_side"),
+                   "pickaxe"),
     "soldering_station": ("Soldering Station", "Паяльная станция",
                           _faces("omnitech:block/casing_base_scheme_inner", "omnitech:block/machine_slab",
                                  "omnitech:block/casing_supply", "omnitech:block/electric_machine_side"),
@@ -178,6 +206,48 @@ SOLVATION = {
                     "outputFluid": {"fluid": O + "photoresist", "amount": 1000}},
 }
 
+def pipette_shapeless(result, ingredients, fluid=None, amount=0, copy_from=None, count=1):
+    r = {"type": O + "pipette_shapeless", "category": "misc", "ingredients": ingredients,
+         "result": {"count": count, "id": result}}
+    if fluid:
+        r["fluid"] = {"fluid": fluid, "amount": amount}
+    if copy_from:
+        r["copy_components_from"] = copy_from
+    return r
+
+
+# Board materials — the grid keeps the pipette, minus its dose
+PIPETTE_RECIPES = {
+    # The drawing is contact-printed onto fused silica: a mask that survives the UV lamp
+    "photomask": pipette_shapeless(O + "photomask", [O + "pcb_blueprint", O + "silica_wafer"],
+                                   copy_from=O + "pcb_blueprint"),
+    # Copper foil laminated on textolite, then a thin photoresist coat
+    "empty_circuit_board": pipette_shapeless(O + "empty_circuit_board", [O + "textolite_plate", O + "copper_plate"],
+                                             fluid=O + "photoresist", amount=5),
+    # Low-pressure mercury vapour between tungsten electrodes glows UV
+    "uv_bulb": pipette_shapeless(O + "uv_bulb", [O + "empty_light_bulb", O + "tungsten_wire"],
+                                 fluid=O + "mercury", amount=5),
+}
+
+SAND = "#" + M + "smelts_to_glass"
+# Glass blowing station — id: (min °C, input item or #tag, output, count)
+GLASS_BLOWING = {
+    "glass_block":      (1700, SAND, M + "glass", 1),
+    "glass_pane":       (1700, SAND, M + "glass_pane", 2),
+    "glass_bottle":     (1700, SAND, M + "glass_bottle", 1),
+    "drinking_bottle":  (1700, SAND, O + "drinking_bottle", 1),
+    "flask":            (1700, SAND, O + "flask", 1),
+    "reaction_flask":   (1700, SAND, O + "reaction_flask", 1),
+    "empty_light_bulb": (1700, SAND, O + "empty_light_bulb", 2),
+    # glass fibre drawn from the melt and pressed into a laminate
+    "textolite_plate":  (1600, SAND, O + "textolite_plate", 1),
+    # pure silica needs far more heat than soda-lime glass
+    "silica_wafer":     (1950, M + "quartz", O + "silica_wafer", 2),
+}
+
+# Fluids the PCB Washer etches copper with
+ETCHANTS = [O + "hydrochloric_acid", O + "nitric_acid", O + "sulfuric_acid"]
+
 COMPONENT_RECIPES = {
     # Wire saw slices the boule into wafers
     "silicon_wafer": shapeless(O + "silicon_wafer", [O + "silicon_boule", O + "steel_wire"], count=8),
@@ -204,10 +274,13 @@ COMPONENT_RECIPES = {
     "pcb_workbench": shaped(O + "pcb_workbench", ["GGG", "WTW", "PIP"],
                             {"G": M + "glass_pane", "W": O + "copper_wire", "T": M + "crafting_table",
                              "P": O + "iron_plate", "I": O + "iron_rod"}),
-    # UV lamp over a resist bath and an etching tray — no circuits, it is what makes them
-    "pcb_fabricator": shaped(O + "pcb_fabricator", ["ILI", "FBF", "IPI"],
-                             {"I": O + "iron_plate", "L": M + "glowstone", "F": O + "fluid_pipe",
-                              "B": O + "basic_machine_casing", "P": M + "piston"}),
+    # UV lamp hood over an exposure frame — no circuits, it is what makes them
+    "pcb_burner": shaped(O + "pcb_burner", ["ILI", "IGI", "IBI"],
+                         {"I": O + "iron_plate", "L": M + "glowstone", "G": M + "glass_pane",
+                          "B": O + "basic_machine_casing"}),
+    # Glass-lined acid tray, fed by pipe
+    "pcb_washer": shaped(O + "pcb_washer", ["GFG", "GCG", "III"],
+                         {"G": M + "glass", "F": O + "fluid_pipe", "C": M + "cauldron", "I": O + "iron_plate"}),
     # Solder spool, iron and heating coil on a bench
     "soldering_station": shaped(O + "soldering_station", ["WRC", "PPP"],
                                 {"W": O + "tin_wire", "R": O + "iron_rod", "C": O + "copper_coil",
@@ -593,6 +666,14 @@ def build_recipes():
     for name, recipe in SOLVATION.items():
         write_json(os.path.join(DATA, "machine_recipe", "solvation", name + ".json"), recipe)
         written += 1
+    for name, recipe in PIPETTE_RECIPES.items():
+        write_json(os.path.join(DATA, "recipe", name + ".json"), recipe)
+        written += 1
+    for name, (temp, inp, out, count) in GLASS_BLOWING.items():
+        write_json(os.path.join(DATA, "machine_recipe", "glass_blowing", name + ".json"),
+                   {"requiredMinimalTemperature": temp, "input": inp, "output": {"item": out, "count": count}})
+        written += 1
+    write_json(os.path.join(DATA, "tags", "fluid", "pcb_etchant.json"), {"values": ETCHANTS})
     print(f"  recipes: {written} written, {skipped} skipped")
 
 
@@ -617,24 +698,30 @@ def build_items():
         item_assets(iid, tex)
 
 
-def block_assets(bid, model, rotatable):
-    write_json(os.path.join(ASSETS, "models", "block", bid + ".json"), model)
+def block_assets(bid, model, rotatable, keep_model=False, tall=False):
+    write_json(os.path.join(ASSETS, "models", "block", bid + ".json"), model, overwrite=not keep_model)
     if rotatable:
         variants = {f"facing={f}": ({"model": "omnitech:block/" + bid, "y": y} if y else
                                     {"model": "omnitech:block/" + bid})
                     for f, y in (("north", 0), ("south", 180), ("west", 270), ("east", 90))}
+        if tall:
+            # the upper half renders nothing (RenderShape.INVISIBLE) but still needs a model for particles
+            variants = {f"{k},half={h}": v for k, v in variants.items() for h in ("lower", "upper")}
     else:
         variants = {"": {"model": "omnitech:block/" + bid}}
     write_json(os.path.join(ASSETS, "blockstates", bid + ".json"), {"variants": variants})
     write_json(os.path.join(ASSETS, "items", bid + ".json"),
                {"model": {"type": "minecraft:model", "model": "omnitech:block/" + bid}})
-    self_drop(bid)
+    self_drop(bid, lower_half_only=tall)
 
 
-def self_drop(bid, overwrite=True):
+def self_drop(bid, overwrite=True, lower_half_only=False):
+    entry = {"type": "minecraft:item", "name": "omnitech:" + bid}
+    if lower_half_only:
+        entry["condition"] = {"type": "minecraft:match_block", "blocks": "omnitech:" + bid, "state": {"half": "lower"}}
     return write_json(os.path.join(DATA, "loot_table", "blocks", bid + ".json"), {
         "type": "minecraft:block",
-        "pools": [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": "omnitech:" + bid}],
+        "pools": [{"rolls": 1, "entries": [entry],
                    "condition": {"type": "minecraft:survives_explosion"}}],
         "random_sequence": "omnitech:blocks/" + bid,
     }, overwrite=overwrite)
@@ -663,7 +750,15 @@ def build_blocks():
     for bid, (_en, _ru, tex, _tool) in STATIONS.items():
         for t in tex.values():
             check_texture(t)
-        block_assets(bid, {"parent": "minecraft:block/cube", "textures": tex}, rotatable=True)
+        block_assets(bid, {"parent": "minecraft:block/cube", "textures": tex}, rotatable=True, keep_model=True,
+                     tall=bid in TALL_STATIONS)
+    for bid in RETIRED_STATIONS:
+        for path in (os.path.join(ASSETS, "blockstates", bid + ".json"), os.path.join(ASSETS, "items", bid + ".json"),
+                     os.path.join(ASSETS, "models", "block", bid + ".json"),
+                     os.path.join(DATA, "loot_table", "blocks", bid + ".json"),
+                     os.path.join(DATA, "recipe", bid + ".json")):
+            if os.path.exists(path):
+                os.remove(path)
 
 
 def tint(src, dst, color, only_changed_vs=None):
@@ -707,6 +802,106 @@ def build_photoresist():
     write_json(os.path.join(ASSETS, "models", "block", "fluid", name + ".json"),
                {"textures": {"particle": "omnitech:block/fluid/" + name + "_still"}})
     item_assets(name + "_bucket", name + "_bucket")
+
+
+PCB_TEXTURES = ["textolite_plate", "silica_wafer", "empty_circuit_board", "photomask",
+                "empty_light_bulb", "uv_bulb", "exposed_circuit_board"]
+
+
+def _recolor(src, color, alpha=None):
+    """A copy of an item texture recoloured by luminance (optionally with a fixed alpha)."""
+    img = Image.open(os.path.join(ASSETS, "textures", "item", src + ".png")).convert("RGBA")
+    px = img.load()
+    for y in range(img.height):
+        for x in range(img.width):
+            r, g, b, a = px[x, y]
+            if a == 0:
+                continue
+            k = 0.45 + 0.85 * (0.299 * r + 0.587 * g + 0.114 * b) / 255
+            px[x, y] = tuple(min(255, int(c * k)) for c in color) + (alpha if alpha is not None else a,)
+    return img
+
+
+def _bulb(glass, glow=None):
+    """16×16 light bulb: glass envelope (RGBA fill), optional filament glow, screw base."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    px = img.load()
+    shape = ["......####......",
+             "....##....##....",
+             "...#........#...",
+             "..#..........#..",
+             "..#..........#..",
+             "..#..........#..",
+             "..#..........#..",
+             "...#........#...",
+             "....#......#....",
+             ".....#....#.....",
+             ".....######.....",
+             ".....mMmMmM.....",
+             ".....MmMmMm.....",
+             ".....mMmMmM.....",
+             "......dddd......",
+             ".......dd......."]
+    edge = tuple(min(255, c + 60) for c in glass[:3]) + (230,)
+    for y, row in enumerate(shape):
+        inside = False
+        for x, ch in enumerate(row):
+            if ch == "#":
+                px[x, y] = edge
+            elif ch in "mM":
+                px[x, y] = (150, 150, 158, 255) if ch == "m" else (200, 200, 208, 255)
+            elif ch == "d":
+                px[x, y] = (60, 60, 66, 255)
+        cols = [x for x, ch in enumerate(row) if ch == "#"]
+        if y < 10 and len(cols) >= 2:
+            for x in range(cols[0] + 1, cols[-1]):
+                if row[x] == ".":
+                    px[x, y] = glass
+    px[5, 3] = px[4, 4] = px[4, 5] = (255, 255, 255, 220)   # highlight
+    if glow:
+        for x, y in ((7, 9), (8, 9), (7, 8), (8, 8), (6, 6), (9, 6), (6, 7), (9, 7), (7, 5), (8, 5)):
+            px[x, y] = glow
+    return img
+
+
+def build_pcb_textures():
+    out = os.path.join(ASSETS, "textures", "item")
+    made = []
+
+    def save(name, img):
+        path = os.path.join(out, name + ".png")
+        if not os.path.exists(path):
+            img.save(path)
+            made.append(name)
+
+    # glass-epoxy laminate: the plain green blank
+    save("textolite_plate", _recolor("empty-circuit", (196, 186, 92)))
+    # fused silica: pale, half-clear
+    save("silica_wafer", _recolor("silicon_alloy", (200, 225, 240), alpha=190))
+    # copper clad, amber resist coat
+    save("empty_circuit_board", _recolor("empty-circuit", (214, 120, 52)))
+    # silica plate with the blueprint's lines in chrome
+    mask = _recolor("silicon_alloy", (200, 225, 240), alpha=190)
+    lines = Image.open(os.path.join(out, "circuit_blueprint.png")).convert("RGBA")
+    mp, lp = mask.load(), lines.load()
+    for y in range(16):
+        for x in range(16):
+            r, g, b, a = lp[x, y]
+            if a and mp[x, y][3] and r > 180 and g > 180:
+                mp[x, y] = (70, 74, 86, 255)
+    save("photomask", mask)
+    # resist coat with the pattern burnt in, darker where the UV hit
+    exposed = _recolor("empty-circuit", (214, 120, 52))
+    ep = exposed.load()
+    for y in range(16):
+        for x in range(16):
+            r, g, b, a = lp[x, y]
+            if a and ep[x, y][3] and r > 180 and g > 180:
+                ep[x, y] = (120, 52, 110, 255)
+    save("exposed_circuit_board", exposed)
+    save("empty_light_bulb", _bulb((215, 235, 245, 90)))
+    save("uv_bulb", _bulb((150, 90, 235, 150), glow=(225, 190, 255, 255)))
+    print(f"  pcb textures: +{len(made)}")
 
 
 def build_resistor():
@@ -755,6 +950,7 @@ def build_resistor():
 def add_to_tag(path, ids):
     with open(path, encoding="utf-8") as f:
         tag = json.load(f)
+    tag["values"] = [v for v in tag["values"] if v.removeprefix("omnitech:") not in RETIRED_STATIONS]
     for i in ids:
         if i not in tag["values"]:
             tag["values"].append(i)
@@ -772,6 +968,7 @@ def build_tags_and_tabs():
         path = os.path.join(DATA, "creative_tab", tab + ".json")
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
+        data["data"] = [v for v in data["data"] if v.removeprefix("omnitech:") not in RETIRED_STATIONS]
         for i in ids:
             if i not in data["data"]:
                 data["data"].append(i)
@@ -780,13 +977,15 @@ def build_tags_and_tabs():
     tab_add("omnitech.machines", ["omnitech:" + b for b in STATIONS] + ["omnitech:" + b for b in CASINGS]
             + ["omnitech:photoresist_bucket"])
     tab_add("omnitech.materials", ["omnitech:" + i for i in ITEMS] + ["omnitech:resistor"])
-    tab_add("omnitech.utility", ["omnitech:pcb_blueprint", "omnitech:printed_circuit_board",
+    tab_add("omnitech.utility", ["omnitech:pcb_blueprint", "omnitech:photomask", "omnitech:empty_circuit_board",
+                                 "omnitech:uv_bulb", "omnitech:exposed_circuit_board", "omnitech:printed_circuit_board",
                                  "omnitech:assembled_circuit_board"])
 
 
 LANG = {
     "container.omnitech.pcb_workbench": ("PCB Workbench", "Верстак печатных плат"),
-    "container.omnitech.pcb_fabricator": ("PCB Fabricator", "Фабрикатор печатных плат"),
+    "container.omnitech.pcb_burner": ("PCB Burner", "Установка засветки плат"),
+    "container.omnitech.pcb_washer": ("PCB Washer", "Ванна травления плат"),
     "container.omnitech.soldering_station": ("Soldering Station", "Паяльная станция"),
     "fluid.omnitech.photoresist": ("Photoresist", "Фоторезист"),
     "block.omnitech.photoresist": ("Photoresist", "Фоторезист"),
@@ -816,8 +1015,9 @@ LANG = {
     "gui.omnitech.pcb.unplace.tooltip": ("Remove every placed part", "Убрать все установленные детали"),
     "gui.omnitech.pcb.info": ("%s pads · %s nets · %s terminals", "%s площ. · %s цепей · %s выв."),
     "gui.omnitech.pcb.terminal": ("Terminal %s", "Вывод %s"),
-    "gui.omnitech.pcb.fab_cost": ("Per board: %s copper plate(s), %s mB photoresist",
-                                  "На плату: медных пластин %s, фоторезиста %s mB"),
+    "gui.omnitech.pcb.fab_cost": ("Acid: %s / board", "Кислота: %s / плата"),
+    "gui.omnitech.pcb.fab_exposing": ("UV exposure", "УФ-засветка"),
+    "gui.omnitech.pcb.fab_etching": ("Etching", "Травление"),
     "gui.omnitech.pcb.rotate": ("Rotate", "Поворот"),
     "gui.omnitech.pcb.rotate.tooltip": ("Rotate the part (R or mouse wheel)", "Повернуть деталь (R или колесо мыши)"),
     "gui.omnitech.pcb.test": ("Test", "Тест"),
@@ -875,9 +1075,12 @@ LANG = {
     "tooltip.omnitech.pcb.reference": ("Ready-made: parts placement included (%s)",
                                        "Готовый чертёж: расстановка деталей включена (%s)"),
 
-    "jei.omnitech.pcb_fabrication": ("PCB Fabrication", "Изготовление плат"),
-    "jei.omnitech.pcb_fabrication.mask": ("Blueprint is the photomask, not used up",
-                                          "Чертёж — фотошаблон, не расходуется"),
+    "subtitles.omnitech.pcb_burner_flash": ("PCB Burner flashes", "Вспышка установки засветки"),
+    "subtitles.omnitech.pcb_washer_flush": ("PCB Washer flushes", "Слив ванны травления"),
+    "jei.omnitech.pcb_exposure": ("PCB Exposure", "Засветка плат"),
+    "jei.omnitech.pcb_etching": ("PCB Etching", "Травление плат"),
+    "jei.omnitech.pcb_fabrication.mask": ("Photomask is not used up; the UV bulb wears",
+                                          "Фотошаблон не расходуется, УФ-лампа изнашивается"),
     "jei.omnitech.soldering": ("Soldering & Testing", "Пайка и испытание"),
     "jei.omnitech.soldering.test": ("Test: %s", "Стенд: %s"),
     "jei.omnitech.soldering.reference": ("Reference placement — the Soldering Station fills it in for you",
@@ -889,11 +1092,20 @@ LANG = {
         "Нарисуйте плату: Дорожка — медь, Площадка — отверстия под выводы, Форма — добавить или вырезать площадь, "
         "Вывод — имя площадки (V+, GND, IN, OUT, AC1, AC2). Напечатайте на бумаге — получится чертёж платы. "
         "Не знаете, с чего начать? Скрафтите готовый чертёж (бумага + синий краситель + стабилитрон, NPN-транзистор или конденсатор)."),
-    "jei.omnitech.info.pcb_fabricator": (
-        "Mass-produces etched boards from a PCB Blueprint (the photomask, never used up). Needs power, copper plates "
-        "and photoresist — resin clumps dissolved in acetone in the Solvation Machine. Bigger boards cost more.",
-        "Серийно изготавливает платы по чертежу (фотошаблон не расходуется). Нужны энергия, медные пластины "
-        "и фоторезист — смола, растворённая в ацетоне в машине растворения. Большие платы дороже."),
+    "jei.omnitech.info.pcb_burner": (
+        "Two blocks tall. Burns a photomask's drawing into an empty circuit board: put in a UV bulb, the photomask and "
+        "empty boards, and give it power. The photomask is never used up; the bulb wears one point per board. "
+        "Photomask = PCB blueprint + fused silica wafer. Empty board = textolite plate + copper plate + a pipette "
+        "with 5 mB of photoresist. Etch the exposed boards in the PCB Washer.",
+        "Высотой в два блока. Переносит рисунок фотошаблона на заготовку платы: положите УФ-лампу, фотошаблон и "
+        "заготовки и подайте энергию. Фотошаблон не расходуется, лампа изнашивается на единицу за плату. "
+        "Фотошаблон = чертёж платы + пластина кварцевого стекла. Заготовка = стеклотекстолит + медная пластина + "
+        "пипетка с 5 mB фоторезиста. Засвеченные платы протравите в ванне травления."),
+    "jei.omnitech.info.pcb_washer": (
+        "Acid bath for exposed circuit boards: hydrochloric, nitric or sulfuric acid (by pipe or bucket) dissolves "
+        "the copper the resist left bare, leaving a printed circuit board. Needs no power; bigger boards take more acid.",
+        "Кислотная ванна для засвеченных плат: соляная, азотная или серная кислота (по трубе или в ведре) растворяет "
+        "медь, не закрытую резистом, и остаётся печатная плата. Энергия не нужна; большим платам нужно больше кислоты."),
     "jei.omnitech.info.soldering_station": (
         "Place parts on the pads of an etched board (R rotates), then press Test to simulate it on every test bench, "
         "and Solder to build it. Boards from ready-made blueprints come with their parts already placed — just "
@@ -902,8 +1114,10 @@ LANG = {
         "и «Паять» для сборки. Платы по готовым чертежам приходят с уже расставленными деталями — просто "
         "положите детали и оловянную проволоку и нажмите «Паять»."),
     "jei.omnitech.info.pcb_blueprint": (
-        "A printed circuit drawing. Put it in the PCB Fabricator as a photomask, or in the PCB Workbench to edit or copy it.",
-        "Чертёж печатной платы. Вставьте в фабрикатор как фотошаблон или в верстак, чтобы изменить или скопировать."),
+        "A printed circuit drawing. Craft it with a fused silica wafer into a photomask for the PCB Burner, "
+        "or put it in the PCB Workbench to edit or copy it.",
+        "Чертёж печатной платы. Скрафтите с пластиной кварцевого стекла — получится фотошаблон для установки засветки; "
+        "в верстаке чертёж можно изменить или скопировать."),
 
     "item.omnitech.resistor": ("Resistor", "Резистор"),
     "item.omnitech.resistor.blank": ("Blank Resistor", "Резистор без маркировки"),
@@ -914,10 +1128,26 @@ LANG = {
     "tooltip.omnitech.resistor.metal_film": ("Metal film", "Металлоплёночный"),
     "tooltip.omnitech.resistor.tempco": ("%s ppm/K", "%s ppm/K"),
 
+    "tooltip.omnitech.uv_bulb.desc": ("Lamp for the PCB Burner: wears one point per exposed board",
+                                      "Лампа для установки засветки: изнашивается на единицу за каждую засвеченную плату"),
+    "tooltip.omnitech.photomask.desc": ("Reusable mask for the PCB Burner", "Многоразовый шаблон для установки засветки"),
+    "tooltip.omnitech.empty_circuit_board.desc": ("Copper-clad and resist-coated; expose it in the PCB Burner",
+                                                  "Покрыта медью и фоторезистом; засветите в установке засветки"),
+    "tooltip.omnitech.exposed_circuit_board.desc": ("Pattern burnt into the resist; etch it in the PCB Washer",
+                                                    "Рисунок перенесён в резист; протравите в ванне травления"),
     "tooltip.omnitech.pcb.board": ("%s×%s board, %s pads", "Плата %s×%s, площадок: %s"),
     "tooltip.omnitech.pcb.parts": ("%s components soldered", "Припаяно деталей: %s"),
     "tooltip.omnitech.pcb.terminals": ("Terminals: %s", "Выводы: %s"),
 }
+
+
+# Existing keys whose wording changed with the fabricator rework — rewritten in place
+LANG_REPLACE = {"gui.omnitech.pcb.fab_cost", "jei.omnitech.pcb_fabrication.mask", "jei.omnitech.info.pcb_blueprint",
+                "tooltip.omnitech.uv_bulb.desc", "tooltip.omnitech.photomask.desc",
+                "tooltip.omnitech.empty_circuit_board.desc"}
+# Keys of the retired single-block PCB Fabricator — dropped from the lang files
+LANG_REMOVE = {"block.omnitech.pcb_fabricator", "container.omnitech.pcb_fabricator",
+               "jei.omnitech.pcb_fabrication", "jei.omnitech.info.pcb_fabricator"}
 
 
 def build_lang():
@@ -937,6 +1167,15 @@ def build_lang():
         with open(path, encoding="utf-8") as f:
             text = f.read()
         lang = json.loads(text)
+        for k in LANG_REPLACE:
+            if k in lang and lang[k] != entries[k][idx]:
+                old_line = f"{json.dumps(k, ensure_ascii=False)}: {json.dumps(lang[k], ensure_ascii=False)}"
+                assert old_line in text, k
+                text = text.replace(old_line, f"{json.dumps(k, ensure_ascii=False)}: {json.dumps(entries[k][idx], ensure_ascii=False)}")
+        for k in LANG_REMOVE:
+            if k in lang:
+                text = re.sub(r"\n[ \t]*" + re.escape(json.dumps(k, ensure_ascii=False)) + r":[^\n]*", "", text)
+        text = re.sub(r",(\s*\n\s*})", r"\1", text)   # a removed last entry leaves a dangling comma
         new = [(k, v[idx]) for k, v in entries.items() if k not in lang]
         if new:
             # Append as a new block before the closing brace so hand-made grouping survives
@@ -946,14 +1185,15 @@ def build_lang():
             lines = ",\n".join(f"  {json.dumps(k, ensure_ascii=False)}: {json.dumps(v, ensure_ascii=False)}"
                                for k, v in new)
             text = body + ",\n\n" + lines + "\n}\n"
-            json.loads(text)  # sanity
-            with open(path, "w", encoding="utf-8") as f:
-                f.write(text)
+        json.loads(text)  # sanity
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(text)
         print(f"  lang {code}: +{len(new)}")
 
 
 if __name__ == "__main__":
     print("Items / blocks / fluid")
+    build_pcb_textures()
     build_items()
     build_blocks()
     build_photoresist()

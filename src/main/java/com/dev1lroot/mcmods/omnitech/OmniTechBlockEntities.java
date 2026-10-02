@@ -7,7 +7,7 @@ package com.dev1lroot.mcmods.omnitech;
 import com.dev1lroot.mcmods.omnitech.blocks.thermal.alloy_furnace.AlloyFurnaceBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.processing.centrifuge.ManualCentrifugeBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticGeneratorBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticPipeBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticShaftBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticReductorBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.ChemicalMixerBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.labware.ElectrolysisMachineBlockEntity;
@@ -46,7 +46,8 @@ import com.dev1lroot.mcmods.omnitech.blocks.logic.gpio_port.GPIOPortBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.programming_station.ProgrammingStationBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.research_table.ResearchTableBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbWorkbenchBlockEntity;
-import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbFabricatorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbBurnerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbWasherBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.SolderingStationBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_gate.LogicGateBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.logic.logic_machine.LogicMachineBlockEntity;
@@ -88,10 +89,16 @@ public class OmniTechBlockEntities {
                     () -> new BlockEntityType<>(KineticGeneratorBlockEntity::new,
                             OmniTechBlocks.KF_GENERATOR.get()));
 
-    public static final Supplier<BlockEntityType<KineticPipeBlockEntity>> KF_PIPE =
-            REGISTRY.register("kf_pipe",
-                    () -> new BlockEntityType<>(KineticPipeBlockEntity::new,
-                            OmniTechBlocks.KF_PIPE.get()));
+    public static final Supplier<BlockEntityType<KineticShaftBlockEntity>> KF_SHAFT =
+            REGISTRY.register("kf_shaft",
+                    () -> new BlockEntityType<>(KineticShaftBlockEntity::new,
+                            OmniTechBlocks.KF_SHAFT.get()));
+
+    // Renamed from kf_pipe ("Kinetic Pipe") — old worlds and items load as the shaft
+    static {
+        REGISTRY.addAlias(net.minecraft.resources.Identifier.fromNamespaceAndPath(OmniTech.MODID, "kf_pipe"),
+                net.minecraft.resources.Identifier.fromNamespaceAndPath(OmniTech.MODID, "kf_shaft"));
+    }
 
     public static final Supplier<BlockEntityType<KineticReductorBlockEntity>> KF_REDUCTOR =
             REGISTRY.register("kf_reductor",
@@ -341,9 +348,12 @@ public class OmniTechBlockEntities {
     public static final Supplier<BlockEntityType<PcbWorkbenchBlockEntity>> PCB_WORKBENCH =
             REGISTRY.register("pcb_workbench",
                     () -> new BlockEntityType<>(PcbWorkbenchBlockEntity::new, OmniTechBlocks.PCB_WORKBENCH.get()));
-    public static final Supplier<BlockEntityType<PcbFabricatorBlockEntity>> PCB_FABRICATOR =
-            REGISTRY.register("pcb_fabricator",
-                    () -> new BlockEntityType<>(PcbFabricatorBlockEntity::new, OmniTechBlocks.PCB_FABRICATOR.get()));
+    public static final Supplier<BlockEntityType<PcbBurnerBlockEntity>> PCB_BURNER =
+            REGISTRY.register("pcb_burner",
+                    () -> new BlockEntityType<>(PcbBurnerBlockEntity::new, OmniTechBlocks.PCB_BURNER.get()));
+    public static final Supplier<BlockEntityType<PcbWasherBlockEntity>> PCB_WASHER =
+            REGISTRY.register("pcb_washer",
+                    () -> new BlockEntityType<>(PcbWasherBlockEntity::new, OmniTechBlocks.PCB_WASHER.get()));
     public static final Supplier<BlockEntityType<SolderingStationBlockEntity>> SOLDERING_STATION =
             REGISTRY.register("soldering_station",
                     () -> new BlockEntityType<>(SolderingStationBlockEntity::new, OmniTechBlocks.SOLDERING_STATION.get()));

@@ -1,0 +1,8 @@
+{
+  "requiredMinimalTemperature": 1950,
+  "input": "minecraft:quartz",
+  "output": {
+    "item": "omnitech:silica_wafer",
+    "count": 2
+  }
+}

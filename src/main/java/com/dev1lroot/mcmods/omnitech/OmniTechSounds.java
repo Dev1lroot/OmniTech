@@ -20,6 +20,16 @@ public class OmniTechSounds {
             REGISTRY.register("nuclear_explosion", () -> SoundEvent.createFixedRangeEvent(
                     Identifier.fromNamespaceAndPath(OmniTech.MODID, "nuclear_explosion"), 320.0f));
 
+    /** UV flash when the PCB Burner finishes exposing a board. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> PCB_BURNER_FLASH =
+            REGISTRY.register("pcb_burner_flash", () -> SoundEvent.createVariableRangeEvent(
+                    Identifier.fromNamespaceAndPath(OmniTech.MODID, "pcb_burner_flash")));
+
+    /** Acid flush when the PCB Washer finishes etching a board. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> PCB_WASHER_FLUSH =
+            REGISTRY.register("pcb_washer_flush", () -> SoundEvent.createVariableRangeEvent(
+                    Identifier.fromNamespaceAndPath(OmniTech.MODID, "pcb_washer_flush")));
+
     public static void register(IEventBus bus) {
         REGISTRY.register(bus);
     }

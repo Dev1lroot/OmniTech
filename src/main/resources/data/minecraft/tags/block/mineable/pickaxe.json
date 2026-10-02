@@ -11,7 +11,7 @@
     "omnitech:manual_centrifuge",
     "omnitech:manual_centrifuge_rotor",
     "omnitech:kf_generator",
-    "omnitech:kf_pipe",
+    "omnitech:kf_shaft",
     "omnitech:kf_reductor",
     "omnitech:kf_reductor_axis",
     "omnitech:heater",
@@ -250,7 +250,8 @@
     "omnitech:europa_evaporite",
     "omnitech:basic_machine_casing",
     "omnitech:machine_casing",
-    "omnitech:pcb_fabricator",
-    "omnitech:soldering_station"
+    "omnitech:soldering_station",
+    "omnitech:pcb_burner",
+    "omnitech:pcb_washer"
   ]
 }

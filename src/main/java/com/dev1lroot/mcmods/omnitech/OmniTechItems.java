@@ -88,8 +88,14 @@ public class OmniTechItems
     public static final DeferredItem<BlockItem> KF_GENERATOR_ITEM = REGISTRY.registerSimpleBlockItem(
             "kf_generator", OmniTechBlocks.KF_GENERATOR);
 
-    public static final DeferredItem<BlockItem> KF_PIPE_ITEM = REGISTRY.registerSimpleBlockItem(
-            "kf_pipe", OmniTechBlocks.KF_PIPE);
+    public static final DeferredItem<BlockItem> KF_SHAFT_ITEM = REGISTRY.registerSimpleBlockItem(
+            "kf_shaft", OmniTechBlocks.KF_SHAFT);
+
+    // Renamed from kf_pipe ("Kinetic Pipe") — old worlds and items load as the shaft
+    static {
+        REGISTRY.addAlias(net.minecraft.resources.Identifier.fromNamespaceAndPath(OmniTech.MODID, "kf_pipe"),
+                net.minecraft.resources.Identifier.fromNamespaceAndPath(OmniTech.MODID, "kf_shaft"));
+    }
 
     public static final DeferredItem<BlockItem> KF_REDUCTOR_ITEM = REGISTRY.registerSimpleBlockItem(
             "kf_reductor", OmniTechBlocks.KF_REDUCTOR);
@@ -386,8 +392,10 @@ public class OmniTechItems
             REGISTRY.registerSimpleBlockItem("research_table", OmniTechBlocks.RESEARCH_TABLE);
     public static final DeferredItem<BlockItem> PCB_WORKBENCH_ITEM =
             REGISTRY.registerSimpleBlockItem("pcb_workbench", OmniTechBlocks.PCB_WORKBENCH);
-    public static final DeferredItem<BlockItem> PCB_FABRICATOR_ITEM =
-            REGISTRY.registerSimpleBlockItem("pcb_fabricator", OmniTechBlocks.PCB_FABRICATOR);
+    public static final DeferredItem<BlockItem> PCB_BURNER_ITEM =
+            REGISTRY.registerSimpleBlockItem("pcb_burner", OmniTechBlocks.PCB_BURNER);
+    public static final DeferredItem<BlockItem> PCB_WASHER_ITEM =
+            REGISTRY.registerSimpleBlockItem("pcb_washer", OmniTechBlocks.PCB_WASHER);
     public static final DeferredItem<BlockItem> SOLDERING_STATION_ITEM =
             REGISTRY.registerSimpleBlockItem("soldering_station", OmniTechBlocks.SOLDERING_STATION);
     /** Resistor: crafted blank, value painted on as colour bands ({@code resistor_bands}). */
@@ -396,6 +404,18 @@ public class OmniTechItems
     /** Paper photomask printed at the PCB Workbench; carries {@code pcb_design}. */
     public static final DeferredItem<Item> PCB_BLUEPRINT =
             REGISTRY.registerItem("pcb_blueprint", Item::new, p -> p.stacksTo(16));
+    /** Blueprint transferred onto a fused-silica plate; the PCB Burner's reusable mask. Carries {@code pcb_design}. */
+    public static final DeferredItem<Item> PHOTOMASK =
+            REGISTRY.registerItem("photomask", Item::new, p -> p.stacksTo(16));
+    /** Copper-clad textolite coated in photoresist, ready to be exposed and etched. */
+    public static final DeferredItem<Item> EMPTY_CIRCUIT_BOARD =
+            REGISTRY.registerItem("empty_circuit_board", Item::new);
+    /** Empty board with the photomask's pattern burnt into its resist by the PCB Burner; carries {@code pcb_design}. */
+    public static final DeferredItem<Item> EXPOSED_CIRCUIT_BOARD =
+            REGISTRY.registerItem("exposed_circuit_board", Item::new);
+    /** Mercury-vapour UV lamp for the PCB Burner; one point of wear per exposed board. */
+    public static final DeferredItem<Item> UV_BULB =
+            REGISTRY.registerItem("uv_bulb", Item::new, p -> p.durability(64));
     /** Etched bare board from the PCB Fabricator; carries {@code pcb_design}. */
     public static final DeferredItem<Item> PRINTED_CIRCUIT_BOARD =
             REGISTRY.registerItem("printed_circuit_board", Item::new);

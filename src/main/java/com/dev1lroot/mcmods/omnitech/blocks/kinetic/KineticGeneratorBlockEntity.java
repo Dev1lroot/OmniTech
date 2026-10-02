@@ -90,7 +90,7 @@ public class KineticGeneratorBlockEntity extends BaseContainerBlockEntity implem
             level.setBlock(pos, state.setValue(KineticGeneratorBlock.LIT, be.isLit()), 3);
         }
 
-        // Walk the pipe network via BFS and deliver KF to every reachable machine
+        // Walk the shaft network via BFS and deliver KF to every reachable machine
         if (be.isLit()) {
             KineticNetworkUtil.propagateKineticForce(level, pos, KF_SUPPLY);
         }

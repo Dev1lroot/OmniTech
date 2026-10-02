@@ -143,7 +143,7 @@ public class OmniTechClient
         event.registerBlockEntityRenderer(OmniTechBlockEntities.ELECTRIC_ENGINE.get(), ElectricEngineRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.SUSPENSION_INSULATOR.get(), OverheadLineRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.CRANK.get(), CrankBlockEntityRenderer::new);
-        event.registerBlockEntityRenderer(OmniTechBlockEntities.KF_PIPE.get(), KineticPipeRenderer::new);
+        event.registerBlockEntityRenderer(OmniTechBlockEntities.KF_SHAFT.get(), KineticShaftRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.KF_REDUCTOR.get(), KineticReductorRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.CONVEYOR_BELT.get(), ConveyorBeltRenderer::new);
         event.registerBlockEntityRenderer(OmniTechBlockEntities.FLUID_TANK.get(), FluidTankRenderer::new);
@@ -589,6 +589,8 @@ public class OmniTechClient
             var parts = stack.get(OmniTechDataComponents.PCB_PARTS.get());
             if (parts != null) {
                 boolean reference = stack.is(OmniTechItems.PCB_BLUEPRINT.get())
+                        || stack.is(OmniTechItems.PHOTOMASK.get())
+                        || stack.is(OmniTechItems.EXPOSED_CIRCUIT_BOARD.get())
                         || stack.is(OmniTechItems.PRINTED_CIRCUIT_BOARD.get());
                 event.getToolTip().add(Component.translatable(reference
                         ? "tooltip.omnitech.pcb.reference" : "tooltip.omnitech.pcb.parts", parts.size())

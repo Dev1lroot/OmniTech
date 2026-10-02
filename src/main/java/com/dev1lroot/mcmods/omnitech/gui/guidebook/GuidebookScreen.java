@@ -193,9 +193,14 @@ public class GuidebookScreen extends Screen {
 
                 String label = link.label();
                 // Append a small indicator for the link type
-                String displayLabel = link.target() instanceof GuidebookPage.LinkTarget.Url
-                        ? label + " [web]"
-                        : label + " [->p" + (((GuidebookPage.LinkTarget.PageJump) link.target()).pageIndex() + 1) + "]";
+                String displayLabel = switch (link.target()) {
+                    case GuidebookPage.LinkTarget.Url u -> label + " [web]";
+                    case GuidebookPage.LinkTarget.PageJump j -> label + " [->p" + (j.pageIndex() + 1) + "]";
+                    case GuidebookPage.LinkTarget.PageRef r -> {
+                        int idx = indexOf(r.key());
+                        yield idx < 0 ? label : label + " [->p" + (idx + 1) + "]";
+                    }
+                };
 
                 g.text(font, displayLabel, contentLeft, y, color, false);
 
@@ -272,7 +277,20 @@ public class GuidebookScreen extends Screen {
                     scrollOffset = 0;
                 }
             }
+            case GuidebookPage.LinkTarget.PageRef r -> {
+                int idx = indexOf(r.key());
+                if (idx >= 0) {
+                    currentPage = idx;
+                    scrollOffset = 0;
+                }
+            }
         }
+    }
+
+    /** Index of the page with this key, or -1. */
+    private int indexOf(String key) {
+        for (int i = 0; i < pages.size(); i++) if (pages.get(i).key().equals(key)) return i;
+        return -1;
     }
 
     // ── Navigation ────────────────────────────────────────────────────────────

@@ -40,6 +40,10 @@
     "omnitech:ram_card",
     "omnitech:pcb_blueprint",
     "omnitech:printed_circuit_board",
-    "omnitech:assembled_circuit_board"
+    "omnitech:assembled_circuit_board",
+    "omnitech:photomask",
+    "omnitech:empty_circuit_board",
+    "omnitech:uv_bulb",
+    "omnitech:exposed_circuit_board"
   ]
 }

@@ -8,9 +8,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -24,6 +26,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiFunction;
@@ -69,6 +72,15 @@ public class PcbStationBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
             Player player, BlockHitResult hit) {
+        // Buckets of etching acid go straight into the washer's tank
+        if (level.getBlockEntity(pos) instanceof PcbWasherBlockEntity) {
+            for (InteractionHand hand : InteractionHand.values()) {
+                if (!(player.getItemInHand(hand).getItem() instanceof BucketItem)) continue;
+                if (level.isClientSide()) return InteractionResult.SUCCESS;
+                return FluidUtil.interactWithFluidHandler(player, hand, level, pos, hit.getDirection())
+                        ? InteractionResult.SUCCESS : InteractionResult.FAIL;
+            }
+        }
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof Station st) {
             ((ServerPlayer) player).openMenu(st, st::writeOpenData);
         }

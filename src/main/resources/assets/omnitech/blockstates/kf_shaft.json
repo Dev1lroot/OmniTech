@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "axis=y": { "model": "omnitech:block/kf_shaft" },
+    "axis=z": { "model": "omnitech:block/kf_shaft", "x": 90 },
+    "axis=x": { "model": "omnitech:block/kf_shaft", "x": 90, "y": 90 }
+  }
+}

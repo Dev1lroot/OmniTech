@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "omnitech:block/soldering_station"
+    "model": "omnitech:item/soldering_station"
   }
 }

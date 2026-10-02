@@ -13,7 +13,7 @@
     "omnitech:foundry",
     "omnitech:glass_blowing_station",
     "omnitech:crank",
-    "omnitech:kf_pipe",
+    "omnitech:kf_shaft",
     "omnitech:kf_reductor",
     "omnitech:conveyor_belt",
     "omnitech:sorter",
@@ -111,10 +111,11 @@
     "omnitech:redstone_intersection_block",
     "omnitech:orrery",
     "omnitech:pcb_workbench",
-    "omnitech:pcb_fabricator",
     "omnitech:soldering_station",
     "omnitech:basic_machine_casing",
     "omnitech:machine_casing",
-    "omnitech:photoresist_bucket"
+    "omnitech:photoresist_bucket",
+    "omnitech:pcb_burner",
+    "omnitech:pcb_washer"
   ]
 }

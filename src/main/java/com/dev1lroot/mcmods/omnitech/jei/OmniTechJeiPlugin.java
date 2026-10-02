@@ -10,7 +10,8 @@ import com.dev1lroot.mcmods.omnitech.OmniTechBlocks;
 import com.dev1lroot.mcmods.omnitech.OmniTechFluids;
 import com.dev1lroot.mcmods.omnitech.OmniTechItems;
 import com.dev1lroot.mcmods.omnitech.OmniTechDataComponents;
-import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbFabricatorBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbBurnerBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.PcbWasherBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.electrical.pcb.SolderingStationBlockEntity;
 import com.dev1lroot.mcmods.omnitech.gui.pcb.PcbRenderer;
 import com.dev1lroot.mcmods.omnitech.pcb.PlacedPart;
@@ -145,8 +146,10 @@ public class OmniTechJeiPlugin implements IModPlugin {
     /** Display-only: a ready-made board soldered with its reference parts into the circuit it tests as. */
     private record SolderingRecipe(ReadyBlueprints.Ready ready, TestBench bench) {}
 
-    public static final IRecipeType<PcbFabricationRecipe> PCB_FABRICATION =
-            IRecipeType.create(OmniTech.MODID, "pcb_fabrication", PcbFabricationRecipe.class);
+    public static final IRecipeType<PcbFabricationRecipe> PCB_EXPOSURE =
+            IRecipeType.create(OmniTech.MODID, "pcb_exposure", PcbFabricationRecipe.class);
+    public static final IRecipeType<PcbFabricationRecipe> PCB_ETCHING =
+            IRecipeType.create(OmniTech.MODID, "pcb_etching", PcbFabricationRecipe.class);
 
     public static final IRecipeType<SolderingRecipe> SOLDERING =
             IRecipeType.create(OmniTech.MODID, "soldering", SolderingRecipe.class);
@@ -192,6 +195,8 @@ public class OmniTechJeiPlugin implements IModPlugin {
     public void registerItemSubtypes(mezz.jei.api.registration.ISubtypeRegistration registration) {
         // Each drawn board is its own ingredient, so recipe lookups find the right blueprint
         registration.registerFromDataComponentTypes(OmniTechItems.PCB_BLUEPRINT.get(), OmniTechDataComponents.PCB_DESIGN.get());
+        registration.registerFromDataComponentTypes(OmniTechItems.PHOTOMASK.get(), OmniTechDataComponents.PCB_DESIGN.get());
+        registration.registerFromDataComponentTypes(OmniTechItems.EXPOSED_CIRCUIT_BOARD.get(), OmniTechDataComponents.PCB_DESIGN.get());
         registration.registerFromDataComponentTypes(OmniTechItems.PRINTED_CIRCUIT_BOARD.get(), OmniTechDataComponents.PCB_DESIGN.get());
     }
 
@@ -232,7 +237,8 @@ public class OmniTechJeiPlugin implements IModPlugin {
                 new FermentationCategory(gui),
                 new FermenterDissolveCategory(gui),
                 new FermenterMicrobeCategory(gui),
-                new PcbFabricationCategory(gui),
+                new PcbExposureCategory(gui),
+                new PcbEtchingCategory(gui),
                 new SolderingCategory(gui)
         );
     }
@@ -260,11 +266,12 @@ public class OmniTechJeiPlugin implements IModPlugin {
         registration.addRecipes(FERMENTATION,             FermentationRecipeManager.getAllRecipes());
         registration.addRecipes(FERMENTER_DISSOLVE,       FermentationRecipeManager.getDissolutions());
         registration.addRecipes(FERMENTER_MICROBES,       FermentationRecipeManager.getMicrobes());
-        registration.addRecipes(PCB_FABRICATION,          ReadyBlueprints.all().stream().map(PcbFabricationRecipe::new).toList());
+        registration.addRecipes(PCB_EXPOSURE,             ReadyBlueprints.all().stream().map(PcbFabricationRecipe::new).toList());
+        registration.addRecipes(PCB_ETCHING,              ReadyBlueprints.all().stream().map(PcbFabricationRecipe::new).toList());
         registration.addRecipes(SOLDERING,                buildSolderingRecipes());
 
         // The PCB pipeline is free-form (any drawing works), so explain each step on its block
-        for (var block : List.of(OmniTechBlocks.PCB_WORKBENCH, OmniTechBlocks.PCB_FABRICATOR, OmniTechBlocks.SOLDERING_STATION)) {
+        for (var block : List.of(OmniTechBlocks.PCB_WORKBENCH, OmniTechBlocks.PCB_BURNER, OmniTechBlocks.PCB_WASHER, OmniTechBlocks.SOLDERING_STATION)) {
             registration.addItemStackInfo(new ItemStack(block.get()),
                     Component.translatable("jei.omnitech.info." + block.getId().getPath()));
         }
@@ -315,7 +322,8 @@ public class OmniTechJeiPlugin implements IModPlugin {
         registration.addCraftingStation(FERMENTATION,            OmniTechBlocks.FERMENTER.get());
         registration.addCraftingStation(FERMENTER_DISSOLVE,      OmniTechBlocks.FERMENTER.get());
         registration.addCraftingStation(FERMENTER_MICROBES,      OmniTechBlocks.FERMENTER.get());
-        registration.addCraftingStation(PCB_FABRICATION,         OmniTechBlocks.PCB_FABRICATOR.get());
+        registration.addCraftingStation(PCB_EXPOSURE,            OmniTechBlocks.PCB_BURNER.get());
+        registration.addCraftingStation(PCB_ETCHING,             OmniTechBlocks.PCB_WASHER.get());
         registration.addCraftingStation(SOLDERING,               OmniTechBlocks.SOLDERING_STATION.get());
         registration.addCraftingStation(mezz.jei.api.constants.RecipeTypes.CRAFTING, OmniTechBlocks.PCB_WORKBENCH.get());
     }
@@ -905,8 +913,7 @@ public class OmniTechJeiPlugin implements IModPlugin {
 
         @Override
         public void setRecipe(IRecipeLayoutBuilder builder, GlassBlowingRecipe recipe, IFocusGroup focuses) {
-            if (recipe.getInput() != null)
-                builder.addInputSlot(0, 12).add(new ItemStack(recipe.getInput())).setStandardSlotBackground();
+            builder.addInputSlot(0, 12).addItemStacks(recipe.getInputStacks()).setStandardSlotBackground();
             ItemStack result = recipe.getResult();
             if (!result.isEmpty())
                 builder.addOutputSlot(82, 12).add(result).setOutputSlotBackground();
@@ -1148,46 +1155,73 @@ public class OmniTechJeiPlugin implements IModPlugin {
         }
     }
 
-    // ── PCB Fabricator: blueprint (mask) + copper + photoresist → etched board ─
+    // ── PCB Burner: UV bulb shines through the photomask onto an empty board ───
 
-    static class PcbFabricationCategory implements IRecipeCategory<PcbFabricationRecipe> {
+    static class PcbExposureCategory implements IRecipeCategory<PcbFabricationRecipe> {
         private final IDrawable icon;
         private final IDrawable arrow;
 
-        PcbFabricationCategory(IGuiHelper gui) {
-            this.icon  = gui.createDrawableItemLike(OmniTechBlocks.PCB_FABRICATOR.get());
+        PcbExposureCategory(IGuiHelper gui) {
+            this.icon  = gui.createDrawableItemLike(OmniTechBlocks.PCB_BURNER.get());
             this.arrow = gui.getRecipeArrow();
         }
 
-        @Override public IRecipeType<PcbFabricationRecipe> getRecipeType() { return PCB_FABRICATION; }
-        @Override public Component getTitle() { return Component.translatable("jei.omnitech.pcb_fabrication"); }
+        @Override public IRecipeType<PcbFabricationRecipe> getRecipeType() { return PCB_EXPOSURE; }
+        @Override public Component getTitle() { return Component.translatable("jei.omnitech.pcb_exposure"); }
         @Override public int getWidth()  { return 160; }
-        @Override public int getHeight() { return 62; }
+        @Override public int getHeight() { return 74; }
         @Override public IDrawable getIcon() { return icon; }
-
-        private static int boardCells(PcbFabricationRecipe r) { return r.ready().design().boardCells(); }
 
         @Override
         public void setRecipe(IRecipeLayoutBuilder builder, PcbFabricationRecipe recipe, IFocusGroup focuses) {
-            int cells = boardCells(recipe);
-            int plates = Math.max(1, (cells + PcbFabricatorBlockEntity.CELLS_PER_PLATE - 1) / PcbFabricatorBlockEntity.CELLS_PER_PLATE);
-            int resist = PcbFabricatorBlockEntity.RESIST_BASE + PcbFabricatorBlockEntity.RESIST_PER_CELL * cells;
-
-            builder.addInputSlot(0, 0).add(recipe.ready().blueprint()).setStandardSlotBackground();
-            builder.addInputSlot(0, 20).add(new ItemStack(BuiltInRegistries.ITEM.getValue(
-                    Identifier.fromNamespaceAndPath(OmniTech.MODID, "copper_plate")), plates)).setStandardSlotBackground();
-            builder.addInputSlot(22, 0).add(PcbFabricatorBlockEntity.photoresist(), resist)
-                    .setFluidRenderer(PcbFabricatorBlockEntity.TANK_CAPACITY / 4, false, 16, 36);
-            builder.addOutputSlot(90, 10).add(recipe.ready().board()).setOutputSlotBackground();
+            builder.addInputSlot(0, 0).add(OmniTechItems.UV_BULB.get()).setStandardSlotBackground();
+            builder.addInputSlot(0, 19).add(recipe.ready().photomask()).setStandardSlotBackground();
+            builder.addInputSlot(0, 38).add(OmniTechItems.EMPTY_CIRCUIT_BOARD.get()).setStandardSlotBackground();
+            builder.addOutputSlot(66, 19).add(recipe.ready().exposed()).setOutputSlotBackground();
         }
 
         @Override
         public void draw(PcbFabricationRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
             Font font = Minecraft.getInstance().font;
-            arrow.draw(graphics, 52, 10);
-            graphics.text(font, Component.translatable("jei.omnitech.pcb_fabrication.mask"), 0, 42, 0x555555, false);
-            graphics.text(font, (int) PcbFabricatorBlockEntity.EU_PER_BOARD + " kJ · "
-                    + PcbFabricatorBlockEntity.PROCESS_TICKS / 20 + " s", 0, 52, 0x555555, false);
+            arrow.draw(graphics, 30, 19);
+            graphics.text(font, Component.translatable("jei.omnitech.pcb_fabrication.mask"), 0, 58, 0x555555, false);
+            graphics.text(font, (int) PcbBurnerBlockEntity.EU_PER_BOARD + " kJ · "
+                    + PcbBurnerBlockEntity.EXPOSE_TICKS / 20 + " s", 0, 66, 0x555555, false);
+        }
+    }
+
+    // ── PCB Washer: acid dissolves the copper the exposed resist left bare ─────
+
+    static class PcbEtchingCategory implements IRecipeCategory<PcbFabricationRecipe> {
+        private final IDrawable icon;
+        private final IDrawable arrow;
+
+        PcbEtchingCategory(IGuiHelper gui) {
+            this.icon  = gui.createDrawableItemLike(OmniTechBlocks.PCB_WASHER.get());
+            this.arrow = gui.getRecipeArrow();
+        }
+
+        @Override public IRecipeType<PcbFabricationRecipe> getRecipeType() { return PCB_ETCHING; }
+        @Override public Component getTitle() { return Component.translatable("jei.omnitech.pcb_etching"); }
+        @Override public int getWidth()  { return 160; }
+        @Override public int getHeight() { return 64; }
+        @Override public IDrawable getIcon() { return icon; }
+
+        @Override
+        public void setRecipe(IRecipeLayoutBuilder builder, PcbFabricationRecipe recipe, IFocusGroup focuses) {
+            int acid = PcbWasherBlockEntity.acidPerBoard(recipe.ready().design());
+            var acids = builder.addInputSlot(0, 0).setFluidRenderer(PcbWasherBlockEntity.TANK_CAPACITY / 16, false, 16, 54);
+            BuiltInRegistries.FLUID.getTagOrEmpty(PcbWasherBlockEntity.ETCHANT)
+                    .forEach(h -> acids.addFluidStack(h.value(), acid));
+            builder.addInputSlot(24, 19).add(recipe.ready().exposed()).setStandardSlotBackground();
+            builder.addOutputSlot(90, 19).add(recipe.ready().board()).setOutputSlotBackground();
+        }
+
+        @Override
+        public void draw(PcbFabricationRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+            Font font = Minecraft.getInstance().font;
+            arrow.draw(graphics, 54, 19);
+            graphics.text(font, PcbWasherBlockEntity.ETCH_TICKS / 20 + " s", 24, 56, 0x555555, false);
         }
     }
 

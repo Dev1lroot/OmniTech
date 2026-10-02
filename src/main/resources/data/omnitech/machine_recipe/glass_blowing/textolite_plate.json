@@ -1,0 +1,8 @@
+{
+  "requiredMinimalTemperature": 1600,
+  "input": "#minecraft:smelts_to_glass",
+  "output": {
+    "item": "omnitech:textolite_plate",
+    "count": 1
+  }
+}

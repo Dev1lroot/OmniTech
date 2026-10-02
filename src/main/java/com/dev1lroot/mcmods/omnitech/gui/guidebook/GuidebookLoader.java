@@ -128,7 +128,8 @@ public class GuidebookLoader implements PreparableReloadListener {
                             new InputStreamReader(res.open(), StandardCharsets.UTF_8))) {
                         md = r.lines().collect(Collectors.joining("\n"));
                     }
-                    pages.add(parse(chapterName, md));
+                    String key = ce.getKey() + "/" + pe.getKey().replaceFirst("\\.md$", "");
+                    pages.add(parse(key, chapterName, md));
                 } catch (Exception e) {
                     OmniTech.LOGGER.warn("[Guidebook] Failed to load {}: {}", pe.getValue(), e.getMessage());
                 }
@@ -144,7 +145,7 @@ public class GuidebookLoader implements PreparableReloadListener {
 
     // ── Markdown parsing ──────────────────────────────────────────────────────
 
-    private static GuidebookPage parse(String chapterName, String content) {
+    private static GuidebookPage parse(String key, String chapterName, String content) {
         List<GuidebookPage.PageToken> tokens = new ArrayList<>();
         String[] lines = content.split("\n", -1);
         int start = 0;
@@ -246,7 +247,7 @@ public class GuidebookLoader implements PreparableReloadListener {
         }
         flush(tokens, para);
 
-        return new GuidebookPage(chapterName, tokens);
+        return new GuidebookPage(key, chapterName, tokens);
     }
 
     private static StringBuilder flush(List<GuidebookPage.PageToken> tokens, StringBuilder para) {
@@ -259,6 +260,11 @@ public class GuidebookLoader implements PreparableReloadListener {
         if (target.startsWith("http://") || target.startsWith("https://"))
             return new GuidebookPage.LinkTarget.Url(target);
         if (target.startsWith("page:")) {
+            String ref = target.substring(5).trim();
+            // page:01_kinetics/00_overview — by name, so links survive pages being added
+            if (!ref.isEmpty() && !Character.isDigit(ref.charAt(0)) || ref.contains("/")) {
+                return new GuidebookPage.LinkTarget.PageRef(ref);
+            }
             try {
                 int idx = Integer.parseInt(target.substring(5).trim()) - 1; // 1-based → 0-based
                 return new GuidebookPage.LinkTarget.PageJump(Math.max(0, idx));

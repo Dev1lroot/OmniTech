@@ -3,5 +3,17 @@
     "sounds": [
       "omnitech:nuclear_explosion"
     ]
+  },
+  "pcb_burner_flash": {
+    "subtitle": "subtitles.omnitech.pcb_burner_flash",
+    "sounds": [
+      "omnitech:pcb_burner_flash"
+    ]
+  },
+  "pcb_washer_flush": {
+    "subtitle": "subtitles.omnitech.pcb_washer_flush",
+    "sounds": [
+      "omnitech:pcb_washer_flush"
+    ]
   }
 }

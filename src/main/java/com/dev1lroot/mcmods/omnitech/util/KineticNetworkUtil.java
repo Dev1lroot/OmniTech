@@ -6,8 +6,8 @@ package com.dev1lroot.mcmods.omnitech.util;
 
 import com.dev1lroot.mcmods.omnitech.io.IKineticReceiver;
 import com.dev1lroot.mcmods.omnitech.io.IKineticSupplier;
-import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticPipeBlock;
-import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticPipeBlockEntity;
+import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticShaftBlock;
+import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticShaftBlockEntity;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticReductorBlock;
 import com.dev1lroot.mcmods.omnitech.blocks.kinetic.KineticReductorBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -31,7 +31,7 @@ import java.util.Set;
  *
  * <p>Traversal rules:
  * <ul>
- *   <li>A {@link KineticPipeBlock} is only entered from a direction matching its axis.</li>
+ *   <li>A {@link KineticShaftBlock} is only entered from a direction matching its axis.</li>
  *   <li>A {@link KineticReductorBlock} is entered from any direction and propagates
  *       to all six faces (omnidirectional junction).</li>
  *   <li>Any other block that implements {@link IKineticReceiver} receives the force.</li>
@@ -51,11 +51,11 @@ public final class KineticNetworkUtil {
 
     // ── Collected-node records ─────────────────────────────────────────────────
 
-    private record PipeNode(BlockPos pos, KineticPipeBlockEntity be) {}
+    private record ShaftNode(BlockPos pos, KineticShaftBlockEntity be) {}
     private record ReductorNode(BlockPos pos, KineticReductorBlockEntity be) {}
 
     /**
-     * BFS from {@code source} through the kinetic pipe network.
+     * BFS from {@code source} through the kinetic shaft network.
      *
      * <p>Phase 1 collects all reachable nodes and sums total supply.
      * Phase 2 delivers that supply to every receiver unconditionally.
@@ -69,7 +69,7 @@ public final class KineticNetworkUtil {
 
         Set<BlockPos>         visited   = new HashSet<>();
         ArrayDeque<Step>      queue     = new ArrayDeque<>();
-        List<PipeNode>        pipes     = new ArrayList<>();
+        List<ShaftNode>        shafts     = new ArrayList<>();
         List<ReductorNode>    reductors = new ArrayList<>();
         List<IKineticReceiver> receivers = new ArrayList<>();
 
@@ -89,21 +89,21 @@ public final class KineticNetworkUtil {
 
             BlockState state = level.getBlockState(step.pos());
 
-            if (state.getBlock() instanceof KineticPipeBlock) {
-                Direction.Axis pipeAxis = state.getValue(KineticPipeBlock.AXIS);
-                // Pipes only accept entry from the matching axis face
-                if (step.entryAxis() != pipeAxis) continue;
+            if (state.getBlock() instanceof KineticShaftBlock) {
+                Direction.Axis shaftAxis = state.getValue(KineticShaftBlock.AXIS);
+                // Shafts only accept entry from the matching axis face
+                if (step.entryAxis() != shaftAxis) continue;
 
                 BlockEntity be = level.getBlockEntity(step.pos());
-                if (be instanceof KineticPipeBlockEntity pipe) {
-                    pipes.add(new PipeNode(step.pos(), pipe));
+                if (be instanceof KineticShaftBlockEntity shaft) {
+                    shafts.add(new ShaftNode(step.pos(), shaft));
                 }
 
                 for (Direction dir : Direction.values()) {
-                    if (dir.getAxis() != pipeAxis) continue;
+                    if (dir.getAxis() != shaftAxis) continue;
                     BlockPos next = step.pos().relative(dir);
                     if (!visited.contains(next)) {
-                        queue.add(new Step(next, pipeAxis));
+                        queue.add(new Step(next, shaftAxis));
                     }
                 }
 
@@ -142,10 +142,10 @@ public final class KineticNetworkUtil {
 
         // ── Phase 2: dispatch ──────────────────────────────────────────────────
 
-        // Pipes and reductors animate whenever any KF is flowing
-        for (PipeNode pn : pipes) {
-            BlockState pipeState = level.getBlockState(pn.pos());
-            pn.be().refreshPoweredTimer(level, pn.pos(), pipeState, totalSupply);
+        // Shafts and reductors animate whenever any KF is flowing
+        for (ShaftNode pn : shafts) {
+            BlockState shaftState = level.getBlockState(pn.pos());
+            pn.be().refreshPoweredTimer(level, pn.pos(), shaftState, totalSupply);
         }
 
         for (ReductorNode rn : reductors) {

@@ -305,7 +305,7 @@ public class OmniTech {
         );
         event.registerBlockEntity(
                 Capabilities.Fluid.BLOCK,
-                OmniTechBlockEntities.PCB_FABRICATOR.get(),
+                OmniTechBlockEntities.PCB_WASHER.get(),
                 (be, side) -> be.fluidHandler);
         event.registerBlockEntity(
                 Capabilities.Fluid.BLOCK,

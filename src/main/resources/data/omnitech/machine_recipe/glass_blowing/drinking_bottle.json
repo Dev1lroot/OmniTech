@@ -1,6 +1,6 @@
 {
   "requiredMinimalTemperature": 1700,
-  "input": "minecraft:sand",
+  "input": "#minecraft:smelts_to_glass",
   "output": {
     "item": "omnitech:drinking_bottle",
     "count": 1
